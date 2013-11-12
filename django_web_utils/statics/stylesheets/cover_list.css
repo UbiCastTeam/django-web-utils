@@ -1,0 +1,94 @@
+/* CSS for cover list widget */
+
+.cover-list {
+    display: block;
+    position: relative;
+    height: 300px;
+}
+.cover-list .cover-loading {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    background: transparent url(../images/cover_list/loading.gif) 50% 50% no-repeat;
+}
+.cover-list a {
+    color: transparent;
+}
+.cover-list .cover-bar {
+    padding: 0 40px;
+    left: 120px;
+    right: 120px;
+    bottom: 15px;
+    position: absolute;
+    height: 30px;
+    background: transparent url(../images/overlay/black_mask.png) 0 0 repeat;
+    border: 1px solid #888;
+    border-radius: 4px;
+}
+.cover-list .cover-previous,
+.cover-list .cover-next {
+    top: 2px;
+    bottom: 2px;
+    position: absolute;
+    width: 26px;
+    background: #fff;
+    border: 1px solid #888;
+    border-radius: 4px;
+}
+.cover-list .cover-previous {
+    left: 2px;
+}
+.cover-list .cover-next {
+    right: 2px;
+}
+.cover-list .cover-previous-icon,
+.cover-list .cover-next-icon {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+}
+.cover-list .cover-previous-icon {
+    background: transparent url("../images/cover_list/previous.png") 50% 50% no-repeat;
+}
+.cover-list .cover-next-icon {
+    background: transparent url("../images/cover_list/next.png") 50% 50% no-repeat;
+}
+.cover-list .cover-slider {
+    display: block;
+    height: 100%;
+    position: relative;
+}
+.cover-list .cover-slider a {
+    margin-left: -7px;
+    top: 2px;
+    bottom: 2px;
+    position: absolute;
+    width: 12px;
+    display: block;
+    background: #fff;
+    border: 1px solid #888;
+    border-radius: 4px;
+}
+.cover-list .cover-box {
+    top: 0;
+    position: absolute;
+    width: 240px;
+}
+.cover-list .cover-box-content {
+    padding: 2px;
+    display: block;
+    position: relative;
+    background: transparent url(../images/overlay/black_mask.png) 0 0 repeat;
+    border: 1px solid #888;
+    border-radius: 4px;
+}
+.cover-list .cover-box-content img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+

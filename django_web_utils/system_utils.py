@@ -1,0 +1,164 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------------------
+## System utility functions
+##----------------------------------------------------------------------------------
+import os
+import sys
+import errno
+import datetime
+import random
+import pwd
+import grp
+import subprocess
+# Django
+from django.utils.translation import ugettext_lazy as _
+
+
+# get_login function
+#-----------------------------------------------------------------------------------
+def get_login():
+    return pwd.getpwuid(os.getuid())[0]
+
+# run_as function
+#-----------------------------------------------------------------------------------
+def run_as(username, umask=022, exit_on_error=True):
+    """
+    Drop privileges to given user, and set up environment.
+    Assumes the parent process has root privileges.
+    """
+    if get_login() == username:
+        return
+    
+    try:
+        pwent = pwd.getpwnam(username)
+    except KeyError, e:
+        if exit_on_error:
+            print >>sys.stderr, e
+            sys.exit(1)
+        else:
+            raise
+    
+    os.umask(umask)
+    home = pwent.pw_dir
+    try:
+        os.chdir(home)
+    except OSError:
+        os.chdir('/')
+    
+    groups = list()
+    for group in grp.getgrall():
+        if username in group.gr_mem:
+            groups.append(group.gr_gid)
+    
+    # drop privs to user
+    os.setgroups(groups)
+    os.setgid(pwent.pw_gid)
+    os.setegid(pwent.pw_gid)
+    os.setuid(pwent.pw_uid)
+    os.seteuid(pwent.pw_uid)
+    os.environ['HOME'] = home
+    os.environ['USER'] = pwent.pw_name
+    os.environ['LOGNAME'] = pwent.pw_name
+    os.environ['SHELL'] = pwent.pw_shell
+    #os.environ['PATH'] = '/bin:/usr/bin:/usr/local/bin'
+    return
+
+# execute_command function
+#-----------------------------------------------------------------------------------
+def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
+    cmd = cmd.replace('"', '\\"')
+    if user == 'self':
+        cmd_prompt = '/bin/bash -c "%s"'
+        need_password = False
+    elif user == 'root':
+        cmd_prompt = 'sudo%s /bin/bash -c "%%s"' %('' if is_root else ' -S')
+        need_password = False if is_root else True
+    else:
+        cmd_prompt = 'sudo%s su %s -c "%%s"' %('' if is_root else ' -S', user)
+        need_password = False if is_root else True
+    
+    command = cmd_prompt %cmd
+    #print '    Executing command: %s' %command
+    p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    if need_password:
+        if not pwd and (not request or not request.session.get('pwd')):
+            return False, unicode(_('Password required.'))
+        out, err = p.communicate(input='%s\n' %(pwd if pwd else request.session['pwd']))
+    else:
+        out, err = p.communicate()
+    if p.returncode != 0:
+        if err:
+            return False, err
+        else:
+            return False, unicode(_('Command exited with code %s.') %p.returncode)
+    if out:
+        return True, out
+    return True, None
+
+# is_pid_running
+#--------------------------------------------------------------------------------
+def is_pid_running(pid_file_path, user='self', request=None):
+    if not os.path.exists(pid_file_path):
+        return False
+    pid = None
+    try:
+        pidfile = open(pid_file_path, 'r')
+    except Exception:
+        pass
+    else:
+        try:
+            pid = int(pidfile.read())
+        except Exception:
+            pass
+        finally:
+            pidfile.close()
+    cmd = 'ps -p %s > /dev/null 2>&1' %pid
+    success, output = execute_command(cmd, user=user, request=request)
+    return success
+
+# is_process_running
+#--------------------------------------------------------------------------------
+def is_process_running(process_name, user='self', request=None):
+    cmd = 'ps ax | grep \'%s\' | grep -v \'grep\' > /dev/null 2>&1' %process_name
+    success, output = execute_command(cmd, user=user, request=request)
+    return success
+
+# write_file_as
+#--------------------------------------------------------------------------------
+def write_file_as(request, content, file_path, user='self'):
+    try:
+        # try to write file like usual
+        f = open(file_path, 'w+')
+    except Exception, e:
+        if e.errno != errno.EACCES:
+            return False, u'%s %s' %(_('Unable to write file.'), e)
+        # write file as given user
+        #   to write as given user we first write the content in a temporary file then we
+        #   transfer the content to the destination file. This method is used to avoid
+        #   problems with special characters (before echo was used but it was too unstable)
+        if 'pwd' not in request.session:
+            return False, unicode(_('You need to send the main password to edit this file.'))
+        # write tmp file
+        rd_chars = ''.join([random.choice('0123456789abcdef') for i in range(10)])
+        date_dump = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S_%f')
+        tmp_path = '/tmp/msmonitor-tmp_%s_%s' %(date_dump, rd_chars)
+        try:
+            f = open(tmp_path, 'w+')
+        except Exception, e:
+            return False, u'%s %s' %(_('Unable to create temporary file "%s".') %tmp_path, e)
+        f.write(content.encode('utf-8'))
+        f.close()
+        # transfer content in final file
+        cmd = u'cat \'%s\' > \'%s\'' %(tmp_path, file_path)
+        success, output = execute_command(cmd, user=user, request=request)
+        os.remove(tmp_path)
+        if success:
+            return True, unicode(_('File updated.'))
+        else:
+            return False, u'%s %s' %(_('Unable to write file.'), output)
+    else:
+        f.write(content.encode('utf-8'))
+        f.close()
+        return True, unicode(_('File updated.'))
+
