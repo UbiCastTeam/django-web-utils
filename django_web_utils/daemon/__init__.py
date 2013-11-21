@@ -33,7 +33,9 @@ class BaseDaemon(object):
     PID_DIR = os.path.join(SERVER_DIR, 'temporary')
     SETTINGS_MODULE = 'settings'
     
-    USAGE = 'USAGE: %s start|restart|stop|clear_log [-n] [*options]'
+    USAGE = '''USAGE: %s start|restart|stop|clear_log [-n] [-f] [*options]
+    -n: launch daemon in current thread and not in background
+    -f: force log to use a file and not the standard output'''
     DAEMON_NAME = 'unamed_daemon'
     NEED_GOBJECT = False
     DEFAULTS = dict(LOGGING_LEVEL='INFO')
@@ -47,6 +49,7 @@ class BaseDaemon(object):
         os.chdir('/') # to avoid wrong imports
         
         self._daemonized = False
+        self._log_in_file = False
         self._pid_written = False
         self._pid_file_path = os.path.join(self.PID_DIR, '%s.pid' % self.DAEMON_NAME)
         self._log_file_path = os.path.join(self.LOG_DIR, '%s.log' % self.DAEMON_NAME)
@@ -110,7 +113,7 @@ class BaseDaemon(object):
         django_logger = logging.getLogger('django')
         django_logger.setLevel(logging.WARNING)
     
-    def _setup_logging(self):
+    def _setup_logging(self, log_in_file):
         if not os.path.exists(self.LOG_DIR):
             try:
                 os.makedirs(self.LOG_DIR)
@@ -128,7 +131,7 @@ class BaseDaemon(object):
             format = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
             level = level
         )
-        if self._daemonized:
+        if log_in_file:
             logging_conf['filename'] = self._log_file_path
         logging.basicConfig(**logging_conf)
     
@@ -276,6 +279,11 @@ class BaseDaemon(object):
             daemonize = False
             args.remove('-n')
         
+        log_in_file = daemonize
+        if '-f' in args:
+            log_in_file = True
+            args.remove('-f')
+        
         if len(args) > 0 and args[0] not in ('start', 'restart', 'stop', 'clear_log'):
             args.pop(0) # this script path
         
@@ -285,10 +293,10 @@ class BaseDaemon(object):
         
         options = args
         
-        return daemonize, command, options
+        return daemonize, log_in_file, command, options
     
     def start(self, argv=None):
-        daemonize, command, options = self._parse_args(argv)
+        daemonize, log_in_file, command, options = self._parse_args(argv)
         
         if command not in ('start', 'restart', 'stop', 'clear_log'):
             print >>sys.stderr, self.usage
@@ -325,7 +333,7 @@ class BaseDaemon(object):
             if daemonize:
                 self._daemonize()
             self._write_pid()
-            self._setup_logging()
+            self._setup_logging(log_in_file)
             
             # launch service
             try:
@@ -358,7 +366,7 @@ class BaseDaemon(object):
     
     def restart(self, argv=None):
         # function to restart daemon itself
-        daemonize, command, options = self._parse_args(argv)
+        daemonize, log_in_file, command, options = self._parse_args(argv)
         
         # remove pid file to avoid kill command when restarting
         try:
