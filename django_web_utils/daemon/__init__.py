@@ -35,6 +35,7 @@ class BaseDaemon(object):
     
     USAGE = '''USAGE: %s start|restart|stop|clear_log [-n] [-f] [*options]
     -n: launch daemon in current thread and not in background
+    -s: allow simultaneous execution
     -f: force log to use a file and not the standard output'''
     DAEMON_NAME = 'unamed_daemon'
     NEED_GOBJECT = False
@@ -65,8 +66,8 @@ class BaseDaemon(object):
         logger.error(msg)
         raise NotImplementedError, msg
     
-    def get_config(self, option):
-        return self.config.get(option)
+    def get_config(self, option, default=None):
+        return self.config.get(option, default)
     
     def load_config(self):
         self.config = dict(self.DEFAULTS)
@@ -279,6 +280,11 @@ class BaseDaemon(object):
             daemonize = False
             args.remove('-n')
         
+        allow_simultaneous = False
+        if '-s' in args:
+            allow_simultaneous = True
+            args.remove('-s')
+        
         log_in_file = daemonize
         if '-f' in args:
             log_in_file = True
@@ -293,10 +299,10 @@ class BaseDaemon(object):
         
         options = args
         
-        return daemonize, log_in_file, command, options
+        return daemonize, allow_simultaneous, log_in_file, command, options
     
     def start(self, argv=None):
-        daemonize, log_in_file, command, options = self._parse_args(argv)
+        daemonize, allow_simultaneous, log_in_file, command, options = self._parse_args(argv)
         
         if command not in ('start', 'restart', 'stop', 'clear_log'):
             print >>sys.stderr, self.usage
@@ -318,7 +324,7 @@ class BaseDaemon(object):
             else:
                 print >>sys.stdout, '%s is not running' % self.DAEMON_NAME
         elif command == 'start':
-            if pid:
+            if pid and not allow_simultaneous:
                 print >>sys.stderr, '%s is already running' % self.DAEMON_NAME
                 self.exit(130)
         else: # command == 'clear_log':
@@ -366,7 +372,7 @@ class BaseDaemon(object):
     
     def restart(self, argv=None):
         # function to restart daemon itself
-        daemonize, log_in_file, command, options = self._parse_args(argv)
+        daemonize, allow_simultaneous, log_in_file, command, options = self._parse_args(argv)
         
         # remove pid file to avoid kill command when restarting
         try:
