@@ -45,8 +45,8 @@ def get_meta_tag_text(text):
 # get_html_traceback function
 #-----------------------------------------------------------------------------------
 def get_html_traceback():
-    html = u'<p style="padding-left: 16px;">'
     error_tb = unicode(defaultfilters.escape(traceback.format_exc()))
+    html = u''
     for line in error_tb.split(u'\n'):
         if line.startswith(u'    '):
             padding = u'32px'
@@ -55,6 +55,7 @@ def get_html_traceback():
         else:
             padding = u'0'
         html += u'<span style="padding-left: %s;">%s</span><br/>' %(padding, line)
-    html += u'</p>'
+    if html.endswith('<br/>'):
+        html = html[:-5]
     return html
 
