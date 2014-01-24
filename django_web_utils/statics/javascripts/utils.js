@@ -69,6 +69,28 @@ utils.isinstance = function (obj, type) {
     return false;
 };
 
+// escape html
+utils.escape_html = function (text) {
+    if (!text)
+        return text;
+    var result = text.toString();
+    result = result.replace(new RegExp("(\n)", "g"), "<br/>");
+    result = result.replace(new RegExp("(<)", "g"), "&lt;");
+    result = result.replace(new RegExp("(>)", "g"), "&gt;");
+    result = result.replace(new RegExp("(\")", "g"), "&quot;");
+    return result;
+};
+
+// escape attribute
+utils.escape_attr = function (attr) {
+    if (!attr)
+        return attr;
+    var result = attr.toString();
+    result = result.replace(new RegExp("(\n)", "g"), " ");
+    result = result.replace(new RegExp("(\")", "g"), "&quot;");
+    return result;
+};
+
 // get click relative coordinates
 utils.get_click_position = function (evt, dom) {
     var element = dom, x_offset = 0, y_offset = 0;
@@ -159,7 +181,7 @@ utils.add_translations = function (translations, lang) {
         catalog = utils._translations[lang];
     }
     else
-        catalog = utils._translations["en"];
+        catalog = utils._current_catalog;
     for (var text in translations) {
         if (translations.hasOwnProperty(text))
             catalog[text] = translations[text];
@@ -172,6 +194,65 @@ utils.translate = function (text) {
         return utils._translations["en"][text];
     return text;
 };
+utils.get_date_display = function (d) {
+    // date format %Y-%m-%d %H:%M:%S
+    var date_split = d.split(" ");
+    if (date_split.length < 2)
+        return "";
+    var ymd_split = date_split[0].split("-");
+    var hms_split = date_split[1].split(":");
+    if (ymd_split.length < 3 || hms_split.length < 3)
+        return "";
+    // year
+    var year = ymd_split[0];
+    // month
+    var month = ymd_split[1];
+    switch (ymd_split[1]) {
+        case "01": month = utils.translate("January");   break;
+        case "02": month = utils.translate("February");  break;
+        case "03": month = utils.translate("March");     break;
+        case "04": month = utils.translate("April");     break;
+        case "05": month = utils.translate("May");       break;
+        case "06": month = utils.translate("June");      break;
+        case "07": month = utils.translate("July");      break;
+        case "08": month = utils.translate("August");    break;
+        case "09": month = utils.translate("September"); break;
+        case "10": month = utils.translate("October");   break;
+        case "11": month = utils.translate("November");  break;
+        case "12": month = utils.translate("December");  break;
+    }
+    // day
+    var day = ymd_split[2];
+    try { day = parseInt(ymd_split[2], 10); } catch (e) { }
+    // hour
+    var hour = parseInt(hms_split[0], 10);
+    // minute
+    var minute = parseInt(hms_split[1], 10);
+    if (minute < 10)
+        minute = "0"+minute;
+    // time
+    var time;
+    if (utils._current_lang == "fr") {
+        // 24 hours time format
+        if (hour < 10)
+            hour = "0"+hour;
+        time = hour+"h"+minute;
+    }
+    else {
+        // 12 hours time format
+        var moment = "PM";
+        if (hour < 13) {
+            moment = "AM";
+            if (hour == 0)
+                hour = 12;
+        }
+        else
+            hour -= 12;
+        time = hour+":"+minute+" "+moment;
+    }
+    return day+" "+month+" "+year+" "+utils.translate("at")+" "+time;
+};
+
 
 // JavaScript classes related functions
 utils.setup_class = function (obj, options, allowed_options) {
