@@ -280,9 +280,9 @@ class BaseDaemon(object):
             daemonize = False
             args.remove('-n')
         
-        allow_simultaneous = False
+        simultaneous = False
         if '-s' in args:
-            allow_simultaneous = True
+            simultaneous = True
             args.remove('-s')
         
         log_in_file = daemonize
@@ -299,10 +299,10 @@ class BaseDaemon(object):
         
         options = args
         
-        return daemonize, allow_simultaneous, log_in_file, command, options
+        return daemonize, simultaneous, log_in_file, command, options
     
     def start(self, argv=None):
-        daemonize, allow_simultaneous, log_in_file, command, options = self._parse_args(argv)
+        daemonize, simultaneous, log_in_file, command, options = self._parse_args(argv)
         
         if command not in ('start', 'restart', 'stop', 'clear_log'):
             print >>sys.stderr, self.usage
@@ -324,7 +324,7 @@ class BaseDaemon(object):
             else:
                 print >>sys.stdout, '%s is not running' % self.DAEMON_NAME
         elif command == 'start':
-            if pid and not allow_simultaneous:
+            if pid and not simultaneous:
                 print >>sys.stderr, '%s is already running' % self.DAEMON_NAME
                 self.exit(130)
         else: # command == 'clear_log':
@@ -338,7 +338,8 @@ class BaseDaemon(object):
             print >>sys.stdout, 'Starting %s...' % self.DAEMON_NAME
             if daemonize:
                 self._daemonize()
-            self._write_pid()
+            if not simultaneous:
+                self._write_pid()
             self._setup_logging(log_in_file)
             
             # launch service
@@ -372,7 +373,7 @@ class BaseDaemon(object):
     
     def restart(self, argv=None):
         # function to restart daemon itself
-        daemonize, allow_simultaneous, log_in_file, command, options = self._parse_args(argv)
+        daemonize, simultaneous, log_in_file, command, options = self._parse_args(argv)
         
         # remove pid file to avoid kill command when restarting
         try:
