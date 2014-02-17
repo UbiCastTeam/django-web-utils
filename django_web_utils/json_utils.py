@@ -18,34 +18,34 @@ def get_date_display(date):
 
 # default response function
 #-------------------------------------------------------------------------------
-def response(code=200, *args, **kwargs):
+def response(*args, **kwargs):
     if args:
         if len(args) == 1:
-            return HttpResponse(json.dumps(args[0]), content_type='application/json')
-        return HttpResponse(json.dumps(args), content_type='application/json')
-    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=code)
+            return HttpResponse(json.dumps(args[0]), content_type='application/json', status=kwargs.get('code', 200))
+        return HttpResponse(json.dumps(args), content_type='application/json', status=kwargs.get('code', 200))
+    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=kwargs.get('code', 200))
 
 # success_response function
 #-------------------------------------------------------------------------------
-def success_response(code=200, *args, **kwargs):
+def success_response(*args, **kwargs):
     kwargs['success'] = True
     if args:
         if len(args) == 1:
             kwargs['data'] = args[0]
         else:
             kwargs['data'] = args
-    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=code)
+    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=kwargs.get('code', 200))
 
 # failure_response function
 #-------------------------------------------------------------------------------
-def failure_response(code=400, *args, **kwargs):
+def failure_response(*args, **kwargs):
     kwargs['success'] = False
     if args:
         if len(args) == 1:
             kwargs['data'] = args[0]
         else:
             kwargs['data'] = args
-    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=code)
+    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=kwargs.get('code', 400))
 
 
 # classic errors classes
