@@ -85,7 +85,7 @@ def json_view(methods=None):
                 return function(request, *args, **kwargs)
             except JsonHttp400:
                 return failure_response(code=400, error=u'%s (400)' %_('Bad request'))
-            except JsonHttp400:
+            except JsonHttp401:
                 return failure_response(code=401, error=u'%s (401)' %_('Authentication required'))
             except JsonHttp403:
                 return failure_response(code=403, error=u'%s (403)' %_('Access denied'))
