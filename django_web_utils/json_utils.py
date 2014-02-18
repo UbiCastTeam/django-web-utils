@@ -41,7 +41,7 @@ def success_response(*args, **kwargs):
 # failure_response function
 #-------------------------------------------------------------------------------
 def failure_response(*args, **kwargs):
-    code = kwargs.pop('code', 400)
+    code = kwargs.pop('code', 200)
     kwargs['success'] = False
     if args:
         if len(args) == 1:
@@ -54,6 +54,9 @@ def failure_response(*args, **kwargs):
 # classic errors classes
 #-------------------------------------------------------------------------------
 JsonHttp404 = Http404
+
+class JsonHttp401(Exception):
+    pass
 
 class JsonHttp403(Exception):
     pass
@@ -82,6 +85,8 @@ def json_view(methods=None):
                 return function(request, *args, **kwargs)
             except JsonHttp400:
                 return failure_response(code=400, error=u'%s (400)' %_('Bad request'))
+            except JsonHttp400:
+                return failure_response(code=401, error=u'%s (401)' %_('Authentication required'))
             except JsonHttp403:
                 return failure_response(code=403, error=u'%s (403)' %_('Access denied'))
             except JsonHttp404:
