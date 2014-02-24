@@ -4,6 +4,7 @@
 ## Functions for MediaServer's API app
 ##-------------------------------------------------------------------------------
 import json
+import datetime
 import traceback
 import logging
 # Django
@@ -15,6 +16,14 @@ from django.utils.translation import ugettext_lazy as _
 #-------------------------------------------------------------------------------
 def get_date_display(date):
     return date.strftime('%Y-%m-%d %H:%M:%S')
+
+# get_date_object function
+#-------------------------------------------------------------------------------
+def get_date_object(date):
+    try:
+        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    except Exception:
+        return None
 
 # default response function
 #-------------------------------------------------------------------------------
