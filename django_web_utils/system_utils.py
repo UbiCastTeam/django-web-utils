@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------------------
-## System utility functions
-##----------------------------------------------------------------------------------
+'''
+System utility functions
+'''
 import os
 import sys
 import errno

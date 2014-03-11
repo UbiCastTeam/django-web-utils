@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##-------------------------------------------------------------------------------
-## Functions for MediaServer's API app
-##-------------------------------------------------------------------------------
+'''
+JSON utility functions
+'''
 import json
 import datetime
 import traceback

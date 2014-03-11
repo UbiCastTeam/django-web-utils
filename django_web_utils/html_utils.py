@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------------------
-## HTML utility functions
-##----------------------------------------------------------------------------------
+'''
+HTML utility functions
+'''
 import traceback
 import re
 import htmlentitydefs

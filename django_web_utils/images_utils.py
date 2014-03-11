@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##-------------------------------------------------------------------------------
-## Images utilities functions
-##-------------------------------------------------------------------------------
+'''
+Images utility functions
+'''
 import os
 import datetime
 from PIL import Image

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------------------
-## Rss utility functions
-##----------------------------------------------------------------------------------
+'''
+Rss utility functions
+'''
 # Django
 from django.utils.tzinfo import LocalTimezone
 

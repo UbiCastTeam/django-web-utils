@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------------------
-## Translations utility functions
-##----------------------------------------------------------------------------------
+'''
+Translations utility functions
+'''
 
 
 # get_text_for_lang function

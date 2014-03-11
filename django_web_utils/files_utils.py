@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------------------
-## Files utility functions
-##----------------------------------------------------------------------------------
+'''
+Files utility functions
+'''
 import os
 # Django
 from django.utils.translation import ugettext_lazy as _
