@@ -210,7 +210,8 @@ class BaseDaemon(object):
                 else:
                     print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
                 self.exit(135)
-        self.exit(0)
+        else:
+            self.exit(0)
     
     def _setup_django(self):
         # set django settings, so that django modules can be imported
