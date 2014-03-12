@@ -74,9 +74,9 @@ utils.escape_html = function (text) {
     if (!text)
         return text;
     var result = text.toString();
-    result = result.replace(new RegExp("(\n)", "g"), "<br/>");
     result = result.replace(new RegExp("(<)", "g"), "&lt;");
     result = result.replace(new RegExp("(>)", "g"), "&gt;");
+    result = result.replace(new RegExp("(\n)", "g"), "<br/>");
     result = result.replace(new RegExp("(\")", "g"), "&quot;");
     return result;
 };
