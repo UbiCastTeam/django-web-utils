@@ -42,23 +42,39 @@ class BaseDaemon(object):
     NEED_GOBJECT = False
     DEFAULTS = dict(LOGGING_LEVEL='INFO')
     
-    def __init__(self):
+    def __init__(self, argv=None):
         object.__init__(self)
-        # get daemon script path before changing dir
-        self.daemon_path = os.path.join(os.getcwd(), sys.argv[0])
-        self.usage = self.USAGE % self.daemon_path
-        os.environ['LANG'] = 'C'
-        os.chdir('/') # to avoid wrong imports
-        
-        self._daemonized = False
-        self._log_in_file = False
-        self._pid_written = False
-        self._pid_file_path = os.path.join(self.PID_DIR, '%s.pid' % self.DAEMON_NAME)
-        self._log_file_path = os.path.join(self.LOG_DIR, '%s.log' % self.DAEMON_NAME)
-        
-        self.config = dict()
-        self.config_file = os.path.join(self.CONF_DIR, '%s.py' % self.DAEMON_NAME)
-        self.load_config()
+        try:
+            self.daemon_path = os.path.expanduser(__file__)
+            if self.daemon_path.endswith('pyc'):
+                self.daemon_path = self.daemon_path[:-1]
+            self.usage = self.USAGE % self.daemon_path
+            
+            os.environ['LANG'] = 'C'
+            os.chdir('/') # to avoid wrong imports
+            
+            self._daemonize = False
+            self._simultaneous = False
+            self._log_in_file = False
+            self._command = None
+            self._cleaned_args = list()
+            self._parse_args(argv)
+            
+            self._pid_written = False
+            self._pid_file_path = os.path.join(self.PID_DIR, '%s.pid' % self.DAEMON_NAME)
+            self._log_file_path = os.path.join(self.LOG_DIR, '%s.log' % self.DAEMON_NAME)
+            
+            self.config = dict()
+            self.config_file = os.path.join(self.CONF_DIR, '%s.py' % self.DAEMON_NAME)
+            self.load_config()
+            
+            self._run_command()
+        except Exception:
+            f = open('/tmp/daemon-error', 'w+')
+            f.write(traceback.format_exc())
+            f.close()
+            traceback.print_exc()
+            sys.exit(-1)
     
     def run(self, *args):
         msg = 'Function "run" is not implemented in daemon "%s"' % self.DAEMON_NAME
@@ -105,10 +121,101 @@ class BaseDaemon(object):
             conf_file.close()
             return True
     
+    def _parse_args(self, argv=None):
+        if argv:
+            args = list(argv)
+        else:
+            args = list(sys.argv)
+        
+        daemonize = True
+        if '-n' in args:
+            daemonize = False
+            args.remove('-n')
+        self._daemonize = daemonize
+        
+        simultaneous = False
+        if '-s' in args:
+            simultaneous = True
+            args.remove('-s')
+        self._simultaneous = simultaneous
+        
+        log_in_file = daemonize
+        if '-f' in args:
+            log_in_file = True
+            args.remove('-f')
+        self._log_in_file = log_in_file
+        
+        if len(args) > 0 and args[0] not in self.ALLOWED_COMMANDS:
+            args.pop(0) # this script path
+        
+        command = None
+        if len(args) > 0 and args[0] in self.ALLOWED_COMMANDS:
+            command = args.pop(0)
+        self._command = command
+        
+        self._cleaned_args = args
+    
+    def _run_command(self):
+        if self._command in ('restart', 'stop'):
+            # check if daemon is already launched
+            pid = self._look_for_existing_process()
+            if pid:
+                print >>sys.stdout, 'Stopping %s... ' % self.DAEMON_NAME
+                # kill process and its children
+                result = os.system('kill -- -$(ps hopgid %s | sed \'s/^ *//g\')' % pid)
+                if result != 0:
+                    print >>sys.stderr, 'Cannot stop %s' % self.DAEMON_NAME
+                    self.exit(129)
+                os.remove(self._pid_file_path)
+                print >>sys.stdout, '%s stopped' % self.DAEMON_NAME
+            else:
+                print >>sys.stdout, '%s is not running' % self.DAEMON_NAME
+        elif self._command == 'start':
+            # check if daemon is already launched
+            pid = self._look_for_existing_process()
+            if pid and not self._simultaneous:
+                print >>sys.stderr, '%s is already running' % self.DAEMON_NAME
+                self.exit(130)
+        elif self._command == 'clear_log':
+            if os.path.exists(self._log_file_path):
+                f = open(self._log_file_path, 'w')
+                f.write('')
+                f.close()
+            print >>sys.stdout, 'Log file cleared for %s.' % self.DAEMON_NAME
+        else:
+            print >>sys.stderr, self.usage
+            self.exit(128)
+        
+        if self._command in ('start', 'restart'):
+            print >>sys.stdout, 'Starting %s...' % self.DAEMON_NAME
+            try:
+                if self._daemonize:
+                    self._daemonize_daemon()
+                    if not self._simultaneous:
+                        self._write_pid()
+            except Exception:
+                print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
+                self.exit(134)
+            try:
+                self._setup_logging()
+                self._setup_django()
+            except Exception:
+                if self._daemonize:
+                    # sys.stderr is not visible if daemonized
+                    f = open('/tmp/daemon-error', 'w+')
+                    f.write('Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc()))
+                    f.write(traceback.format_exc())
+                    f.close()
+                    traceback.print_exc()
+                else:
+                    print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
+                self.exit(135)
+        self.exit(0)
+    
     def _setup_django(self):
         # set django settings, so that django modules can be imported
         sys.path.append(self.SERVER_DIR)
-        if not os.environ.get('DJANGO_SETTINGS_MODULE'):
+        if not os.environ.get('DJANGO_SETTINGS_MODULE') or os.environ.get('DJANGO_SETTINGS_MODULE') != self.SETTINGS_MODULE:
             # if the DJANGO_SETTINGS_MODULE is already set,
             # the logging will not be changed to avoid possible
             # impact on the server which called this script.
@@ -117,7 +224,7 @@ class BaseDaemon(object):
             django_logger = logging.getLogger('django')
             django_logger.setLevel(logging.WARNING)
     
-    def _setup_logging(self, log_in_file):
+    def _setup_logging(self):
         if not os.path.exists(self.LOG_DIR):
             try:
                 os.makedirs(self.LOG_DIR)
@@ -135,7 +242,7 @@ class BaseDaemon(object):
             format = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
             level = level
         )
-        if log_in_file:
+        if self._log_in_file:
             logging_conf['filename'] = self._log_file_path
         logging.basicConfig(**logging_conf)
     
@@ -179,7 +286,7 @@ class BaseDaemon(object):
             pidfile.close()
             self._pid_written = True
     
-    def _daemonize(self, MAXFD=1024, REDIRECT_TO=os.devnull, RUNDIR='/', UMASK=0):
+    def _daemonize_daemon(self, MAXFD=1024, REDIRECT_TO=os.devnull, RUNDIR='/', UMASK=0):
         '''Detach a process from the controlling terminal and run it in the background as a daemon.'''
         
         try:
@@ -230,6 +337,7 @@ class BaseDaemon(object):
             # streams to be flushed twice and any temporary files may be unexpectedly
             # removed.  It's therefore recommended that child branches of a fork()
             # and the parent branch(es) of a daemon use _exit().
+            print >>sys.stdout, 'Process daemoninzed'
             os._exit(0) # Exit parent of the first child.
         
         # Close all open file descriptors.  This prevents the child from keeping
@@ -269,117 +377,40 @@ class BaseDaemon(object):
             if e.errno != errno.EBADF:
                 raise
         
-        self._daemonized = True
         return 0
     
-    def _parse_args(self, argv=None):
-        if argv:
-            args = list(argv)
-        else:
-            args = list(sys.argv)
-        
-        daemonize = True
-        if '-n' in args:
-            daemonize = False
-            args.remove('-n')
-        
-        simultaneous = False
-        if '-s' in args:
-            simultaneous = True
-            args.remove('-s')
-        
-        log_in_file = daemonize
-        if '-f' in args:
-            log_in_file = True
-            args.remove('-f')
-        
-        if len(args) > 0 and args[0] not in self.ALLOWED_COMMANDS:
-            args.pop(0) # this script path
-        
-        command = None
-        if len(args) > 0 and args[0] in self.ALLOWED_COMMANDS:
-            command = args.pop(0)
-        
-        options = args
-        
-        return daemonize, simultaneous, log_in_file, command, options
-    
     def start(self, argv=None):
-        daemonize, simultaneous, log_in_file, command, options = self._parse_args(argv)
+        argv = self._cleaned_args if not argv else argv
+        # launch service
+        try:
+            self.run(*argv)
+        except Exception:
+            logger.error('Error when running %s:\n    %s' % (self.DAEMON_NAME, traceback.format_exc()))
+            self.exit(140)
+        except KeyboardInterrupt:
+            logger.info('%s interrupted by KeyboardInterrupt' % (self.DAEMON_NAME))
+            self.exit(141)
         
-        if command not in self.ALLOWED_COMMANDS:
-            print >>sys.stderr, self.usage
-            self.exit(128)
-        
-        # check if daemon is already launched
-        pid = self._look_for_existing_process()
-        
-        if command in ('restart', 'stop'):
-            if pid:
-                print >>sys.stdout, 'Stopping %s... ' % self.DAEMON_NAME
-                # kill process and its children
-                result = os.system('kill -- -$(ps hopgid %s | sed \'s/^ *//g\')' % pid)
-                if result != 0:
-                    print >>sys.stderr, 'Cannot stop %s' % self.DAEMON_NAME
-                    self.exit(129)
-                os.remove(self._pid_file_path)
-                print >>sys.stdout, '%s stopped' % self.DAEMON_NAME
-            else:
-                print >>sys.stdout, '%s is not running' % self.DAEMON_NAME
-        elif command == 'start':
-            if pid and not simultaneous:
-                print >>sys.stderr, '%s is already running' % self.DAEMON_NAME
-                self.exit(130)
-        else: # command == 'clear_log':
-            if os.path.exists(self._log_file_path):
-                f = open(self._log_file_path, 'w')
-                f.write('')
-                f.close()
-            print >>sys.stdout, 'Log file cleared for %s.' % self.DAEMON_NAME
-        
-        if command in ('start', 'restart'):
-            print >>sys.stdout, 'Starting %s...' % self.DAEMON_NAME
-            if daemonize:
-                self._daemonize()
-            if not simultaneous:
-                self._write_pid()
-            self._setup_django()
-            self._setup_logging(log_in_file)
-            
-            # launch service
+        # Gobject main loop
+        if self.NEED_GOBJECT:
+            import gobject
+            #gobject.threads_init()
+            ml = gobject.MainLoop()
+            print >>sys.stdout, '%s started' % self.DAEMON_NAME
             try:
-                self.run(*options)
+                ml.run()
             except Exception:
                 traceback_lines = traceback.format_exc().splitlines()
                 formatted_lines = '\n    '.join(traceback_lines)
-                logger.error('Error in %s init:\n    %s' % (self.DAEMON_NAME, formatted_lines))
-                self.exit(134)
+                logger.info('%s interrupted by error:\n    %s' % (self.DAEMON_NAME, formatted_lines))
+                self.exit(142)
             except KeyboardInterrupt:
                 logger.info('%s interrupted by KeyboardInterrupt' % (self.DAEMON_NAME))
-                self.exit(135)
-            
-            # Gobject main loop
-            if self.NEED_GOBJECT:
-                import gobject
-                #gobject.threads_init()
-                ml = gobject.MainLoop()
-                print >>sys.stdout, '%s started' % self.DAEMON_NAME
-                try:
-                    ml.run()
-                except Exception:
-                    traceback_lines = traceback.format_exc().splitlines()
-                    formatted_lines = '\n    '.join(traceback_lines)
-                    logger.info('%s interrupted by error:\n    %s' % (self.DAEMON_NAME, formatted_lines))
-                    self.exit(136)
-                except KeyboardInterrupt:
-                    logger.info('%s interrupted by KeyboardInterrupt' % (self.DAEMON_NAME))
-                    self.exit(135)
-        self.exit(0)
+                self.exit(143)
     
     def restart(self, argv=None):
         # function to restart daemon itself
-        daemonize, simultaneous, log_in_file, command, options = self._parse_args(argv)
-        
+        argv = self._cleaned_args if not argv else argv
         # remove pid file to avoid kill command when restarting
         try:
             os.remove(self._pid_file_path)
@@ -387,7 +418,7 @@ class BaseDaemon(object):
             logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.' % e)
         
         # execute restart command (if the daemon was not daemonized it will become so)
-        cmd = 'python %s restart %s' % (self.daemon_path, ' '.join(options))
+        cmd = 'python %s restart %s' % (self.daemon_path, ' '.join(argv))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
         if p.returncode != 0:

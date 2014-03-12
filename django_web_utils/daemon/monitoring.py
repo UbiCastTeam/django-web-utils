@@ -22,34 +22,34 @@ from django_web_utils.files_utils import get_unit
 
 def clear_log(path):
     if not os.path.exists(path):
-        return True, _('Log file cleared.')
+        return True, unicode(_('Log file cleared.'))
     try:
         f = open(path, 'w+')
         f.write(u'')
         f.close()
-        return True, _('Log file cleared.')
+        return True, unicode(_('Log file cleared.'))
     except OSError, e:
-        return False, _('Can not clear log file. Error is: %s') %e
+        return False, unicode(_('Can not clear log file. Error is: %s') %e)
 
 
-def execute_command(daemon_class, command, args=None):
+def execute_daemon_command(daemon_class, command, args=None):
     if not issubclass(daemon_class, BaseDaemon):
-        return False, _('Given daemon class is not a subclass of Django web utils BaseDaemon.')
+        return False, unicode(_('Given daemon class is not a subclass of Django web utils BaseDaemon.'))
     if command not in daemon_class.ALLOWED_COMMANDS:
-        return False, _('Invalid command.')
+        return False, unicode(_('Invalid command.'))
     name = daemon_class.DAEMON_NAME
     path = sys.modules[daemon_class.__module__].__file__
     if path.endswith('pyc'):
         path = path[:-1]
     if not os.path.isfile(path):
         logger.error('The daemon script cannot be found. Path: %s' %path)
-        return False, _('The daemon script cannot be found.')
+        return False, unicode(_('The daemon script cannot be found.'))
     
     if command == 'clear_log':
         log_path = os.path.join(daemon_class.LOG_DIR, '%s.log' %name)
         return clear_log(log_path)
     
-    error = None
+    error = ''
     try:
         cmd = 'python %s %s' %(path, command)
         if args:
@@ -58,42 +58,40 @@ def execute_command(daemon_class, command, args=None):
         result = os.system(cmd)
     except Exception, e:
         result = -1
-        error = e
+        error = unicode(e)
     
     if result != 0:
-        message = unicode(_('Command "%(command)s" on "%(name)s" daemon failed.') %{'command': command, 'name': name})
-        if error:
-            message += u'\n\t%s' %error
-        return False, message
+        return False, error
     else:
         return True, ''
 
 def daemons_statuses(daemons, date_adjust_fct=None):
-    # daemons is a list of dict containing the following fields:
-    # name, [daemon_class], [pid_path], [log_path]
+    # daemons is a dict containing a dict for each daemon with the following fields:
+    # [daemon_class], [pid_path], [log_path]
     data = dict()
-    for daemon in daemons:
-        name = daemon['name']
+    for name, daemon in daemons.iteritems():
         # check if daemon is launched
         pid_path = daemon.get('pid_path')
-        if not pid_path:
+        if not pid_path and daemon.get('daemon_class'):
             pid_path = os.path.join(daemon['daemon_class'].PID_DIR, '%s.pid' %name)
-        try:
-            pidfile = open(pid_path, 'r')
-            pid = pidfile.read()
-            pidfile.close()
-        except Exception:
-            pid = None
-        running = pid and os.system('ps -p %s > /dev/null' %pid) == 0
+        running = None
+        if pid_path and os.path.exists(pid_path):
+            try:
+                pidfile = open(pid_path, 'r')
+                pid = pidfile.read()
+                pidfile.close()
+            except Exception:
+                pid = None
+            running = pid and os.system('ps -p %s > /dev/null' %pid) == 0
         
         # get log file properties
         log_path = daemon.get('log_path')
-        if not log_path:
+        if not log_path and daemon.get('daemon_class'):
             log_path = os.path.join(daemon['daemon_class'].LOG_DIR, '%s.log' %name)
         size = 0
         unit = ''
         mtime = ''
-        if os.path.exists(log_path):
+        if log_path and os.path.exists(log_path):
             size, unit = get_unit(os.path.getsize(log_path))
             mtime = os.path.getmtime(log_path)
             mtime = datetime.datetime.fromtimestamp(mtime)
@@ -103,12 +101,12 @@ def daemons_statuses(daemons, date_adjust_fct=None):
         data[name] = dict(
             running = running,
             log_size = size,
-            log_unit = unit,
+            log_unit = unicode(unit),
             log_mtime = mtime,
         )
     return data
 
-def log_view(request, title, template, url, path, tail=False, date_adjust_fct=None, **kwargs):
+def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **kwargs):
     # clear log
     #***************************************************************************
     if request.method == 'POST' and request.POST.get('submitted_form') == 'clear_log':
@@ -142,10 +140,10 @@ def log_view(request, title, template, url, path, tail=False, date_adjust_fct=No
     bottom_bar = lines > 20
     
     tplt_args = {
-        'title': title,
         'content': content,
         'url': url,
         'size': size,
+        'unit': unicode(unit),
         'mtime': mtime,
         'bottom_bar': bottom_bar,
     }
@@ -153,7 +151,7 @@ def log_view(request, title, template, url, path, tail=False, date_adjust_fct=No
         tplt_args.update(kwargs)
     return render_to_response(template, tplt_args, context_instance=RequestContext(request))
 
-def edit_conf_view(request, title, template, url, path, default_conf_path=None, defaults=None, date_adjust_fct=None, **kwargs):
+def edit_conf_view(request, template, url, path, default_conf_path=None, defaults=None, date_adjust_fct=None, **kwargs):
     content = ''
     # save modifications
     #***************************************************************************
@@ -218,10 +216,10 @@ def edit_conf_view(request, title, template, url, path, default_conf_path=None, 
             default_conf += u'%s = %s\n' %(key, val)
     
     tplt_args = {
-        'title': title,
         'content': content,
         'url': url,
         'size': size,
+        'unit': unicode(unit),
         'mtime': mtime,
         'path': path,
         'default_conf': default_conf,
