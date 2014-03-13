@@ -45,9 +45,8 @@ class BaseDaemon(object):
     def __init__(self, argv=None):
         object.__init__(self)
         try:
-            self.daemon_path = os.path.expanduser(__file__)
-            if self.daemon_path.endswith('pyc'):
-                self.daemon_path = self.daemon_path[:-1]
+            # get daemon script path before changing dir
+            self.daemon_path = os.path.join(os.getcwd(), sys.argv[0])
             self.usage = self.USAGE % self.daemon_path
             
             os.environ['LANG'] = 'C'
@@ -422,6 +421,7 @@ class BaseDaemon(object):
         cmd = 'python %s restart %s' % (self.daemon_path, ' '.join(argv))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
+        logger.debug('Restarting daemon.\n    Command: %s\n    Stdout: %s\n    Stderr: %s', cmd, out, err)
         if p.returncode != 0:
             logger.error('Error when restarting daemon:\n    %s' % err)
         sys.exit(0)

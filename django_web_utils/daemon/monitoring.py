@@ -146,6 +146,7 @@ def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **k
         'unit': unicode(unit),
         'mtime': mtime,
         'bottom_bar': bottom_bar,
+        'tail': tail,
     }
     if kwargs:
         tplt_args.update(kwargs)
