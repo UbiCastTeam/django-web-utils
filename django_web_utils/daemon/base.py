@@ -197,7 +197,8 @@ class BaseDaemon(object):
                 self.exit(134)
             try:
                 self._setup_logging()
-                self._setup_django()
+                if self.SETTINGS_MODULE:
+                    self._setup_django()
             except Exception:
                 if self._daemonize:
                     # sys.stderr is not visible if daemonized
