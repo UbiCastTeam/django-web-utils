@@ -9,6 +9,7 @@ import traceback
 import logging
 # Django
 from django.http import HttpResponse, Http404
+from django.core.exceptions import PermissionDenied
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -62,36 +63,35 @@ def failure_response(*args, **kwargs):
 
 # classic errors classes
 #-------------------------------------------------------------------------------
-JsonHttp404 = Http404
+class JsonHttp400(Exception):
+    pass
 
 class JsonHttp401(Exception):
     pass
 
-class JsonHttp403(Exception):
-    pass
+JsonHttp403 = PermissionDenied
 
-class JsonHttp400(Exception):
-    pass
+JsonHttp404 = Http404
 
 
 # json_view function
 #-------------------------------------------------------------------------------
-def json_view(methods=None):
+def json_view(function=None, methods=None):
     '''
-    Returns 400, 403, 404 and 500 errors in JSON format.
+    Returns 400, 401, 403, 404 and 500 errors in JSON format.
     The "methods" argument can be used to allow only some methods on a particular view.
     '''
-    def _wrap(function):
+    def decorator(fct):
         def _wrapped_view(request, *args, **kwargs):
-            # check request method
+            # Check request method
             if methods and (((isinstance(methods, list) or isinstance(methods, tuple)) and request.method not in methods) or request.method != methods):
                 data = dict(error=u'%s (405)' %_('Invalid request method'))
                 response = HttpResponse(json.dumps(data), content_type='application/json', status=405)
                 response['Allow'] = ', '.join(methods) if isinstance(methods, list) or isinstance(methods, tuple) else methods
                 return response
-            # process view
+            # Process view
             try:
-                return function(request, *args, **kwargs)
+                return fct(request, *args, **kwargs)
             except JsonHttp400:
                 return failure_response(code=400, error=u'%s (400)' %_('Bad request'))
             except JsonHttp401:
@@ -102,8 +102,10 @@ def json_view(methods=None):
                 return failure_response(code=404, error=u'%s (404)' %_('Page not found'))
             except Exception:
                 logger = logging.getLogger('django.request')
-                logger.error('Internal server error: %s\n%s', request.path, traceback.format_exc(), extra={'status_code': 500, 'request': request})
+                logger.error('Internal server error: %s\n%s', request.get_full_path(), traceback.format_exc(), extra={'status_code': 500, 'request': request})
                 return failure_response(code=500, error=u'%s (500)' %_('Internal server error'))
         return _wrapped_view
-    return _wrap
+    if function:
+        return decorator(function)
+    return decorator
 

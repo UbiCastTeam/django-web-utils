@@ -35,12 +35,16 @@ for dirpath, dirnames, filenames in os.walk('django_web_utils'):
     package_name = '.'.join(parts)
     if '__init__.py' in filenames:
         packages.append(package_name)
-    elif filenames:
+    filenames = [f for f in filenames if not f.endswith('.py')]
+    if filenames:
         relative_path = []
         while '.'.join(parts) not in packages:
             relative_path.append(parts.pop())
-        relative_path.reverse()
-        path = os.path.join(*relative_path)
+        if relative_path:
+            relative_path.reverse()
+            path = os.path.join(*relative_path)
+        else:
+            path = ''
         package_files = package_data.setdefault('.'.join(parts), [])
         package_files.extend([os.path.join(path, f) for f in filenames])
 
