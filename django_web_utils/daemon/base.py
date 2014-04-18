@@ -40,6 +40,7 @@ class BaseDaemon(object):
     -f: force log to use a file and not the standard output'''
     DAEMON_NAME = 'unamed_daemon'
     NEED_GOBJECT = False
+    NEED_DJANGO = True
     DEFAULTS = dict(LOGGING_LEVEL='INFO')
     
     def __init__(self, argv=None):
@@ -197,7 +198,7 @@ class BaseDaemon(object):
                 self.exit(134)
             try:
                 self._setup_logging()
-                if self.SETTINGS_MODULE:
+                if self.NEED_DJANGO and self.SETTINGS_MODULE:
                     self._setup_django()
             except Exception:
                 if self._daemonize:
