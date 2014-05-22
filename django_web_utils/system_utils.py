@@ -88,13 +88,14 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
     else:
         out, err = p.communicate()
     if p.returncode != 0:
-        if err:
-            return False, err
-        else:
-            return False, unicode(_('Command exited with code %s.') %p.returncode)
+        if not err:
+            err = unicode(_('Command exited with code %s.') %p.returncode)
+        if out:
+            return False, '%s\n---- stderr ----\n%s' %(out, err)
+        return False, err
     if out:
         return True, out
-    return True, None
+    return True, ''
 
 # is_pid_running
 #--------------------------------------------------------------------------------
