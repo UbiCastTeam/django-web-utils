@@ -8,6 +8,7 @@ import re
 import htmlentitydefs
 # Django
 from django.template import defaultfilters
+from django.utils.safestring import mark_safe
 
 
 # unescape function
@@ -57,5 +58,5 @@ def get_html_traceback():
         html += u'<span style="padding-left: %s;">%s</span><br/>' %(padding, line)
     if html.endswith('<br/>'):
         html = html[:-5]
-    return html
+    return mark_safe(html)
 

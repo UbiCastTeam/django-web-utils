@@ -24,30 +24,24 @@ utils.get_cookie = function (c_name, c_default) {
         if (c_start != -1) {
             c_start = c_start + c_name.length+1;
             var c_end = document.cookie.indexOf(";", c_start);
-            if (c_end == -1) c_end = document.cookie.length;
+            if (c_end == -1)
+                c_end = document.cookie.length;
             return unescape(document.cookie.substring(c_start, c_end));
         }
     }
-    if (c_default !== undefined)
-        return c_default;
-    return "";
+    return c_default !== undefined ? c_default : "";
 };
 utils.set_cookie = function (c_name, value, expiredays) {
     var exdate = new Date();
-    if (expiredays)
-        exdate.setDate(exdate.getDate() + expiredays);
-    else
-        exdate.setDate(exdate.getDate() + 360);
+    exdate.setDate(exdate.getDate() + (expiredays ? expiredays : 360));
     document.cookie = c_name+"="+escape(value)+"; expires="+exdate.toUTCString()+"; path=/";
 };
 
 // strip function
 utils.strip = function (str, character) {
-    var c = character;
-    if (c === undefined)
-        c = " ";
     if (!str)
         return str;
+    var c = character !== undefined ? character : " ";
     var start = 0;
     while (start < str.length && str[start] == c) {
         start++;
@@ -74,10 +68,10 @@ utils.escape_html = function (text) {
     if (!text)
         return text;
     var result = text.toString();
-    result = result.replace(new RegExp("(<)", "g"), "&lt;");
-    result = result.replace(new RegExp("(>)", "g"), "&gt;");
-    result = result.replace(new RegExp("(\n)", "g"), "<br/>");
-    result = result.replace(new RegExp("(\")", "g"), "&quot;");
+    result = result.replace(/(<)/g, "&lt;");
+    result = result.replace(/(>)/g, "&gt;");
+    result = result.replace(/(\n)/g, "&#13;&#10;");
+    result = result.replace(/(\")/g, "&quot;");
     return result;
 };
 
@@ -86,8 +80,8 @@ utils.escape_attr = function (attr) {
     if (!attr)
         return attr;
     var result = attr.toString();
-    result = result.replace(new RegExp("(\n)", "g"), " ");
-    result = result.replace(new RegExp("(\")", "g"), "&quot;");
+    result = result.replace(/(\n)/g, "&#13;&#10;");
+    result = result.replace(/(\")/g, "&quot;");
     return result;
 };
 
@@ -104,64 +98,106 @@ utils.get_click_position = function (evt, dom) {
 };
 
 // user agent and platform related functions
-utils.get_user_agent = function () {
-    if (utils._user_agent)
-        return utils._user_agent;
+utils._get_user_agent = function () {
     if (window.navigator && window.navigator.userAgent)
-        utils._user_agent = window.navigator.userAgent.toLowerCase();
+        utils.user_agent = window.navigator.userAgent.toLowerCase();
     else
-        utils._user_agent = "unknown";
-    return utils._user_agent;
+        utils.user_agent = "unknown";
 };
-utils.get_os_name = function () {
-    if (utils._os_name)
-        return utils._os_name;
+utils._get_user_agent();
+utils._get_os_name = function () {
+    var name = "";
     if (window.navigator && window.navigator.platform) {
         var platform = window.navigator.platform.toLowerCase();
         if (platform.indexOf("ipad") != -1 || platform.indexOf("iphone") != -1 || platform.indexOf("ipod") != -1)
-            utils._os_name = "ios";
+            name = "ios";
     }
-    if (!utils._os_name && window.navigator && window.navigator.appVersion) {
+    if (!name && window.navigator && window.navigator.appVersion) {
         var app_version = window.navigator.appVersion.toLowerCase();
         if (app_version.indexOf("win") != -1)
-            utils._os_name = "windows";
+            name = "windows";
         else if (app_version.indexOf("mac") != -1)
-            utils._os_name = "macos";
+            name = "macos";
         else if (app_version.indexOf("x11") != -1 || app_version.indexOf("linux") != -1)
-            utils._os_name = "linux";
+            name = "linux";
     }
-    if (!utils._os_name)
-        utils._os_name = "unknown";
-    return utils._os_name;
+    utils.os_name = name ? name : "unknown";
+    utils["os_is_"+name] = true;
 };
-utils.is_in_user_agent = function () {
-    var ua = utils.get_user_agent();
-    if (arguments.length == 1 && typeof arguments[0] == "string")
-        return ua.indexOf(arguments[0]) != -1;
-    for (var i=0; i < arguments.length; i++) {
-        if (ua.indexOf(arguments[i]) != -1)
-            return true;
+utils._get_os_name();
+utils._extract_browser_version = function (ua, re) {
+    var matches = ua.match(re);
+    if (matches && !isNaN(parseFloat(matches[1])))
+        return parseFloat(matches[1]);
+    return 0.0;
+}
+utils._get_browser_info = function () {
+    // get browser name and version
+    var name = "unknown";
+    var version = 0.0;
+    var ua = utils.user_agent;
+    if (ua.indexOf("firefox") != -1) {
+        name = "firefox";
+        version = utils._extract_browser_version(ua, /firefox\/(\d+\.\d+)/);
+        if (!version)
+            version = utils._extract_browser_version(ua, /rv:(\d+\.\d+)/);
     }
-    return false;
+    else if (ua.indexOf("chromium") != -1) {
+        name = "chromium";
+        version = utils._extract_browser_version(ua, /chromium\/(\d+\.\d+)/);
+    }
+    else if (ua.indexOf("chrome") != -1) {
+        name = "chrome";
+        version = utils._extract_browser_version(ua, /chrome\/(\d+\.\d+)/);
+    }
+    else if (ua.indexOf("iemobile") != -1) {
+        name = "iemobile";
+        version = utils._extract_browser_version(ua, /iemobile\/(\d+\.\d+)/);
+    }
+    else if (ua.indexOf("msie") != -1) {
+        name = "ie";
+        version = utils._extract_browser_version(ua, /msie (\d+\.\d+)/);
+        if (version < 7)
+            utils.browser_is_ie6 = true;
+        else if (version < 8)
+            utils.browser_is_ie7 = true;
+        else if (version < 9)
+            utils.browser_is_ie8 = true;
+        else
+            utils.browser_is_ie9 = true;
+    }
+    else if (ua.indexOf("trident") != -1) {
+        name = "ie";
+        version = utils._extract_browser_version(ua, /rv:(\d+\.\d+)/);
+        utils.browser_is_ie9 = true;
+    }
+    else if (ua.indexOf("opera") != -1) {
+        name = "opera";
+        version = utils._extract_browser_version(ua, /opera\/(\d+\.\d+)/);
+    }
+    else if (ua.indexOf("konqueror") != -1) {
+        name = "konqueror";
+        version = utils._extract_browser_version(ua, /konqueror\/(\d+\.\d+)/);
+    }
+    else if (ua.indexOf("mobile safari") != -1) {
+        name = "mobile_safari";
+        version = utils._extract_browser_version(ua, /mobile safari\/(\d+\.\d+)/);
+    }
+    else if (ua.indexOf("safari") != -1) {
+        name = "safari";
+        version = utils._extract_browser_version(ua, /safari\/(\d+\.\d+)/);
+    }
+    utils.browser_name = name;
+    utils["browser_is_"+name] = true;
+    utils.browser_version = version;
+    
+    // detect type of device
+    utils.is_phone = ua.indexOf("iphone") != -1 || ua.indexOf("ipod") != -1 || ua.indexOf("android") != -1 || ua.indexOf("iemobile") != -1 || ua.indexOf("opera mobi") != -1 || ua.indexOf("opera mini") != -1 || ua.indexOf("windows ce") != -1 || ua.indexOf("fennec") != -1 || ua.indexOf("series60") != -1 || ua.indexOf("symbian") != -1 || ua.indexOf("blackberry") != -1 || window.orientation !== undefined;
+    utils.is_tablet = window.navigator && window.navigator.platform == "iPad";
+    utils.is_mobile = utils.is_phone || utils.is_tablet;
+    utils.is_tactile = document.documentElement && "ontouchstart" in document.documentElement;
 };
-utils.is_phone = function () {
-    if (utils._is_phone !== undefined)
-        return utils._is_phone;
-    utils._is_phone = utils.is_in_user_agent("android", "ipad", "iphone", "opera mobi", "opera mini", "fennec", "symbianos", "bolt", "sonyericsson") && !utils.is_tablet();
-    return utils._is_phone;
-};
-utils.is_tablet = function () {
-    if (utils._is_tablet !== undefined)
-        return utils._is_tablet;
-    utils._is_tablet = window.navigator && window.navigator.platform == "iPad";
-    return utils._is_tablet;
-};
-utils.is_tactile = function () {
-    if (utils._is_tactile !== undefined)
-        return utils._is_tactile;
-    utils._is_tactile = utils.is_phone() || utils.is_tablet();
-    return utils._is_tactile;
-};
+utils._get_browser_info();
 
 // Translations utils
 utils._translations = { en: {} };
