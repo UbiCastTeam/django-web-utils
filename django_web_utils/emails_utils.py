@@ -71,7 +71,7 @@ def send_template_emails(template, contexts=None, request=None, content_subtype=
         contexts = [contexts]
     connection = None
     sent = list()
-    error = 'no receiver'
+    error = 'no recipient'
     cur_lang = translation.get_language()
     for context in contexts:
         if common_ctx:
@@ -81,26 +81,26 @@ def send_template_emails(template, contexts=None, request=None, content_subtype=
             ctx = context
         # Get sender
         sender = ctx['sender'] if ctx.get('sender') else '"Default sender name" <sender@address.com>'
-        # Search for receivers
-        receivers = None
-        if ctx.get('receiver'):
-            if hasattr(ctx['receiver'], 'email'):
-                # the receiver is a user model, use his information
-                if hasattr(ctx['receiver'], 'emails_lang'):
-                    ctx['lang'] = ctx['receiver'].emails_lang
-                if ctx['receiver'].get_full_name():
-                    receivers = ['"%s" <%s>' %(ctx['receiver'].get_full_name(), ctx['receiver'].email)]
+        # Search for recipients
+        recipients = None
+        if ctx.get('recipient'):
+            if hasattr(ctx['recipient'], 'email'):
+                # the recipient is a user model, use his information
+                if hasattr(ctx['recipient'], 'emails_lang'):
+                    ctx['lang'] = ctx['recipient'].emails_lang
+                if ctx['recipient'].get_full_name():
+                    recipients = ['"%s" <%s>' %(ctx['recipient'].get_full_name(), ctx['recipient'].email)]
                 else:
-                    receivers = [ctx['receiver'].email]
+                    recipients = [ctx['recipient'].email]
             else:
-                receivers = [ctx['receiver']]
-        if not receivers:
-            receivers = ctx.get('receivers')
-        if not receivers:
+                recipients = [ctx['recipient']]
+        if not recipients:
+            recipients = ctx.get('recipients')
+        if not recipients:
             # Send emails to managers if no email is given
-            receivers = [a[1] for a in settings.MANAGERS]
-        if not isinstance(receivers, (tuple, list)):
-            logger.error('An email cannot be sent because the mail its receivers are invalid.\nReceivers: %s\nEmail context: %s', receivers, ctx)
+            recipients = [a[1] for a in settings.MANAGERS]
+        if not isinstance(recipients, (tuple, list)):
+            logger.error('An email cannot be sent because the mail its recipients are invalid.\nrecipients: %s\nEmail context: %s', recipients, ctx)
             continue
         if not ctx.get('lang'):
             ctx['lang'] = 'en'
@@ -110,8 +110,8 @@ def send_template_emails(template, contexts=None, request=None, content_subtype=
         subject_end = content.index('</subject>')
         subject = content[subject_start+9:subject_end].strip()
         content = content[:subject_start]+content[subject_end+10:]
-        for receiver in receivers:
-            msg = mail.EmailMessage(subject.encode('utf-8'), content.encode('utf-8'), sender, [receiver])
+        for recipient in recipients:
+            msg = mail.EmailMessage(subject.encode('utf-8'), content.encode('utf-8'), sender, [recipient])
             msg.content_subtype = content_subtype # by default, set email content type to html
             try:
                 if not connection:
@@ -119,10 +119,10 @@ def send_template_emails(template, contexts=None, request=None, content_subtype=
                 connection.send_messages([msg])
             except Exception, e:
                 error = e
-                logger.error('Error when trying to send email to: %s.\n%s' %(receiver, traceback.format_exc()))
+                logger.error('Error when trying to send email to: %s.\n%s' %(recipient, traceback.format_exc()))
             else:
-                sent.append(receiver[receiver.index('<')+1:].rstrip('> ') if '<' in receiver else receiver)
-                logger.info(u'Mail with subject "%s" sent to "%s" (tplt).', subject, receiver)
+                sent.append(recipient[recipient.index('<')+1:].rstrip('> ') if '<' in recipient else recipient)
+                logger.info(u'Mail with subject "%s" sent to "%s" (tplt).', subject, recipient)
     translation.activate(cur_lang)
     if not sent:
         return False, 'No emails have been sent. Last error when trying to send email: %s' %error
@@ -130,23 +130,23 @@ def send_template_emails(template, contexts=None, request=None, content_subtype=
 
 # send_emails (to send emails without template)
 #--------------------------------------------------------------------------------
-def send_emails(subject, content, receivers=None, request=None, content_subtype='html'):
+def send_emails(subject, content, recipients=None, request=None, content_subtype='html'):
     # Get common context
     ctx = _get_context(request)
     # Get sender
     sender = ctx['sender'] if ctx.get('sender') else '"Default sender name" <sender@address.com>'
-    # Get receivers
-    if not receivers:
+    # Get recipients
+    if not recipients:
         # Send emails to managers if no email is given
-        receivers = [a[1] for a in settings.MANAGERS]
-    elif not isinstance(receivers, list):
-        receivers = [receivers]
+        recipients = [a[1] for a in settings.MANAGERS]
+    elif not isinstance(recipients, list):
+        recipients = [recipients]
     # Prepare emails messages
     connection = None
     sent = list()
-    error = 'no receiver'
-    for receiver in receivers:
-        msg = mail.EmailMessage(subject.encode('utf-8'), content.encode('utf-8'), sender, [receiver])
+    error = 'no recipient'
+    for recipient in recipients:
+        msg = mail.EmailMessage(subject.encode('utf-8'), content.encode('utf-8'), sender, [recipient])
         msg.content_subtype = content_subtype # by default, set email content type to html
         try:
             if not connection:
@@ -154,17 +154,17 @@ def send_emails(subject, content, receivers=None, request=None, content_subtype=
             connection.send_messages([msg])
         except Exception, e:
             error = e
-            logger.error('Error when trying to send email to: %s.\n%s' %(receiver, traceback.format_exc()))
+            logger.error('Error when trying to send email to: %s.\n%s' %(recipient, traceback.format_exc()))
         else:
-            sent.append(receiver[receiver.index('<')+1:].rstrip('> ') if '<' in receiver else receiver)
-            logger.info(u'Mail with subject "%s" sent to "%s".', subject, receiver)
+            sent.append(recipient[recipient.index('<')+1:].rstrip('> ') if '<' in recipient else recipient)
+            logger.info(u'Mail with subject "%s" sent to "%s".', subject, recipient)
     if not sent:
         return False, 'No emails have been sent. Last error when trying to send email: %s' %error
     return True, sent
 
 # send_error_report_emails (to send last traceback)
 #--------------------------------------------------------------------------------
-def send_error_report_emails(title=None, error=None, receivers=None, request=None):
+def send_error_report_emails(title=None, error=None, recipients=None, request=None):
     if request:
         title = u' (%s)' %title if title else ''
         title = u'Error at %s%s' %(request.get_full_path(), title)
@@ -221,8 +221,8 @@ def send_error_report_emails(title=None, error=None, receivers=None, request=Non
             title = title,
             error = error,
             content = content,
-            receivers = receivers,
+            recipients = recipients,
         ))
     else:
-        return send_emails(title, content, receivers, request)
+        return send_emails(title, content, recipients, request)
 
