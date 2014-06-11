@@ -51,11 +51,11 @@ for dirpath, dirnames, filenames in os.walk('django_web_utils'):
 setup(
     name = 'django_web_utils',
     version = django_web_utils.__version__,
-    description = 'A library of utilities for web projects based on Django.',
+    description = 'A collection of utilities for web projects based on Django.',
     author = 'Stéphane Diemer',
     author_email = 'stephane.diemer@ubicast.eu',
     url = 'https://github.com/sdiemer/django-web-utils',
-    license = 'not set for now',
+    license = 'cc-by-sa',
     packages = packages,
     package_data = package_data,
     scripts = [],
