@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-##-------------------------------------------------------------------------------
-## Automatic admin configuration
-##-------------------------------------------------------------------------------
+'''
+Django admin utility functions
+'''
 # Django
 from django.contrib import admin
 from django.db import models as dj_models
 
 
+# register_module function
+# Automatic models registeration
+#-----------------------------------------------------------------------------------
 def register_module(models_module, allow_filters=False):
-    # Automatic models registeration
     for attr_name in dir(models_module):
         model = getattr(models_module, attr_name, None)
         if not hasattr(model, '__class__') or not hasattr(model, '_meta') \
