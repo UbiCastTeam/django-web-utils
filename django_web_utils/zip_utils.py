@@ -5,8 +5,6 @@ Zip utility functions
 '''
 import os
 import zipfile
-# Django
-from mediaserver import shared
 
 
 # _add_to_zip function
@@ -47,31 +45,33 @@ def unzip(path, zip_path=None, zip_file=None):
     else:
         # open zip file
         if not zip_path:
-            return shared.Result(success=False, message='No zip file specified.')
+            return False, 'No zip file specified.'
         try:
             used_zip_file = zipfile.ZipFile(zip_path, 'r')
         except Exception, e:
-            return shared.Result(success=False, message='Cannot open zip file (%s). Error: %s.' %(zip_path, e))
+            return False, 'Cannot open zip file (%s). Error: %s.' %(zip_path, e)
     try:
         # CRC test
         zip_test = used_zip_file.testzip()
         if zip_test:
-            return shared.Result(success=False, message='CRC error on zip file. Error detected on: %s' %zip_test)
+            return False, 'CRC error on zip file. Error detected on: %s' %zip_test
         # create destination path
         if not os.path.exists(os.path.dirname(path)):
             try:
                 os.makedirs(os.path.dirname(path))
             except Exception, e:
-                return shared.Result(success=False, message='Cannot create folder "%s". Error is: %s' %(path, e))
+                return False, 'Cannot create folder "%s". Error is: %s' %(path, e)
         # extract files
         used_zip_file.extractall(path)
-        return shared.Result(success=True)
+        return True, ''
     except AttributeError:
         # for python 2.5
-        os.system('unzip -d %s %s' %(path, zip_path))
-        return shared.Result(success=True)
+        retcode = os.system('unzip -d %s %s' %(path, zip_path))
+        if retcode != 0:
+            return False, 'Unable to unzip file. The "unzip" command returned code %s.' %retcode
+        return True, ''
     except Exception:
-        return shared.Result(success=False, message='File is not a valid zip.')
+        return False, 'File is not a valid zip.'
     finally:
         if not zip_file:
             used_zip_file.close()
