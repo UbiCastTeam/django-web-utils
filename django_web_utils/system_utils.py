@@ -128,6 +128,8 @@ def is_process_running(process_name, user='self', request=None):
 # write_file_as
 #--------------------------------------------------------------------------------
 def write_file_as(request, content, file_path, user='self'):
+    if os.path.isdir(file_path):
+        return False, u'%s %s' %(_('Unable to write file.'), _('Specified path is a directory.'))
     try:
         # try to write file like usual
         f = open(file_path, 'w+')
@@ -137,13 +139,13 @@ def write_file_as(request, content, file_path, user='self'):
         # write file as given user
         #   to write as given user we first write the content in a temporary file then we
         #   transfer the content to the destination file. This method is used to avoid
-        #   problems with special characters (before echo was used but it was too unstable)
+        #   problems with special characters.
         if 'pwd' not in request.session:
             return False, unicode(_('You need to send the main password to edit this file.'))
         # write tmp file
         rd_chars = ''.join([random.choice('0123456789abcdef') for i in range(10)])
         date_dump = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S_%f')
-        tmp_path = '/tmp/msmonitor-tmp_%s_%s' %(date_dump, rd_chars)
+        tmp_path = '/tmp/djwutils-tmp_%s_%s' %(date_dump, rd_chars)
         try:
             f = open(tmp_path, 'w+')
         except Exception, e:
@@ -151,7 +153,7 @@ def write_file_as(request, content, file_path, user='self'):
         f.write(content.encode('utf-8'))
         f.close()
         # transfer content in final file
-        cmd = u'cat \'%s\' > \'%s\'' %(tmp_path, file_path)
+        cmd = u'cp \'%s\' \'%s\'' %(tmp_path, file_path)
         success, output = execute_command(cmd, user=user, request=request)
         os.remove(tmp_path)
         if success:
