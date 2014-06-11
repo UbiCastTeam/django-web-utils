@@ -10,6 +10,11 @@ Optional settings:
         (something like '"name" <sender@address.com>').
     - EMAIL_ERROR_TEMPLATE:
         The template to use to prepare error report emails.
+
+The template should contain a subject tag.
+For example, a valid template could look like this:
+<subject>The email subject</subject>
+The email content
 '''
 import datetime
 import traceback
