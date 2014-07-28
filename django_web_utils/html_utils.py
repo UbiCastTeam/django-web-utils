@@ -45,8 +45,10 @@ def get_meta_tag_text(text):
 
 # get_html_traceback function
 #-----------------------------------------------------------------------------------
-def get_html_traceback():
-    error_tb = unicode(defaultfilters.escape(traceback.format_exc()))
+def get_html_traceback(tb=None):
+    if not tb:
+        tb = traceback.format_exc()
+    error_tb = unicode(defaultfilters.escape(tb))
     html = u''
     for line in error_tb.split(u'\n'):
         if line.startswith(u'    '):
