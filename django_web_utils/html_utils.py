@@ -49,16 +49,12 @@ def get_html_traceback(tb=None):
     if not tb:
         tb = traceback.format_exc()
     error_tb = unicode(defaultfilters.escape(tb))
-    html = u''
+    lines = list()
     for line in error_tb.split(u'\n'):
-        if line.startswith(u'    '):
-            padding = u'32px'
-        elif line.startswith(u'  '):
-            padding = u'16px'
+        if line:
+            nb_spaces = len(line) - len(line.lstrip())
+            lines.append(nb_spaces * u'&nbsp;' + line[nb_spaces:])
         else:
-            padding = u'0'
-        html += u'<span style="padding-left: %s;">%s</span><br/>' %(padding, line)
-    if html.endswith('<br/>'):
-        html = html[:-5]
-    return mark_safe(html)
+            lines.append(line)
+    return mark_safe(u'\n<br/>'.join(lines))
 
