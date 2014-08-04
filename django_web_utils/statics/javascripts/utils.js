@@ -70,7 +70,7 @@ utils.escape_html = function (text) {
     var result = text.toString();
     result = result.replace(/(<)/g, "&lt;");
     result = result.replace(/(>)/g, "&gt;");
-    result = result.replace(/(\n)/g, "&#13;&#10;");
+    result = result.replace(/(\n)/g, "<br/>");
     result = result.replace(/(\")/g, "&quot;");
     return result;
 };
