@@ -51,10 +51,10 @@ def _get_context(request=None):
                 logger.error('Failed to import emails context processor: %s', e)
             else:
                 if not hasattr(ctx_processor, '__call__'):
-                    ctx_processor = lambda request: ctx_processor
-        _context_processor = ctx_processor
+                    ctx_processor = None
+        globals()['_context_processor'] = ctx_processor
     else:
-        ctx_processor = _context_processor
+        ctx_processor = globals()['_context_processor']
     if not ctx_processor:
         ctx = None
     else:
@@ -62,6 +62,8 @@ def _get_context(request=None):
         if ctx and not isinstance(ctx, dict):
             logger.error('Emails context processor returned an invalid object for context (must be a dict): %s', ctx)
             ctx = None
+    if not ctx.get('sender') and getattr(settings, 'DEFAULT_FROM_EMAIL', None):
+        ctx['sender'] = settings.DEFAULT_FROM_EMAIL
     return ctx
 
 # send_template_emails (to send emails with a template)
