@@ -437,9 +437,9 @@ class BaseDaemon(object):
         logger.debug('Daemon %s ended (return code: %s).\n' % (self.DAEMON_NAME, code))
         sys.exit(code)
     
-    def send_error_email(self, msg, tb=False):
+    def send_error_email(self, msg, tb=False, recipients=None):
         from django_web_utils import emails_utils
         logger.error(u'%s\n%s' %(msg, traceback.format_exc()) if tb else msg)
         msg += u'\n\nThe daemon was started with the following arguments:\n%s' %sys.argv
-        emails_utils.send_error_report_emails(title=self.DAEMON_NAME, error=msg)
+        emails_utils.send_error_report_emails(title=self.DAEMON_NAME, error=msg, recipients=recipients)
 
