@@ -102,7 +102,7 @@ def json_view(function=None, methods=None):
                 return failure_response(code=404, error=u'%s (404)' %_('Page not found'))
             except Exception:
                 logger = logging.getLogger('django.request')
-                logger.error('Internal server error: %s\n%s', request.get_full_path(), traceback.format_exc(), extra={'status_code': 500, 'request': request})
+                logger.error('Internal server error: %s', request.get_full_path(), exc_info=traceback.extract_stack(), extra={'status_code': 500, 'request': request})
                 return failure_response(code=500, error=u'%s (500)' %_('Internal server error'))
         return _wrapped_view
     if function:
