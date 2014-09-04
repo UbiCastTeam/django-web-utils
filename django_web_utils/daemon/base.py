@@ -223,6 +223,8 @@ class BaseDaemon(object):
             # impact on the server which called this script.
             os.environ['DJANGO_SETTINGS_MODULE'] = self.SETTINGS_MODULE
             os.environ['DJANGO_LOGGING'] = 'none'
+            import django
+            django.setup()
             django_logger = logging.getLogger('django')
             django_logger.setLevel(logging.WARNING)
     
