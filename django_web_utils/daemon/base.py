@@ -48,7 +48,7 @@ class BaseDaemon(object):
         try:
             # get daemon script path before changing dir
             self.daemon_path = os.path.join(os.getcwd(), sys.argv[0])
-            self.usage = self.USAGE % self.daemon_path
+            self.usage = self.USAGE %self.daemon_path
             
             os.environ['LANG'] = 'C'
             os.chdir('/') # to avoid wrong imports
@@ -61,11 +61,11 @@ class BaseDaemon(object):
             self._parse_args(argv)
             
             self._pid_written = False
-            self._pid_file_path = os.path.join(self.PID_DIR, '%s.pid' % self.DAEMON_NAME)
-            self._log_file_path = os.path.join(self.LOG_DIR, '%s.log' % self.DAEMON_NAME)
+            self._pid_file_path = os.path.join(self.PID_DIR, '%s.pid' %self.DAEMON_NAME)
+            self._log_file_path = os.path.join(self.LOG_DIR, '%s.log' %self.DAEMON_NAME)
             
             self.config = dict()
-            self.config_file = os.path.join(self.CONF_DIR, '%s.py' % self.DAEMON_NAME)
+            self.config_file = os.path.join(self.CONF_DIR, '%s.py' %self.DAEMON_NAME)
             self.load_config()
             
             self._run_command()
@@ -77,7 +77,7 @@ class BaseDaemon(object):
             sys.exit(-1)
     
     def run(self, *args):
-        msg = 'Function "run" is not implemented in daemon "%s"' % self.DAEMON_NAME
+        msg = 'Function "run" is not implemented in daemon "%s"' %self.DAEMON_NAME
         logger.error(msg)
         raise NotImplementedError, msg
     
@@ -160,41 +160,41 @@ class BaseDaemon(object):
             # check if daemon is already launched
             pid = self._look_for_existing_process()
             if pid:
-                print >>sys.stdout, 'Stopping %s... ' % self.DAEMON_NAME
+                print >>sys.stdout, 'Stopping %s... ' %self.DAEMON_NAME
                 # kill process and its children
-                result = os.system('kill -- -$(ps hopgid %s | sed \'s/^ *//g\')' % pid)
+                result = os.system('kill -- -$(ps hopgid %s | sed \'s/^ *//g\')' %pid)
                 if result != 0:
-                    print >>sys.stderr, 'Cannot stop %s' % self.DAEMON_NAME
+                    print >>sys.stderr, 'Cannot stop %s' %self.DAEMON_NAME
                     self.exit(129)
                 os.remove(self._pid_file_path)
-                print >>sys.stdout, '%s stopped' % self.DAEMON_NAME
+                print >>sys.stdout, '%s stopped' %self.DAEMON_NAME
             else:
-                print >>sys.stdout, '%s is not running' % self.DAEMON_NAME
+                print >>sys.stdout, '%s is not running' %self.DAEMON_NAME
         elif self._command == 'start':
             # check if daemon is already launched
             pid = self._look_for_existing_process()
             if pid and not self._simultaneous:
-                print >>sys.stderr, '%s is already running' % self.DAEMON_NAME
+                print >>sys.stderr, '%s is already running' %self.DAEMON_NAME
                 self.exit(130)
         elif self._command == 'clear_log':
             if os.path.exists(self._log_file_path):
                 f = open(self._log_file_path, 'w')
                 f.write('')
                 f.close()
-            print >>sys.stdout, 'Log file cleared for %s.' % self.DAEMON_NAME
+            print >>sys.stdout, 'Log file cleared for %s.' %self.DAEMON_NAME
         else:
             print >>sys.stderr, self.usage
             self.exit(128)
         
         if self._command in ('start', 'restart'):
-            print >>sys.stdout, 'Starting %s...' % self.DAEMON_NAME
+            print >>sys.stdout, 'Starting %s...' %self.DAEMON_NAME
             try:
                 if self._daemonize:
                     self._daemonize_daemon()
                     if not self._simultaneous:
                         self._write_pid()
             except Exception:
-                print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
+                print >>sys.stderr, 'Error when starting %s:\n%s' %(self.DAEMON_NAME, traceback.format_exc())
                 self.exit(134)
             try:
                 self._setup_logging()
@@ -204,12 +204,12 @@ class BaseDaemon(object):
                 if self._daemonize:
                     # sys.stderr is not visible if daemonized
                     f = open('/tmp/daemon-error', 'w+')
-                    f.write('Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc()))
+                    f.write('Error when starting %s:\n%s' %(self.DAEMON_NAME, traceback.format_exc()))
                     f.write(traceback.format_exc())
                     f.close()
                     traceback.print_exc()
                 else:
-                    print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
+                    print >>sys.stderr, 'Error when starting %s:\n%s' %(self.DAEMON_NAME, traceback.format_exc())
                 self.exit(135)
         else:
             self.exit(0)
@@ -235,7 +235,7 @@ class BaseDaemon(object):
             except Exception:
                 pass
         if not os.path.isdir(self.LOG_DIR):
-            print >>sys.stderr, 'Cannot create log directory %s' % self.LOG_DIR
+            print >>sys.stderr, 'Cannot create log directory %s' %self.LOG_DIR
             self.exit(131)
         
         level_name = self.config.get('LOGGING_LEVEL', 'INFO')
@@ -264,7 +264,7 @@ class BaseDaemon(object):
                 pass
             finally:
                 pidfile.close()
-        if pid and os.system('ps -p %s > /dev/null' % pid) != 0:
+        if pid and os.system('ps -p %s > /dev/null' %pid) != 0:
             pid = None
         return pid
 
@@ -277,16 +277,16 @@ class BaseDaemon(object):
             except Exception:
                 pass
         if not os.path.isdir(pid_dir):
-            print >>sys.stderr, 'Cannot create pidfile directory %s' % pid_dir
+            print >>sys.stderr, 'Cannot create pidfile directory %s' %pid_dir
             self.exit(132)
         
         try:
             pidfile = open(self._pid_file_path, 'w')
         except Exception:
-            print >>sys.stderr, 'Cannot write pid into pidfile %s' % self._pid_file_path
+            print >>sys.stderr, 'Cannot write pid into pidfile %s' %self._pid_file_path
             self.exit(133)
         else:
-            pidfile.write('%s' % os.getpid())
+            pidfile.write('%s' %os.getpid())
             pidfile.close()
             self._pid_written = True
     
@@ -301,7 +301,7 @@ class BaseDaemon(object):
             # to insure that the next call to os.setsid is successful.
             pid = os.fork()
         except OSError, e:
-            raise Exception, '%s [%d]' % (e.strerror, e.errno)
+            raise Exception, '%s [%d]' %(e.strerror, e.errno)
         
         if pid == 0: # The first child.
             # To become the session leader of this new session and the process group
@@ -320,7 +320,7 @@ class BaseDaemon(object):
                 # a controlling terminal.
                 pid = os.fork() # Fork a second child.
             except OSError, e:
-                raise Exception, '%s [%d]' % (e.strerror, e.errno)
+                raise Exception, '%s [%d]' %(e.strerror, e.errno)
         
             if pid == 0: # The second child.
                 # Since the current working directory may be a mounted filesystem, we
@@ -389,10 +389,11 @@ class BaseDaemon(object):
         try:
             self.run(*argv)
         except Exception:
-            logger.error('Error when running %s:\n    %s' % (self.DAEMON_NAME, traceback.format_exc()))
+            logger.error('Error when running %s:\n    %s' %(self.DAEMON_NAME, traceback.format_exc()))
+            self.send_error_email('Error when running daemon %s.' %self.DAEMON_NAME, tb=True)
             self.exit(140)
         except KeyboardInterrupt:
-            logger.info('%s interrupted by KeyboardInterrupt' % (self.DAEMON_NAME))
+            logger.info('%s interrupted by KeyboardInterrupt' %(self.DAEMON_NAME))
             self.exit(141)
         
         # Gobject main loop
@@ -400,16 +401,17 @@ class BaseDaemon(object):
             import gobject
             #gobject.threads_init()
             ml = gobject.MainLoop()
-            print >>sys.stdout, '%s started' % self.DAEMON_NAME
+            print >>sys.stdout, '%s started' %self.DAEMON_NAME
             try:
                 ml.run()
             except Exception:
                 traceback_lines = traceback.format_exc().splitlines()
                 formatted_lines = '\n    '.join(traceback_lines)
-                logger.info('%s interrupted by error:\n    %s' % (self.DAEMON_NAME, formatted_lines))
+                logger.error('Daemon %s mainloop interrupted by error:\n    %s' %(self.DAEMON_NAME, formatted_lines))
+                self.send_error_email('Daemon %s mainloop interrupted by error.' %self.DAEMON_NAME, tb=True)
                 self.exit(142)
             except KeyboardInterrupt:
-                logger.info('%s interrupted by KeyboardInterrupt' % (self.DAEMON_NAME))
+                logger.info('Daemon %s mainloop interrupted by KeyboardInterrupt.' %(self.DAEMON_NAME))
                 self.exit(143)
     
     def restart(self, argv=None):
@@ -419,15 +421,15 @@ class BaseDaemon(object):
         try:
             os.remove(self._pid_file_path)
         except Exception, e:
-            logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.' % e)
+            logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.' %e)
         
         # execute restart command (if the daemon was not daemonized it will become so)
-        cmd = 'python %s restart %s' % (self.daemon_path, ' '.join(argv))
+        cmd = 'python %s restart %s' %(self.daemon_path, ' '.join(argv))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
         logger.debug('Restarting daemon.\n    Command: %s\n    Stdout: %s\n    Stderr: %s', cmd, out, err)
         if p.returncode != 0:
-            logger.error('Error when restarting daemon:\n    %s' % err)
+            logger.error('Error when restarting daemon:\n    %s' %err)
         sys.exit(0)
     
     def exit(self, code=0):
@@ -436,7 +438,7 @@ class BaseDaemon(object):
                 os.remove(self._pid_file_path)
             except Exception:
                 pass
-        logger.debug('Daemon %s ended (return code: %s).\n' % (self.DAEMON_NAME, code))
+        logger.debug('Daemon %s ended (return code: %s).\n' %(self.DAEMON_NAME, code))
         sys.exit(code)
     
     def send_error_email(self, msg, tb=False, recipients=None):
