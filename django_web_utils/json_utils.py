@@ -78,16 +78,17 @@ JsonHttp404 = Http404
 #-------------------------------------------------------------------------------
 def json_view(function=None, methods=None):
     '''
-    Returns 400, 401, 403, 404 and 500 errors in JSON format.
+    Returns 400, 401, 403, 404, 405 and 500 errors in JSON format.
     The "methods" argument can be used to allow only some methods on a particular view.
+    To allow several methods, use this format: "GET, PUT".
     '''
     def decorator(fct):
         def _wrapped_view(request, *args, **kwargs):
             # Check request method
-            if methods and (((isinstance(methods, list) or isinstance(methods, tuple)) and request.method not in methods) or request.method != methods):
+            if methods and request.method not in methods:
                 data = dict(error=u'%s (405)' %_('Invalid request method'))
                 response = HttpResponse(json.dumps(data), content_type='application/json', status=405)
-                response['Allow'] = ', '.join(methods) if isinstance(methods, list) or isinstance(methods, tuple) else methods
+                response['Allow'] = methods
                 return response
             # Process view
             try:

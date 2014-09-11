@@ -32,15 +32,16 @@ IframeHttp404 = Http404
 #-------------------------------------------------------------------------------
 def iframe_view(function=None, methods=None, login_url=None, login_required=False):
     '''
-    Returns 400, 401, 403, 404 and 500 errors with Iframe template.
+    Returns 400, 401, 403, 404, 405 and 500 errors with Iframe template.
     The "methods" argument can be used to allow only some methods on a particular view.
+    To allow several methods, use this format: "GET, PUT".
     '''
     def decorator(fct):
         def _wrapped_view(request, *args, **kwargs):
             # Check request method
-            if methods and (((isinstance(methods, list) or isinstance(methods, tuple)) and request.method not in methods) or request.method != methods):
+            if methods and request.method not in methods:
                 response = render(request, 'iframe/405.html', status=405)
-                response['Allow'] = ', '.join(methods) if isinstance(methods, list) or isinstance(methods, tuple) else methods
+                response['Allow'] = methods
                 return response
             # Process view
             try:
