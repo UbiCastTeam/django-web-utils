@@ -62,7 +62,9 @@ def _get_context(request=None):
         if ctx and not isinstance(ctx, dict):
             logger.error('Emails context processor returned an invalid object for context (must be a dict): %s', ctx)
             ctx = None
-    if not ctx.get('sender') and getattr(settings, 'DEFAULT_FROM_EMAIL', None):
+    if (not ctx or not ctx.get('sender')) and getattr(settings, 'DEFAULT_FROM_EMAIL', None):
+        if not ctx:
+            ctx = dict()
         ctx['sender'] = settings.DEFAULT_FROM_EMAIL
     return ctx
 
