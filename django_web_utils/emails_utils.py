@@ -148,7 +148,7 @@ def send_emails(subject, content, recipients=None, request=None, content_subtype
     if not recipients:
         # Send emails to managers if no email is given
         recipients = [a[1] for a in settings.MANAGERS]
-    elif not isinstance(recipients, list):
+    elif not isinstance(recipients, (tuple, list)):
         recipients = [recipients]
     # Prepare emails messages
     connection = None
