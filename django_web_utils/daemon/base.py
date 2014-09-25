@@ -226,7 +226,12 @@ class BaseDaemon(object):
             django_logger = logging.getLogger('django')
             django_logger.setLevel(logging.WARNING)
         import django
-        django.setup()
+        try:
+            django.setup()
+        except Exception:
+            # django.setup exists since 1.7
+            if django.get_version() >= 1.7:
+                raise
     
     def _setup_logging(self):
         if not os.path.exists(self.LOG_DIR):
