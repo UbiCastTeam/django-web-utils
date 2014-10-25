@@ -11,7 +11,7 @@
     left: 0;
     right: 0;
     position: absolute;
-    background: transparent url(../images/cover_list/loading.gif) 50% 50% no-repeat;
+    background: transparent url("img/loading.gif") 50% 50% no-repeat;
 }
 .cover-list a {
     color: transparent;
@@ -23,7 +23,7 @@
     bottom: 15px;
     position: absolute;
     height: 30px;
-    background: transparent url(../images/overlay/black_mask.png) 0 0 repeat;
+    background: transparent url("img/black_mask.png") 0 0 repeat;
     border: 1px solid #888;
     border-radius: 4px;
 }
@@ -52,17 +52,17 @@
     position: absolute;
 }
 .cover-list .cover-previous-icon {
-    background: transparent url("../images/cover_list/previous.png") 50% 50% no-repeat;
+    background: transparent url("img/previous.png") 50% 50% no-repeat;
 }
 .cover-list .cover-next-icon {
-    background: transparent url("../images/cover_list/next.png") 50% 50% no-repeat;
+    background: transparent url("img/next.png") 50% 50% no-repeat;
 }
 .cover-list .cover-slider {
     display: block;
     height: 100%;
     position: relative;
 }
-.cover-list .cover-slider a {
+.cover-list .cover-slider .ui-slider-handle {
     margin-left: -7px;
     top: 2px;
     bottom: 2px;
@@ -82,7 +82,7 @@
     padding: 2px;
     display: block;
     position: relative;
-    background: transparent url(../images/overlay/black_mask.png) 0 0 repeat;
+    background: transparent url("img/black_mask.png") 0 0 repeat;
     border: 1px solid #888;
     border-radius: 4px;
 }

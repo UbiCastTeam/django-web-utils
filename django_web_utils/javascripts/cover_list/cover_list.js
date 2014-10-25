@@ -1,12 +1,14 @@
-/*******************************************
-* Cover list script                        *
-* Copyright: UbiCast, all rights reserved  *
-* Author: Stephane Diemer                  *
-*******************************************/
+/**************************************************
+* Cover list script                               *
+* Author: Stephane Diemer                         *
+* License: CC by SA v3                            *
+* https://creativecommons.org/licenses/by-sa/3.0/ *
+* Requires: jQuery and jQuery ui slider           *
+**************************************************/
 
 function CoverList(options) {
     // params
-    this.widget_place = ".cover-list";
+    this.widget_place = "#cover_list";
     this.y_offset = -10;
     this.padding = 3;
     this.box_width = 240 + 2*this.padding;
@@ -30,8 +32,19 @@ function CoverList(options) {
         "selected",
         "color"
     ];
-    if (options)
+    if (options) {
         this.set_options(options);
+        if (options.elements) {
+            for (var i=0; i < options.elements.length; i++) {
+                this.add_element(options.elements[i]);
+            }
+        }
+    }
+    
+    var obj = this;
+    $(document).ready(function () {
+        obj.init_cover_list();
+    });
 }
 
 CoverList.prototype.set_options = function (options) {
@@ -41,31 +54,33 @@ CoverList.prototype.set_options = function (options) {
     }
 };
 
-CoverList.prototype.init = function () {
-    var obj = this;
-    $(document).ready(function () {
-        obj.init_cover_list();
-    });
-};
-
 /* cover list widget */
-CoverList.prototype.add_element = function (options) {
+CoverList.prototype.add_element = function (ele) {
     var element = {
         index: this.elements.length,
         title: "No title",
         thumb: "",
         url: ""
     };
-    for (var field in options) {
-        element[field] = options[field];
+    for (var field in ele) {
+        element[field] = ele[field];
     }
     this.elements.push(element);
 };
 CoverList.prototype.init_cover_list = function () {
+    // Build widget
+    var html = "";
+    html += "<div class=\"cover-loading\"></div>";
+    html += "<div class=\"cover-bar\">";
+    html += "    <a class=\"cover-next\" href=\"#\"><span class=\"cover-next-icon\"></span></a>";
+    html += "    <div class=\"cover-slider\"></div>";
+    html += "    <a class=\"cover-previous\" href=\"#\"><span class=\"cover-previous-icon\"></span></a>";
+    html += "</div>";
     this.$widget = $(this.widget_place);
+    this.$widget.html(html).addClass("cover-list");
+    
     this.widget_width = this.$widget.width();
     this.widget_height = this.$widget.height();
-    
     this.calculate_positions();
     
     if (this.selected < 0)

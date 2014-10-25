@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Overlay displayer manager test page</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    
+    <link rel="stylesheet" type="text/css" href="../odm.css"/>
+    
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="../odm.js"></script>
+    <script type="text/javascript">
+        var odm = new OverlayDisplayerManager();
+        $(document).ready(function () {
+            $("#odm_img").click(function () {
+                odm.show("1.jpg");
+            });
+            $("#odm_imgs").click(function () {
+                odm.show(["1.jpg", "2.jpg", "3.jpg", "4.jpg"]);
+            });
+            $("#odm_imgchange").click(function () {
+                odm.change("3.jpg");
+            });
+            $("#odm_img404").click(function () {
+                odm.show("404.jpg");
+            });
+            $("#odm_img404title").click(function () {
+                odm.show({ image: "404.jpg", title: "404" });
+            });
+            $("#odm_html").click(function () {
+                odm.show({ title: "feegeg", html: "Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin." });
+            });
+            $("#odm_iframe").click(function () {
+                odm.show({ title: "feegeg", iframe: "http://localhost/" });
+            });
+            $("#odm_iframe_buttons").click(function () {
+                odm.show({ title: "Iframe + buttons", iframe: "http://localhost/", buttons: [
+                    { label: "test" }
+                ]});
+            });
+            $("#odm_show").click(function () {
+                odm.show();
+            });
+            
+            $(window).keypress(function (event) {
+                var key = event.keyCode || event.which;
+                if (key == 48)
+                    $("#odm_imgchange").click();
+                else if (key == 49)
+                    $("#odm_img").click();
+                else if (key == 50)
+                    $("#odm_html").click();
+                else if (key == 51)
+                    $("#odm_img404").click();
+                else if (key == 52)
+                    $("#odm_imgs").click();
+                //else
+                //    console.log("key pressed:", key);
+            });
+        });
+    </script>
+    
+    <style>
+        .buttons {
+            padding: 10px;
+            text-align: center;
+            background: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="buttons">
+        <button type="button" id="odm_img">Mono image</button>
+        <button type="button" id="odm_imgs">Multi images</button>
+        <button type="button" id="odm_imgchange">Change image</button>
+        <button type="button" id="odm_img404">404 image</button>
+        <button type="button" id="odm_img404title">404 image with title</button>
+        <button type="button" id="odm_html">HTML content</button>
+        <button type="button" id="odm_iframe">Iframe content</button>
+        <button type="button" id="odm_iframe_buttons">Iframe content with buttons</button>
+        <button type="button" id="odm_show">Show</button>
+    </div>
+    
+    <ul>Keyboard tests:
+        <li>0: Change image</li>
+        <li>1: Mono image</li>
+        <li>2: HTML content</li>
+        <li>3: 404 image</li>
+        <li>4: Multi images</li>
+    </ul>
+    
+    <div>
+<p><b>Text to check that the overlay is not clickable when hidden</b></p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nec aliquam tellus. Suspendisse potenti. Pellentesque pharetra lectus sed nisl egestas, sed laoreet mi vestibulum. In ullamcorper purus sed blandit laoreet. Suspendisse eleifend feugiat sodales. Quisque suscipit ultrices luctus. Mauris lacinia pulvinar metus. Sed odio massa, feugiat ac dolor sed, euismod porta eros. Duis sodales interdum nisl, non rhoncus orci tempus convallis. Ut vitae interdum eros, in lacinia enim.
+
+Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin.
+
+Vivamus laoreet pulvinar tortor, sit amet tincidunt ligula auctor eu. Aliquam cursus purus tincidunt pulvinar tincidunt. In vel bibendum tellus. Nulla ornare nunc dui, eget egestas massa ultrices id. Proin eu arcu at ante vulputate volutpat auctor id ipsum. Etiam luctus sit amet risus interdum condimentum. Aenean viverra velit at tortor volutpat faucibus. Morbi ex dolor, auctor eget mauris id, pharetra tincidunt justo. Proin et aliquam est. Mauris rhoncus lacus sed ex lacinia, ac tincidunt est vestibulum. Phasellus placerat tincidunt libero, non viverra massa pulvinar sed. Integer fermentum eros sed velit tristique mattis. Curabitur eu augue fermentum, ullamcorper odio at, ornare dolor.
+
+Integer sodales vitae mauris at convallis. Nam elementum ac enim in pharetra. Sed lorem massa, aliquam eget dolor eget, placerat efficitur felis. Fusce a eros sit amet purus bibendum lacinia. Sed finibus nulla eget mi convallis sodales. Suspendisse pharetra mauris nulla, eget fringilla purus sagittis ut. Nunc congue sollicitudin porttitor. Aliquam posuere rhoncus tellus eget malesuada. Mauris tempus iaculis ornare. Phasellus justo sem, volutpat eu mattis vitae, venenatis et nulla. Etiam gravida tempor risus eget malesuada. Fusce tempus arcu ut elit lobortis, sed rutrum quam fermentum. Praesent nec tempus felis. Curabitur elementum, nibh a rutrum consequat, massa eros consectetur nunc, in dignissim purus tellus nec urna. Cras iaculis sed leo sit amet volutpat.
+
+Sed commodo tellus nibh, eget varius ipsum malesuada eu. Etiam lobortis rhoncus sodales. Morbi malesuada, mauris at sollicitudin sollicitudin, velit lacus tempor elit, eu pretium tellus lacus eleifend est. Nulla facilisi. Ut vehicula dolor eu aliquam rutrum. Integer sed mauris sed dolor luctus convallis. Nullam id dui commodo, vestibulum odio sit amet, sagittis metus. In aliquam lacinia nisl, eget commodo neque egestas a. Nunc in ligula quis nisl tristique vehicula ac nec enim. Vivamus luctus, massa at tristique porttitor, sapien massa fringilla risus, a tempus elit eros ut augue. Mauris egestas augue eros, a eleifend eros varius in. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Cras malesuada ac urna at sollicitudin. Donec fermentum lectus in vestibulum efficitur. Vestibulum porttitor dictum dui id feugiat.</p>
+    </div>
+</body>
+</html>
+

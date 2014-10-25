@@ -1,0 +1,284 @@
+/* Overlay display manager stylesheet */
+.odm-main,
+.odm-main .odm-layer,
+.odm-main .odm-closer {
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    bottom: auto;
+    right: auto;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: block;
+}
+.odm-main {
+    position: fixed;
+    display: none;
+    background: transparent url("img/black_mask.png") 0 0 repeat;
+    z-index: 50;
+}
+.odm-main.no-fixed {
+    position: absolute;
+}
+.odm-main .odm-closer {
+    z-index: 40;
+}
+.odm-main table.odm-table {
+    margin: 0 auto;
+    padding: 0;
+    height: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+.odm-main.no-fixed table.odm-table {
+    height: auto;
+}
+.odm-main tr.odm-table,
+.odm-main th.odm-table,
+.odm-main td.odm-table {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0 none;
+}
+.odm-main td.odm-table {
+    vertical-align: middle;
+}
+.odm-main .odm-block {
+    margin: 0;
+    padding: 5px;
+    display: block;
+    position: relative;
+    border: 1px solid #666;
+    background: #222;
+    background: -moz-linear-gradient(top, #333, #000);
+    background: -webkit-gradient(linear, left top, left bottom, from(#333), to(#000));
+    overflow: hidden;
+    z-index: 45;
+    border-radius: 4px;
+}
+.odm-main .odm-block > * {
+    display: none;
+    opacity: 0;
+    transition: display 0.3s linear, opacity 0.3s linear 0s;
+}
+
+/* close button */
+.odm-main .odm-close {
+    top: 0;
+    right: 0;
+    position: absolute;
+    display: block;
+    opacity: 1;
+    background: #222 url("img/light.png") 0 0 repeat-x;
+    border-bottom-left-radius: 4px;
+}
+.odm-main .odm-close div {
+    width: 28px;
+    height: 28px;
+    display: block;
+    background: transparent url("img/close.png") 0 50% no-repeat;
+}
+.odm-main .odm-close:hover div {
+    background-position: 100% 50%;
+}
+.odm-main.odm-top-bar-displayed .odm-close {
+    padding-top: 4px;
+    padding-right: 4px;
+    background: transparent;
+}
+
+/* loading and error */
+.odm-main .odm-error,
+.odm-main .odm-loading {
+    color: #ccc;
+    font-weight: bold;
+    font-size: 20px;
+}
+.odm-main.odm-error-displayed .odm-error,
+.odm-main.odm-loading-displayed .odm-loading {
+    display: block;
+    opacity: 1;
+}
+.odm-main .odm-error {
+    padding: 45px;
+    padding-left: 110px;
+    padding-right: 30px;
+    background: transparent url("img/warning.png") 30px 50% no-repeat;
+}
+.odm-main .odm-loading {
+    padding: 45px;
+    padding-left: 110px;
+    padding-right: 30px;
+    background: transparent url("img/loading.gif") 30px 50% no-repeat;
+}
+
+/* top-bar */
+.odm-main .odm-top-bar {
+    padding-bottom: 5px;
+    padding-right: 35px;
+    color: #ddd;
+    height: 25px;
+    line-height: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+}
+.odm-main.odm-top-bar-displayed .odm-top-bar {
+    opacity: 1;
+    display: block;
+}
+.odm-main .odm-top-bar .odm-resources {
+    margin-left: 5px;
+    float: right;
+    display: block;
+}
+/* bottom-bar */
+.odm-main .odm-bottom-bar {
+    padding: 0 2px;
+    padding-top: 5px;
+    color: #ddd;
+    height: 35px;
+    line-height: 35px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: right;
+}
+.odm-main .odm-bottom-bar button {
+    vertical-align: middle;
+}
+.odm-main .odm-bottom-bar button + button {
+    margin-left: 8px;
+}
+.odm-main.odm-bottom-bar-displayed .odm-bottom-bar {
+    opacity: 1;
+    display: block;
+}
+
+/* element block */
+.odm-main .odm-element-place {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    border-radius: 3px;
+}
+.odm-main.odm-element-place-displayed .odm-element-place {
+    opacity: 1;
+    display: block;
+}
+.odm-main .odm-hover-loading {
+    top: 20px;
+    left: 20px;
+    position: absolute;
+    display: none;
+    border: 1px solid #666;
+    background: transparent url("img/black_mask.png") 0 0 repeat;
+    border-radius: 6px;
+}
+.odm-main.odm-hover-loading-displayed .odm-hover-loading {
+    display: block;
+}
+.odm-main .odm-hover-loading div {
+    padding: 8px 16px;
+    padding-left: 52px;
+    line-height: 32px;
+    color: #ccc;
+    font-size: 13px;
+    font-weight: bold;
+    background: transparent url("img/loading_small.gif") 8px 50% no-repeat;
+}
+.odm-main .odm-element-content {
+    position: relative;
+    transition: width 0.3s linear, height 0.3s linear 0s;
+}
+.odm-main .odm-element-padding {
+    padding: 10px;
+}
+.odm-main .odm-element {
+    min-width: 150px;
+    min-height: 20px;
+    vertical-align: top;
+    transition: opacity 0.3s linear 0s;
+}
+.odm-main img.odm-element {
+    max-width: 100%;
+    max-height: 100%;
+    -ms-interpolation-mode: bicubic;
+}
+.odm-main iframe.odm-element {
+    margin: 0;
+    padding: 0;
+    border: 0 none;
+    vertical-align: top;
+}
+.odm-main div.odm-element,
+.odm-main iframe.odm-element {
+    background: #fff;
+    color: #000;
+    text-align: left;
+    overflow: auto;
+}
+.odm-main .odm-previous,
+.odm-main .odm-next {
+    display: none;
+    top: 0;
+    bottom: 0;
+    width: 192px;
+    position: absolute;
+    cursor: pointer;
+}
+.odm-main .odm-previous table,
+.odm-main .odm-next table {
+    width: 100%;
+}
+.odm-main .odm-previous table td,
+.odm-main .odm-next table td {
+    padding: 0;
+}
+.odm-main .odm-btn-bg {
+    padding: 32px;
+    border: 1px solid #666;
+    display: none;
+    background: transparent url("img/black_mask.png") 0 0 repeat;
+}
+.odm-main .odm-previous .odm-btn-bg {
+    margin-right: 64px;
+    border-left: 0 none;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+.odm-main .odm-next .odm-btn-bg {
+    margin-left: 64px;
+    border-right: 0 none;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+.odm-main .odm-previous td .odm-btn-icon,
+.odm-main .odm-next td .odm-btn-icon {
+    padding-top: 74px;
+    color: #ccc;
+    font-size: 13px;
+    text-align: center;
+    width: 64px;
+}
+.odm-main .odm-previous {
+    left: 0;
+}
+.odm-main .odm-previous td .odm-btn-icon {
+    background: transparent url("img/previous.png") 50% 0 no-repeat;
+}
+.odm-main .odm-previous:hover td .odm-btn-bg {
+    display: block;
+}
+.odm-main .odm-next {
+    right: 0;
+}
+.odm-main .odm-next td .odm-btn-icon {
+    background: transparent url("img/next.png") 50% 0 no-repeat;
+}
+.odm-main .odm-next:hover td .odm-btn-bg {
+    display: block;
+}
+
