@@ -22,9 +22,6 @@
 .odm-main.no-fixed {
     position: absolute;
 }
-.odm-main .odm-closer {
-    z-index: 40;
-}
 .odm-main table.odm-table {
     margin: 0 auto;
     padding: 0;
@@ -59,11 +56,6 @@
     z-index: 45;
     border-radius: 4px;
 }
-.odm-main .odm-block > * {
-    display: none;
-    opacity: 0;
-    transition: display 0.3s linear, opacity 0.3s linear 0s;
-}
 
 /* close button */
 .odm-main .odm-close {
@@ -71,7 +63,6 @@
     right: 0;
     position: absolute;
     display: block;
-    opacity: 1;
     background: #222 url("img/light.png") 0 0 repeat-x;
     border-bottom-left-radius: 4px;
 }
@@ -90,31 +81,6 @@
     background: transparent;
 }
 
-/* loading and error */
-.odm-main .odm-error,
-.odm-main .odm-loading {
-    color: #ccc;
-    font-weight: bold;
-    font-size: 20px;
-}
-.odm-main.odm-error-displayed .odm-error,
-.odm-main.odm-loading-displayed .odm-loading {
-    display: block;
-    opacity: 1;
-}
-.odm-main .odm-error {
-    padding: 45px;
-    padding-left: 110px;
-    padding-right: 30px;
-    background: transparent url("img/warning.png") 30px 50% no-repeat;
-}
-.odm-main .odm-loading {
-    padding: 45px;
-    padding-left: 110px;
-    padding-right: 30px;
-    background: transparent url("img/loading.gif") 30px 50% no-repeat;
-}
-
 /* top-bar */
 .odm-main .odm-top-bar {
     padding-bottom: 5px;
@@ -125,9 +91,9 @@
     font-size: 16px;
     font-weight: bold;
     text-align: left;
+    display: none;
 }
 .odm-main.odm-top-bar-displayed .odm-top-bar {
-    opacity: 1;
     display: block;
 }
 .odm-main .odm-top-bar .odm-resources {
@@ -145,6 +111,7 @@
     font-size: 16px;
     font-weight: bold;
     text-align: right;
+    display: none;
 }
 .odm-main .odm-bottom-bar button {
     vertical-align: middle;
@@ -153,20 +120,14 @@
     margin-left: 8px;
 }
 .odm-main.odm-bottom-bar-displayed .odm-bottom-bar {
-    opacity: 1;
     display: block;
 }
 
 /* element block */
 .odm-main .odm-element-place {
     position: relative;
-    background: #000;
     overflow: hidden;
     border-radius: 3px;
-}
-.odm-main.odm-element-place-displayed .odm-element-place {
-    opacity: 1;
-    display: block;
 }
 .odm-main .odm-hover-loading {
     top: 20px;
@@ -191,7 +152,6 @@
 }
 .odm-main .odm-element-content {
     position: relative;
-    transition: width 0.3s linear, height 0.3s linear 0s;
 }
 .odm-main .odm-element-padding {
     padding: 10px;
@@ -220,65 +180,93 @@
     text-align: left;
     overflow: auto;
 }
+
+/* loading and error */
+.odm-main div.odm-element.odm-error,
+.odm-main div.odm-element.odm-loading {
+    background: transparent;
+    color: #ccc;
+    font-weight: bold;
+    font-size: 20px;
+    transition: none;
+}
+.odm-main div.odm-element.odm-error {
+    padding: 45px;
+    padding-left: 110px;
+    padding-right: 30px;
+    background: transparent url("img/warning.png") 30px 50% no-repeat;
+}
+.odm-main div.odm-element.odm-loading {
+    padding: 45px;
+    padding-left: 110px;
+    padding-right: 30px;
+    background: transparent url("img/loading.gif") 30px 50% no-repeat;
+}
+
+/* previous and next buttons */
 .odm-main .odm-previous,
 .odm-main .odm-next {
-    display: none;
-    top: 0;
-    bottom: 0;
-    width: 192px;
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
     position: absolute;
+    width: 181px;
+    display: none;
     cursor: pointer;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0); /* to avoid IE bug */
 }
-.odm-main .odm-previous table,
-.odm-main .odm-next table {
-    width: 100%;
+.odm-main .odm-previous {
+    right: auto;
 }
-.odm-main .odm-previous table td,
-.odm-main .odm-next table td {
-    padding: 0;
+.odm-main .odm-next {
+    left: auto;
 }
 .odm-main .odm-btn-bg {
-    padding: 32px;
+    margin-top: -80px;
+    padding: 32px 0;
+    left: 0;
+    right: 0;
+    top: 50%;
+    position: absolute;
     border: 1px solid #666;
-    display: none;
     background: transparent url("img/black_mask.png") 0 0 repeat;
+    display: none;
 }
 .odm-main .odm-previous .odm-btn-bg {
-    margin-right: 64px;
+    right: 60px;
+}
+.odm-main .odm-next .odm-btn-bg {
+    left: 60px;
+}
+.odm-main .odm-previous .odm-btn-bg {
+    right: 60px;
     border-left: 0 none;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
 }
 .odm-main .odm-next .odm-btn-bg {
-    margin-left: 64px;
+    left: 60px;
     border-right: 0 none;
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
 }
-.odm-main .odm-previous td .odm-btn-icon,
-.odm-main .odm-next td .odm-btn-icon {
+.odm-main .odm-previous .odm-btn-icon,
+.odm-main .odm-next .odm-btn-icon {
     padding-top: 74px;
     color: #ccc;
-    font-size: 13px;
+    font-size: 14px;
     text-align: center;
-    width: 64px;
 }
-.odm-main .odm-previous {
-    left: 0;
+.odm-main .odm-previous:hover .odm-btn-bg,
+.odm-main .odm-next:hover .odm-btn-bg {
+    display: block;
 }
-.odm-main .odm-previous td .odm-btn-icon {
+.odm-main .odm-previous .odm-btn-icon {
     background: transparent url("img/previous.png") 50% 0 no-repeat;
 }
-.odm-main .odm-previous:hover td .odm-btn-bg {
-    display: block;
-}
-.odm-main .odm-next {
-    right: 0;
-}
-.odm-main .odm-next td .odm-btn-icon {
+.odm-main .odm-next .odm-btn-icon {
     background: transparent url("img/next.png") 50% 0 no-repeat;
-}
-.odm-main .odm-next:hover td .odm-btn-bg {
-    display: block;
 }
 

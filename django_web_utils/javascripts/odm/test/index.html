@@ -17,6 +17,9 @@
             $("#odm_imgs").click(function () {
                 odm.show(["1.jpg", "2.jpg", "3.jpg", "4.jpg"]);
             });
+            $("#odm_imgs404").click(function () {
+                odm.show(["1.jpg", "2.jpg", "404.jpg", "3.jpg", "4.jpg"]);
+            });
             $("#odm_imgchange").click(function () {
                 odm.change("3.jpg");
             });
@@ -72,6 +75,7 @@
     <div class="buttons">
         <button type="button" id="odm_img">Mono image</button>
         <button type="button" id="odm_imgs">Multi images</button>
+        <button type="button" id="odm_imgs404">Multi images with 404</button>
         <button type="button" id="odm_imgchange">Change image</button>
         <button type="button" id="odm_img404">404 image</button>
         <button type="button" id="odm_img404title">404 image with title</button>

@@ -66,21 +66,19 @@ OverlayDisplayerManager.prototype._init = function () {
     html +=                     "<div class=\"odm-resources\"></div>";
     html +=                     "<div class=\"odm-title\"></div>";
     html +=                 "</div>";
-    html +=                 "<div class=\"odm-loading\">"+this.messages.loading+"</div>";
-    html +=                 "<div class=\"odm-error\"></div>";
     html +=                 "<div class=\"odm-element-place\">";
-    html +=                     "<div class=\"odm-element-content\"></div>";
+    html +=                     "<div class=\"odm-element-content\">";
+    html +=                         "<div class=\"odm-element odm-loading\">"+this.messages.loading+"</div>";
+    html +=                     "</div>";
     html +=                     "<div class=\"odm-hover-loading\"><div>"+this.messages.loading+"</div></div>";
-    html +=                     "<div class=\"odm-previous\">";
-    html +=                         "<table class=\"odm-table\"><tr class=\"odm-table\"><td class=\"odm-table\"><div class=\"odm-btn-bg\">";
-    html +=                             "<div class=\"odm-btn-icon\">"+this.messages.previous+"</div></div></td></tr></table></div>";
-    html +=                     "<div class=\"odm-next\">";
-    html +=                         "<table class=\"odm-table\"><tr class=\"odm-table\"><td class=\"odm-table\"><div class=\"odm-btn-bg\">";
-    html +=                             "<div class=\"odm-btn-icon\">"+this.messages.next+"</div></div></td></tr></table></div>";
     html +=                 "</div>";
     html +=                 "<div class=\"odm-bottom-bar\">";
     html +=                     "<div class=\"odm-buttons\"></div>";
     html +=                 "</div>";
+    html +=                 "<div class=\"odm-previous\"><div class=\"odm-btn-bg\">";
+    html +=                     "<div class=\"odm-btn-icon\">"+this.messages.previous+"</div></div></div>";
+    html +=                 "<div class=\"odm-next\"><div class=\"odm-btn-bg\">";
+    html +=                     "<div class=\"odm-btn-icon\">"+this.messages.next+"</div></div></div>";
     html +=                 "<div class=\"odm-close\"><div></div></div>";
     html +=             "</div>";
     html +=         "</td></tr></table>";
@@ -154,6 +152,13 @@ OverlayDisplayerManager.prototype.on_resize = function () {
 };
 
 OverlayDisplayerManager.prototype._set_resources = function (params) {
+    // reset content
+    if (!this.displayed && this.resources.length > 1) {
+        var html = $("<div class=\"odm-element odm-loading\">"+this.messages.loading+"</div>");
+        this._display_element(html);
+        this.image = null;
+    }
+    // parse resources
     this.resources = [];
     if (typeof params != "string" && params.length !== undefined) {
         for (var i=0; i < params.length; i++) {
@@ -162,7 +167,7 @@ OverlayDisplayerManager.prototype._set_resources = function (params) {
     }
     else
         this._add_resources(params);
-    
+    // display require elements
     this.current_index = 0;
     if (this.resources.length < 1)
         return;
@@ -183,7 +188,6 @@ OverlayDisplayerManager.prototype._set_resources = function (params) {
             $(".odm-next", this.$widget).css("display", "block");
         else
             $(".odm-next", this.$widget).css("display", "none");
-        return this.resources[this.current_index];
     }
     else {
         if (this.top_bar_displayed && !this.title) {
@@ -194,8 +198,8 @@ OverlayDisplayerManager.prototype._set_resources = function (params) {
         $(".odm-resources", this.$widget).html("");
         $(".odm-previous", this.$widget).css("display", "none");
         $(".odm-next", this.$widget).css("display", "none");
-        return this.resources[0];
     }
+    return this.resources[this.current_index];
 };
 
 OverlayDisplayerManager.prototype._add_resources = function (res) {
@@ -268,58 +272,6 @@ OverlayDisplayerManager.prototype._focus_button = function () {
     catch (e) { }
 };
 
-OverlayDisplayerManager.prototype._show_loading = function () {
-    if (this.loading_displayed)
-        return;
-    this.loading_displayed = true;
-    if (this.loading_timeout_id !== null) {
-        clearTimeout(this.loading_timeout_id);
-        this.loading_timeout_id = null;
-    }
-    if (this.$widget.hasClass("odm-element-place-displayed")) {
-        var obj = this;
-        this.loading_timeout_id = setTimeout(function () {
-            obj.$widget.addClass("odm-hover-loading-displayed");
-        }, 500);
-    }
-    else {
-        this.$widget.addClass("odm-loading-displayed");
-    }
-};
-OverlayDisplayerManager.prototype._hide_loading = function () {
-    if (!this.loading_displayed)
-        return;
-    this.loading_displayed = false;
-    if (this.loading_timeout_id !== null) {
-        clearTimeout(this.loading_timeout_id);
-        this.loading_timeout_id = null;
-    }
-    this.$widget.removeClass("odm-loading-displayed");
-    this.$widget.removeClass("odm-hover-loading-displayed");
-};
-
-OverlayDisplayerManager.prototype._show_error = function (msg) {
-    $(".odm-error", this.$widget).html((msg in this.messages) ? this.messages[msg] : msg);
-    if (this.error_displayed)
-        return;
-    this.error_displayed = true;
-    this.$widget.addClass("odm-error-displayed");
-};
-OverlayDisplayerManager.prototype._hide_error = function () {
-    if (!this.error_displayed)
-        return;
-    this.error_displayed = false;
-    this.$widget.removeClass("odm-error-displayed");
-};
-
-OverlayDisplayerManager.prototype._detach_previous = function ($previous) {
-    if ($previous.length < 1)
-        return;
-    $previous.css("opacity", "0").css("position", "absolute");
-    setTimeout(function () {
-        $previous.detach();
-    }, 500);
-};
 
 //---------------------------
 // Resources list functions
@@ -353,21 +305,14 @@ OverlayDisplayerManager.prototype.previous = function () {
 
 
 OverlayDisplayerManager.prototype._load_resource = function (resource) {
-    this._hide_error();
     this._show_loading();
     this._check_title_display(resource.title ? resource.title : "");
     this._check_buttons_display(resource.buttons);
     
     var obj = this;
-    var callback = function (success, msg) {
+    var callback = function (success) {
         obj.current_resource = resource;
         obj._hide_loading();
-        if (success)
-            obj.$widget.addClass("odm-element-place-displayed");
-        else {
-            obj.$widget.removeClass("odm-element-place-displayed");
-            obj._show_error("not_found");
-        }
     };
     if (resource.image)
         // image mode
@@ -378,8 +323,10 @@ OverlayDisplayerManager.prototype._load_resource = function (resource) {
     else if (resource.html)
         // html mode
         this._load_html(resource, callback);
-    else
-        callback(false, "Unknown resource type.");
+    else {
+        this._display_error("unknown_resource");
+        callback(false);
+    }
 };
 
 OverlayDisplayerManager.prototype.change = function (params) {
@@ -442,6 +389,54 @@ OverlayDisplayerManager.prototype._execute_on_hide_callback = function () {
             window.console.log("Callback execution failed: "+e);
     }
 };
+OverlayDisplayerManager.prototype._display_element = function ($element) {
+    var $previous = $(".odm-element-content .odm-element", this.$widget);
+    $(".odm-element-content", this.$widget).append($element);
+    if ($previous.length < 1)
+        return;
+    if ($previous.hasClass("odm-loading") || $previous.hasClass("odm-error")) {
+        $previous.remove();
+    }
+    else if ($element.hasClass("odm-loading") || $element.hasClass("odm-error")) {
+        $previous.detach();
+    }
+    else {
+        $previous.css("opacity", "0").css("position", "absolute");
+        setTimeout(function () {
+            $previous.detach();
+        }, 500);
+    }
+};
+
+// Error and loading management
+//---------------------------
+OverlayDisplayerManager.prototype._display_error = function (msg) {
+    var html = $("<div class=\"odm-element odm-error\">"+((msg in this.messages) ? this.messages[msg] : msg)+"</div>");
+    this._display_element(html);
+};
+OverlayDisplayerManager.prototype._show_loading = function () {
+    if (this.loading_displayed)
+        return;
+    this.loading_displayed = true;
+    if (this.loading_timeout_id !== null) {
+        clearTimeout(this.loading_timeout_id);
+        this.loading_timeout_id = null;
+    }
+    var obj = this;
+    this.loading_timeout_id = setTimeout(function () {
+        obj.$widget.addClass("odm-hover-loading-displayed");
+    }, 500);
+};
+OverlayDisplayerManager.prototype._hide_loading = function () {
+    if (!this.loading_displayed)
+        return;
+    this.loading_displayed = false;
+    if (this.loading_timeout_id !== null) {
+        clearTimeout(this.loading_timeout_id);
+        this.loading_timeout_id = null;
+    }
+    this.$widget.removeClass("odm-hover-loading-displayed");
+};
 
 // Image management
 //---------------------------
@@ -457,25 +452,24 @@ OverlayDisplayerManager.prototype._load_image = function (resource, callback) {
     this.image.ori_src = resource.image;
     this.image.src = resource.image;
     if (this.image.complete) {
-        this.on_image_load(this.image, resource, callback);
+        this._on_image_load(this.image, resource, callback);
     }
     else {
         var obj = this;
-        this.image.onload = function () { obj.on_image_load(this, resource, callback); };
-        this.image.onabort = function () { obj.on_image_load(this, resource, callback); };
-        this.image.onerror = function () { obj.on_image_error(this, resource, callback); };
+        this.image.onload = function () { obj._on_image_load(this, resource, callback); };
+        this.image.onabort = function () { obj._on_image_load(this, resource, callback); };
+        this.image.onerror = function () { obj._on_image_error(this, resource, callback); };
     }
 };
-OverlayDisplayerManager.prototype.on_image_load = function (img, resource, callback) {
-    var $previous = $(".odm-element-content .odm-element", this.$widget);
+OverlayDisplayerManager.prototype._on_image_load = function (img, resource, callback) {
     var $img = $("<img class=\"odm-element\" src=\""+img.src+"\" style=\"max-width: "+this.max_width+"px; max-height: "+this.max_height+"px;\"/>");
-    $(".odm-element-content", this.$widget).append($img);
-    this._detach_previous($previous);
+    this._display_element($img);
     callback(true);
 };
-OverlayDisplayerManager.prototype.on_image_error = function (img, resource, callback) {
+OverlayDisplayerManager.prototype._on_image_error = function (img, resource, callback) {
     img.loading_failed = true;
-    callback(false, "not_found");
+    this._display_error("not_found");
+    callback(false);
 };
 
 // Iframe management
@@ -485,10 +479,8 @@ OverlayDisplayerManager.prototype._load_iframe = function (resource, callback) {
         this.display_mode = "iframe";
     var width = resource.width ? resource.width : this.max_width+"px";
     var height = resource.height ? resource.height : this.max_height+"px";
-    var $previous = $(".odm-element-content .odm-element", this.$widget);
     var $iframe = $("<iframe class=\"odm-element\" src=\""+resource.iframe+"\" style=\"width: "+width+"; height: "+height+";\"></iframe>");
-    $(".odm-element-content", this.$widget).append($iframe);
-    this._detach_previous($previous);
+    this._display_element($iframe);
     callback(true);
 };
 
@@ -500,11 +492,9 @@ OverlayDisplayerManager.prototype._load_html = function (resource, callback) {
     var width = resource.width ? resource.width : "auto";
     var height = resource.height ? resource.height : "auto";
     var overflow = resource.overflow ? resource.overflow : "";
-    var $previous = $(".odm-element-content .odm-element", this.$widget);
     var $html = $("<div class=\"odm-element\" style=\"max-width: "+this.max_width+"px; max-height: "+this.max_height+"px; width: "+width+"; height: "+height+"; overflow: "+overflow+";\"></div>");
     $html.append(resource.html);
-    $(".odm-element-content", this.$widget).append($html);
-    this._detach_previous($previous);
+    this._display_element($html);
     callback(true);
 };
 
