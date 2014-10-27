@@ -32,6 +32,9 @@
             $("#odm_html").click(function () {
                 odm.show({ title: "feegeg", html: "Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin." });
             });
+            $("#odm_object").click(function () {
+                odm.show({ title: "object", html: $("#object") });
+            });
             $("#odm_iframe").click(function () {
                 odm.show({ title: "feegeg", iframe: "http://localhost/" });
             });
@@ -80,6 +83,7 @@
         <button type="button" id="odm_img404">404 image</button>
         <button type="button" id="odm_img404title">404 image with title</button>
         <button type="button" id="odm_html">HTML content</button>
+        <button type="button" id="odm_object">Object content</button>
         <button type="button" id="odm_iframe">Iframe content</button>
         <button type="button" id="odm_iframe_buttons">Iframe content with buttons</button>
         <button type="button" id="odm_show">Show</button>
@@ -93,8 +97,8 @@
         <li>4: Multi images</li>
     </ul>
     
-    <div>
-<p><b>Text to check that the overlay is not clickable when hidden</b></p>
+    <div id="object">
+<p><b>Some text used to test object management</b></p>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque nec aliquam tellus. Suspendisse potenti. Pellentesque pharetra lectus sed nisl egestas, sed laoreet mi vestibulum. In ullamcorper purus sed blandit laoreet. Suspendisse eleifend feugiat sodales. Quisque suscipit ultrices luctus. Mauris lacinia pulvinar metus. Sed odio massa, feugiat ac dolor sed, euismod porta eros. Duis sodales interdum nisl, non rhoncus orci tempus convallis. Ut vitae interdum eros, in lacinia enim.
 
 Sed efficitur ac enim at dictum. Sed hendrerit vulputate imperdiet. Quisque ultricies tortor eget felis molestie eleifend. Donec ut vulputate mauris. Nulla libero odio, condimentum ut efficitur ac, porta id lacus. Vivamus dictum tortor in ultrices vehicula. Integer sed tortor tincidunt, laoreet est eget, porta enim. Duis venenatis libero sit amet leo sodales sollicitudin.

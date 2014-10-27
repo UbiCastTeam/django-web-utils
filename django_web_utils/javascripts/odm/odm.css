@@ -168,13 +168,16 @@
     -ms-interpolation-mode: bicubic;
 }
 .odm-main iframe.odm-element {
-    margin: 0;
     padding: 0;
     border: 0 none;
     vertical-align: top;
 }
+.odm-main div.odm-element {
+    padding: 10px;
+}
 .odm-main div.odm-element,
 .odm-main iframe.odm-element {
+    margin: 0;
     background: #fff;
     color: #000;
     text-align: left;

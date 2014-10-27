@@ -12,6 +12,7 @@ function OverlayDisplayerManager(options) {
     this.enable_effects = true;
     this.enable_transition_effects = true;
     this.margin = 30;
+    this.object_padding = 20;
     this.top_bar_height = 30;
     this.bottom_bar_height = 40;
     this.default_buttons_class = "";
@@ -153,10 +154,11 @@ OverlayDisplayerManager.prototype.on_resize = function () {
 
 OverlayDisplayerManager.prototype._set_resources = function (params) {
     // reset content
-    if (!this.displayed && this.resources.length > 1) {
+    if (!this.displayed) {
         var html = $("<div class=\"odm-element odm-loading\">"+this.messages.loading+"</div>");
         this._display_element(html);
         this.image = null;
+        this.current_resource = null;
     }
     // parse resources
     this.resources = [];
@@ -273,7 +275,6 @@ OverlayDisplayerManager.prototype._focus_button = function () {
 };
 
 
-//---------------------------
 // Resources list functions
 //---------------------------
 OverlayDisplayerManager.prototype.go_to_index = function (index) {
@@ -334,10 +335,8 @@ OverlayDisplayerManager.prototype.change = function (params) {
         return;
     
     var resource = this._set_resources(params);
-    if (this.displayed) {
-        this._execute_on_hide_callback();
+    if (this.displayed)
         this._load_resource(resource);
-    }
 };
 
 OverlayDisplayerManager.prototype.show = function (params) {
@@ -351,6 +350,8 @@ OverlayDisplayerManager.prototype.show = function (params) {
         resource = this._set_resources(params);
     else if (this.resources.length < 1)
         return;
+    else if (!this.current_resource)
+        resource = this.resources[this.current_index];
     
     if (resource) {
         // Change resource
@@ -373,22 +374,9 @@ OverlayDisplayerManager.prototype.hide = function () {
     var obj = this;
     this.$widget.stop(true, false).fadeOut(250, function () {
         obj.displayed = false;
-        obj._execute_on_hide_callback();
     });
 };
 
-OverlayDisplayerManager.prototype._execute_on_hide_callback = function () {
-    if (!this.current_resource || !this.current_resource.on_hide)
-        return;
-    
-    try {
-        this.current_resource.on_hide();
-    }
-    catch (e) {
-        if (window.console)
-            window.console.log("Callback execution failed: "+e);
-    }
-};
 OverlayDisplayerManager.prototype._display_element = function ($element) {
     var $previous = $(".odm-element-content .odm-element", this.$widget);
     $(".odm-element-content", this.$widget).append($element);
@@ -489,11 +477,8 @@ OverlayDisplayerManager.prototype._load_iframe = function (resource, callback) {
 OverlayDisplayerManager.prototype._load_html = function (resource, callback) {
     if (this.display_mode != "html")
         this.display_mode = "html";
-    var width = resource.width ? resource.width : "auto";
-    var height = resource.height ? resource.height : "auto";
-    var overflow = resource.overflow ? resource.overflow : "";
-    var $html = $("<div class=\"odm-element\" style=\"max-width: "+this.max_width+"px; max-height: "+this.max_height+"px; width: "+width+"; height: "+height+"; overflow: "+overflow+";\"></div>");
-    $html.append(resource.html);
+    var $html = (typeof resource.html == "string") ? $("<div>"+resource.html+"</div>") : resource.html.detach();
+    $html.addClass("odm-element").css("max-width", (this.max_width-this.object_padding)+"px").css("max-height", (this.max_height-this.object_padding)+"px");
     this._display_element($html);
     callback(true);
 };
