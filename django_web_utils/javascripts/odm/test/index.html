@@ -40,7 +40,7 @@
             });
             $("#odm_iframe_buttons").click(function () {
                 odm.show({ title: "Iframe + buttons", iframe: "http://localhost/", buttons: [
-                    { label: "test" }
+                    { label: "test", callback: function () { alert("test"); } }
                 ]});
             });
             $("#odm_show").click(function () {

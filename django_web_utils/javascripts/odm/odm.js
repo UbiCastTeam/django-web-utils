@@ -9,10 +9,8 @@
 function OverlayDisplayerManager(options) {
     // params
     this.language = "en";
-    this.enable_effects = true;
-    this.enable_transition_effects = true;
     this.margin = 30;
-    this.object_padding = 20;
+    this.element_padding = 20;
     this.top_bar_height = 30;
     this.bottom_bar_height = 40;
     this.default_buttons_class = "";
@@ -25,6 +23,7 @@ function OverlayDisplayerManager(options) {
     this.max_height = 0;
     this.image = null;
     this.displayed = false;
+    this.element_padding_displayed = false;
     this.top_bar_displayed = false;
     this.bottom_bar_displayed = false;
     this.display_mode = null;
@@ -146,10 +145,11 @@ OverlayDisplayerManager.prototype.on_resize = function () {
         this.max_height -= this.top_bar_height;
     if (this.bottom_bar_displayed)
         this.max_height -= this.bottom_bar_height;
+    var padding = this.element_padding_displayed ? this.element_padding : 0;
     if (this.max_width > 0)
-        $(".odm-element", this.$widget).css("max-width", this.max_width+"px");
+        $(".odm-element", this.$widget).css("max-width", (this.max_width-padding)+"px");
     if (this.max_height > 0)
-        $(".odm-element", this.$widget).css("max-height", this.max_height+"px");
+        $(".odm-element", this.$widget).css("max-height", (this.max_height-padding)+"px");
 };
 
 OverlayDisplayerManager.prototype._set_resources = function (params) {
@@ -237,13 +237,13 @@ OverlayDisplayerManager.prototype._check_buttons_display = function (buttons) {
             $(".odm-buttons", this.$widget).html("");
             for (var i=0; i < buttons.length; i++) {
                 var btn = $("<button class=\""+this.default_buttons_class+"\"/>");
+                btn.html(buttons[i].label);
                 if (buttons[i].id)
                     btn.attr("id", buttons[i].id);
                 if (buttons[i].disabled)
                     btn.attr("disabled", "disabled");
                 if (buttons[i].klass)
                     btn.attr("class", this.default_buttons_class+" "+buttons[i].klass);
-                btn.html(buttons[i].label);
                 if (buttons[i].callback)
                     btn.click(buttons[i].callback);
                 $(".odm-buttons", this.$widget).append(btn);
@@ -257,7 +257,8 @@ OverlayDisplayerManager.prototype._check_buttons_display = function (buttons) {
             this.on_resize();
         }
         // focus first button
-        this._focus_button();
+        if (this.displayed)
+            this._focus_button();
     }
     else if (this.bottom_bar_displayed) {
         // hide bottom bar and clear buttons
@@ -269,39 +270,11 @@ OverlayDisplayerManager.prototype._check_buttons_display = function (buttons) {
 };
 
 OverlayDisplayerManager.prototype._focus_button = function () {
+    if ($(".odm-bottom-bar button", this.$widget).length < 1)
+        return;
     // focus first button (this can crash on IE)
     try { $(".odm-bottom-bar button:first", this.$widget).focus(); }
     catch (e) { }
-};
-
-
-// Resources list functions
-//---------------------------
-OverlayDisplayerManager.prototype.go_to_index = function (index) {
-    if (index >= this.resources.length || index < 0)
-        return;
-    
-    $(".odm-resources", this.$widget).html((index+1)+" / "+this.resources.length);
-    if (index > 0)
-        $(".odm-previous", this.$widget).css("display", "block");
-    else
-        $(".odm-previous", this.$widget).css("display", "none");
-    if (index < this.resources.length - 1)
-        $(".odm-next", this.$widget).css("display", "block");
-    else
-        $(".odm-next", this.$widget).css("display", "none");
-    if (this.current_index != index) {
-        this.current_index = index;
-        this._load_resource(this.resources[this.current_index]);
-    }
-};
-OverlayDisplayerManager.prototype.next = function () {
-    if (this.resources.length > 0 && this.current_index + 1 < this.resources.length)
-        this.go_to_index(this.current_index + 1);
-};
-OverlayDisplayerManager.prototype.previous = function () {
-    if (this.resources.length > 0 && this.current_index - 1 >= 0)
-        this.go_to_index(this.current_index - 1);
 };
 
 
@@ -330,6 +303,7 @@ OverlayDisplayerManager.prototype._load_resource = function (resource) {
     }
 };
 
+// Main functions
 OverlayDisplayerManager.prototype.change = function (params) {
     if (!this.$widget || !params)
         return;
@@ -338,7 +312,6 @@ OverlayDisplayerManager.prototype.change = function (params) {
     if (this.displayed)
         this._load_resource(resource);
 };
-
 OverlayDisplayerManager.prototype.show = function (params) {
     if (!this.$widget)
         return;
@@ -352,21 +325,16 @@ OverlayDisplayerManager.prototype.show = function (params) {
         return;
     else if (!this.current_resource)
         resource = this.resources[this.current_index];
-    
-    if (resource) {
-        // Change resource
+    if (resource)
         this._load_resource(resource);
-        // focus first button
-        this._focus_button();
-    }
     if (this.no_fixed)
         $(".odm-table", this.$widget).css("margin-top", ($(document).scrollTop()+10)+"px");
     var obj = this;
     this.$widget.stop(true, false).fadeIn(250, function () {
         obj.displayed = true;
+        obj._focus_button();
     });
 };
-
 OverlayDisplayerManager.prototype.hide = function () {
     if (!this.displayed)
         return;
@@ -377,7 +345,37 @@ OverlayDisplayerManager.prototype.hide = function () {
     });
 };
 
-OverlayDisplayerManager.prototype._display_element = function ($element) {
+// Resources list functions
+OverlayDisplayerManager.prototype.go_to_index = function (index) {
+    if (index >= this.resources.length || index < 0)
+        return;
+    
+    $(".odm-resources", this.$widget).html((index+1)+" / "+this.resources.length);
+    if (index > 0)
+        $(".odm-previous", this.$widget).css("display", "block");
+    else
+        $(".odm-previous", this.$widget).css("display", "none");
+    if (index < this.resources.length - 1)
+        $(".odm-next", this.$widget).css("display", "block");
+    else
+        $(".odm-next", this.$widget).css("display", "none");
+    if (this.current_index != index) {
+        this.current_index = index;
+        this._load_resource(this.resources[this.current_index]);
+    }
+};
+OverlayDisplayerManager.prototype.next = function () {
+    if (this.resources.length > 0 && this.current_index + 1 < this.resources.length)
+        this.go_to_index(this.current_index + 1);
+};
+OverlayDisplayerManager.prototype.previous = function () {
+    if (this.resources.length > 0 && this.current_index - 1 >= 0)
+        this.go_to_index(this.current_index - 1);
+};
+
+// Element display
+OverlayDisplayerManager.prototype._display_element = function ($element, padding) {
+    this.element_padding_displayed = padding;
     var $previous = $(".odm-element-content .odm-element", this.$widget);
     $(".odm-element-content", this.$widget).append($element);
     if ($previous.length < 1)
@@ -397,7 +395,6 @@ OverlayDisplayerManager.prototype._display_element = function ($element) {
 };
 
 // Error and loading management
-//---------------------------
 OverlayDisplayerManager.prototype._display_error = function (msg) {
     var html = $("<div class=\"odm-element odm-error\">"+((msg in this.messages) ? this.messages[msg] : msg)+"</div>");
     this._display_element(html);
@@ -427,7 +424,6 @@ OverlayDisplayerManager.prototype._hide_loading = function () {
 };
 
 // Image management
-//---------------------------
 OverlayDisplayerManager.prototype._load_image = function (resource, callback) {
     if (this.display_mode != "image")
         this.display_mode = "image";
@@ -437,31 +433,24 @@ OverlayDisplayerManager.prototype._load_image = function (resource, callback) {
     }
     
     this.image = new Image();
+    this.image.odm = this;
+    this.image.odm_callback = callback;
+    this.image.onload = function () {
+        var $img = $("<img class=\"odm-element\" src=\""+this.src+"\" style=\"max-width: "+this.odm.max_width+"px; max-height: "+this.odm.max_height+"px;\"/>");
+        this.odm._display_element($img);
+        this.odm_callback(true);
+    };
+    this.image.onabort = this.image.onload;
+    this.image.onerror = function () {
+        this.loading_failed = true;
+        this.odm._display_error("not_found");
+        this.odm_callback(false);
+    };
     this.image.ori_src = resource.image;
     this.image.src = resource.image;
-    if (this.image.complete) {
-        this._on_image_load(this.image, resource, callback);
-    }
-    else {
-        var obj = this;
-        this.image.onload = function () { obj._on_image_load(this, resource, callback); };
-        this.image.onabort = function () { obj._on_image_load(this, resource, callback); };
-        this.image.onerror = function () { obj._on_image_error(this, resource, callback); };
-    }
-};
-OverlayDisplayerManager.prototype._on_image_load = function (img, resource, callback) {
-    var $img = $("<img class=\"odm-element\" src=\""+img.src+"\" style=\"max-width: "+this.max_width+"px; max-height: "+this.max_height+"px;\"/>");
-    this._display_element($img);
-    callback(true);
-};
-OverlayDisplayerManager.prototype._on_image_error = function (img, resource, callback) {
-    img.loading_failed = true;
-    this._display_error("not_found");
-    callback(false);
 };
 
 // Iframe management
-//---------------------------
 OverlayDisplayerManager.prototype._load_iframe = function (resource, callback) {
     if (this.display_mode != "iframe")
         this.display_mode = "iframe";
@@ -473,13 +462,12 @@ OverlayDisplayerManager.prototype._load_iframe = function (resource, callback) {
 };
 
 // HTML management
-//---------------------------
 OverlayDisplayerManager.prototype._load_html = function (resource, callback) {
     if (this.display_mode != "html")
         this.display_mode = "html";
     var $html = (typeof resource.html == "string") ? $("<div>"+resource.html+"</div>") : resource.html.detach();
-    $html.addClass("odm-element").css("max-width", (this.max_width-this.object_padding)+"px").css("max-height", (this.max_height-this.object_padding)+"px");
-    this._display_element($html);
+    $html.addClass("odm-element").css("max-width", (this.max_width-this.element_padding)+"px").css("max-height", (this.max_height-this.element_padding)+"px");
+    this._display_element($html, true);
     callback(true);
 };
 
