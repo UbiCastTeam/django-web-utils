@@ -102,7 +102,7 @@ OverlayDisplayerManager.prototype._init = function () {
         event.data.obj.hide();
     });
     $(".odm-element-content", this.$widget).click({ obj: this }, function (event) {
-        if (event.data.obj.display_mode == "image" && event.data.obj.resources.length < 2)
+        if (event.data.obj.display_mode == "image" && event.data.obj.resources.length < 2 && event.data.obj.image && !event.data.obj.image.loading_failed)
             event.data.obj.hide();
     });
     this.on_resize();
