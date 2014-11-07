@@ -1,12 +1,12 @@
 /**************************************************
-* Overlay displayer manager                       *
+* Overlay display manager                         *
 * Author: Stephane Diemer                         *
 * License: CC by SA v3                            *
 * https://creativecommons.org/licenses/by-sa/3.0/ *
 * Requires: jQuery                                *
 **************************************************/
 
-function OverlayDisplayerManager(options) {
+function OverlayDisplayManager(options) {
     // params
     this.language = "en";
     this.margin = 30;
@@ -51,7 +51,7 @@ function OverlayDisplayerManager(options) {
     });
 }
 
-OverlayDisplayerManager.prototype._init = function () {
+OverlayDisplayManager.prototype._init = function () {
     var extra_class = "";
     if (navigator.platform == "iPad" || navigator.platform == "iPhone" || navigator.platform == "iPod") {
         this.no_fixed = true;
@@ -108,7 +108,7 @@ OverlayDisplayerManager.prototype._init = function () {
     this.on_resize();
 };
 
-OverlayDisplayerManager.prototype.set_language = function (lang) {
+OverlayDisplayManager.prototype.set_language = function (lang) {
     if (lang == "fr") {
         this.language = "fr";
         this.messages = {
@@ -138,7 +138,7 @@ OverlayDisplayerManager.prototype.set_language = function (lang) {
     }
 };
 
-OverlayDisplayerManager.prototype.on_resize = function () {
+OverlayDisplayManager.prototype.on_resize = function () {
     this.max_width = $(window).width() - this.margin;
     this.max_height = $(window).height() - this.margin;
     if (this.top_bar_displayed)
@@ -152,7 +152,7 @@ OverlayDisplayerManager.prototype.on_resize = function () {
         $(".odm-element", this.$widget).css("max-height", (this.max_height-padding)+"px");
 };
 
-OverlayDisplayerManager.prototype._set_resources = function (params) {
+OverlayDisplayManager.prototype._set_resources = function (params) {
     // reset content
     if (!this.displayed) {
         var html = $("<div class=\"odm-element odm-loading\">"+this.messages.loading+"</div>");
@@ -204,14 +204,14 @@ OverlayDisplayerManager.prototype._set_resources = function (params) {
     return this.resources[this.current_index];
 };
 
-OverlayDisplayerManager.prototype._add_resources = function (res) {
+OverlayDisplayManager.prototype._add_resources = function (res) {
     if (typeof res == "string")
         this.resources.push({ image: res });
     else
         this.resources.push(res);
 };
 
-OverlayDisplayerManager.prototype._check_title_display = function (title) {
+OverlayDisplayManager.prototype._check_title_display = function (title) {
     if (this.title == title)
         return;
     
@@ -230,7 +230,7 @@ OverlayDisplayerManager.prototype._check_title_display = function (title) {
     }
 };
 
-OverlayDisplayerManager.prototype._check_buttons_display = function (buttons) {
+OverlayDisplayManager.prototype._check_buttons_display = function (buttons) {
     if (buttons) {
         // update buttons
         if (!buttons.loaded) {
@@ -269,7 +269,7 @@ OverlayDisplayerManager.prototype._check_buttons_display = function (buttons) {
     }
 };
 
-OverlayDisplayerManager.prototype._focus_button = function () {
+OverlayDisplayManager.prototype._focus_button = function () {
     if ($(".odm-bottom-bar button", this.$widget).length < 1)
         return;
     // focus first button (this can crash on IE)
@@ -278,7 +278,7 @@ OverlayDisplayerManager.prototype._focus_button = function () {
 };
 
 
-OverlayDisplayerManager.prototype._load_resource = function (resource) {
+OverlayDisplayManager.prototype._load_resource = function (resource) {
     this._show_loading();
     this._check_title_display(resource.title ? resource.title : "");
     this._check_buttons_display(resource.buttons);
@@ -304,7 +304,7 @@ OverlayDisplayerManager.prototype._load_resource = function (resource) {
 };
 
 // Main functions
-OverlayDisplayerManager.prototype.change = function (params) {
+OverlayDisplayManager.prototype.change = function (params) {
     if (!this.$widget || !params)
         return;
     
@@ -312,7 +312,7 @@ OverlayDisplayerManager.prototype.change = function (params) {
     if (this.displayed)
         this._load_resource(resource);
 };
-OverlayDisplayerManager.prototype.show = function (params) {
+OverlayDisplayManager.prototype.show = function (params) {
     if (!this.$widget)
         return;
     if (this.displayed)
@@ -335,7 +335,7 @@ OverlayDisplayerManager.prototype.show = function (params) {
         obj._focus_button();
     });
 };
-OverlayDisplayerManager.prototype.hide = function () {
+OverlayDisplayManager.prototype.hide = function () {
     if (!this.displayed)
         return;
     
@@ -346,7 +346,7 @@ OverlayDisplayerManager.prototype.hide = function () {
 };
 
 // Resources list functions
-OverlayDisplayerManager.prototype.go_to_index = function (index) {
+OverlayDisplayManager.prototype.go_to_index = function (index) {
     if (index >= this.resources.length || index < 0)
         return;
     
@@ -364,17 +364,17 @@ OverlayDisplayerManager.prototype.go_to_index = function (index) {
         this._load_resource(this.resources[this.current_index]);
     }
 };
-OverlayDisplayerManager.prototype.next = function () {
+OverlayDisplayManager.prototype.next = function () {
     if (this.resources.length > 0 && this.current_index + 1 < this.resources.length)
         this.go_to_index(this.current_index + 1);
 };
-OverlayDisplayerManager.prototype.previous = function () {
+OverlayDisplayManager.prototype.previous = function () {
     if (this.resources.length > 0 && this.current_index - 1 >= 0)
         this.go_to_index(this.current_index - 1);
 };
 
 // Element display
-OverlayDisplayerManager.prototype._display_element = function ($element, padding) {
+OverlayDisplayManager.prototype._display_element = function ($element, padding) {
     this.element_padding_displayed = padding;
     var $previous = $(".odm-element-content .odm-element", this.$widget);
     $(".odm-element-content", this.$widget).append($element);
@@ -395,11 +395,11 @@ OverlayDisplayerManager.prototype._display_element = function ($element, padding
 };
 
 // Error and loading management
-OverlayDisplayerManager.prototype._display_error = function (msg) {
+OverlayDisplayManager.prototype._display_error = function (msg) {
     var html = $("<div class=\"odm-element odm-error\">"+((msg in this.messages) ? this.messages[msg] : msg)+"</div>");
     this._display_element(html);
 };
-OverlayDisplayerManager.prototype._show_loading = function () {
+OverlayDisplayManager.prototype._show_loading = function () {
     if (this.loading_displayed)
         return;
     this.loading_displayed = true;
@@ -412,7 +412,7 @@ OverlayDisplayerManager.prototype._show_loading = function () {
         obj.$widget.addClass("odm-hover-loading-displayed");
     }, 500);
 };
-OverlayDisplayerManager.prototype._hide_loading = function () {
+OverlayDisplayManager.prototype._hide_loading = function () {
     if (!this.loading_displayed)
         return;
     this.loading_displayed = false;
@@ -424,7 +424,7 @@ OverlayDisplayerManager.prototype._hide_loading = function () {
 };
 
 // Image management
-OverlayDisplayerManager.prototype._load_image = function (resource, callback) {
+OverlayDisplayManager.prototype._load_image = function (resource, callback) {
     if (this.display_mode != "image")
         this.display_mode = "image";
     else if (this.image && this.image.ori_src == resource.image) {
@@ -451,7 +451,7 @@ OverlayDisplayerManager.prototype._load_image = function (resource, callback) {
 };
 
 // Iframe management
-OverlayDisplayerManager.prototype._load_iframe = function (resource, callback) {
+OverlayDisplayManager.prototype._load_iframe = function (resource, callback) {
     if (this.display_mode != "iframe")
         this.display_mode = "iframe";
     var width = resource.width ? resource.width : this.max_width+"px";
@@ -462,7 +462,7 @@ OverlayDisplayerManager.prototype._load_iframe = function (resource, callback) {
 };
 
 // HTML management
-OverlayDisplayerManager.prototype._load_html = function (resource, callback) {
+OverlayDisplayManager.prototype._load_html = function (resource, callback) {
     if (this.display_mode != "html")
         this.display_mode = "html";
     var $html = (typeof resource.html == "string") ? $("<div>"+resource.html+"</div>") : resource.html.detach();
