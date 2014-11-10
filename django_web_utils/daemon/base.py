@@ -7,6 +7,7 @@ To create daemon (which can use django easily).
 import os
 import sys
 import subprocess
+import socket
 import imp
 import resource
 import traceback
@@ -447,7 +448,11 @@ class BaseDaemon(object):
     
     def send_error_email(self, msg, tb=False, recipients=None):
         from django_web_utils import emails_utils
-        logger.error(u'%s\n%s' %(msg, traceback.format_exc()) if tb else msg)
-        msg += u'\n\nThe daemon was started with the following arguments:\n%s' %sys.argv
-        emails_utils.send_error_report_emails(title=self.DAEMON_NAME, error=msg, recipients=recipients)
+        message = msg.decode('utf-8')
+        logger.error(u'%s\n%s' %(message, traceback.format_exc()) if tb else message)
+        emails_utils.send_error_report_emails(
+            title = u'%s - %s' %(self.DAEMON_NAME, socket.gethostname()),
+            error = u'%s\n\nThe daemon was started with the following arguments:\n%s' %(message, sys.argv),
+            recipients = recipients,
+        )
 
