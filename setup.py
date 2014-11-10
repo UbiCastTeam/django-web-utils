@@ -54,7 +54,7 @@ setup(
     description = 'A collection of utilities for web projects based on Django.',
     author = 'Stéphane Diemer',
     author_email = 'stephane.diemer@ubicast.eu',
-    url = 'https://github.com/sdiemer/django-web-utils',
+    url = 'https://github.com/UbiCastTeam/django-web-utils',
     license = 'cc-by-sa',
     packages = packages,
     package_data = package_data,
