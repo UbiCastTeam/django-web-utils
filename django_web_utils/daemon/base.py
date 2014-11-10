@@ -449,7 +449,7 @@ class BaseDaemon(object):
     def send_error_email(self, msg, tb=False, recipients=None):
         from django_web_utils import emails_utils
         message = msg.decode('utf-8')
-        logger.error(u'%s\n%s' %(message, traceback.format_exc()) if tb else message)
+        logger.error(u'%s\n%s' %(message, traceback.format_exc().decode('utf-8')) if tb else message)
         emails_utils.send_error_report_emails(
             title = u'%s - %s' %(self.DAEMON_NAME, socket.gethostname()),
             error = u'%s\n\nThe daemon was started with the following arguments:\n%s' %(message, sys.argv),
