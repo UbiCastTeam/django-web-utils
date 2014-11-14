@@ -466,7 +466,7 @@ OverlayDisplayManager.prototype._load_html = function (resource, callback) {
     if (this.display_mode != "html")
         this.display_mode = "html";
     var $html = (typeof resource.html == "string") ? $("<div>"+resource.html+"</div>") : resource.html.detach();
-    $html.addClass("odm-element").css("max-width", (this.max_width-this.element_padding)+"px").css("max-height", (this.max_height-this.element_padding)+"px");
+    $html.addClass("odm-element").css("max-width", (this.max_width-this.element_padding)+"px").css("max-height", (this.max_height-this.element_padding)+"px").css("opacity", "").css("position", "");
     this._display_element($html, true);
     callback(true);
 };
