@@ -33,6 +33,8 @@ function OverlayDisplayManager(options) {
     this.current_resource = null;
     this.no_fixed = false;
     
+    if (window.utils && window.utils._current_lang)
+        this.language = utils._current_lang;
     if (options) {
         for (var attr in options)
             this[attr] = options[attr];
