@@ -246,8 +246,13 @@ OverlayDisplayManager.prototype._check_buttons_display = function (buttons) {
                     btn.attr("disabled", "disabled");
                 if (buttons[i].klass)
                     btn.attr("class", this.default_buttons_class+" "+buttons[i].klass);
-                if (buttons[i].callback)
-                    btn.click(buttons[i].callback);
+                if (buttons[i].callback) {
+                    var data = buttons[i].data ? buttons[i].data : {};
+                    data.odm = this;
+                    btn.click(data, buttons[i].callback);
+                }
+                if (buttons[i].close)
+                    btn.click({ odm: this }, function (event) { event.data.odm.hide(); });
                 $(".odm-buttons", this.$widget).append(btn);
             }
             buttons.loaded = true;
@@ -344,6 +349,8 @@ OverlayDisplayManager.prototype.hide = function () {
     var obj = this;
     this.$widget.stop(true, false).fadeOut(250, function () {
         obj.displayed = false;
+        if (obj.current_resource && obj.current_resource.on_hide)
+            obj.current_resource.on_hide();
     });
 };
 
