@@ -158,6 +158,7 @@ OverlayDisplayManager.prototype._set_resources = function (params) {
     // reset content
     if (!this.displayed) {
         var html = $("<div class=\"odm-element odm-loading\">"+this.messages.loading+"</div>");
+        this.loading_displayed = true;
         this._display_element(html);
         this.image = null;
         this.current_resource = null;
