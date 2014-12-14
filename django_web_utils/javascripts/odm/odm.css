@@ -162,6 +162,9 @@
     vertical-align: top;
     transition: opacity 0.3s linear 0s;
 }
+.odm-main.odm-no-transition .odm-element {
+    transition: none;
+}
 .odm-main img.odm-element {
     max-width: 100%;
     max-height: 100%;
@@ -272,4 +275,3 @@
 .odm-main .odm-next .odm-btn-icon {
     background: transparent url("img/next.png") 50% 0 no-repeat;
 }
-

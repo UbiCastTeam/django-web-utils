@@ -338,7 +338,8 @@ OverlayDisplayManager.prototype.show = function (params) {
     if (this.no_fixed)
         $(".odm-table", this.$widget).css("margin-top", ($(document).scrollTop()+10)+"px");
     var obj = this;
-    this.$widget.stop(true, false).fadeIn(250, function () {
+    this.$widget.addClass("odm-no-transition").stop(true, false).fadeIn(250, function () {
+        $(this).removeClass("odm-no-transition");
         obj.displayed = true;
         obj._focus_button();
     });
@@ -348,7 +349,8 @@ OverlayDisplayManager.prototype.hide = function () {
         return;
     
     var obj = this;
-    this.$widget.stop(true, false).fadeOut(250, function () {
+    this.$widget.addClass("odm-no-transition").stop(true, false).fadeOut(250, function () {
+        $(this).removeClass("odm-no-transition");
         obj.displayed = false;
         if (obj.current_resource && obj.current_resource.on_hide)
             obj.current_resource.on_hide();
@@ -364,11 +366,11 @@ OverlayDisplayManager.prototype.go_to_index = function (index) {
     if (index > 0)
         $(".odm-previous", this.$widget).css("display", "block");
     else
-        $(".odm-previous", this.$widget).css("display", "none");
+        $(".odm-previous", this.$widget).css("display", "");
     if (index < this.resources.length - 1)
         $(".odm-next", this.$widget).css("display", "block");
     else
-        $(".odm-next", this.$widget).css("display", "none");
+        $(".odm-next", this.$widget).css("display", "");
     if (this.current_index != index) {
         this.current_index = index;
         this._load_resource(this.resources[this.current_index]);
