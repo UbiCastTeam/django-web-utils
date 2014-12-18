@@ -16,12 +16,13 @@ from django.utils.translation import ugettext_lazy as _
 
 
 # get_login function
-#-----------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def get_login():
     return pwd.getpwuid(os.getuid())[0]
 
+
 # run_as function
-#-----------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def run_as(username, umask=022, exit_on_error=True):
     """
     Drop privileges to given user, and set up environment.
@@ -64,41 +65,43 @@ def run_as(username, umask=022, exit_on_error=True):
     #os.environ['PATH'] = '/bin:/usr/bin:/usr/local/bin'
     return
 
+
 # execute_command function
-#-----------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
     cmd = cmd.replace('"', '\\"')
     if user == 'self':
         cmd_prompt = '/bin/bash -c "%s"'
         need_password = False
     elif user == 'root':
-        cmd_prompt = 'sudo%s /bin/bash -c "%%s"' %('' if is_root else ' -S')
+        cmd_prompt = 'sudo%s /bin/bash -c "%%s"' % ('' if is_root else ' -S')
         need_password = False if is_root else True
     else:
-        cmd_prompt = 'sudo%s su %s -c "%%s"' %('' if is_root else ' -S', user)
+        cmd_prompt = 'sudo%s su %s -c "%%s"' % ('' if is_root else ' -S', user)
         need_password = False if is_root else True
     
-    command = cmd_prompt %cmd
+    command = cmd_prompt % cmd
     #print '    Executing command: %s' %command
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     if need_password:
         if not pwd and (not request or not request.session.get('pwd')):
             return False, unicode(_('Password required.'))
-        out, err = p.communicate(input=('%s\n' %(pwd if pwd else request.session['pwd']).encode('utf-8')))
+        out, err = p.communicate(input=('%s\n' % (pwd if pwd else request.session['pwd']).encode('utf-8')))
     else:
         out, err = p.communicate()
     if p.returncode != 0:
         if not err:
-            err = unicode(_('Command exited with code %s.') %p.returncode)
+            err = unicode(_('Command exited with code %s.') % p.returncode)
         if out:
-            return False, '%s\n---- stderr ----\n%s' %(out, err)
+            return False, '%s\n---- stderr ----\n%s' % (out, err)
         return False, err
     if out:
         return True, out
     return True, ''
 
+
 # is_pid_running
-#--------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def is_pid_running(pid_file_path, user='self', request=None):
     if not os.path.exists(pid_file_path):
         return False
@@ -114,28 +117,30 @@ def is_pid_running(pid_file_path, user='self', request=None):
             pass
         finally:
             pidfile.close()
-    cmd = 'ps -p %s > /dev/null 2>&1' %pid
+    cmd = 'ps -p %s > /dev/null 2>&1' % pid
     success, output = execute_command(cmd, user=user, request=request)
     return success
+
 
 # is_process_running
-#--------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def is_process_running(process_name, user='self', request=None):
-    cmd = 'ps ax | grep \'%s\' | grep -v \'grep\' > /dev/null 2>&1' %process_name
+    cmd = 'ps ax | grep \'%s\' | grep -v \'grep\' > /dev/null 2>&1' % process_name
     success, output = execute_command(cmd, user=user, request=request)
     return success
 
+
 # write_file_as
-#--------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def write_file_as(request, content, file_path, user='self'):
     if os.path.isdir(file_path):
-        return False, u'%s %s' %(_('Unable to write file.'), _('Specified path is a directory.'))
+        return False, u'%s %s' % (_('Unable to write file.'), _('Specified path is a directory.'))
     try:
         # try to write file like usual
         f = open(file_path, 'w+')
     except Exception, e:
         if e.errno != errno.EACCES:
-            return False, u'%s %s' %(_('Unable to write file.'), e)
+            return False, u'%s %s' % (_('Unable to write file.'), e)
         # write file as given user
         #   to write as given user we first write the content in a temporary file then we
         #   transfer the content to the destination file. This method is used to avoid
@@ -145,23 +150,22 @@ def write_file_as(request, content, file_path, user='self'):
         # write tmp file
         rd_chars = ''.join([random.choice('0123456789abcdef') for i in range(10)])
         date_dump = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S_%f')
-        tmp_path = '/tmp/djwutils-tmp_%s_%s' %(date_dump, rd_chars)
+        tmp_path = '/tmp/djwutils-tmp_%s_%s' % (date_dump, rd_chars)
         try:
             f = open(tmp_path, 'w+')
         except Exception, e:
-            return False, u'%s %s' %(_('Unable to create temporary file "%s".') %tmp_path, e)
+            return False, u'%s %s' % (_('Unable to create temporary file "%s".') % tmp_path, e)
         f.write(content.encode('utf-8'))
         f.close()
         # transfer content in final file
-        cmd = u'cp \'%s\' \'%s\'' %(tmp_path, file_path)
+        cmd = u'cp \'%s\' \'%s\'' % (tmp_path, file_path)
         success, output = execute_command(cmd, user=user, request=request)
         os.remove(tmp_path)
         if success:
             return True, unicode(_('File updated.'))
         else:
-            return False, u'%s %s' %(_('Unable to write file.'), output)
+            return False, u'%s %s' % (_('Unable to write file.'), output)
     else:
         f.write(content.encode('utf-8'))
         f.close()
         return True, unicode(_('File updated.'))
-
