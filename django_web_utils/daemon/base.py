@@ -9,6 +9,7 @@ import sys
 import subprocess
 import socket
 import imp
+import datetime
 import resource
 import traceback
 import errno
@@ -71,10 +72,10 @@ class BaseDaemon(object):
             
             self._run_command()
         except Exception:
-            f = open('/tmp/daemon-error', 'w+')
-            f.write(traceback.format_exc())
-            f.close()
-            traceback.print_exc()
+            msg = 'Error when initializing base daemon.'
+            self._dump_error_in_tmp(msg)
+            print >>sys.stderr, '%s\n%s' % (msg, traceback.format_exc())
+            self.send_error_email(msg, tb=True)
             sys.exit(-1)
     
     def run(self, *args):
@@ -198,19 +199,14 @@ class BaseDaemon(object):
                 print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
                 self.exit(134)
             try:
-                self._setup_logging()
                 if self.NEED_DJANGO and self.SETTINGS_MODULE:
                     self._setup_django()
+                self._setup_logging()
             except Exception:
-                if self._daemonize:
-                    # sys.stderr is not visible if daemonized
-                    f = open('/tmp/daemon-error', 'w+')
-                    f.write('Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc()))
-                    f.write(traceback.format_exc())
-                    f.close()
-                    traceback.print_exc()
-                else:
-                    print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
+                msg = 'Error when starting %s.' % self.DAEMON_NAME
+                self._dump_error_in_tmp(msg)
+                print >>sys.stderr, '%s\n%s' % (msg, traceback.format_exc())
+                self.send_error_email(msg, tb=True)
                 self.exit(135)
         else:
             self.exit(0)
@@ -223,9 +219,6 @@ class BaseDaemon(object):
             # the logging will not be changed to avoid possible
             # impact on the server which called this script.
             os.environ['DJANGO_SETTINGS_MODULE'] = self.SETTINGS_MODULE
-            os.environ['DJANGO_LOGGING'] = 'none'
-            django_logger = logging.getLogger('django')
-            django_logger.setLevel(logging.WARNING)
         import django
         try:
             django.setup()
@@ -241,18 +234,52 @@ class BaseDaemon(object):
         if not os.path.isdir(self.LOG_DIR):
             print >>sys.stderr, 'Cannot create log directory %s' % self.LOG_DIR
             self.exit(131)
-        
-        level_name = self.config.get('LOGGING_LEVEL', 'INFO')
-        level = getattr(logging, level_name, logging.INFO)
-        
-        # setup logging
-        logging_conf = dict(
-            format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-            level=level
-        )
-        if self._log_in_file:
-            logging_conf['filename'] = self._log_file_path
-        logging.basicConfig(**logging_conf)
+
+        dl = logging.getLogger('django')
+        configure = len(dl.handlers) == 0 or self._daemonize
+
+        if configure:
+            # configure logging and disable all existing loggers
+            LOGGING_CONF = {
+                'version': 1,
+                'disable_existing_loggers': False,
+                'formatters': {
+                    'verbose': {
+                        'format': '%(asctime)s %(name)s %(levelname)s %(message)s',
+                    },
+                },
+                'handlers': {
+                    'console': {
+                        'class': 'logging.StreamHandler',
+                        'formatter': 'verbose',
+                        'stream': 'ext://sys.stdout',
+                    },
+                    'log_file': {
+                        'class': 'logging.FileHandler',
+                        'formatter': 'verbose',
+                        'filename': self._log_file_path,
+                    },
+                },
+                'loggers': {
+                    'django': {
+                        'level': 'WARNING',
+                    },
+                    'urllib3': {
+                        'level': 'WARNING',
+                    },
+                },
+                'root': {
+                    'handlers': ['log_file' if self._log_in_file else 'console'],
+                    'level': self.config.get('LOGGING_LEVEL', 'INFO'),
+                    'propagate': False,
+                }
+            }
+            logging.config.dictConfig(LOGGING_CONF)
+            # reset all loggers config
+            for key, lg in logging.Logger.manager.loggerDict.iteritems():
+                lg.handlers = []
+                lg.propagate = 1
+            logger.debug('Logging configured.')
     
     def _look_for_existing_process(self):
         '''check if the daemon is already launched and return its pid if it is, else None'''
@@ -294,6 +321,16 @@ class BaseDaemon(object):
             pidfile.close()
             self._pid_written = True
     
+    def _dump_error_in_tmp(self, msg=None):
+        if self._daemonize:
+            # sys.stderr is not visible if daemonized
+            fd = open('/tmp/daemon-error_%s' % self.DAEMON_NAME, 'w+')
+            fd.write('Date: %s (local time).\n\n' % datetime.datetime.now())
+            if msg:
+                fd.write(msg + '\n\n')
+            fd.write(traceback.format_exc())
+            fd.close()
+
     def _daemonize_daemon(self, MAXFD=1024, REDIRECT_TO=os.devnull, RUNDIR='/', UMASK=0):
         '''Detach a process from the controlling terminal and run it in the background as a daemon.'''
         
@@ -392,10 +429,16 @@ class BaseDaemon(object):
         argv = self._cleaned_args if not argv else argv
         # launch service
         try:
+            if argv:
+                logger.info('Staring daemon %s with arguments:\n    %s.' % (self.DAEMON_NAME, argv))
+            else:
+                logger.info('Staring daemon %s without arguments.' % self.DAEMON_NAME)
             self.run(*argv)
         except Exception:
-            logger.error('Error when running %s:\n    %s' % (self.DAEMON_NAME, traceback.format_exc()))
-            self.send_error_email('Error when running daemon %s.' % self.DAEMON_NAME, tb=True)
+            msg = 'Error when running %s.' % self.DAEMON_NAME
+            self._dump_error_in_tmp(msg)
+            logger.error('%s\n%s' % (msg, traceback.format_exc()))
+            self.send_error_email(msg, tb=True)
             self.exit(140)
         except KeyboardInterrupt:
             logger.info('%s interrupted by KeyboardInterrupt' % (self.DAEMON_NAME))
@@ -410,10 +453,10 @@ class BaseDaemon(object):
             try:
                 ml.run()
             except Exception:
-                traceback_lines = traceback.format_exc().splitlines()
-                formatted_lines = '\n    '.join(traceback_lines)
-                logger.error('Daemon %s mainloop interrupted by error:\n    %s' % (self.DAEMON_NAME, formatted_lines))
-                self.send_error_email('Daemon %s mainloop interrupted by error.' % self.DAEMON_NAME, tb=True)
+                msg = 'Daemon %s mainloop interrupted by error.' % self.DAEMON_NAME
+                self._dump_error_in_tmp(msg)
+                logger.error('%s\n%s' % (msg, traceback.format_exc()))
+                self.send_error_email(msg, tb=True)
                 self.exit(142)
             except KeyboardInterrupt:
                 logger.info('Daemon %s mainloop interrupted by KeyboardInterrupt.' % (self.DAEMON_NAME))
