@@ -42,7 +42,7 @@ def _get_context(request=None):
             ctx_processor = settings.EMAIL_CONTEXT_PROCESSOR
             try:
                 module_name = ctx_processor.split('.')[-1]
-                module_path = ctx_processor[:-len(module_name)-1]
+                module_path = ctx_processor[:-len(module_name) - 1]
                 if not module_path:
                     module_path = '.'
                 ctx_processor = __import__(module_path, fromlist=[module_name])
@@ -67,6 +67,7 @@ def _get_context(request=None):
             ctx = dict()
         ctx['sender'] = settings.DEFAULT_FROM_EMAIL
     return ctx
+
 
 # send_template_emails (to send emails with a template)
 #--------------------------------------------------------------------------------
@@ -98,7 +99,7 @@ def send_template_emails(template, contexts=None, request=None, content_subtype=
                 if hasattr(ctx['recipient'], 'emails_lang'):
                     ctx['lang'] = ctx['recipient'].emails_lang
                 if ctx['recipient'].get_full_name():
-                    recipients = ['"%s" <%s>' %(ctx['recipient'].get_full_name(), ctx['recipient'].email)]
+                    recipients = ['"%s" <%s>' % (ctx['recipient'].get_full_name(), ctx['recipient'].email)]
                 else:
                     recipients = [ctx['recipient'].email]
             else:
@@ -117,25 +118,26 @@ def send_template_emails(template, contexts=None, request=None, content_subtype=
         content = render_to_string(template, ctx, Context(dict(LANGUAGE_CODE=ctx['lang'])))
         subject_start = content.index('<subject>')
         subject_end = content.index('</subject>')
-        subject = content[subject_start+9:subject_end].strip()
-        content = content[:subject_start]+content[subject_end+10:]
+        subject = content[subject_start + 9:subject_end].strip()
+        content = content[:subject_start] + content[subject_end + 10:]
         for recipient in recipients:
             msg = mail.EmailMessage(subject.encode('utf-8'), content.encode('utf-8'), sender, [recipient])
-            msg.content_subtype = content_subtype # by default, set email content type to html
+            msg.content_subtype = content_subtype  # by default, set email content type to html
             try:
                 if not connection:
                     connection = mail.get_connection()
                 connection.send_messages([msg])
             except Exception, e:
                 error = e
-                logger.error('Error when trying to send email to: %s.\n%s' %(recipient, traceback.format_exc()))
+                logger.error('Error when trying to send email to: %s.\n%s' % (recipient, traceback.format_exc()))
             else:
-                sent.append(recipient[recipient.index('<')+1:].rstrip('> ') if '<' in recipient else recipient)
+                sent.append(recipient[recipient.index('<') + 1:].rstrip('> ') if '<' in recipient else recipient)
                 logger.info(u'Mail with subject "%s" sent to "%s" (tplt).', subject, recipient)
     translation.activate(cur_lang)
     if not sent:
-        return False, 'No emails have been sent. Last error when trying to send email: %s' %error
+        return False, 'No emails have been sent. Last error when trying to send email: %s' % error
     return True, sent
+
 
 # send_emails (to send emails without template)
 #--------------------------------------------------------------------------------
@@ -156,69 +158,70 @@ def send_emails(subject, content, recipients=None, request=None, content_subtype
     error = 'no recipient'
     for recipient in recipients:
         msg = mail.EmailMessage(subject.encode('utf-8'), content.encode('utf-8'), sender, [recipient])
-        msg.content_subtype = content_subtype # by default, set email content type to html
+        msg.content_subtype = content_subtype  # by default, set email content type to html
         try:
             if not connection:
                 connection = mail.get_connection()
             connection.send_messages([msg])
         except Exception, e:
             error = e
-            logger.error('Error when trying to send email to: %s.\n%s' %(recipient, traceback.format_exc()))
+            logger.error('Error when trying to send email to: %s.\n%s' % (recipient, traceback.format_exc()))
         else:
-            sent.append(recipient[recipient.index('<')+1:].rstrip('> ') if '<' in recipient else recipient)
+            sent.append(recipient[recipient.index('<') + 1:].rstrip('> ') if '<' in recipient else recipient)
             logger.info(u'Mail with subject "%s" sent to "%s".', subject, recipient)
     if not sent:
-        return False, 'No emails have been sent. Last error when trying to send email: %s' %error
+        return False, 'No emails have been sent. Last error when trying to send email: %s' % error
     return True, sent
+
 
 # send_error_report_emails (to send last traceback)
 #--------------------------------------------------------------------------------
 def send_error_report_emails(title=None, error=None, recipients=None, request=None):
     if request:
-        title = u' (%s)' %title if title else ''
-        title = u'Error at %s%s' %(request.get_full_path(), title)
+        title = u' (%s)' % title if title else ''
+        title = u'Error at %s%s' % (request.get_full_path(), title)
     elif title:
-        title = u'Error report - %s' %title
+        title = u'Error report - %s' % title
     else:
         title = u'Error report'
     
     fieldset_style = u'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'
-    content = u'<div style="margin-bottom: 8px;">Message sent at: %s</div>' %datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    content = u'<div style="margin-bottom: 8px;">Message sent at: %s</div>' % datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     # Error information
     if error:
-        content += u'<fieldset %s>\n' %fieldset_style
+        content += u'<fieldset %s>\n' % fieldset_style
         content += u'<legend><b> Error </b></legend>\n'
-        content += u'<div>%s</div>\n' %escape(error).replace('\n', '<br/>')
+        content += u'<div>%s</div>\n' % escape(error).replace('\n', '<br/>')
         content += u'</fieldset>\n\n'
     # Traceback information
-    content += u'<fieldset %s>\n' %fieldset_style
+    content += u'<fieldset %s>\n' % fieldset_style
     content += u'<legend><b> Traceback </b></legend>\n'
-    content += u'<div style="color: #800;">%s</div>\n' %html_utils.get_html_traceback()
+    content += u'<div style="color: #800;">%s</div>\n' % html_utils.get_html_traceback()
     content += u'</fieldset>\n\n'
     # Request's info
     if request:
         left_col_style = u'vertical-align: top; color: #666; padding-right: 8px; text-align: right;'
         right_col_style = u'vertical-align: top;'
         # Main request's info
-        content += u'<fieldset %s>\n' %fieldset_style
+        content += u'<fieldset %s>\n' % fieldset_style
         content += u'<legend><b> Main request\'s info </b></legend>\n'
         content += u'<table>\n'
-        content += u'<tr> <td style="%s"><b>HTTP_USER_AGENT</b></td>\n' %left_col_style
-        content += u'     <td style="%s"><b>%s</b></td> </tr>\n' %(right_col_style, escape(request.META.get('HTTP_USER_AGENT', 'unknown')))
-        content += u'<tr> <td style="%s"><b>REMOTE_ADDR</b></td>\n' %left_col_style
-        content += u'     <td style="%s"><b>%s</b></td> </tr>\n' %(right_col_style, escape(request.META.get('REMOTE_ADDR', 'unknown')))
+        content += u'<tr> <td style="%s"><b>HTTP_USER_AGENT</b></td>\n' % left_col_style
+        content += u'     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, escape(request.META.get('HTTP_USER_AGENT', 'unknown')))
+        content += u'<tr> <td style="%s"><b>REMOTE_ADDR</b></td>\n' % left_col_style
+        content += u'     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, escape(request.META.get('REMOTE_ADDR', 'unknown')))
         content += u'</table>\n'
         content += u'</fieldset>\n\n'
         # Other request's info
-        content += u'<fieldset %s>\n' %fieldset_style
+        content += u'<fieldset %s>\n' % fieldset_style
         content += u'<legend><b> Other request\'s info </b></legend>\n'
         content += u'<table>\n'
         keys = request.META.keys()
         keys.sort()
         for key in keys:
             if key not in ('HTTP_USER_AGENT', 'REMOTE_ADDR'):
-                content += u'<tr> <td style="%s">%s</td>\n' %(left_col_style, escape(key))
-                content += u'     <td style="%s">%s</td> </tr>\n' %(right_col_style, escape(request.META[key]))
+                content += u'<tr> <td style="%s">%s</td>\n' % (left_col_style, escape(key))
+                content += u'     <td style="%s">%s</td> </tr>\n' % (right_col_style, escape(request.META[key]))
         content += u'</table>\n'
         content += u'</fieldset>\n'
     content = mark_safe(content)
@@ -226,12 +229,11 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
     tplt = getattr(settings, 'EMAIL_ERROR_TEMPLATE', None)
     if tplt:
         return send_template_emails(tplt, dict(
-            request = request,
-            title = title,
-            error = error,
-            content = content,
-            recipients = recipients,
+            request=request,
+            title=title,
+            error=error,
+            content=content,
+            recipients=recipients,
         ))
     else:
         return send_emails(title, content, recipients, request)
-
