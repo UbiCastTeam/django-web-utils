@@ -23,7 +23,7 @@ logger = logging.getLogger('djwutils.emails_utils')
 # Django
 from django.template.loader import render_to_string
 from django.template import Context
-from django.utils.html import escape
+from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils import translation
 from django.core import mail
@@ -191,7 +191,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
     if error:
         content += u'<fieldset %s>\n' % fieldset_style
         content += u'<legend><b> Error </b></legend>\n'
-        content += u'<div>%s</div>\n' % escape(error).replace('\n', '<br/>')
+        content += u'<div>%s</div>\n' % conditional_escape(error).replace('\n', '<br/>\n')
         content += u'</fieldset>\n\n'
     # Traceback information
     content += u'<fieldset %s>\n' % fieldset_style
@@ -207,9 +207,9 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
         content += u'<legend><b> Main request\'s info </b></legend>\n'
         content += u'<table>\n'
         content += u'<tr> <td style="%s"><b>HTTP_USER_AGENT</b></td>\n' % left_col_style
-        content += u'     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, escape(request.META.get('HTTP_USER_AGENT', 'unknown')))
+        content += u'     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, conditional_escape(request.META.get('HTTP_USER_AGENT', 'unknown')))
         content += u'<tr> <td style="%s"><b>REMOTE_ADDR</b></td>\n' % left_col_style
-        content += u'     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, escape(request.META.get('REMOTE_ADDR', 'unknown')))
+        content += u'     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, conditional_escape(request.META.get('REMOTE_ADDR', 'unknown')))
         content += u'</table>\n'
         content += u'</fieldset>\n\n'
         # Other request's info
@@ -220,8 +220,8 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
         keys.sort()
         for key in keys:
             if key not in ('HTTP_USER_AGENT', 'REMOTE_ADDR'):
-                content += u'<tr> <td style="%s">%s</td>\n' % (left_col_style, escape(key))
-                content += u'     <td style="%s">%s</td> </tr>\n' % (right_col_style, escape(request.META[key]))
+                content += u'<tr> <td style="%s">%s</td>\n' % (left_col_style, conditional_escape(key))
+                content += u'     <td style="%s">%s</td> </tr>\n' % (right_col_style, conditional_escape(request.META[key]))
         content += u'</table>\n'
         content += u'</fieldset>\n'
     content = mark_safe(content)
