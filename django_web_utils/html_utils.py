@@ -18,6 +18,7 @@ from django.utils.safestring import mark_safe
 #------------------------------------------------------------------------------
 def unescape(text):
     text = defaultfilters.striptags(text)
+
     def fixup(m):
         text = m.group(0)
         if text[:2] == "&#":
@@ -35,8 +36,10 @@ def unescape(text):
                 text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
             except KeyError:
                 pass
-        return text # leave as is
+        return text  # leave as is
+
     return re.sub("&#?\w+;", fixup, text)
+
 
 # get_meta_tag_text function
 #------------------------------------------------------------------------------
@@ -45,6 +48,7 @@ def get_meta_tag_text(text):
     result = unescape(result)
     result = result.replace("\"", "''")
     return result
+
 
 # get_html_traceback function
 #------------------------------------------------------------------------------
@@ -61,6 +65,7 @@ def get_html_traceback(tb=None):
             lines.append(line)
     return mark_safe(u'\n<br/>'.join(lines))
 
+
 # get_short_text function
 #------------------------------------------------------------------------------
 class TextHTMLParser(HTMLParser):
@@ -76,16 +81,16 @@ class TextHTMLParser(HTMLParser):
     
     def handle_starttag(self, tag, attrs):
         if not self._stop:
-            self._short += '<%s' %tag
+            self._short += '<%s' % tag
             for attr in attrs:
-                self._short += ' %s="%s"' %(attr[0], attr[1])
+                self._short += ' %s="%s"' % (attr[0], attr[1])
             self._short += '>'
             # add tag to list of tags to end
             self._tags_to_end.insert(0, tag)
 
     def handle_endtag(self, tag):
         if not self._stop:
-            self._short += '</%s>' %tag
+            self._short += '</%s>' % tag
             # remove tag to list of tags to end
             if len(self._tags_to_end) != 0:
                 if self._tags_to_end[0] == tag:
@@ -93,9 +98,9 @@ class TextHTMLParser(HTMLParser):
     
     def handle_startendtag(self, tag, attrs):
         if not self._stop:
-            self._short += '<%s' %tag
+            self._short += '<%s' % tag
             for attr in attrs:
-                self._short += ' %s="%s"' %(attr[0], attr[1])
+                self._short += ' %s="%s"' % (attr[0], attr[1])
             self._short += '/>'
     
     def handle_data(self, data):
@@ -114,20 +119,21 @@ class TextHTMLParser(HTMLParser):
 
     def handle_charref(self, name):
         if not self._stop:
-            self._short += '&#%s;' %name
+            self._short += '&#%s;' % name
             self._length += 1
     
     def handle_entityref(self, name):
         if not self._stop:
-            self._short += '&%s;' %name
+            self._short += '&%s;' % name
             self._length += 1
     
     def _insert_tags_end(self):
         for tag in self._tags_to_end:
-            self._short += '</%s>' %tag
+            self._short += '</%s>' % tag
     
     def get_short(self):
         return self._short
+
 
 def get_short_text(html_text, max_length=300, margin=100):
     """
@@ -138,6 +144,5 @@ def get_short_text(html_text, max_length=300, margin=100):
             parser = TextHTMLParser(html_text, max_length)
             return parser.get_short()
         except Exception, e:
-            logger.error('Unable to create short html text. %s' %e)
+            logger.error('Unable to create short html text. %s' % e)
     return ''
-
