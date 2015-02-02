@@ -267,6 +267,9 @@ class BaseDaemon(object):
                     'urllib3': {
                         'level': 'WARNING',
                     },
+                    'requests.packages.urllib3': {
+                        'level': 'WARNING',
+                    },
                 },
                 'root': {
                     'handlers': ['log_file' if self._log_in_file else 'console'],
