@@ -79,10 +79,16 @@ CoverList.prototype.init_cover_list = function () {
     this.$widget = $(this.widget_place);
     this.$widget.html(html).addClass("cover-list");
     
-    this.widget_width = this.$widget.width();
-    this.widget_height = this.$widget.height();
+    // use only integer and divisible by two values for width and height
+    // this is done to avoid having a blurry centered image
+    this.widget_width = parseInt(this.$widget.width(), 10);
+    if (this.widget_width % 2 != 0)
+        this.widget_width --;
+    this.widget_height = parseInt(this.$widget.height(), 10);
+    if (this.widget_height % 2 != 0)
+        this.widget_height --;
     this.calculate_positions();
-    
+
     if (this.selected < 0)
         this.selected = Math.floor(this.elements.length / 2);
     else if (this.selected >= this.elements.length)
@@ -103,8 +109,8 @@ CoverList.prototype.init_cover_list = function () {
     }
     
     // cover bar display
-	if (this.elements.length < 2)
-	    $(".cover-bar", this.widget).css("display", "none");
+    if (this.elements.length < 2)
+        $(".cover-bar", this.widget).css("display", "none");
     else
         $(".cover-bar", this.widget).css("display", "block");
     
@@ -126,9 +132,9 @@ CoverList.prototype.init_cover_list = function () {
             obj.go_to_index(ui.value);
         },
         stop: function (event, ui) {
-		    obj.go_to_index(ui.value);
-	    }
-	});
+            obj.go_to_index(ui.value);
+        }
+    });
 };
 CoverList.prototype.calculate_positions = function () {
     if (this.elements.length == 0) {
@@ -297,8 +303,8 @@ CoverList.prototype.canvas_cover_init = function () {
             y_offset += dom.offsetTop;
             dom = dom.offsetParent;
         }
-	    var x = evt.pageX - x_offset;
-	    var y = evt.pageY - y_offset;
+        var x = evt.pageX - x_offset;
+        var y = evt.pageY - y_offset;
         evt.data.obj.canvas_cover_on_click(x, y);
     });
     
@@ -543,4 +549,3 @@ CoverCanvasBox.prototype.draw = function (ctx) {
 CoverCanvasBox.prototype.contains = function (x, y) {
     return x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
 };
-
