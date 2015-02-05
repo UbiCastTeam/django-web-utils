@@ -158,7 +158,7 @@ CoverList.prototype.calculate_positions = function () {
         }
         for (var i = positions_length; i >= 0; i--) {
             var delta = positions_length - i;
-            var factor = delta / (positions_length - 1);
+            var factor = delta / positions_length;
             factor = Math.sqrt(factor) * multiplier;
             
             var width = this.box_width * (1 - factor * this.min_size);
@@ -252,11 +252,11 @@ CoverList.prototype.html_cover_go_to_index = function (index, update_slider) {
             top: attrs.top,
             width: attrs.width,
             height: attrs.height
-        }
+        };
         if (delta < 0)
-            style["left"] = this.widget_width - attrs.width - attrs.offset;
+            style.left = this.widget_width - attrs.width - attrs.offset;
         else
-            style["left"] = attrs.offset;
+            style.left = attrs.offset;
         
         var box = $("#cover_box_"+i, this.widget);
         box.stop(true, false);
@@ -332,7 +332,7 @@ CoverList.prototype.canvas_cover_init = function () {
         }));
     }
 };
-CoverList.prototype.canvas_cover_on_image_load = function (success) {
+CoverList.prototype.canvas_cover_on_image_load = function () {
     this.nb_images_loaded++;
     if (this.nb_images_loaded >= this.elements.length) {
         this.images_loaded = true;
@@ -461,7 +461,7 @@ function CoverCanvasBox(options) {
     }
     
     this.image = null;
-};
+}
 CoverCanvasBox.prototype.load_image = function () {
     if (!this.thumb)
         return;
