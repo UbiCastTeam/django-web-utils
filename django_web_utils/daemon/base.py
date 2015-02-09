@@ -235,54 +235,54 @@ class BaseDaemon(object):
             print >>sys.stderr, 'Cannot create log directory %s' % self.LOG_DIR
             self.exit(131)
 
-        dl = logging.getLogger('django')
-        configure = len(dl.handlers) == 0 or self._daemonize
+        loggers = logging.Logger.manager.loggerDict
+        if loggers.keys():
+            logger.info('Resetting loggers.')
 
-        if configure:
-            # configure logging and disable all existing loggers
-            LOGGING_CONF = {
-                'version': 1,
-                'disable_existing_loggers': False,
-                'formatters': {
-                    'verbose': {
-                        'format': '%(asctime)s %(name)s %(levelname)s %(message)s',
-                    },
+        # configure logging and disable all existing loggers
+        LOGGING_CONF = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'verbose': {
+                    'format': '%(asctime)s %(name)s %(levelname)s %(message)s',
                 },
-                'handlers': {
-                    'console': {
-                        'class': 'logging.StreamHandler',
-                        'formatter': 'verbose',
-                        'stream': 'ext://sys.stdout',
-                    },
-                    'log_file': {
-                        'class': 'logging.FileHandler',
-                        'formatter': 'verbose',
-                        'filename': self._log_file_path,
-                    },
+            },
+            'handlers': {
+                'console': {
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'verbose',
+                    'stream': 'ext://sys.stdout',
                 },
-                'loggers': {
-                    'django': {
-                        'level': 'WARNING',
-                    },
-                    'urllib3': {
-                        'level': 'WARNING',
-                    },
-                    'requests.packages.urllib3': {
-                        'level': 'WARNING',
-                    },
+                'log_file': {
+                    'class': 'logging.FileHandler',
+                    'formatter': 'verbose',
+                    'filename': self._log_file_path,
                 },
-                'root': {
-                    'handlers': ['log_file' if self._log_in_file else 'console'],
-                    'level': self.config.get('LOGGING_LEVEL', 'INFO'),
-                    'propagate': False,
-                }
+            },
+            'loggers': {
+                'django': {
+                    'level': 'WARNING',
+                },
+                'urllib3': {
+                    'level': 'WARNING',
+                },
+                'requests.packages.urllib3': {
+                    'level': 'WARNING',
+                },
+            },
+            'root': {
+                'handlers': ['log_file' if self._log_in_file else 'console'],
+                'level': self.config.get('LOGGING_LEVEL', 'INFO'),
+                'propagate': False,
             }
-            logging.config.dictConfig(LOGGING_CONF)
-            # reset all loggers config
-            for key, lg in logging.Logger.manager.loggerDict.iteritems():
-                lg.handlers = []
-                lg.propagate = 1
-            logger.debug('Logging configured.')
+        }
+        logging.config.dictConfig(LOGGING_CONF)
+        # reset all loggers config
+        for key, lg in loggers.iteritems():
+            lg.handlers = []
+            lg.propagate = 1
+        logger.debug('Logging configured.')
     
     def _look_for_existing_process(self):
         '''check if the daemon is already launched and return its pid if it is, else None'''
