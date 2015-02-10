@@ -16,20 +16,23 @@ from django.core.exceptions import PermissionDenied
 
 
 # classic errors classes
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 class IframeHttp400(Exception):
     pass
+
 
 class IframeHttp401(Exception):
     pass
 
+
 IframeHttp403 = PermissionDenied
+
 
 IframeHttp404 = Http404
 
 
 # iframe_view function
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def iframe_view(function=None, methods=None, login_url=None, login_required=False):
     '''
     Returns 400, 401, 403, 404, 405 and 500 errors with Iframe template.
@@ -79,4 +82,3 @@ def iframe_view(function=None, methods=None, login_url=None, login_required=Fals
     if function:
         return decorator(function)
     return decorator
-
