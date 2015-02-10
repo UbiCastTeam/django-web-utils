@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 # get_size function
 # to get size of a dir
-#-----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def get_size(path):
     if os.path.isfile(path):
         return os.path.getsize(path)
@@ -23,8 +23,9 @@ def get_size(path):
         # socket or something else
         return 0
 
+
 # get_unit function
-#-----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def get_unit(size=0, path=None):
     if path is not None:
         size = get_size(path)
@@ -44,8 +45,9 @@ def get_unit(size=0, path=None):
     size = round(size, 2)
     return size, unit
 
+
 # get_new_path function
-#-----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def get_new_path(path, new_extension=None):
     fdir = os.path.dirname(path)
     fname = os.path.basename(path).lower()
@@ -53,12 +55,12 @@ def get_new_path(path, new_extension=None):
         splitted = fname.split('.')
         fname = '.'.join(splitted[:-1])
         if new_extension:
-            fext = '.%s' %new_extension
+            fext = '.%s' % new_extension
         else:
-            fext = '.%s' %splitted[-1]
+            fext = '.%s' % splitted[-1]
     else:
         fname = fname
-        fext = '.%s' %new_extension if new_extension else ''
+        fext = '.%s' % new_extension if new_extension else ''
     count = 1
     if '_' in fname:
         splitted = fname.split('_')
@@ -69,14 +71,15 @@ def get_new_path(path, new_extension=None):
         else:
             count += 1
             fname = '_'.join(splitted[:-1])
-    dest = '%s/%s_%s%s' %(fdir, fname, count, fext)
+    dest = '%s/%s_%s%s' % (fdir, fname, count, fext)
     while os.path.exists(dest):
         count += 1
-        dest = '%s/%s_%s%s' %(fdir, fname, count, fext)
+        dest = '%s/%s_%s%s' % (fdir, fname, count, fext)
     return dest
 
+
 # remove_dir function (recursive function to remove a dir and its content)
-#-----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def remove_dir(path):
     if not os.path.isdir(path):
         return
@@ -87,4 +90,3 @@ def remove_dir(path):
         elif os.path.isdir(fpath):
             remove_dir(fpath)
     os.rmdir(path)
-
