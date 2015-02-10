@@ -1,0 +1,105 @@
+{% extends "base_full.html" %}{% load i18n %}{% load staticfiles %}
+
+{% block wtitle %}UbiCast - {% trans "Storage" %}{% endblock %}
+
+{% block scripts %}
+    <link rel="stylesheet" type="text/css" href="{% static 'file_browser/file_browser.css' %}"/>
+    <script type="text/javascript" src="{% static 'file_browser/file_browser.js' %}"></script>
+    <script type="text/javascript">
+        var fbrowser = new FileBrowser({
+            base_url: "{% url 'media' 'downloads/' %}",
+            dirs_url: "{% url 'file_browser_dirs' %}",
+            content_url: "{% url 'file_browser_content' %}",
+            preview_url: "{% url 'file_browser_img_preview' %}",
+            action_url: "{% url 'file_browser_action' %}",
+            translations: {
+                "The folder is empty.": "{% trans "The folder is empty." %}",
+                "Size:": "{% trans "Size:" %}",
+                "Last modification:": "{% trans "Last modification:" %}",
+                "root": "{% trans "root" %}",
+                "Loading": "{% trans "Loading" %}",
+                "server unreachable": "{% trans "server unreachable" %}",
+                "Cancel": "{% trans "Cancel" %}",
+                "Add": "{% trans "Add" %}",
+                "Ok": "{% trans "Ok" %}",
+                "Selected file(s):": "{% trans "Selected file(s):" %}",
+                "New folder name:": "{% trans "New folder name:" %}",
+                "Add a folder in": "{% trans "Add a folder in" %}",
+                "File to add:": "{% trans "File to add:" %}",
+                "Add a file in": "{% trans "Add a file in" %}",
+                "Rename": "{% trans "Rename" %}",
+                "files": "{% trans "files" %}",
+                "Move": "{% trans "Move" %}",
+                "Move to:": "{% trans "Move to:" %}",
+                "Delete": "{% trans "Delete" %}",
+                "Are you sure to delete the selected file(s) ?": "{% trans "Are you sure to delete the selected file(s) ?" %}",
+                "Search": "{% trans "Search" %}",
+                "Search only in current dir": "{% trans "Search only in current dir" %}"
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block fplmenu %}
+    <div class="title-bar">
+        <h2>{% trans "Files browser" %}</h2>
+    </div>
+    <div class="content-container">
+        <p><a href="#">{% trans "Root folder" %}</a></p>
+        <div id="fm_dirs_tree"></div>
+    </div>
+{% endblock %}
+
+{% block fplmain %}
+    <div class="title-bar">
+        <span class="buttons-bar">
+            <button class="btn-add-folder" id="fm_btn_add_folder">{% trans "Add a folder" %}</button>
+            <button class="btn-add-file" id="fm_btn_add_file">{% trans "Add a file" %}</button>
+            <button class="btn-search" id="fm_btn_search">{% trans "Search" %}</button>
+        </span>
+        <h2 id="path_bar"></h2>
+    </div>
+    <div class="content-container">
+        {% if messages %}
+            <div class="messages-container">
+                <div class="std-btn show-messages-btn" onclick="javascript: fbrowser.show_messages();">{% trans "Show messages" %}</div>
+                <div class="std-btn hide-messages-btn" onclick="javascript: fbrowser.hide_messages();">{% trans "Hide messages" %}</div>
+                <div class="messages-list">
+                    <!-- django message block -->
+                    {% include "messages_django.html" %}
+                </div>
+            </div>
+        {% endif %}
+        
+        <div id="fm_files_list" class="files-list">
+            <div class="message-info">{% trans "Loading" %}...</div>
+        </div>
+        
+        <div id="fm_drop_zone">
+            <div class="drop-zone-aligner">
+                <div class="drop-zone-info">{% trans "Drop files here to add them" %}</div>
+                <div class="drop-zone-upload">
+                    <div>{% trans "Upload in progress" %}</div>
+                    <progress id="progress" min="0" max="100" value="0">0 %</progress>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-footer">
+        <span>{% trans "Total size:" %} <b id="fm_total_size">-</b></span>
+        <span>{% trans "Number of folders:" %} <b id="fm_folders_count">-</b></span>
+        <span>{% trans "Number of files:" %} <b id="fm_files_count">-</b></span>
+        <span>{% trans "Order by:" %}
+            <select id="fm_files_ordering">
+                <option value="name-asc">{% trans "name" %} ↑</option>
+                <option value="name-desc">{% trans "name" %} ↓</option>
+                <option value="size-asc">{% trans "size" %} ↑</option>
+                <option value="size-desc">{% trans "size" %} ↓</option>
+                <option value="mdate-asc">{% trans "modification date" %} ↑</option>
+                <option value="mdate-desc">{% trans "modification date" %} ↓</option>
+            </select>
+        </span>
+        <span><button id="fm_btn_refresh">{% trans "Refresh" %}</button></span>
+    </div>
+{% endblock %}
+
