@@ -11,6 +11,7 @@ function FileBrowser(options) {
     this.content_url = "";
     this.preview_url = "";
     this.action_url = "";
+    this.csrf_token = "";
     this.language = "en";
     
     // vars
@@ -48,6 +49,7 @@ function FileBrowser(options) {
 }
 
 FileBrowser.prototype.init = function () {
+    this.csrf_token = utils.get_cookie("csrftoken");
     // get elements
     this.$tree = $("#path_bar");
     this.$buttons = $(".buttons-bar");
@@ -113,9 +115,6 @@ FileBrowser.prototype.init = function () {
         disable_in_input: true,
         propagate: false
     };
-    shortcut.add("Delete", function () {
-	    obj.delete_files();
-    }, options);
 };
 
 FileBrowser.prototype.contains_files = function (evt) {
@@ -431,9 +430,10 @@ FileBrowser.prototype.execute_action = function (data, cb) {
     // show loading overlay
     this.overlay.show({
         title: " ",
-        html: "<div class=\"message-loading\">"+this.translate("Loading")+"...</div>"
+        html: "<div class=\"file-browser-overlay message-loading\">"+this.translate("Loading")+"...</div>"
     });
     // execute request
+    data.csrfmiddlewaretoken = this.csrf_token;
     var obj = this;
     $.ajax({
         type: "POST",
@@ -459,7 +459,7 @@ FileBrowser.prototype.on_action_executed = function (response) {
     var obj = this;
     this.overlay.show({
         title: " ",
-        html: "<div class=\"message-"+(response.success ? "success" : "error")+"\">"+response.message+"</div>",
+        html: "<div class=\"file-browser-overlay message-"+(response.success ? "success" : "error")+"\">"+response.message+"</div>",
         buttons: [
             { label: this.translate("Ok"), close: true }
         ]
@@ -482,6 +482,7 @@ FileBrowser.prototype.on_files_drop = function (evt) {
     var form_data = new FormData();
     form_data.append("action", "upload");
     form_data.append("path", this.path);
+    form_data.append("csrfmiddlewaretoken", this.csrf_token);
     for (var i=0; i < files.length; i++) {
         form_data.append("file_"+i, files[i]);
     }
@@ -524,12 +525,15 @@ FileBrowser.prototype.on_files_drop = function (evt) {
 };
 FileBrowser.prototype.add_folder = function () {
     if (!this.folder_form) {
-        var html = "<div>";
+        var html = "<form class=\"file-browser-overlay\" action=\".\" method=\"post\" enctype=\"multipart/form-data\">";
+        html += "<input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\""+this.csrf_token+"\"/>";
         html += "<label for=\"new_folder_name\">"+this.translate("New folder name:")+"</label>";
         html += " <input id=\"new_folder_name\" type=\"text\" value=\"\"/>";
-        html += "</div>";
+        html += "</form>";
         this.folder_form = $(html);
+        this.folder_form.submit({obj: this}, function (evt) { evt.data.obj._add_folder(); return false; });
     }
+    this.folder_form.attr("action", this.action_url+"#"+this.path);
     
     var obj = this;
     this.overlay.show({
@@ -537,21 +541,25 @@ FileBrowser.prototype.add_folder = function () {
         html: this.folder_form,
         buttons: [
             { label: this.translate("Add"), callback: function () {
-                var data = {
-                    action: "add_folder",
-                    path: obj.path,
-                    name: $("input", obj.folder_form).val()
-                };
-                obj.folder_form.detach();
-                obj.execute_action(data);
+                obj._add_folder();
             } },
             { label: this.translate("Cancel"), close: true }
         ]
     });
 };
+FileBrowser.prototype._add_folder = function () {
+    var data = {
+        action: "add_folder",
+        path: this.path,
+        name: $("#new_folder_name", this.folder_form).val()
+    };
+    this.folder_form.detach();
+    this.execute_action(data);
+};
 FileBrowser.prototype.add_file = function () {
     if (!this.upload_form) {
-        var html = "<form action=\".\" method=\"post\" enctype=\"multipart/form-data\">";
+        var html = "<form class=\"file-browser-overlay\" action=\".\" method=\"post\" enctype=\"multipart/form-data\">";
+        html += "<input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\""+this.csrf_token+"\"/>";
         html += "<input type=\"hidden\" name=\"action\" value=\"upload-old\"/>";
         html += "<input id=\"file_to_add_path\" type=\"hidden\" name=\"path\" value=\"\"/>";
         html += "<label for=\"file_to_add\">"+this.translate("File to add:")+"</label>";
@@ -583,12 +591,14 @@ FileBrowser.prototype.rename_files = function (files) {
     
     var html;
     if (!this.rename_form) {
-        html = "<form action=\""+this.action_url+"\" method=\"post\">";
-        html += "<div class=\"margin-8\">";
+        html = "<form class=\"file-browser-overlay\" action=\""+this.action_url+"\" method=\"post\">";
+        html += "<input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\""+this.csrf_token+"\"/>";
+        html += "<div>";
         html += "<label for=\"rename_new_name\">"+this.translate("New name:")+"</label>";
         html += " <input id=\"rename_new_name\" type=\"text\" value=\"\"/>";
         html += "</div>";
-        html += "<div class=\"margin-8\">"+this.translate("Selected file(s):")+"<ul></ul></div>";
+        html += "<p>"+this.translate("Selected file(s):")+"</p>";
+        html += "<ul></ul>";
         html += "</form>";
         this.rename_form = $(html);
         this.rename_form.submit({ obj: this }, function (evt) {
@@ -596,7 +606,7 @@ FileBrowser.prototype.rename_files = function (files) {
             var data = {
                 action: "rename",
                 path: obj.path,
-                new_name: $("input", obj.rename_form).val()
+                new_name: $("#rename_new_name", obj.rename_form).val()
             };
             for (var i=0; i < selected.length; i++) {
                 data["name_"+i] = selected[i].name;
@@ -610,11 +620,11 @@ FileBrowser.prototype.rename_files = function (files) {
     var title = this.translate("Rename");
     if (selected.length == 1) {
         title += " \""+selected[0].name+"\"";
-        $("input", this.rename_form).val(selected[0].name);
+        $("#rename_new_name", this.rename_form).val(selected[0].name);
     }
     else {
         title += " "+selected.length+" "+this.translate("files");
-        $("input", this.rename_form).val("");
+        $("#rename_new_name", this.rename_form).val("");
     }
     
     html = "";
@@ -655,7 +665,7 @@ FileBrowser.prototype.move_files = function (files) {
             banned.push(this.path+s.name+"/");
     }
     
-    var html = "<div class=\"margin-8\">";
+    var html = "<div class=\"file-browser-overlay\">";
     html +=     "<label for=\"move_select\">"+this.translate("Move to:")+"</label>";
     html +=     " <select id=\"move_select\">";
     html +=         "<option value=\"#\" "+(this.path ? "" : "disabled=\"disabled\"")+">"+this.translate("root")+"</option>";
@@ -676,10 +686,10 @@ FileBrowser.prototype.move_files = function (files) {
         html +=     "<option value=\""+t.path+"\" style=\"padding-left: "+(t.level * 10)+"px;\" "+disabled+">"+t.name+"</option>";
     }
     html +=     "</select>";
-    html += "</div>";
-    html += "<div class=\"margin-8\">"+this.translate("Selected file(s):")+"<ul>";
+    html +=     "<p>"+this.translate("Selected file(s):")+"</p>";
+    html +=     "<ul>";
     for (var i=0; i < selected.length; i++) {
-        html +=         "<li>"+selected[i].name+"</li>";
+        html +=     "<li>"+selected[i].name+"</li>";
     }
     html +=     "</ul>";
     html += "</div>";
@@ -694,7 +704,7 @@ FileBrowser.prototype.move_files = function (files) {
                 var data = {
                     action: "move",
                     path: obj.path,
-                    new_path: $("select", form).val()
+                    new_path: $("#move_select", form).val()
                 };
                 for (var i=0; i < selected.length; i++) {
                     data["name_"+i] = selected[i].name;
@@ -722,10 +732,12 @@ FileBrowser.prototype.delete_files = function (files) {
     else
         title += " "+selected.length+" "+this.translate("files");
     
-    var html = "<div class=\"margin-8\"><b>"+this.translate("Are you sure to delete the selected file(s) ?")+"</b></div>";
-    html += "<div class=\"margin-8\">"+this.translate("Selected file(s):")+"<ul>";
+    var html = "<div class=\"file-browser-overlay\">";
+    html +=     "<div><b>"+this.translate("Are you sure to delete the selected file(s) ?")+"</b></div>";
+    html +=     "<p>"+this.translate("Selected file(s):")+"</p>";
+    html +=     "<ul>";
     for (var i=0; i < selected.length; i++) {
-        html +=         "<li>"+selected[i].name+"</li>";
+        html +=     "<li>"+selected[i].name+"</li>";
     }
     html +=     "</ul>";
     html += "</div>";
@@ -752,7 +764,8 @@ FileBrowser.prototype.delete_files = function (files) {
 FileBrowser.prototype.search = function () {
     if (!this.search_form) {
         // prepare search form
-        var html = "<form action=\""+this.action_url+"\" method=\"post\">";
+        var html = "<form class=\"file-browser-overlay\" action=\""+this.action_url+"\" method=\"post\">";
+        html += "<input type=\"hidden\" name=\"csrfmiddlewaretoken\" value=\""+this.csrf_token+"\"/>";
         html += "<div>";
         html += "<input id=\"search\" type=\"text\" value=\"\"/>";
         html += " <label for=\"search_in_current\">"+this.translate("Search only in current dir")+"</label>";
@@ -774,7 +787,7 @@ FileBrowser.prototype.search = function () {
                 // display search results
                 var html = "<p><b>"+response.msg+"</b></p>";
                 if (response.dirs && response.dirs.length > 0) {
-                    html += "<div class=\"search-resulsts\">";
+                    html += "<div class=\"search-results\">";
                     for (var i=0; i < response.dirs.length; i++) {
                         var dir = response.dirs[i];
                         html += "<p><a class=\"dir-link\" href=\"#"+dir.url+"\">"+obj.translate("root")+"/"+dir.url+"</a></p>";

@@ -1,0 +1,36 @@
+{% load i18n %}{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'file_browser/file_browser.css' %}?_=1"/>
+<script type="text/javascript" src="{% static 'file_browser/file_browser.js' %}"></script>
+<script type="text/javascript">
+    var fbrowser = new FileBrowser({
+        base_url: "{{ base_url }}",
+        dirs_url: "{% url 'file_browser_dirs' %}",
+        content_url: "{% url 'file_browser_content' %}",
+        preview_url: "{% url 'file_browser_img_preview' %}",
+        action_url: "{% url 'file_browser_action' %}",
+        translations: {
+            "The folder is empty.": "{% trans "The folder is empty." %}",
+            "Size:": "{% trans "Size:" %}",
+            "Last modification:": "{% trans "Last modification:" %}",
+            "root": "{% trans "root" %}",
+            "Loading": "{% trans "Loading" %}",
+            "server unreachable": "{% trans "server unreachable" %}",
+            "Cancel": "{% trans "Cancel" %}",
+            "Add": "{% trans "Add" %}",
+            "Ok": "{% trans "Ok" %}",
+            "Selected file(s):": "{% trans "Selected file(s):" %}",
+            "New folder name:": "{% trans "New folder name:" %}",
+            "Add a folder in": "{% trans "Add a folder in" %}",
+            "File to add:": "{% trans "File to add:" %}",
+            "Add a file in": "{% trans "Add a file in" %}",
+            "Rename": "{% trans "Rename" %}",
+            "files": "{% trans "files" %}",
+            "Move": "{% trans "Move" %}",
+            "Move to:": "{% trans "Move to:" %}",
+            "Delete": "{% trans "Delete" %}",
+            "Are you sure to delete the selected file(s) ?": "{% trans "Are you sure to delete the selected file(s) ?" %}",
+            "Search": "{% trans "Search" %}",
+            "Search only in current dir": "{% trans "Search only in current dir" %}"
+        }
+    });
+</script>

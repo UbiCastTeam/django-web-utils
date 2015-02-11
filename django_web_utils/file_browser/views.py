@@ -8,7 +8,6 @@ from django.shortcuts import render
 from django.template import defaultfilters
 from django.http import Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 # Django web utils
 from django_web_utils import json_utils
 from django_web_utils.files_utils import get_unit, get_size
@@ -22,7 +21,10 @@ IMAGES_EXTENSION = ['png', 'gif', 'bmp', 'tiff', 'jpg', 'jpeg']
 # ----------------------------------------------------------------------------
 @config.view_decorator
 def storage_manager(request):
-    return render(request, 'file_browser/storage.html', {})
+    tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'file_browser/base.html'
+    return render(request, tplt, {
+        'base_url': config.BASE_URL,
+    })
 
 
 # storage_dirs
@@ -47,7 +49,7 @@ def storage_dirs(request):
     if not os.path.exists(base_path):
         return json_utils.failure_response(message=unicode(_('Folder "%s" does not exist') % base_path))
 
-    return json_utils.success_response(dirs=recursive_dirs(os.path.join(settings.MEDIA_ROOT, 'downloads')))
+    return json_utils.success_response(dirs=recursive_dirs(base_path))
 
 
 # storage_content

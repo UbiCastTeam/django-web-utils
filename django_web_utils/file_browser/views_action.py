@@ -10,7 +10,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 # Django web utils
 from django_web_utils import json_utils
 from django_web_utils.file_browser import config
@@ -64,6 +63,7 @@ def storage_action(request):
         return json_utils.failure_response(message=unicode(_('Invalid request method.')), code=405)
 
     base_path = config.BASE_PATH
+    base_url = config.BASE_URL
     action = request.POST.get('action')
     # upload form
     if action == 'upload' or action == 'upload-old':
@@ -84,9 +84,9 @@ def storage_action(request):
             else:
                 return json_utils.failure_response(message=msg)
         if path:
-            dir_path = os.path.join(settings.MEDIA_ROOT, 'downloads', path)
+            dir_path = os.path.join(base_path, path)
         else:
-            dir_path = os.path.join(settings.MEDIA_ROOT, 'downloads')
+            dir_path = base_path
         # create upload folder
         if not os.path.exists(dir_path):
             try:
@@ -116,9 +116,9 @@ def storage_action(request):
             f.close()
             # get url
             if path:
-                url = reverse('media', args=[os.path.join('downloads', path, file_name)])
+                url = base_url + path + '/' + file_name
             else:
-                url = reverse('media', args=[os.path.join('downloads', file_name)])
+                url = base_url + file_name
             msg += u' <br/><a href="%s">%s://%s%s</a>' % (url, 'https' if request.is_secure() else 'http', request.get_host(), url)
         if action == 'upload-old':
             messages.success(request, msg)
@@ -140,9 +140,9 @@ def storage_action(request):
             return json_utils.failure_response(message=unicode(_('Invalid name.')))
         # execute action
         if path:
-            target = os.path.join(settings.MEDIA_ROOT, 'downloads', path, name)
+            target = os.path.join(base_path, path, name)
         else:
-            target = os.path.join(settings.MEDIA_ROOT, 'downloads', name)
+            target = os.path.join(base_path, name)
         try:
             os.makedirs(target)
         except OSError, e:
@@ -156,7 +156,6 @@ def storage_action(request):
     elif action == 'search':
         # get path
         path = request.REQUEST.get('path', '')
-        base_path = os.path.join(settings.MEDIA_ROOT, 'downloads')
         if '..' in path:
             return json_utils.failure_response(message=unicode(_('Invalid base path.')))
         if path:
@@ -217,9 +216,9 @@ def storage_action(request):
         if '..' in path:
             return json_utils.failure_response(message=unicode(_('Invalid base path.')))
         if path:
-            dir_path = os.path.join(settings.MEDIA_ROOT, 'downloads', path)
+            dir_path = os.path.join(base_path, path)
         else:
-            dir_path = os.path.join(settings.MEDIA_ROOT, 'downloads')
+            dir_path = base_path
         names = list()
         for key in request.POST:
             if key.startswith('name_') and request.POST[key]:

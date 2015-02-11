@@ -1,53 +1,302 @@
-/* Styles for admin storage page */
-.menu-place .content-container p {
+/* Styles for file browser */
+html.file-browser-default {
+    background: #fff;
+}
+
+.file-browser * {
+    margin: 0;
+    padding: 0;
+}
+
+.file-browser {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+}
+.file-browser a {
+    text-decoration: none;
+}
+
+.file-browser input[type=text] {
+    width: 220px;
+}
+
+
+/* title and footer bar */
+.file-browser .title-bar,
+.file-browser .footer-bar {
+    color: #fff;
+    background: #0a83d4;
+    background: -moz-linear-gradient(top, #0a83d4, #29427a);
+    background: -webkit-gradient(linear, left top, left bottom, from(#0a83d4), to(#29427a));
+}
+.file-browser .title-bar {
+    padding: 6px 8px;
+    height: 24px;
+    line-height: 24px;
+}
+.file-browser .title-bar h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #fff;
+}
+.file-browser .title-bar a {
+    color: #ddd;
+}
+.file-browser .title-bar a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.file-browser .menu-place {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    width: 250px;
+    background: #eee;
+    border-right: 1px solid #0a83d4;
+}
+.file-browser .menu-place h3 {
+    margin: 8px 0;
+    padding: 4px 6px;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 4px;
+}
+.file-browser .menu-place h3 a {
+    float: right;
+}
+.file-browser .content-place {
+    top: 0;
+    bottom: 0;
+    left: 251px;
+    right: 0;
+    position: absolute;
+    border-left: 1px solid #29427a;
+}
+.file-browser .content-container {
+    padding: 0 8px;
+    top: 36px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    overflow: auto;
+}
+.file-browser .content-place .content-container {
+    padding: 0 3px;
+    bottom: 32px;
+}
+.file-browser .footer-bar {
+    padding: 6px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+    height: 20px;
+    line-height: 20px;
+    overflow: hidden;
+}
+.file-browser .footer-bar span + span {
+    margin-left: 16px;
+}
+
+
+/* buttons and buttons bar */
+.file-browser .buttons-bar {
+    margin-top: -1px;
+    margin-right: -8px;
+    float: right;
+}
+.file-browser .footer-bar .buttons-bar {
+    margin-right: 60px;
+}
+.file-browser .file-browser-btn {
+    margin-right: 8px;
+    padding: 2px 4px;
+    padding-left: 24px;
+    font-size: 14px;
+    font-weight: normal;
+    float: left;
+    line-height: 20px;
+    height: 20px;
+    color: #0363a7;
+    cursor: pointer;
+    background: #ddd none 4px 50% no-repeat;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition-property: background-color, color, border-color;
+    transition-duration: 0.5s;
+}
+.file-browser .file-browser-btn:hover {
+    color: #0a83d4;
+    background-color: #fff;
+    border-color: #ddd;
+}
+.file-browser .file-browser-btn.disabled
+.file-browser .file-browser-btn:disabled {
+    cursor: default;
+    color: #0a83d4;
+    background-color: #ddd;
+    border-color: #ccc;
+    opacity: 0.6;
+}
+.file-browser button.file-browser-btn {
+    height: 26px;
+}
+
+
+/* menu list */
+.file-browser .menu-place ul {
+    padding: 5px 0;
+    word-wrap: break-word;
+}
+.file-browser .menu-place ul ul {
+    margin-left: 20px;
+    padding: 0;
+}
+.file-browser .menu-place .closed ul {
+    display: none;
+}
+.file-browser .menu-place .closed ul ul {
+    display: block;
+}
+.file-browser .menu-place .active a {
+    color: #000;
+    font-weight: bold;
+}
+.file-browser .menu-place .active li a {
+    color: #0a83d4;
+    font-weight: normal;
+}
+.file-browser .menu-place .active li a:hover {
+    color: #29427a;
+    font-weight: normal;
+}
+.file-browser .menu-place .invisible > a,
+.file-browser .menu-place .disabled > a {
+    padding-left: 20px;
+    opacity: 0.8;
+    background: transparent url("img/list/invisible.png") 0 50% no-repeat; 
+}
+.file-browser .menu-place .disabled > a {
+    opacity: 0.5;
+    background-image: url("img/list/disabled.png"); 
+}
+.file-browser .menu-place li {
+    list-style: none;
+    line-height: 17px;
+    overflow: hidden;
+}
+.file-browser .menu-place li span {
+    width: 17px;
+    height: 17px;
+    float: left;
+    display: block;
+    background: transparent none 50% 50% no-repeat; 
+}
+.file-browser .menu-place li span.list-none {
+    background-image: url("img/list/list_none.png"); 
+}
+.file-browser .menu-place li span.list-entry {
+    padding-left: 0;
+    cursor: pointer;
+    background-image: url("img/list/list_down.png");
+}
+.file-browser .menu-place li.closed span.list-entry {
+    background-image: url("img/list/list_right.png");
+}
+.file-browser .menu-place li a {
+    margin-left: 21px;
+    display: block;
+}
+.file-browser .menu-place .content-container p {
     margin: 0;
     padding-top: 8px;
 }
-.content-place .content-container {
-    padding: 0 3px;
+
+/* messages */
+.file-browser .messages-container {
+    margin: 8px 4px;
+    overflow: hidden;
+    background: #eee;
+    border: 1px solid #ccc;
+    border-radius: 6px;
 }
-.content-footer span + span {
-    margin-left: 16px;
+.file-browser .messages-container .show-messages-btn { display: none; }
+.file-browser .messages-container.hidden .show-messages-btn { display: block; }
+.file-browser .messages-container .hide-messages-btn { display: block; }
+.file-browser .messages-container.hidden .hide-messages-btn { display: none; }
+
+.file-browser .message-info,
+.file-browser .message-success,
+.file-browser .message-warning,
+.file-browser .message-error,
+.file-browser .message-loading {
+    margin: 4px;
+    padding: 6px;
+    padding-left: 36px;
+    min-height: 24px;
+    line-height: 24px;
+    font-size: 15px;
+    border: 1px solid transparent;
+    overflow: hidden;
+    border-radius: 6px;
 }
-select option:disabled {
+.file-browser .message-info {
+    color: #143447;
+    border-color: #388fc4;
+    background: #ebfaff url("img/messages/icon_24_info.png") 6px 50% no-repeat;
+}
+.file-browser .message-success {
+    color: #223205;
+    border-color: #76ae12;
+    background: #f2ffdb url("img/messages/icon_24_tick.png") 6px 50% no-repeat;
+}
+.file-browser .message-warning {
+    color: #150c03;
+    border-color: #e47f25;
+    background: #ffeddc url("img/messages/icon_24_warning.png") 6px 50% no-repeat;
+}
+.file-browser .message-error {
+    color: #390a0a;
+    border-color: #e42626;
+    background: #ffefef url("img/messages/icon_24_error.png") 6px 50% no-repeat;
+}
+.file-browser .message-loading {
+    color: #808080;
+    border-color: #808080;
+    background: #e0e0e0 url("img/messages/icon_32_loading.gif") 2px 50% no-repeat;
+}
+
+
+
+.file-browser select option:disabled {
     background: #888;
     color: #fff;
 }
 
-#path_bar a {
+.file-browser #path_bar a {
     max-width: 200px;
     white-space: nowrap;
     display: inline-block;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-#path_bar span {
+.file-browser #path_bar span {
     display: inline-block;
     overflow: hidden;
 }
 
-.search-resulsts {
-    margin-bottom: 10px;
-}
-.search-resulsts p {
-    margin: 5px -10px;
-    padding: 4px 10px;
-    background: #ddd;
-}
-.search-resulsts ul {
-    margin-top: 5px;
-    margin-bottom: 10px;
-    margin-left: 20px;
-    margin-right: 10px;
-}
-
-
 /* file list */
-.files-list {
+.file-browser .files-list {
     padding: 3px 0;
     padding-bottom: 80px;
 }
-.file-block {
+.file-browser .file-block {
     margin: 5px;
     width: 212px;
     display: inline-block;
@@ -55,77 +304,77 @@ select option:disabled {
     position: relative;
     vertical-align: top;
 }
-.file-block a,
-.file-block span {
+.file-browser .file-block a,
+.file-browser .file-block span {
     display: block;
 }
-.file-block a.file-link {
+.file-browser .file-block a.file-link {
     padding: 5px;
     border: 1px solid transparent;
     border-radius: 6px;
 }
-.file-block.selected a.file-link {
+.file-browser .file-block.selected a.file-link {
     background: rgba(185, 230, 255, 0.2);
     border-color: #b9e6ff;
 }
-.file-block:hover a.file-link {
+.file-browser .file-block:hover a.file-link {
     background: rgba(35, 190, 255, 0.2);
     border-color: #0a83d4;
 }
-.file-block .file-icon {
+.file-browser .file-block .file-icon {
     text-align: center;
     height: 64px;
     background: transparent url("img/types/file.png") 50% 50% no-repeat;
 }
-.file-block .file-name {
+.file-browser .file-block .file-name {
     margin-top: 4px;
     word-wrap: break-word;
 }
-.file-block.previous .file-icon { background-image: url("img/types/previous.png"); }
-.file-block.folder .file-icon { background-image: url("img/types/folder.png"); }
-.file-block.file-png .file-icon,
-.file-block.file-bmp .file-icon,
-.file-block.file-jpeg .file-icon,
-.file-block.file-gif .file-icon,
-.file-block.file-tiff .file-icon,
-.file-block.file-jpg .file-icon,
-.file-block.file-png .file-icon { background-image: url("img/types/img.png"); }
-.file-block.file-mp3 .file-icon,
-.file-block.file-wav .file-icon,
-.file-block.file-oga .file-icon { background-image: url("img/types/audio.png"); }
-.file-block.file-mp4 .file-icon,
-.file-block.file-mpg .file-icon,
-.file-block.file-mov .file-icon,
-.file-block.file-webm .file-icon,
-.file-block.file-ogg .file-icon,
-.file-block.file-ogv .file-icon,
-.file-block.file-wmv .file-icon,
-.file-block.file-flv .file-icon,
-.file-block.file-ts .file-icon,
-.file-block.file-mkv .file-icon,
-.file-block.file-m4v .file-icon,
-.file-block.file-avi .file-icon { background-image: url("img/types/video.png"); }
-.file-block.file-gz .file-icon,
-.file-block.file-bz2 .file-icon,
-.file-block.file-7z .file-icon,
-.file-block.file-zip .file-icon { background-image: url("img/types/zip.png"); }
-.file-block.file-exe .file-icon { background-image: url("img/types/exe.png"); }
-.file-block.file-doc .file-icon,
-.file-block.file-docx .file-icon { background-image: url("img/types/doc.png"); }
-.file-block.file-ppt .file-icon,
-.file-block.file-pptx .file-icon { background-image: url("img/types/ppt.png"); }
-.file-block.file-xls .file-icon,
-.file-block.file-xlsx .file-icon { background-image: url("img/types/xls.png"); }
-.file-block.file-pdf .file-icon { background-image: url("img/types/pdf.png"); }
-.file-block.file-js .file-icon { background-image: url("img/types/js.png"); }
-.file-block.file-html .file-icon { background-image: url("img/types/html.png"); }
-.file-block.file-xml .file-icon { background-image: url("img/types/xml.png"); }
-.file-block.file-py .file-icon { background-image: url("img/types/py.png"); }
-.file-block.file-txt .file-icon { background-image: url("img/types/txt.png"); }
+.file-browser .file-block.previous .file-icon { background-image: url("img/types/previous.png"); }
+.file-browser .file-block.folder .file-icon { background-image: url("img/types/folder.png"); }
+.file-browser .file-block.file-png .file-icon,
+.file-browser .file-block.file-bmp .file-icon,
+.file-browser .file-block.file-jpeg .file-icon,
+.file-browser .file-block.file-gif .file-icon,
+.file-browser .file-block.file-tiff .file-icon,
+.file-browser .file-block.file-jpg .file-icon,
+.file-browser .file-block.file-png .file-icon { background-image: url("img/types/img.png"); }
+.file-browser .file-block.file-mp3 .file-icon,
+.file-browser .file-block.file-wav .file-icon,
+.file-browser .file-block.file-oga .file-icon { background-image: url("img/types/audio.png"); }
+.file-browser .file-block.file-mp4 .file-icon,
+.file-browser .file-block.file-mpg .file-icon,
+.file-browser .file-block.file-mov .file-icon,
+.file-browser .file-block.file-webm .file-icon,
+.file-browser .file-block.file-ogg .file-icon,
+.file-browser .file-block.file-ogv .file-icon,
+.file-browser .file-block.file-wmv .file-icon,
+.file-browser .file-block.file-flv .file-icon,
+.file-browser .file-block.file-ts .file-icon,
+.file-browser .file-block.file-mkv .file-icon,
+.file-browser .file-block.file-m4v .file-icon,
+.file-browser .file-block.file-avi .file-icon { background-image: url("img/types/video.png"); }
+.file-browser .file-block.file-gz .file-icon,
+.file-browser .file-block.file-bz2 .file-icon,
+.file-browser .file-block.file-7z .file-icon,
+.file-browser .file-block.file-zip .file-icon { background-image: url("img/types/zip.png"); }
+.file-browser .file-block.file-exe .file-icon { background-image: url("img/types/exe.png"); }
+.file-browser .file-block.file-doc .file-icon,
+.file-browser .file-block.file-docx .file-icon { background-image: url("img/types/doc.png"); }
+.file-browser .file-block.file-ppt .file-icon,
+.file-browser .file-block.file-pptx .file-icon { background-image: url("img/types/ppt.png"); }
+.file-browser .file-block.file-xls .file-icon,
+.file-browser .file-block.file-xlsx .file-icon { background-image: url("img/types/xls.png"); }
+.file-browser .file-block.file-pdf .file-icon { background-image: url("img/types/pdf.png"); }
+.file-browser .file-block.file-js .file-icon { background-image: url("img/types/js.png"); }
+.file-browser .file-block.file-html .file-icon { background-image: url("img/types/html.png"); }
+.file-browser .file-block.file-xml .file-icon { background-image: url("img/types/xml.png"); }
+.file-browser .file-block.file-py .file-icon { background-image: url("img/types/py.png"); }
+.file-browser .file-block.file-txt .file-icon { background-image: url("img/types/txt.png"); }
 
-.file-block .file-delete,
-.file-block .file-rename,
-.file-block .file-move {
+.file-browser .file-block .file-delete,
+.file-browser .file-block .file-rename,
+.file-browser .file-block .file-move {
     top: 4px;
     right: 4px;
     width: 24px;
@@ -136,24 +385,24 @@ select option:disabled {
     background: rgba(255, 255, 255, 0.8) none 50% 50% no-repeat;
     border-radius: 4px;
 }
-.file-block:hover .file-delete,
-.file-block:hover .file-rename,
-.file-block:hover .file-move {
+.file-browser .file-block:hover .file-delete,
+.file-browser .file-block:hover .file-rename,
+.file-browser .file-block:hover .file-move {
     display: block;
 }
-.file-block .file-delete {
+.file-browser .file-block .file-delete {
     background-image: url("img/icons/delete.png");
 }
-.file-block .file-rename {
+.file-browser .file-block .file-rename {
     top: 32px;
     background-image: url("img/icons/edit.png");
 }
-.file-block .file-move {
+.file-browser .file-block .file-move {
     right: 32px;
     background-image: url("img/icons/move.png");
 }
 
-.file-block .file-info {
+.file-browser .file-block .file-info {
     margin: 1px 0;
     padding: 5px;
     top: 100%;
@@ -166,17 +415,17 @@ select option:disabled {
     border-radius: 6px;
     z-index: 1;
 }
-.file-block:hover .file-info {
+.file-browser .file-block:hover .file-info {
     display: block;
 }
-.file-block:hover .file-info:hover {
+.file-browser .file-block:hover .file-info:hover {
     display: none;
 }
 
 
-.buttons-bar .btn-add-folder,
-.buttons-bar .btn-add-file { background-image: url("img/icons/add.png"); }
-.buttons-bar .btn-search { background-image: url("img/icons/search.png"); }
+.file-browser .buttons-bar .btn-add-folder,
+.file-browser .buttons-bar .btn-add-file { background-image: url("img/icons/add.png"); }
+.file-browser .buttons-bar .btn-search { background-image: url("img/icons/search.png"); }
 
 #fm_drop_zone {
     margin: 10px;
@@ -219,9 +468,16 @@ select option:disabled {
     display: none;
 }
 
-
-
-
-
-
-
+/* overlay windows */
+.file-browser-overlay .search-results {
+    margin-bottom: 10px;
+}
+.file-browser-overlay .search-results p {
+    margin: 5px -10px;
+    padding: 4px 10px;
+    background: rgba(128, 128, 128, 0.25);
+}
+.file-browser-overlay .search-results ul {
+    margin: 5px 10px 10px 20px;
+    padding: 0;
+}

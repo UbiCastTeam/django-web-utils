@@ -1,0 +1,22 @@
+{% load i18n %}{% load staticfiles %}<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" class="file-browser-default">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="DC.Format" content="text/html"/>
+    <meta name="DC.Title" content="{% trans "File browser" %}"/>
+    <meta name="DC.Creator" content="Stephane Diemer"/>
+    <meta name="copyright" content="Stephane Diemer 2015"/>
+
+    <title>{% trans "File browser" %}</title>
+    
+    <link rel="stylesheet" type="text/css" href="{% static 'file_browser/odm/odm.css' %}?_=1"/>
+    <script type="text/javascript" src="{% static 'file_browser/jquery-1.11.2.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'file_browser/utils.js' %}"></script>
+    <script type="text/javascript" src="{% static 'file_browser/odm/odm.js' %}"></script>
+    {% include "file_browser/script.html" %}
+</head>
+
+<body class="full-page-layout">
+    {% include "file_browser/body.html" %}
+</body>
+</html>
