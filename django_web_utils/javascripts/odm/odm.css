@@ -175,10 +175,12 @@
     border: 0 none;
     vertical-align: top;
 }
-.odm-main div.odm-element {
+.odm-main div.odm-element,
+.odm-main form.odm-element {
     padding: 10px;
 }
 .odm-main div.odm-element,
+.odm-main form.odm-element,
 .odm-main iframe.odm-element {
     margin: 0;
     background: #fff;
