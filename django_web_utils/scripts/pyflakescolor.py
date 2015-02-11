@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Author: Stéphane Diemer stephane.diemer@ubicast.eu
+
+from __future__ import print_function
 import os
 import sys
 import subprocess
-
 
 class PyflakesColor(object):
     RED = '\033[91m'
@@ -23,10 +25,14 @@ class PyflakesColor(object):
             paths_to_check = args[1:]
         else:
             paths_to_check = '.'
+        FNULL = open(os.devnull, 'w')
+        pyflakes_present = subprocess.call(['which', 'pyflakes'], stdout=FNULL, stderr=FNULL) == 0
+        if not pyflakes_present:
+            print('Please install pyflakes')
+            sys.exit(1)
         error, warning, info, other = self.pyflakes_check(paths_to_check)
-        print 'Errors: %s, warnings: %s, information: %s, others: %s' %(error, warning, info, other)
-        #print 'returncode:', self.returncode
-        sys.exit(self.returncode)
+        print('Errors: %s, warnings: %s, information: %s, others: %s' % (error, warning, info, other))
+        return self.returncode
     
     def pyflakes_check(self, paths, display_result_for_all_files=False):
         error = warning = info = other = 0
@@ -34,7 +40,7 @@ class PyflakesColor(object):
             paths = [paths]
         for path in paths:
             if not os.path.exists(path):
-                print '%sPath "%s" does not exists%s' % (self.YELLOW, path, self.DEFAULT)
+                print('%sPath "%s" does not exists%s' % (self.YELLOW, path, self.DEFAULT))
                 continue
             if os.path.isfile(path):
                 base_path = os.path.dirname(path)
@@ -51,17 +57,20 @@ class PyflakesColor(object):
                         text = 'file: %s \t path: %s' % (picked_name, picked_path)
                         p = subprocess.Popen(['pyflakes', picked_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         out, err = p.communicate()
+                        #decode from bytes to unicode
+                        out = out.decode()
+                        err = err.decode()
                         if p.returncode > self.returncode:
                             self.returncode = p.returncode
                         lines = out.split('\n') if out else list()
                         if err:
-                            lines.extend(['        %s' %l if 'invalid syntax' not in l else l for l in err.split('\n')])
+                            lines.extend(['        %s' % l if 'invalid syntax' not in l else l for l in err.split('\n')])
                         if len(lines) == 0 or (len(lines) == 1 and lines[0].strip() == ''):
                             if display_result_for_all_files:
-                                print '%s%s%s' % (self.BLUE, text, self.DEFAULT)
-                                print '    File is OK\n'
+                                print('%s%s%s' % (self.BLUE, text, self.DEFAULT))
+                                print('    File is OK\n')
                         else:
-                            print '%s%s%s' %(self.BLUE, text, self.DEFAULT)
+                            print('%s%s%s' % (self.BLUE, text, self.DEFAULT))
                             for line in lines:
                                 if not line.strip():
                                     continue
@@ -78,8 +87,7 @@ class PyflakesColor(object):
                                 else:
                                     color = self.DEFAULT
                                     other += 1
-                                print '    %s%s%s' % (color, line, self.DEFAULT)
-                            print ''
+                                print('    %s%s%s' % (color, line, self.DEFAULT))
                 elif os.path.isdir(picked_path):
                     e, w, i, o = self.pyflakes_check(picked_path, display_result_for_all_files)
                     error += e
@@ -91,5 +99,4 @@ class PyflakesColor(object):
 
 if __name__ == '__main__':
     pyflakes_color = PyflakesColor()
-    pyflakes_color.run(*sys.argv)
-
+    sys.exit(pyflakes_color.run(*sys.argv))

@@ -1,22 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Author: Stéphane Diemer stephane.diemer@ubicast.eu
+
 import os
 import sys
 
 
 class Replacer(object):
-    PATH = '/sources/mediaserver-work/mediaserver/mediaserver/'
-    #PATH = '/sources/mediaserver-work/mediaserver-monitor/'
-    #PATH = '/sources/celerity/'
-    #PATH = '/sources/skyreach/trunk/skyreach_site/'
-    #PATH = '/sources/easycast/trunk/'
-    #PATH = '/sources/webinar_app/core/'
-    #PATH = '/sources/ubicast-website-work/website/ubicast/'
+    PATH = '/sources/project/'
     REPLACEMENT_LIST = [
-        ('mimetype=', 'content_type='),
+        ('a string', 'replacement'),
     ]
     
-    IGNORED_FILES = ['~', '.svn', '.mo', '.po', '.pyc', '.jpg', '.bmp', '.png', '.gif', '.ttf', '.sql', '.js', '.css']
+    IGNORED_FILES = ['~', '.svn', '.git', '.mo', '.po', '.pyc', '.jpg', '.bmp', '.png', '.gif', '.ttf', '.sql']
     PRINT_IGNORED = False
     
     RED = '\033[91m'
@@ -53,7 +49,7 @@ class Replacer(object):
         self.replace(path, replacement_list)
     
     def replace(self, path, replacement_list):
-        print u'Replacement list is:\n    %s' % u'\n    '.join([u'"%s%s%s" -> "%s%s%s"' %(self.TEAL, r[0], self.DEFAULT, self.PURPLE, r[1], self.DEFAULT) for r in replacement_list])
+        print u'Replacement list is:\n    %s' % u'\n    '.join([u'"%s%s%s" -> "%s%s%s"' % (self.TEAL, r[0], self.DEFAULT, self.PURPLE, r[1], self.DEFAULT) for r in replacement_list])
         print u'Starting script'
         analysed, changed, ignored = self._replace(path, replacement_list)
         print u'%s files analysed, %s files changed and %s files ignored' % (analysed, changed, ignored)
@@ -116,4 +112,3 @@ class Replacer(object):
 if __name__ == '__main__':
     replacer = Replacer()
     replacer.run(*sys.argv)
-
