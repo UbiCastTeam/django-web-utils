@@ -164,17 +164,9 @@ html.file-browser-default {
 .file-browser .menu-place .closed ul ul {
     display: block;
 }
-.file-browser .menu-place .active a {
+.file-browser .menu-place .active > a {
     color: #000;
     font-weight: bold;
-}
-.file-browser .menu-place .active li a {
-    color: #0a83d4;
-    font-weight: normal;
-}
-.file-browser .menu-place .active li a:hover {
-    color: #29427a;
-    font-weight: normal;
 }
 .file-browser .menu-place .invisible > a,
 .file-browser .menu-place .disabled > a {
