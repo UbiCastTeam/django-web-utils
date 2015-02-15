@@ -135,7 +135,7 @@ def storage_content(request):
                 # allow previes for images < 10MB
                 file_properties['preview'] = True
             # get modification time
-            mdate = defaultfilters.date(datetime.datetime.fromtimestamp(os.path.getmtime(current_path)), _('Y/m/j H:i'))
+            mdate = datetime.datetime.fromtimestamp(os.path.getmtime(current_path)).strftime('%Y-%m-%d %H:%M')
             file_properties['mdate'] = mdate
             files.append(file_properties)
         # else: socket or other, ignored
