@@ -110,11 +110,6 @@ FileBrowser.prototype.init = function () {
     $(window).bind("hashchange", function () {
         obj.load_content();
     });
-    // keyboard events
-    var options = {
-        disable_in_input: true,
-        propagate: false
-    };
 };
 
 FileBrowser.prototype.contains_files = function (evt) {
@@ -140,7 +135,7 @@ FileBrowser.prototype.load_dirs = function () {
         error: function (jqXHR, textStatus, errorThrown) {
             obj.parse_dirs_response({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : this.translate("server unreachable"))+")"
+                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
             });
         }
     });
@@ -246,7 +241,7 @@ FileBrowser.prototype.load_content = function () {
         error: function (jqXHR, textStatus, errorThrown) {
             obj.parse_content_response({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : this.translate("server unreachable"))+")"
+                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
             });
         }
     });
@@ -450,13 +445,12 @@ FileBrowser.prototype.execute_action = function (data, cb) {
         error: function (jqXHR, textStatus, errorThrown) {
             obj.on_action_executed({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : this.translate("server unreachable"))+")"
+                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
             });
         }
     });
 };
 FileBrowser.prototype.on_action_executed = function (response) {
-    var obj = this;
     this.overlay.show({
         title: " ",
         html: "<div class=\"file-browser-overlay message-"+(response.success ? "success" : "error")+"\">"+response.message+"</div>",
@@ -518,7 +512,7 @@ FileBrowser.prototype.on_files_drop = function (evt) {
             obj.$drop_zone.attr("class", "");
             obj.on_action_executed({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : this.translate("server unreachable"))+")"
+                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
             });
         }
     });
@@ -709,7 +703,7 @@ FileBrowser.prototype.move_files = function (files) {
                 for (var i=0; i < selected.length; i++) {
                     data["name_"+i] = selected[i].name;
                 }
-                obj.execute_action(data, function (response) {
+                obj.execute_action(data, function () {
                     // refresh dirs tree if a dir has been moved
                     if (banned.length > 0)
                         obj.load_dirs();
@@ -802,7 +796,7 @@ FileBrowser.prototype.search = function () {
                 $("#search_results", obj.search_form).html(html);
                 $("#search_results a.dir-link", obj.search_form).click({ obj: obj }, function(evt) {
                     evt.data.obj.overlay.hide();
-                })
+                });
                 obj.open_search_form();
             });
             return false;
