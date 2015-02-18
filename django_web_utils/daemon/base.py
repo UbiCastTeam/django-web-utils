@@ -265,10 +265,10 @@ class BaseDaemon(object):
                     'level': 'WARNING',
                 },
                 'urllib3': {
-                    'level': 'WARNING',
+                    'level': 'ERROR',
                 },
                 'requests.packages.urllib3': {
-                    'level': 'WARNING',
+                    'level': 'ERROR',
                 },
             },
             'root': {
