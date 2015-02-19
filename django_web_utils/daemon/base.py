@@ -278,6 +278,8 @@ class BaseDaemon(object):
             }
         }
         logging.config.dictConfig(LOGGING_CONF)
+        if self._log_in_file:
+            logging.captureWarnings(False)
         # reset all loggers config
         for key, lg in loggers.iteritems():
             lg.handlers = []
