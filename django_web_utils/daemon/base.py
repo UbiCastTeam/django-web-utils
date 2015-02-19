@@ -237,7 +237,7 @@ class BaseDaemon(object):
 
         loggers = logging.Logger.manager.loggerDict
         if loggers.keys():
-            logger.info('Resetting loggers.')
+            logger.debug('Resetting loggers.')
 
         # configure logging and disable all existing loggers
         LOGGING_CONF = {
