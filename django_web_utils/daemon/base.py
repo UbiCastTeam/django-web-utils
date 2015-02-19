@@ -193,8 +193,8 @@ class BaseDaemon(object):
             try:
                 if self._daemonize:
                     self._daemonize_daemon()
-                    if not self._simultaneous:
-                        self._write_pid()
+                if not self._simultaneous:
+                    self._write_pid()
             except Exception:
                 print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
                 self.exit(134)
