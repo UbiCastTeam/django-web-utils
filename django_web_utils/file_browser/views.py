@@ -5,7 +5,6 @@ import datetime
 from PIL import Image
 # Django
 from django.shortcuts import render
-from django.template import defaultfilters
 from django.http import Http404, HttpResponse
 from django.utils.translation import ugettext_lazy as _
 # Django web utils
