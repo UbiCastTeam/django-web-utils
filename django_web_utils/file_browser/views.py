@@ -3,13 +3,16 @@
 import os
 import datetime
 from PIL import Image
+import logging
+logger = logging.getLogger('djwutils.file_browser.views')
 # Django
 from django.shortcuts import render
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.templatetags.static import static
 from django.utils.translation import ugettext_lazy as _
 # Django web utils
 from django_web_utils import json_utils
-from django_web_utils.files_utils import get_unit, get_size
+from django_web_utils.files_utils import get_unit
 from django_web_utils.file_browser import config
 
 
@@ -30,14 +33,18 @@ def storage_manager(request):
 # ----------------------------------------------------------------------------
 def recursive_dirs(path):
     dirs = list()
-    files_names = os.listdir(path)
-    files_names.sort(lambda a, b: cmp(a.lower(), b.lower()))
-    for file_name in files_names:
-        if '\'' in file_name or '"' in file_name:
-            continue
-        current_path = os.path.join(path, file_name)
-        if os.path.isdir(current_path):
-            dirs.append(dict(dir_name=file_name, sub_dirs=recursive_dirs(current_path)))
+    try:
+        files_names = os.listdir(path)
+    except OSError, e:
+        logger.error(e)
+    else:
+        files_names.sort(lambda a, b: cmp(a.lower(), b.lower()))
+        for file_name in files_names:
+            if '\'' in file_name or '"' in file_name:
+                continue
+            current_path = os.path.join(path, file_name)
+            if os.path.isdir(current_path):
+                dirs.append(dict(dir_name=file_name, sub_dirs=recursive_dirs(current_path)))
     return dirs
 
 
@@ -96,6 +103,26 @@ def sort_by_mdate(a, b, asc=True):
         return diff
 
 
+def get_info(path):
+    size = 0
+    nb_files = 0
+    nb_dirs = 0
+    if os.path.isfile(path):
+        size = os.path.getsize(path)
+        nb_files = 1
+    elif os.path.isdir(path):
+        nb_dirs = 1
+        for root, dirs, files in os.walk(path):
+            for name in files:
+                try:
+                    size += os.path.getsize(os.path.join(root, name))
+                except OSError:
+                    pass
+            nb_files += len(files)
+            nb_dirs += len(dirs)
+    return size, nb_files, nb_dirs
+
+
 @config.view_decorator
 def storage_content(request):
     base_path = config.BASE_PATH
@@ -105,18 +132,26 @@ def storage_content(request):
     if not os.path.exists(folder_path):
         return json_utils.failure_response(message=unicode(_('Folder "%s" does not exist') % path))
 
-    files_names = os.listdir(folder_path)
+    try:
+        files_names = os.listdir(folder_path)
+    except OSError, e:
+        logger.error(e)
+        return json_utils.failure_response(message=unicode(e))
     if '.htaccess' in files_names:
         files_names.remove('.htaccess')
 
     # content list
     total_size = 0
+    folders_count = 0
+    files_count = 0
     files = list()
     folder_index = 0
     for file_name in files_names:
         current_path = os.path.join(folder_path, file_name)
-        size = get_size(current_path)
+        size, nb_files, nb_dirs = get_info(current_path)
         total_size += size
+        files_count += nb_files
+        folders_count += nb_dirs
         file_properties = {
             'name': file_name,
             'size': size,
@@ -139,8 +174,6 @@ def storage_content(request):
             files.append(file_properties)
         # else: socket or other, ignored
     total_size = u'%s %s' % get_unit(total_size)
-    folders_count = folder_index
-    files_count = len(files) - folder_index
 
     # ordering
     order = request.GET.get('order', 'name-asc')
@@ -185,14 +218,17 @@ def storage_img_preview(request):
     if path.startswith('/'):
         path = path[1:]
     if not path:
-        raise Http404()
+        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
     file_path = os.path.join(base_path, path)
     if not os.path.exists(file_path):
-        raise Http404()
+        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
 
-    image = Image.open(file_path)
-    image.load()
-    image.thumbnail((200, 64), Image.ANTIALIAS)
+    try:
+        image = Image.open(file_path)
+        image.load()
+        image.thumbnail((200, 64), Image.ANTIALIAS)
+    except Exception:
+        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
 
     if file_path.lower().endswith('jpg') or file_path.lower().endswith('jpeg'):
         response = HttpResponse(content_type='image/jpeg')
