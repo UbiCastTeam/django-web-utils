@@ -24,12 +24,11 @@ def clear_log(path):
     if not os.path.exists(path):
         return True, unicode(_('Log file cleared.'))
     try:
-        f = open(path, 'w+')
-        f.write(u'')
-        f.close()
+        with open(path, 'w+') as fd:
+            fd.write('')
         return True, unicode(_('Log file cleared.'))
     except OSError, e:
-        return False, unicode(_('Can not clear log file. Error is: %s') %e)
+        return False, unicode(_('Can not clear log file: %s') % e)
 
 
 def execute_daemon_command(daemon_class, command, args=None):
@@ -42,19 +41,19 @@ def execute_daemon_command(daemon_class, command, args=None):
     if path.endswith('pyc'):
         path = path[:-1]
     if not os.path.isfile(path):
-        logger.error('The daemon script cannot be found. Path: %s' %path)
+        logger.error('The daemon script cannot be found. Path: %s' % path)
         return False, unicode(_('The daemon script cannot be found.'))
     
     if command == 'clear_log':
-        log_path = os.path.join(daemon_class.LOG_DIR, '%s.log' %name)
+        log_path = os.path.join(daemon_class.LOG_DIR, '%s.log' % name)
         return clear_log(log_path)
     
     error = ''
     try:
-        cmd = 'python %s %s' %(path, command)
+        cmd = 'python %s %s' % (path, command)
         if args:
             for a in args:
-                cmd += ' %s' %a
+                cmd += ' %s' % a
         result = os.system(cmd)
     except Exception, e:
         result = -1
@@ -65,6 +64,7 @@ def execute_daemon_command(daemon_class, command, args=None):
     else:
         return True, ''
 
+
 def daemons_statuses(daemons, date_adjust_fct=None):
     # daemons is a dict containing a dict for each daemon with the following fields:
     # [daemon_class], [pid_path], [log_path]
@@ -73,7 +73,7 @@ def daemons_statuses(daemons, date_adjust_fct=None):
         # check if daemon is launched
         pid_path = daemon.get('pid_path')
         if not pid_path and daemon.get('daemon_class'):
-            pid_path = os.path.join(daemon['daemon_class'].PID_DIR, '%s.pid' %name)
+            pid_path = os.path.join(daemon['daemon_class'].PID_DIR, '%s.pid' % name)
         running = None
         if pid_path and os.path.exists(pid_path):
             try:
@@ -82,12 +82,12 @@ def daemons_statuses(daemons, date_adjust_fct=None):
                 pidfile.close()
             except Exception:
                 pid = None
-            running = pid and os.system('ps -p %s > /dev/null' %pid) == 0
+            running = pid and os.system('ps -p %s > /dev/null' % pid) == 0
         
         # get log file properties
         log_path = daemon.get('log_path')
         if not log_path and daemon.get('daemon_class'):
-            log_path = os.path.join(daemon['daemon_class'].LOG_DIR, '%s.log' %name)
+            log_path = os.path.join(daemon['daemon_class'].LOG_DIR, '%s.log' % name)
         size = 0
         unit = ''
         mtime = ''
@@ -99,12 +99,13 @@ def daemons_statuses(daemons, date_adjust_fct=None):
                 mtime = date_adjust_fct(mtime)
             mtime = defaultfilters.date(mtime, _('l, F jS, Y, H:i'))
         data[name] = dict(
-            running = running,
-            log_size = size,
-            log_unit = unicode(unit),
-            log_mtime = mtime,
+            running=running,
+            log_size=size,
+            log_unit=unicode(unit),
+            log_mtime=mtime,
         )
     return data
+
 
 def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **kwargs):
     # clear log
@@ -130,7 +131,7 @@ def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **k
         f.close()
         lines = content.count('\n')
         if tail and lines > 50:
-            content = '...\n%s' %('\n'.join(content.split('\n')[-50:]))
+            content = '...\n%s' % ('\n'.join(content.split('\n')[-50:]))
         size, unit = get_unit(os.path.getsize(path))
         mtime = os.path.getmtime(path)
         mtime = datetime.datetime.fromtimestamp(mtime)
@@ -152,6 +153,7 @@ def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **k
         tplt_args.update(kwargs)
     return render_to_response(template, tplt_args, context_instance=RequestContext(request))
 
+
 def edit_conf_view(request, template, url, path, default_conf_path=None, defaults=None, date_adjust_fct=None, **kwargs):
     content = ''
     # save modifications
@@ -162,12 +164,12 @@ def edit_conf_view(request, template, url, path, default_conf_path=None, default
             try:
                 os.makedirs(os.path.dirname(path))
             except OSError, e:
-                messages.error(request, u'%s\n%s' %(_('Unable to create folder for configuration file. Error is:'), e))
+                messages.error(request, u'%s\n%s' % (_('Unable to create folder for configuration file. Error is:'), e))
         if content:
             try:
                 f = open(path, 'w+')
             except Exception, e:
-                messages.error(request, u'%s\n%s' %(_('Unable to write configuration file. Error is:'), e))
+                messages.error(request, u'%s\n%s' % (_('Unable to write configuration file. Error is:'), e))
             else:
                 f.write(content.encode('utf-8'))
                 f.close()
@@ -211,10 +213,10 @@ def edit_conf_view(request, template, url, path, default_conf_path=None, default
                 continue
             val = defaults[key]
             if isinstance(val, str):
-                val = u'\'%s\'' %val
+                val = u'\'%s\'' % val
             elif isinstance(val, unicode):
-                val = u'u\'%s\'' %val
-            default_conf += u'%s = %s\n' %(key, val)
+                val = u'u\'%s\'' % val
+            default_conf += u'%s = %s\n' % (key, val)
     
     tplt_args = {
         'content': content,
@@ -229,4 +231,3 @@ def edit_conf_view(request, template, url, path, default_conf_path=None, default
     if kwargs:
         tplt_args.update(kwargs)
     return render_to_response(template, tplt_args, context_instance=RequestContext(request))
-
