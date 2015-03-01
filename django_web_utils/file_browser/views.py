@@ -109,9 +109,7 @@ def get_info(path):
     nb_dirs = 0
     if os.path.isfile(path):
         size = os.path.getsize(path)
-        nb_files = 1
     elif os.path.isdir(path):
-        nb_dirs = 1
         for root, dirs, files in os.walk(path):
             for name in files:
                 try:
@@ -142,27 +140,31 @@ def storage_content(request):
 
     # content list
     total_size = 0
-    folders_count = 0
-    files_count = 0
+    total_nb_dirs = 0
+    total_nb_files = 0
     files = list()
     folder_index = 0
     for file_name in files_names:
         current_path = os.path.join(folder_path, file_name)
         size, nb_files, nb_dirs = get_info(current_path)
         total_size += size
-        files_count += nb_files
-        folders_count += nb_dirs
+        total_nb_files += nb_files
+        total_nb_dirs += nb_dirs
         file_properties = {
             'name': file_name,
             'size': size,
             'sizeh': u'%s %s' % get_unit(size),
             'isdir': False,
+            'nb_files': nb_files,
+            'nb_dirs': nb_dirs,
         }
         if os.path.isdir(current_path):
+            total_nb_dirs += 1
             file_properties['isdir'] = True
             files.insert(folder_index, file_properties)
             folder_index += 1
         elif os.path.isfile(current_path):
+            total_nb_files += 1
             splitted = file_name.split('.')
             file_properties['ext'] = splitted[-1].lower() if len(splitted) > 0 else ''
             if file_properties['ext'] in IMAGES_EXTENSION and size < 10485760:
@@ -204,8 +206,8 @@ def storage_content(request):
         files=files,
         path=path,
         total_size=total_size,
-        folders_count=folders_count,
-        files_count=files_count,
+        total_nb_dirs=total_nb_dirs,
+        total_nb_files=total_nb_files,
     )
 
 

@@ -19,8 +19,8 @@ function FileBrowser(options) {
     this.$buttons = null;
     this.$place = null;
     this.$total_size = null;
-    this.$folders_count = null;
-    this.$files_count = null;
+    this.$total_nb_dirs = null;
+    this.$total_nb_files = null;
     this.$drop_zone = null;
     this.overlay = null;
     this.drag_entered = false;
@@ -57,8 +57,8 @@ FileBrowser.prototype.init = function () {
     this.$menu_root = $(".menu-place p");
     this.$place = $("#fm_files_list");
     this.$total_size = $("#fm_total_size");
-    this.$folders_count = $("#fm_folders_count");
-    this.$files_count = $("#fm_files_count");
+    this.$total_nb_dirs = $("#fm_total_nb_dirs");
+    this.$total_nb_files = $("#fm_total_nb_files");
     this.$drop_zone = $("#fm_drop_zone");
     // load folder content
     this.ordering = utils.get_cookie("browser-ordering", this.ordering);
@@ -288,6 +288,10 @@ FileBrowser.prototype.parse_content_response = function (response) {
                 html +=     "<span class=\"file-size\">"+this.translate("Size:")+" "+file.sizeh+"</span>";
                 if (!file.isdir)
                     html += "<span class=\"file-mdate\">"+this.translate("Last modification:")+"<br/>"+(file.mdate ? file.mdate : "?")+"</span>";
+                else {
+                    html += "<span class=\"file-nb-files\">"+this.translate("Files:")+" "+file.nb_files+"</span>";
+                    html += "<span class=\"file-nb-dirs\">"+this.translate("Folders:")+" "+file.nb_dirs+"</span>";
+                }
                 html += "</span>";
             }
             html += "</a>";
@@ -334,8 +338,8 @@ FileBrowser.prototype.parse_content_response = function (response) {
     }
     this.$tree.html(html_path);
     this.$total_size.html(response.total_size);
-    this.$folders_count.html(response.folders_count);
-    this.$files_count.html(response.files_count);
+    this.$total_nb_dirs.html(response.total_nb_dirs);
+    this.$total_nb_files.html(response.total_nb_files);
 };
 
 FileBrowser.prototype.refresh = function () {
