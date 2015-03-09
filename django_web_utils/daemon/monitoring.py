@@ -12,7 +12,7 @@ logger = logging.getLogger('djwutils.daemon.monitoring')
 # Django
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
-from django.template import RequestContext, defaultfilters
+from django.template import RequestContext
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 # django_web_utils
@@ -97,7 +97,7 @@ def daemons_statuses(daemons, date_adjust_fct=None):
             mtime = datetime.datetime.fromtimestamp(mtime)
             if date_adjust_fct:
                 mtime = date_adjust_fct(mtime)
-            mtime = defaultfilters.date(mtime, _('l, F jS, Y, H:i'))
+            mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
         data[name] = dict(
             running=running,
             log_size=size,
@@ -137,7 +137,7 @@ def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **k
         mtime = datetime.datetime.fromtimestamp(mtime)
         if date_adjust_fct:
             mtime = date_adjust_fct(mtime)
-        mtime = defaultfilters.date(mtime, _('l, F jS, Y, H:i'))
+        mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
     bottom_bar = lines > 20
     
     tplt_args = {
@@ -198,7 +198,7 @@ def edit_conf_view(request, template, url, path, default_conf_path=None, default
         mtime = datetime.datetime.fromtimestamp(mtime)
         if date_adjust_fct:
             mtime = date_adjust_fct(mtime)
-        mtime = defaultfilters.date(mtime, _('l, F jS, Y, H:i'))
+        mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
     # get default confdefault_conf_module
     default_conf = u''
     if default_conf_path and os.path.isfile(default_conf_path):
