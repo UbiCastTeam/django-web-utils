@@ -86,7 +86,7 @@ def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
     # This call to open is guaranteed to return the lowest file descriptor,
     # which will be 0 (stdin), since it was closed above.
     try:
-        fd = os.open(redirect_to or os.devnull, os.O_CREAT + os.O_RDWR)  # standard input (0)
+        fd = os.open(redirect_to or os.devnull, os.O_CREAT | os.O_RDWR | os.O_APPEND)  # standard input (0)
     except OSError:
         fd = None
     
