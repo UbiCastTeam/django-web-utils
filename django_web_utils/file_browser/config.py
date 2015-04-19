@@ -18,8 +18,20 @@ if view_decorator:
 else:
     view_decorator = user_passes_test(lambda user: user.is_staff)
 
-BASE_PATH = getattr(settings, 'FILE_BROWSER_BASE_PATH')
-BASE_URL = getattr(settings, 'FILE_BROWSER_BASE_URL')
-if not BASE_URL.endswith('/'):
-    BASE_URL += '/'
 BASE_TEMPLATE = getattr(settings, 'FILE_BROWSER_BASE_TEMPLATE', None)
+
+
+def get_base_path(namespace=None):
+    if namespace:
+        return getattr(settings, 'FILE_BROWSER_DIRS')[namespace][0]
+    return getattr(settings, 'FILE_BROWSER_BASE_PATH')
+
+
+def get_base_url(namespace=None):
+    if namespace:
+        url = getattr(settings, 'FILE_BROWSER_DIRS')[namespace][1]
+    else:
+        url = getattr(settings, 'FILE_BROWSER_BASE_URL')
+    if not url.endswith('/'):
+        url += '/'
+    return url

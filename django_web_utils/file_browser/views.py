@@ -22,10 +22,12 @@ IMAGES_EXTENSION = ['png', 'gif', 'bmp', 'tiff', 'jpg', 'jpeg']
 # storage_manager
 # ----------------------------------------------------------------------------
 @config.view_decorator
-def storage_manager(request):
+def storage_manager(request, namespace=None):
+    base_url = config.get_base_url(namespace)
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'file_browser/base.html'
     return render(request, tplt, {
-        'base_url': config.BASE_URL,
+        'base_url': base_url,
+        'namespace': namespace,
     })
 
 
@@ -49,8 +51,8 @@ def recursive_dirs(path):
 
 
 @config.view_decorator
-def storage_dirs(request):
-    base_path = config.BASE_PATH
+def storage_dirs(request, namespace=None):
+    base_path = config.get_base_path(namespace)
 
     if not os.path.exists(base_path):
         return json_utils.failure_response(message=unicode(_('Folder "%s" does not exist') % base_path))
@@ -122,8 +124,8 @@ def get_info(path):
 
 
 @config.view_decorator
-def storage_content(request):
-    base_path = config.BASE_PATH
+def storage_content(request, namespace=None):
+    base_path = config.get_base_path(namespace)
     path = request.GET.get('path')
     folder_path = base_path if not path else os.path.join(base_path, path)
     folder_path = folder_path.encode('utf-8')
@@ -215,8 +217,8 @@ def storage_content(request):
 # storage_img_preview
 # ----------------------------------------------------------------------------
 @config.view_decorator
-def storage_img_preview(request):
-    base_path = config.BASE_PATH
+def storage_img_preview(request, namespace=None):
+    base_path = config.get_base_path(namespace)
     path = request.GET.get('path')
     if path.startswith('/'):
         path = path[1:]

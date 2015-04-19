@@ -58,12 +58,12 @@ def clean_file_name(name):
 # storage_action
 # ----------------------------------------------------------------------------
 @config.view_decorator
-def storage_action(request):
+def storage_action(request, namespace=None):
     if request.method != 'POST':
         return json_utils.failure_response(message=unicode(_('Invalid request method.')), code=405)
 
-    base_path = config.BASE_PATH
-    base_url = config.BASE_URL
+    base_path = config.get_base_path(namespace)
+    base_url = config.get_base_url(namespace)
     action = request.POST.get('action')
     # upload form
     if action == 'upload' or action == 'upload-old':

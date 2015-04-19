@@ -7,9 +7,20 @@ This app allows you to manipulate files in a specific directory.
 
 ``FILE_BROWSER_BASE_PATH``:
 Base path to serve with file browser.
+Should be set when no namespace is used to inlucde app urls.
 
 ``FILE_BROWSER_BASE_URL``:
 Base url for served files.
+Should be set when no namespace is used to inlucde app urls.
+
+``FILE_BROWSER_DIRS``:
+Dict with tuple composed of base path and base url.
+Should be set when namespace is used to inlucde app urls.
+Use different namespaces to allow browsing in several base path.
+Example:
+
+    FILE_BROWSER_DIRS = {'namespace': ('path', 'url')}
+
 
 
 ## Optional settings
