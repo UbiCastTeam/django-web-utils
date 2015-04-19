@@ -126,6 +126,7 @@ def storage_content(request):
     base_path = config.BASE_PATH
     path = request.GET.get('path')
     folder_path = base_path if not path else os.path.join(base_path, path)
+    folder_path = folder_path.encode('utf-8')
 
     if not os.path.exists(folder_path):
         return json_utils.failure_response(message=unicode(_('Folder "%s" does not exist') % path))
@@ -221,7 +222,7 @@ def storage_img_preview(request):
         path = path[1:]
     if not path:
         return HttpResponseRedirect(static('file_browser/img/types/img.png'))
-    file_path = os.path.join(base_path, path)
+    file_path = os.path.join(base_path, path).encode('utf-8')
     if not os.path.exists(file_path):
         return HttpResponseRedirect(static('file_browser/img/types/img.png'))
 

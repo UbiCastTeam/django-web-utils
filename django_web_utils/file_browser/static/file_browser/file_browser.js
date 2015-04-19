@@ -537,6 +537,7 @@ FileBrowser.prototype.add_folder = function () {
     this.overlay.show({
         title: this.translate("Add a folder in")+" \""+this.translate("root")+"/"+this.path+"\"",
         html: this.folder_form,
+        no_button_focus: true,
         buttons: [
             { label: this.translate("Add"), callback: function () {
                 obj._add_folder();
@@ -544,6 +545,7 @@ FileBrowser.prototype.add_folder = function () {
             { label: this.translate("Cancel"), close: true }
         ]
     });
+    setTimeout(function () {$("#new_folder_name").focus();}, 20);
 };
 FileBrowser.prototype._add_folder = function () {
     var data = {
@@ -572,6 +574,7 @@ FileBrowser.prototype.add_file = function () {
     this.overlay.show({
         title: this.translate("Add a file in")+" \""+this.translate("root")+"/"+this.path+"\"",
         html: this.upload_form,
+        no_button_focus: true,
         buttons: [
             { label: this.translate("Add"), callback: function () {
                 obj.upload_form.submit();
@@ -579,14 +582,9 @@ FileBrowser.prototype.add_file = function () {
             { label: this.translate("Cancel"), close: true }
         ]
     });
+    setTimeout(function () {$("#file_to_add").focus();}, 20);
 };
-FileBrowser.prototype.rename_files = function (files) {
-    var selected = files;
-    if (!files)
-        selected = this.get_selected_files();
-    if (selected.length < 1)
-        return;
-    
+FileBrowser.prototype.rename_files = function () {
     var html;
     if (!this.rename_form) {
         html = "<form class=\"file-browser-overlay\" action=\""+this.action_url+"\" method=\"post\">";
@@ -606,6 +604,7 @@ FileBrowser.prototype.rename_files = function (files) {
                 path: obj.path,
                 new_name: $("#rename_new_name", obj.rename_form).val()
             };
+            var selected = evt.data.obj.get_selected_files();
             for (var i=0; i < selected.length; i++) {
                 data["name_"+i] = selected[i].name;
             }
@@ -614,16 +613,13 @@ FileBrowser.prototype.rename_files = function (files) {
             return false;
         });
     }
+
+    var selected = this.get_selected_files();
+    if (selected.length < 1)
+        return;
     
-    var title = this.translate("Rename");
-    if (selected.length == 1) {
-        title += " \""+selected[0].name+"\"";
-        $("#rename_new_name", this.rename_form).val(selected[0].name);
-    }
-    else {
-        title += " "+selected.length+" "+this.translate("files");
-        $("#rename_new_name", this.rename_form).val("");
-    }
+    var title = this.translate("Rename")+" \""+selected[0].name+"\"";
+    $("#rename_new_name", this.rename_form).val(selected[0].name);
     
     html = "";
     for (var i=0; i < selected.length; i++) {
@@ -635,6 +631,7 @@ FileBrowser.prototype.rename_files = function (files) {
     this.overlay.show({
         title: title,
         html: this.rename_form,
+        no_button_focus: true,
         buttons: [
             { label: this.translate("Rename"), callback: function () {
                 obj.rename_form.submit();
@@ -642,11 +639,10 @@ FileBrowser.prototype.rename_files = function (files) {
             { label: this.translate("Cancel"), close: true }
         ]
     });
+    setTimeout(function () {$("#rename_new_name").focus();}, 20);
 };
-FileBrowser.prototype.move_files = function (files) {
-    var selected = files;
-    if (!files)
-        selected = this.get_selected_files();
+FileBrowser.prototype.move_files = function () {
+    var selected = this.get_selected_files();
     if (selected.length < 1)
         return;
     
@@ -697,6 +693,7 @@ FileBrowser.prototype.move_files = function (files) {
     this.overlay.show({
         title: title,
         html: form,
+        no_button_focus: true,
         buttons: [
             { label: this.translate("Move"), callback: function () {
                 var data = {
@@ -716,11 +713,10 @@ FileBrowser.prototype.move_files = function (files) {
             { label: this.translate("Cancel"), close: true }
         ]
     });
+    setTimeout(function () {$("#move_select").focus();}, 20);
 };
-FileBrowser.prototype.delete_files = function (files) {
-    var selected = files;
-    if (!files)
-        selected = this.get_selected_files();
+FileBrowser.prototype.delete_files = function () {
+    var selected = this.get_selected_files();
     if (selected.length < 1)
         return;
     
@@ -744,6 +740,7 @@ FileBrowser.prototype.delete_files = function (files) {
     this.overlay.show({
         title: title,
         html: html,
+        no_button_focus: true,
         buttons: [
             { label: this.translate("Delete"), callback: function () {
                 var data = {
@@ -813,6 +810,7 @@ FileBrowser.prototype.open_search_form = function () {
     this.overlay.show({
         title: this.translate("Search"),
         html: this.search_form,
+        no_button_focus: true,
         buttons: [
             { label: this.translate("Search"), callback: function () {
                 obj.search_form.submit();
@@ -820,6 +818,7 @@ FileBrowser.prototype.open_search_form = function () {
             { label: this.translate("Cancel"), close: true }
         ]
     });
+    setTimeout(function () {$("#search").focus();}, 20);
 };
 
 

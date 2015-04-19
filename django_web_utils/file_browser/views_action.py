@@ -48,7 +48,7 @@ def recursive_remove(path):
 
 
 def clean_file_name(name):
-    """ This function is like the slugify function of Django, but it allow points and uppercase lettrs """
+    # This function is like the slugify function of Django, but it allows points and uppercase letters
     name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
     name = re.sub('[^\.\w\s-]', '', name).strip()
     name = re.sub('[-\s]+', '-', name)
@@ -87,6 +87,7 @@ def storage_action(request):
             dir_path = os.path.join(base_path, path)
         else:
             dir_path = base_path
+        dir_path = dir_path.encode('utf-8')
         # create upload folder
         if not os.path.exists(dir_path):
             try:
@@ -104,16 +105,13 @@ def storage_action(request):
         else:
             msg = unicode(_('The files have been uploaded and are available at the locations:'))
         for uploaded_file in request.FILES.values():
-            if '.' in uploaded_file.name:
-                splitted = uploaded_file.name.split('.')
-                file_name = clean_file_name('.'.join(splitted[:-1])) + '.' + clean_file_name(splitted[-1])
-            else:
-                file_name = clean_file_name(uploaded_file.name)
+            file_name = clean_file_name(uploaded_file.name).encode('utf-8')
+            if file_name == '.htaccess':
+                file_name += '_'
             # write uploaded file
-            f = open(os.path.join(dir_path, file_name), 'wb+')
-            for chunk in uploaded_file.chunks():
-                f.write(chunk)
-            f.close()
+            with open(os.path.join(dir_path, file_name), 'wb+') as fd:
+                for chunk in uploaded_file.chunks():
+                    fd.write(chunk)
             # get url
             if path:
                 url = base_url + path + '/' + file_name
@@ -173,6 +171,8 @@ def storage_action(request):
         for bpath, subdirs, files in os.walk(dir_path):
             for name in subdirs:
                 name = force_decode(name)
+                if '/' in name:
+                    name = name.split('/')[-1]
                 if search in name.lower():
                     dir_url = os.path.join(bpath, name)[len(base_path):].replace('\\', '/')
                     if dir_url:
@@ -184,6 +184,8 @@ def storage_action(request):
                     results += 1
             for name in files:
                 name = force_decode(name)
+                if '/' in name:
+                    name = name.split('/')[-1]
                 if search in name.lower():
                     dir_url = bpath[len(base_path):].replace('\\', '/')
                     if dir_url:
@@ -231,25 +233,22 @@ def storage_action(request):
             if not new_name:
                 return json_utils.failure_response(message=unicode(_('The name field is required.')))
             new_name = clean_file_name(new_name)
-            if '.' in new_name:
-                splitted = new_name.split('.')
-                new_name = clean_file_name('.'.join(splitted[:-1]))
-                new_name_ext = '.' + clean_file_name(splitted[-1])
-            else:
-                new_name = clean_file_name(new_name)
-                new_name_ext = ''
-            if not new_name:
+            new_name_ext = ''
+            if '.' in new_name and not (new_name.startswith('.') and new_name.count('.') == 1):
+                new_name_ext = '.' + new_name.split('.')[-1].lower()
+                new_name = new_name[:-len(new_name_ext)]
+            if not new_name or new_name == '.htaccess':
                 return json_utils.failure_response(message=unicode(_('Invalid name.')))
             # execute action
             index = 0
             for name in names:
-                src = os.path.join(dir_path, name)
+                src = os.path.join(dir_path, name).encode('utf-8')
                 if len(names) == 1:
                     new = '%s%s' % (new_name, new_name_ext)
                 else:
                     index += 1
                     new = '%s-%s%s' % (new_name, index, new_name_ext)
-                dest = os.path.join(dir_path, new)
+                dest = os.path.join(dir_path, new).encode('utf-8')
                 if src != dest:
                     if os.path.exists(dest):
                         return json_utils.failure_response(message=unicode(_('The file "%s" already exists.')) % new)
@@ -267,11 +266,12 @@ def storage_action(request):
                 new_path = base_path
             else:
                 new_path = os.path.join(base_path, new_path)
+            new_path = new_path.encode('utf-8')
             if not os.path.exists(new_path):
                 return json_utils.failure_response(message=unicode(_('Destination path does not exists.')))
             moved = 0
             for name in names:
-                src = os.path.join(dir_path, name)
+                src = os.path.join(dir_path, name).encode('utf-8')
                 if src != new_path and not (os.path.isfile(src) and os.path.dirname(src) == new_path):
                     try:
                         shutil.move(src, new_path)
@@ -280,13 +280,13 @@ def storage_action(request):
                         return json_utils.failure_response(message=u'%s %s' % (_('Unable to move file %s:') % name, e))
             return json_utils.success_response(message=unicode(_('%s file(s) successfully moved.') % moved))
 
-        else:  # delete
+        elif action == 'delete':
             files_deleted = 0
             dir_deleted = 0
             for name in names:
                 if not name:
                     continue
-                src = os.path.join(dir_path, name)
+                src = os.path.join(dir_path, name).encode('utf-8')
                 try:
                     fd, dd = recursive_remove(src)
                     files_deleted += fd
@@ -294,5 +294,8 @@ def storage_action(request):
                 except Exception, e:
                     return json_utils.failure_response(message=u'%s %s' % (_('Unable to delete file %s:') % name, e))
             return json_utils.success_response(message=unicode(_('%(f)s file(s) and %(d)s directory(ies) successfully deleted.') % dict(f=files_deleted, d=dir_deleted)))
+
+        else:
+            return json_utils.failure_response(message=unicode(_('Invalid action requested.')))
 
     return json_utils.failure_response(message=unicode(_('Unknown action.')))
