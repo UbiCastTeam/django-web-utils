@@ -1,6 +1,6 @@
 # File browser Django app
 
-This app allows you to manipulate the file in a specific directory.
+This app allows you to manipulate files in a specific directory.
 
 
 ## Mandatory settings
