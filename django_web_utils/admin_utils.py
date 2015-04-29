@@ -18,7 +18,7 @@ def register_module(models_module, allow_filters=False):
             or getattr(model._meta, 'abstract', False) \
             or model in admin.site._registry \
             or not issubclass(model.__class__, dj_models.Model.__class__) \
-            or models_module.__name__ != model.__module__:
+            or not model.__module__.startswith(models_module.__name__):
             continue
         
         fields = []
