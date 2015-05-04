@@ -67,20 +67,26 @@ def storage_action(request, namespace=None):
     action = request.POST.get('action')
     # upload form
     if action == 'upload' or action == 'upload-old':
+        red_url = None
+        if action == 'upload-old':
+            if namespace:
+                red_url = reverse('%s:file_browser_base' % namespace)
+            else:
+                red_url = reverse('file_browser_base')
         # check data
         path = request.POST.get('path', '')
         if '..' in path:
             msg = unicode(_('Invalid base path.'))
             if action == 'upload-old':
                 messages.error(request, msg)
-                return HttpResponseRedirect('%s#%s' % (reverse('file_browser_base'), path))
+                return HttpResponseRedirect('%s#%s' % (red_url, path))
             else:
                 return json_utils.failure_response(message=msg)
         if not request.FILES.keys():
             msg = unicode(_('No files in request.'))
             if action == 'upload-old':
                 messages.error(request, msg)
-                return HttpResponseRedirect('%s#%s' % (reverse('file_browser_base'), path))
+                return HttpResponseRedirect('%s#%s' % (red_url, path))
             else:
                 return json_utils.failure_response(message=msg)
         if path:
@@ -96,7 +102,7 @@ def storage_action(request, namespace=None):
                 msg = unicode(_('Failed to create dir.'))
                 if action == 'upload-old':
                     messages.error(request, msg)
-                    return HttpResponseRedirect('%s#%s' % (reverse('file_browser_base'), path))
+                    return HttpResponseRedirect('%s#%s' % (red_url, path))
                 else:
                     return json_utils.failure_response(message=msg)
         # execute action
@@ -120,7 +126,7 @@ def storage_action(request, namespace=None):
             msg += u' <br/><a href="%s">%s://%s%s</a>' % (url, 'https' if request.is_secure() else 'http', request.get_host(), url)
         if action == 'upload-old':
             messages.success(request, msg)
-            return HttpResponseRedirect('%s#%s' % (reverse('file_browser_base'), path))
+            return HttpResponseRedirect('%s#%s' % (red_url, path))
         else:
             return json_utils.success_response(message=msg)
 
