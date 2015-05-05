@@ -17,7 +17,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 # django_web_utils
 from django_web_utils.daemon.base import BaseDaemon
-from django_web_utils.files_utils import get_unit
+from django_web_utils import files_utils
 
 
 def clear_log(path):
@@ -92,7 +92,7 @@ def daemons_statuses(daemons, date_adjust_fct=None):
         unit = ''
         mtime = ''
         if log_path and os.path.exists(log_path):
-            size, unit = get_unit(os.path.getsize(log_path))
+            size, unit = files_utils.get_unit(os.path.getsize(log_path))
             mtime = os.path.getmtime(log_path)
             mtime = datetime.datetime.fromtimestamp(mtime)
             if date_adjust_fct:
@@ -109,7 +109,7 @@ def daemons_statuses(daemons, date_adjust_fct=None):
 
 def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **kwargs):
     # clear log
-    #***************************************************************************
+    #*************************************************************************
     if request.method == 'POST' and request.POST.get('submitted_form') == 'clear_log':
         success, message = clear_log(path)
         if success:
@@ -119,20 +119,28 @@ def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **k
         return HttpResponseRedirect(url)
     
     # prepare rendering
-    #***************************************************************************
+    #*************************************************************************
     content = ''
     size = ''
     unit = ''
     mtime = ''
     lines = 0
     if os.path.exists(path):
-        f = open(path, 'r')
-        content = f.read()
-        f.close()
-        lines = content.count('\n')
-        if tail and lines > 50:
-            content = '...\n%s' % ('\n'.join(content.split('\n')[-50:]))
-        size, unit = get_unit(os.path.getsize(path))
+        if tail:
+            # Read only file end
+            lines = 0
+            for segment in files_utils.reverse_read(path):
+                if segment is None:
+                    break
+                content = segment + content
+                lines += segment.count('\n')
+                if lines > 50:
+                    content = '...%s' % content[content.index('\n'):]
+                    break
+        else:
+            with open(path, 'r') as fd:
+                content = fd.read()
+        size, unit = files_utils.get_unit(os.path.getsize(path))
         mtime = os.path.getmtime(path)
         mtime = datetime.datetime.fromtimestamp(mtime)
         if date_adjust_fct:
@@ -157,7 +165,7 @@ def log_view(request, template, url, path, tail=False, date_adjust_fct=None, **k
 def edit_conf_view(request, template, url, path, default_conf_path=None, defaults=None, date_adjust_fct=None, **kwargs):
     content = ''
     # save modifications
-    #***************************************************************************
+    #*************************************************************************
     if request.method == 'POST' and request.POST.get('submitted_form') == 'change_conf':
         content = request.POST.get('conf_content')
         if not os.path.exists(os.path.dirname(path)):
@@ -184,16 +192,14 @@ def edit_conf_view(request, template, url, path, default_conf_path=None, default
             return HttpResponseRedirect(url)
     
     # prepare rendering
-    #***************************************************************************
+    #*************************************************************************
     size = ''
     unit = ''
     mtime = ''
     if os.path.exists(path):
-        if not content:
-            f = open(path, 'r')
-            content = f.read()
-            f.close()
-        size, unit = get_unit(os.path.getsize(path))
+        with open(path, 'r') as fd:
+            content = fd.read()
+        size, unit = files_utils.get_unit(os.path.getsize(path))
         mtime = os.path.getmtime(path)
         mtime = datetime.datetime.fromtimestamp(mtime)
         if date_adjust_fct:
@@ -202,9 +208,8 @@ def edit_conf_view(request, template, url, path, default_conf_path=None, default
     # get default confdefault_conf_module
     default_conf = u''
     if default_conf_path and os.path.isfile(default_conf_path):
-        f = open(default_conf_path, 'r')
-        default_conf = f.read()
-        f.close()
+        with open(default_conf_path, 'r') as fd:
+            default_conf = fd.read()
     elif defaults:
         keys = defaults.keys()
         keys.sort()

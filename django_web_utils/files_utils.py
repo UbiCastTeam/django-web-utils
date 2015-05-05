@@ -78,7 +78,8 @@ def get_new_path(path, new_extension=None):
     return dest
 
 
-# remove_dir function (recursive function to remove a dir and its content)
+# remove_dir function
+# (recursive function to remove a dir and its content)
 # ----------------------------------------------------------------------------
 def remove_dir(path):
     if not os.path.isdir(path):
@@ -90,3 +91,21 @@ def remove_dir(path):
         elif os.path.isdir(fpath):
             remove_dir(fpath)
     os.rmdir(path)
+
+
+# reverse_readline function
+# (to read a file from its end without loading it competely)
+# ----------------------------------------------------------------------------
+def reverse_read(filename, buf_size=8192):
+    with open(filename) as fh:
+        segment = None
+        offset = 0
+        fh.seek(0, os.SEEK_END)
+        total_size = remaining_size = fh.tell()
+        while remaining_size > 0:
+            offset = min(total_size, offset + buf_size)
+            fh.seek(-offset, os.SEEK_END)
+            segment = fh.read(min(remaining_size, buf_size))
+            remaining_size -= buf_size
+            yield segment
+        yield segment
