@@ -47,7 +47,7 @@ function OverlayDisplayManager(options) {
     $(window).resize(function (event) {
         obj.on_resize();
     });
-    $(window).keypress(function (event) {
+    $(document).keydown(function (event) {
         if (obj.hide_on_escape && event.keyCode == 27)
             obj.hide();
     });
@@ -338,10 +338,10 @@ OverlayDisplayManager.prototype.show = function (params) {
         this._load_resource(resource);
     if (this.no_fixed)
         $(".odm-table", this.$widget).css("margin-top", ($(document).scrollTop()+10)+"px");
+    this.displayed = true;
     var obj = this;
     this.$widget.addClass("odm-no-transition").stop(true, false).fadeIn(250, function () {
         $(this).removeClass("odm-no-transition");
-        obj.displayed = true;
         if (!resource.no_button_focus)
             obj._focus_button();
     });
@@ -350,10 +350,10 @@ OverlayDisplayManager.prototype.hide = function () {
     if (!this.displayed)
         return;
     
+    this.displayed = false;
     var obj = this;
     this.$widget.addClass("odm-no-transition").stop(true, false).fadeOut(250, function () {
         $(this).removeClass("odm-no-transition");
-        obj.displayed = false;
         if (obj.current_resource && obj.current_resource.on_hide)
             obj.current_resource.on_hide();
     });
