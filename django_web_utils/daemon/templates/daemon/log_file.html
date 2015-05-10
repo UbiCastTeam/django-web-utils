@@ -1,0 +1,79 @@
+{% load i18n %}{% load staticfiles %}
+
+{% if content %}
+    <div class="top-bar float-container" style="line-height: 24px;">
+        <form class="right" action="." method="post">{% csrf_token %}
+            <input type="hidden" name="submitted_form" value="clear_log"/>
+            <button type="submit" class="std-btn danger">{% trans "Clear log file" %}</button>
+        </form>
+
+        {% if back_url %}
+            <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
+        {% endif %}
+
+        <span {% if back_url %}class="marged"{% endif %}><button onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
+
+        {% if size %}
+            <span class="marged"><b>{% trans "File size:" %}</b> {{ size }}</span>
+        {% endif %}
+
+        {% if mtime %}
+            <span class="marged"><b>{% trans "Last modification:" %}</b> {{ mtime|safe }}</span>
+        {% endif %}
+
+        <span class="marged"><a href="{% if tail %}.{% else %}?tail{% endif %}">{% if tail %}{% trans "See complete file" %}{% else %}{% trans "See only end" %}{% endif %}</a></span>
+
+        {% if content %}
+            <span class="marged"><a href="?raw">{% trans "See raw content" %}</a></span>
+        {% endif %}
+    </div>
+
+    <div>
+        <pre class="log-block">{{ content }}</pre>
+    </div>
+
+    {% if bottom_bar %}
+        <div class="bottom-bar float-container" style="line-height: 24px;">
+            <form class="right" action="." method="post">{% csrf_token %}
+                <input type="hidden" name="submitted_form" value="clear_log"/>
+                <button type="submit" class="std-btn danger">{% trans "Clear log file" %}</button>
+            </form>
+
+            {% if back_url %}
+                <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
+            {% endif %}
+
+            <span {% if back_url %}class="marged"{% endif %}><button onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
+
+            {% if size %}
+                <span class="marged"><b>{% trans "File size:" %}</b> {{ size }}</span>
+            {% endif %}
+
+            {% if mtime %}
+                <span class="marged"><b>{% trans "Last modification:" %}</b> {{ mtime|safe }}</span>
+            {% endif %}
+
+            <span class="marged"><a href="{% if tail %}.{% else %}?tail{% endif %}">{% if tail %}{% trans "See complete file" %}{% else %}{% trans "See only end" %}{% endif %}</a></span>
+
+            {% if content %}
+                <span class="marged"><a href="?raw">{% trans "See raw content" %}</a></span>
+            {% endif %}
+        </div>
+    {% endif %}
+{% else %}
+    <div class="top-bar float-container" style="line-height: 24px;">
+        {% if back_url %}
+            <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
+        {% endif %}
+
+        <span {% if back_url %}class="marged"{% endif %}><button onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
+    </div>
+
+    <div class="margin-32">
+        <div class="message">
+            <div class="content info">
+                {% trans "Log file is empty." %}
+            </div>
+        </div>
+    </div>
+{% endif %}

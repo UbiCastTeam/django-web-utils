@@ -33,7 +33,6 @@ class BaseDaemon(object):
     LOG_DIR = os.path.join(SERVER_DIR, 'logs')
     CONF_DIR = os.path.join(SERVER_DIR, 'conf')
     PID_DIR = os.path.join(SERVER_DIR, 'temporary')
-    ALLOWED_COMMANDS = ('start', 'restart', 'stop', 'clear_log')
     SETTINGS_MODULE = 'settings'
     
     USAGE = '''USAGE: %s start|restart|stop|clear_log [-n] [-f] [*options]
@@ -48,115 +47,91 @@ class BaseDaemon(object):
     def __init__(self, argv=None):
         object.__init__(self)
         try:
+            # Set env
             # get daemon script path before changing dir
             self.daemon_path = os.path.join(os.getcwd(), sys.argv[0])
-            self.usage = self.USAGE % self.daemon_path
-            
             os.environ['LANG'] = 'C'
             os.chdir('/')  # to avoid wrong imports
-            
-            self._should_daemonize = False
-            self._simultaneous = False
-            self._log_in_file = False
-            self._command = None
-            self._cleaned_args = list()
-            self._parse_args(argv)
-            
-            self._pid_written = False
-            self._pid_file_path = os.path.join(self.PID_DIR, '%s.pid' % self.DAEMON_NAME)
-            self._log_file_path = os.path.join(self.LOG_DIR, '%s.log' % self.DAEMON_NAME)
-            
+            # Get config
             self.config = dict()
-            self.config_file = os.path.join(self.CONF_DIR, '%s.py' % self.DAEMON_NAME)
             self.load_config()
-            
+            # Parse args
+            args = list(argv) if argv else list()
+            self._should_daemonize = True
+            if '-n' in args:
+                self._should_daemonize = False
+                args.remove('-n')
+            self._simultaneous = False
+            if '-s' in args:
+                self._simultaneous = True
+                args.remove('-s')
+            self._log_in_file = self._should_daemonize
+            if '-f' in args:
+                self._log_in_file = True
+                args.remove('-f')
+            valid_commands = ('start', 'restart', 'stop', 'clear_log')
+            if len(args) > 0 and args[0] not in valid_commands:
+                args.pop(0)  # this script path
+            self._command = None
+            if len(args) > 0 and args[0] in valid_commands:
+                self._command = args.pop(0)
+            self._cleaned_args = args
+            # Run command
             self._run_command()
         except Exception:
-            msg = 'Error when initializing base daemon.'
-            self._dump_error_in_tmp(msg)
-            print >>sys.stderr, '%s\n%s' % (msg, traceback.format_exc())
-            self.send_error_email(msg, tb=True)
-            sys.exit(-1)
-    
+            self._exit_with_error('Error when initializing base daemon.')
+
     def run(self, *args):
         msg = 'Function "run" is not implemented in daemon "%s"' % self.DAEMON_NAME
         logger.error(msg)
         raise NotImplementedError(msg)
-    
+
+    @classmethod
+    def get_pid_path(cls):
+        if not hasattr(cls, '_pid_path'):
+            cls._pid_path = os.path.join(cls.PID_DIR, '%s.pid' % cls.DAEMON_NAME)
+        return cls._pid_path
+
+    @classmethod
+    def get_log_path(cls):
+        if not hasattr(cls, '_log_path'):
+            cls._log_path = os.path.join(cls.LOG_DIR, '%s.log' % cls.DAEMON_NAME)
+        return cls._log_path
+
+    @classmethod
+    def get_conf_path(cls):
+        if not hasattr(cls, '_conf_path'):
+            cls._conf_path = os.path.join(cls.CONF_DIR, '%s.py' % cls.DAEMON_NAME)
+        return cls._conf_path
+
     def get_config(self, option, default=None):
         return self.config.get(option, default)
-    
+
     def load_config(self):
         self.config = dict(self.DEFAULTS)
-        if not os.path.exists(self.config_file):
+        if not os.path.exists(self.get_conf_path()):
             return False
-        cfg = imp.load_source('cfg', self.config_file)
+        cfg = imp.load_source('cfg', self.get_conf_path())
         for key in cfg.__dict__.keys():
             if not key.startswith('__'):
                 self.config[key] = cfg.__dict__[key]
         return True
-    
+
     def save_config(self):
-        if not os.path.exists(os.path.dirname(self.config_file)):
-            try:
-                os.makedirs(os.path.dirname(self.config_file))
-            except Exception:
-                return False
-        
-        try:
-            conf_file = open(self.config_file, 'w+')
-        except Exception:
-            return False
-        
         # get modified keys
         content = u''
         for key, value in self.config.iteritems():
             if value != self.DEFAULTS.get(key):
                 content += key + u' = ' + self.config[key] + u'\n'
-        
         try:
-            conf_file.write(content)
+            if not os.path.exists(os.path.dirname(self.get_conf_path())):
+                os.makedirs(os.path.dirname(self.get_conf_path()))
+            with open(self.get_conf_path(), 'w+') as fd:
+                fd.write(content)
         except Exception:
-            conf_file.close()
             return False
-        else:
-            conf_file.close()
-            return True
-    
-    def _parse_args(self, argv=None):
-        if argv:
-            args = list(argv)
-        else:
-            args = list(sys.argv)
-        
-        daemonize = True
-        if '-n' in args:
-            daemonize = False
-            args.remove('-n')
-        self._should_daemonize = daemonize
-        
-        simultaneous = False
-        if '-s' in args:
-            simultaneous = True
-            args.remove('-s')
-        self._simultaneous = simultaneous
-        
-        log_in_file = daemonize
-        if '-f' in args:
-            log_in_file = True
-            args.remove('-f')
-        self._log_in_file = log_in_file
-        
-        if len(args) > 0 and args[0] not in self.ALLOWED_COMMANDS:
-            args.pop(0)  # this script path
-        
-        command = None
-        if len(args) > 0 and args[0] in self.ALLOWED_COMMANDS:
-            command = args.pop(0)
-        self._command = command
-        
-        self._cleaned_args = args
-    
+        return True
+
     def _run_command(self):
         if self._command in ('restart', 'stop'):
             # check if daemon is already launched
@@ -168,7 +143,7 @@ class BaseDaemon(object):
                 if result != 0:
                     print >>sys.stderr, 'Cannot stop %s' % self.DAEMON_NAME
                     self.exit(129)
-                os.remove(self._pid_file_path)
+                os.remove(self.get_pid_path())
                 print >>sys.stdout, '%s stopped' % self.DAEMON_NAME
             else:
                 print >>sys.stdout, '%s is not running' % self.DAEMON_NAME
@@ -179,35 +154,26 @@ class BaseDaemon(object):
                 print >>sys.stderr, '%s is already running' % self.DAEMON_NAME
                 self.exit(130)
         elif self._command == 'clear_log':
-            if os.path.exists(self._log_file_path):
-                f = open(self._log_file_path, 'w')
-                f.write('')
-                f.close()
+            if os.path.exists(self.get_log_path()):
+                with open(self.get_log_path(), 'w') as fd:
+                    fd.write('')
             print >>sys.stdout, 'Log file cleared for %s.' % self.DAEMON_NAME
         else:
-            print >>sys.stderr, self.usage
+            print >>sys.stderr, self.USAGE % self.daemon_path
             self.exit(128)
         
         if self._command in ('start', 'restart'):
             print >>sys.stdout, 'Starting %s...' % self.DAEMON_NAME
             try:
                 if self._should_daemonize:
-                    daemonize(redirect_to=self._log_file_path if self._log_in_file else None)
+                    daemonize(redirect_to=self.get_log_path() if self._log_in_file else None)
                 if not self._simultaneous:
                     self._write_pid()
-            except Exception:
-                print >>sys.stderr, 'Error when starting %s:\n%s' % (self.DAEMON_NAME, traceback.format_exc())
-                self.exit(134)
-            try:
                 if self.NEED_DJANGO and self.SETTINGS_MODULE:
                     self._setup_django()
                 self._setup_logging()
             except Exception:
-                msg = 'Error when starting %s.' % self.DAEMON_NAME
-                self._dump_error_in_tmp(msg)
-                print >>sys.stderr, '%s\n%s' % (msg, traceback.format_exc())
-                self.send_error_email(msg, tb=True)
-                self.exit(135)
+                self._exit_with_error('Error when starting %s.' % self.DAEMON_NAME, code=134)
         else:
             self.exit(0)
     
@@ -257,7 +223,7 @@ class BaseDaemon(object):
                 'log_file': {
                     'class': 'logging.FileHandler',
                     'formatter': 'verbose',
-                    'filename': self._log_file_path,
+                    'filename': self.get_log_path(),
                 },
             },
             'loggers': {
@@ -290,51 +256,47 @@ class BaseDaemon(object):
         '''check if the daemon is already launched and return its pid if it is, else None'''
         pid = None
         try:
-            pidfile = open(self._pid_file_path, 'r')
+            with open(self.get_pid_path(), 'r') as fd:
+                pid = int(fd.read())
         except Exception:
             pass
         else:
-            try:
-                pid = int(pidfile.read())
-            except Exception:
-                pass
-            finally:
-                pidfile.close()
-        if pid and os.system('ps -p %s > /dev/null' % pid) != 0:
-            pid = None
+            if pid and os.system('ps -p %s > /dev/null' % pid) != 0:
+                pid = None
         return pid
 
     def _write_pid(self):
         '''write pid into pidfile'''
-        pid_dir = os.path.dirname(self._pid_file_path)
-        if not os.path.exists(pid_dir):
-            try:
-                os.makedirs(pid_dir)
-            except Exception:
-                pass
-        if not os.path.isdir(pid_dir):
-            print >>sys.stderr, 'Cannot create pidfile directory %s' % pid_dir
-            self.exit(132)
-        
+        pid_dir = os.path.dirname(self.get_pid_path())
         try:
-            pidfile = open(self._pid_file_path, 'w')
-        except Exception:
-            print >>sys.stderr, 'Cannot write pid into pidfile %s' % self._pid_file_path
-            self.exit(133)
+            if not os.path.exists(pid_dir):
+                os.makedirs(pid_dir)
+            with open(self.get_pid_path(), 'w+') as fd:
+                fd.write('%s' % os.getpid())
+        except Exception, e:
+            print >>sys.stderr, 'Cannot write pid into pidfile %s' % self.get_pid_path()
+            raise e
         else:
-            pidfile.write('%s' % os.getpid())
-            pidfile.close()
             self._pid_written = True
     
-    def _dump_error_in_tmp(self, msg=None):
+    def _exit_with_error(self, msg=None, code=-1):
         if self._should_daemonize:
             # sys.stderr is not visible if daemonized
-            fd = open('/tmp/daemon-error_%s' % self.DAEMON_NAME, 'w+')
-            fd.write('Date: %s (local time).\n\n' % datetime.datetime.now())
-            if msg:
-                fd.write(msg + '\n\n')
-            fd.write(traceback.format_exc())
-            fd.close()
+            try:
+                with open('/tmp/daemon-error_%s' % self.DAEMON_NAME, 'w+') as fd:
+                    fd.write('Date: %s (local time).\n\n' % datetime.datetime.now())
+                    if msg:
+                        fd.write(msg + '\n\n')
+                    fd.write(traceback.format_exc())
+            except Exception, e:
+                print >>sys.stderr, e
+        try:
+            # logger may not be initialized
+            logger.error('%s\n%s' % (msg, traceback.format_exc()))
+        except Exception:
+            print >>sys.stderr, e
+        self.send_error_email(msg, tb=True)
+        self.exit(code)
 
     def start(self, argv=None):
         argv = self._cleaned_args if not argv else argv
@@ -346,11 +308,7 @@ class BaseDaemon(object):
                 logger.info('Staring daemon %s without arguments.' % self.DAEMON_NAME)
             self.run(*argv)
         except Exception:
-            msg = 'Error when running %s.' % self.DAEMON_NAME
-            self._dump_error_in_tmp(msg)
-            logger.error('%s\n%s' % (msg, traceback.format_exc()))
-            self.send_error_email(msg, tb=True)
-            self.exit(140)
+            self._exit_with_error('Error when running %s.' % self.DAEMON_NAME, code=140)
         except KeyboardInterrupt:
             logger.info('%s interrupted by KeyboardInterrupt' % (self.DAEMON_NAME))
             self.exit(141)
@@ -364,11 +322,7 @@ class BaseDaemon(object):
             try:
                 ml.run()
             except Exception:
-                msg = 'Daemon %s mainloop interrupted by error.' % self.DAEMON_NAME
-                self._dump_error_in_tmp(msg)
-                logger.error('%s\n%s' % (msg, traceback.format_exc()))
-                self.send_error_email(msg, tb=True)
-                self.exit(142)
+                self._exit_with_error('Daemon %s mainloop interrupted by error.' % self.DAEMON_NAME, code=142)
             except KeyboardInterrupt:
                 logger.info('Daemon %s mainloop interrupted by KeyboardInterrupt.' % (self.DAEMON_NAME))
                 self.exit(143)
@@ -378,7 +332,7 @@ class BaseDaemon(object):
         argv = self._cleaned_args if not argv else argv
         # remove pid file to avoid kill command when restarting
         try:
-            os.remove(self._pid_file_path)
+            os.remove(self.get_pid_path())
         except Exception, e:
             logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.' % e)
         
@@ -392,9 +346,9 @@ class BaseDaemon(object):
         sys.exit(0)
     
     def exit(self, code=0):
-        if self._pid_written:
+        if getattr(self, '_pid_written', False):
             try:
-                os.remove(self._pid_file_path)
+                os.remove(self.get_pid_path())
             except Exception:
                 pass
         logger.debug('Daemon %s ended (return code: %s).\n' % (self.DAEMON_NAME, code))
