@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 '''
 Daemon monitoring utilities
-To get status of daemons.
 '''
 import os
 import sys
 import datetime
 import logging
-logger = logging.getLogger('djwutils.daemon.monitoring')
+logger = logging.getLogger('djwutils.monitoring.utils')
 # Django
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
@@ -34,7 +33,7 @@ def clear_log(path):
 def execute_daemon_command(daemon_class, command, args=None):
     if not issubclass(daemon_class, BaseDaemon):
         return False, unicode(_('Given daemon class is not a subclass of Django web utils BaseDaemon.'))
-    if command not in daemon_class.ALLOWED_COMMANDS:
+    if command not in ('start', 'restart', 'stop', 'clear_log'):
         return False, unicode(_('Invalid command.'))
     name = daemon_class.DAEMON_NAME
     path = sys.modules[daemon_class.__module__].__file__

@@ -1,0 +1,81 @@
+{% load i18n %}{% load staticfiles %}
+{% if back_url %}
+    <div class="top-bar">
+        <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
+    </div>
+{% endif %}
+{% csrf_token %}
+<table class="full">
+    <tr class="center daemon-all">
+        <th rowspan="2"></th>
+        <th rowspan="2">{% trans "Status" %}</th>
+        <th colspan="3">{% trans "Log file" %}</th>
+        <th rowspan="2">{% trans "Commands" %}
+            <div class="bottom-bar">
+                <button type="button" class="daemon-start" title="{% trans 'Start all' %}">▷</button>
+                <button type="button" class="daemon-stop" title="{% trans 'Stop all' %}">□</button>
+                <button type="button" class="daemon-restart" title="{% trans 'Restart all' %}">↻</button>
+            </div>
+        </th>
+    </tr>
+    <tr class="center daemon-all">
+        <th>{% trans "Last modification" %}</th>
+        <th>{% trans "File size" %}</th>
+        <th>
+            <span class="right">
+                <button class="daemon-log-clear" title="{% trans 'Clear all logs' %}">✖</button>
+            </span>
+            {% trans "Actions" %}
+        </th>
+    </tr>
+    {% for group in daemons_groups %}
+        {% for daemon in group.members %}
+            <tr class="{% cycle 'even' 'odd' %}">
+                {% if forloop.first %}
+                    <th rowspan="{{ group.label_rowspan }}" class="daemons-group-name"><div>{{ group.label }}</div></th>
+                {% endif %}
+                <td colspan="5">
+                    <b>{{ daemon.label }} {% if daemon.only_log %}- {% trans "log file" %}{% endif %}</b>
+                    <p class="helptext padded">{{ daemon.help_text }}</p>
+                </td>
+            </tr>
+            <tr class="{% cycle 'even' 'odd' %} center daemon-{{ daemon.name }}">
+                <td style="width: 150px;">{% if daemon.only_log %}-{% endif %}<span class="daemon-status" {% if daemon.only_log %}style="display: none;"{% endif %}>{% trans "Loading" %}...</span></td>
+                <td><span class="daemon-log-mtime"></span></td>
+                <td><span class="daemon-log-size"></span></td>
+                <td class="nowrap">
+                    <a href="{% url 'monitoring-log' daemon.name %}">{% trans "See" %}</a>
+                    <a href="{% url 'monitoring-log' daemon.name %}?tail">{% trans "See tail" %}</a>
+                    <button type="button" class="daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
+                </td>
+                <td class="nowrap">
+                    {% if not daemon.no_commands %}
+                        {% if not daemon.only_stop %}
+                            <button type="button" class="daemon-start" title="{% trans 'Start' %}">▷</button>
+                        {% endif %}
+                        <button type="button" class="daemon-stop" title="{% trans 'Stop' %}">□</button>
+                        {% if not daemon.only_stop %}
+                            <button type="button" class="daemon-restart" title="{% trans 'Restart' %}">↻</button>
+                        {% endif %}
+                        <a href="{% url 'monitoring-config' daemon.name %}" title="{% trans 'Edit configuration' %}">⚙</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+
+<script type="text/javascript" src="{% static 'monitoring/daemons_manager.js' %}?_=1"></script>
+<script type="text/javascript">
+    dman = new DaemonsManager({
+        daemons: ["{{ daemons_names|join:'", "' }}"],
+        commands_url: "{% url 'monitoring-command' %}",
+        status_url: "{% url 'monitoring-status' %}",
+        translations: {
+            "Command result": "{% trans "Command result" %}",
+            "No messages returned.": "{% trans "No messages returned." %}",
+            "running": "{% trans "running" %}",
+            "not running": "{% trans "not running" %}"
+        }
+    });
+</script>
