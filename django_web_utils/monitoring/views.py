@@ -84,14 +84,18 @@ def monitoring_command(request):
 
 
 @config.view_decorator
-def monitoring_log(request, name):
-    info = config.info_module
-    DAEMONS = getattr(info, 'DAEMONS', dict())
-    if name not in DAEMONS:
-        raise Http404()
-    
-    daemon = DAEMONS[name]
-    path = daemon['log_path'] if daemon.get('log_path') else os.path.join(daemon['daemon_class'].LOG_DIR, '%s.log' % name)
+def monitoring_log(request, name=None, path=None):
+    label = None
+    if not path:
+        info = config.info_module
+        DAEMONS = getattr(info, 'DAEMONS', dict())
+        if name not in DAEMONS:
+            raise Http404()
+        daemon = DAEMONS[name]
+        path = daemon['log_path'] if daemon.get('log_path') else os.path.join(daemon['daemon_class'].LOG_DIR, '%s.log' % name)
+        label = daemon.get('label')
+    if not label:
+        label = os.path.basename(path)
 
     result = utils.log_view(
         request,
@@ -104,7 +108,7 @@ def monitoring_log(request, name):
     return render(request, tplt, dict(
         monitoring_page='log',
         monitoring_body='monitoring/log.html',
-        title=u'%s - %s' % (daemon['label'], _('log file')),
+        title=u'%s - %s' % (label, _('log file')),
         **result
     ))
 
