@@ -63,49 +63,33 @@ def execute_daemon_command(daemon_class, command, args=None):
         return True, msg
 
 
-def daemons_statuses(daemons, date_adjust_fct=None):
-    # daemons is a dict containing a dict for each daemon with the following fields:
-    # [daemon_class], [pid_path], [log_path]
-    data = dict()
-    for name, daemon in daemons.iteritems():
-        # Check if daemon is launched
-        pid_path = daemon.get('pid_path')
-        if not pid_path and daemon.get('daemon_class'):
-            pid_path = os.path.join(daemon['daemon_class'].PID_DIR, '%s.pid' % name)
-        pid = None
-        if pid_path and os.path.exists(pid_path):
-            try:
-                with open(pid_path, 'r') as fd:
-                    pid = fd.read()
-            except Exception:
-                pass
-        running = pid and os.system('ps -p %s > /dev/null' % pid) == 0
-        # Get log file properties
-        log_path = daemon.get('log_path')
-        if not log_path and daemon.get('daemon_class'):
-            log_path = os.path.join(daemon['daemon_class'].LOG_DIR, '%s.log' % name)
-        size = mtime = ''
-        if log_path and os.path.exists(log_path):
-            size = u'%s %s' % files_utils.get_unit(os.path.getsize(log_path))
-            mtime = os.path.getmtime(log_path)
-            mtime = datetime.datetime.fromtimestamp(mtime)
-            if date_adjust_fct:
-                mtime = date_adjust_fct(mtime)
-            mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
-        data[name] = dict(
-            running=running,
-            log_size=size,
-            log_mtime=mtime,
-        )
-    return data
+def get_daemon_status(pid_path=None, log_path=None, date_adjust_fct=None):
+    # Check if daemon is launched
+    pid = None
+    if pid_path and os.path.exists(pid_path):
+        try:
+            with open(pid_path, 'r') as fd:
+                pid = fd.read()
+        except Exception:
+            pass
+    running = pid and os.system('ps -p %s > /dev/null' % pid) == 0
+    # Get log file properties
+    size = mtime = ''
+    if log_path and os.path.exists(log_path):
+        size = u'%s %s' % files_utils.get_unit(os.path.getsize(log_path))
+        mtime = os.path.getmtime(log_path)
+        mtime = datetime.datetime.fromtimestamp(mtime)
+        if date_adjust_fct:
+            mtime = date_adjust_fct(mtime)
+        mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
+    return dict(
+        running=running,
+        log_size=size,
+        log_mtime=mtime,
+    )
 
 
-def log_view(request, daemon=None, path=None, tail=None, date_adjust_fct=None):
-    if daemon:
-        if not issubclass(daemon, BaseDaemon):
-            raise Exception('The given daemon is not a subclass of BaseDaemon.')
-        path = daemon.get_log_path()
-
+def log_view(request, path=None, tail=None, date_adjust_fct=None):
     # Clear log
     if request.method == 'POST' and request.POST.get('submitted_form') == 'clear_log':
         success, message = clear_log(path)
@@ -162,15 +146,7 @@ def log_view(request, daemon=None, path=None, tail=None, date_adjust_fct=None):
     }
 
 
-def edit_conf_view(request, daemon=None, path=None, default_conf_path=None, default_conf=None, date_adjust_fct=None):
-    if daemon:
-        if not issubclass(daemon, BaseDaemon):
-            raise Exception('The given daemon is not a subclass of BaseDaemon.')
-        default_conf = daemon.DEFAULTS
-        if 'LOGGING_LEVEL' not in default_conf:
-            default_conf['LOGGING_LEVEL'] = 'INFO'
-        path = daemon.get_conf_path()
-
+def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None, date_adjust_fct=None):
     content = ''
     # Change configuration
     if request.method == 'POST' and request.POST.get('submitted_form') == 'change_conf':

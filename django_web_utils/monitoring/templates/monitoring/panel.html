@@ -32,7 +32,7 @@
         {% for daemon in group.members %}
             <tr class="{% cycle 'even' 'odd' %}">
                 {% if forloop.first %}
-                    <th rowspan="{{ group.label_rowspan }}" class="daemons-group-name"><div>{{ group.label }}</div></th>
+                    <th rowspan="{{ group.rowspan }}" class="daemons-group-name"><div>{{ group.label }}</div></th>
                 {% endif %}
                 <td colspan="5">
                     <b>{{ daemon.label }} {% if daemon.only_log %}- {% trans "log file" %}{% endif %}</b>
@@ -67,7 +67,7 @@
 
 <script type="text/javascript" src="{% static 'monitoring/daemons_manager.js' %}?_=1"></script>
 <script type="text/javascript">
-    dman = new DaemonsManager({
+    var dman = new DaemonsManager({
         daemons: ["{{ daemons_names|join:'", "' }}"],
         commands_url: "{% url 'monitoring-command' %}",
         status_url: "{% url 'monitoring-status' %}",

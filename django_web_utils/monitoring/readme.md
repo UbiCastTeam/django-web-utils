@@ -6,10 +6,6 @@ The daemons can be built from the BaseDaemon class or not.
 
 ## Optional settings
 
-``MONITORING_VIEWS_DECORATOR``:
-Function python path to be used as decorator.
-Something like "a.module.decorator".
-
 ``MONITORING_BASE_TEMPLATE``:
 The template to use for the browser base page.
 This template must import jquery.js, utils.js, odm.css and odm.js.
@@ -20,4 +16,22 @@ It must contain this include tag:
 ``MONITORING_DAEMONS_INFO``:
 The module in which daemons informations can be found.
 Something like "a.module".
-TODO: add groups declaration help.
+Content example:
+
+    DAEMONS = [
+        dict(group='base', name='django', label=_('Django'),
+            no_commands=True, only_log=True,
+            log_path=os.path.expanduser('~/.logs/django.log'),
+            pid_path=os.path.join(settings.BASE_DIR, 'django.pid'),
+            help_text=_('This daemon handles all basic requests.')),
+    ]
+    GROUPS = [
+        dict(name='base', label=_('Base daemons')),
+    ]
+
+
+``MONITORING_DATE_ADJUST_FCT``:
+The function to use to convert system locale date to user date.
+For example:
+
+    lambda request: request.user.get_locale_date
