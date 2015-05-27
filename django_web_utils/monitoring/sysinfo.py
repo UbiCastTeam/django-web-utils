@@ -3,6 +3,7 @@
 '''
 System information
 '''
+import os
 import subprocess
 import datetime
 import logging
@@ -26,15 +27,22 @@ def _get_output(cmd):
     return ((out or '') + (err or '')).strip()
 
 
-def get_system_info(package=None, module=None, **extra):
-    # This function returns data for the sysinfo.html template
-    tplt_args = dict(info_sections=list())
-    # Project version
-    version = getattr(module, '__version__', '')
+def get_version(package=None, module=None):
+    version = ''
     revision = ''
+    if module:
+        version = getattr(module, '__version__', '')
+        git_dir = module.__path__[0]
+        if os.path.islink(git_dir):
+            git_dir = os.readlink(git_dir)
+        if not os.path.exists(os.path.join(git_dir, '.git')):
+            git_dir = os.path.dirname(git_dir)
+        git_dir = os.path.join(git_dir, '.git')
+    else:
+        git_dir = '.'
     cmds = [
         'dpkg -s "%s" | grep Version' % package,
-        'git log -1',
+        'git --git-dir \'%s\' log -1' % git_dir,
     ]
     local_repo = False
     for cmd in cmds:
@@ -45,9 +53,9 @@ def get_system_info(package=None, module=None, **extra):
                 local_repo = True
                 # Get git repo version using same method as in autobuild script
                 try:
-                    last_commit_unix_ts = _get_output(['git', 'log', '-1', '--pretty=%ct'])
+                    last_commit_unix_ts = _get_output(['git', '--git-dir', git_dir, 'log', '-1', '--pretty=%ct'])
                     last_commit_ts = datetime.datetime.fromtimestamp(int(last_commit_unix_ts)).strftime('%Y%m%d%H%M%S')
-                    last_commit_shorthash = _get_output(['git', 'log', '-1', '--pretty=%h'])
+                    last_commit_shorthash = _get_output(['git', '--git-dir', git_dir, 'log', '-1', '--pretty=%h'])
                     revision = '%s-%s' % (last_commit_ts, last_commit_shorthash)
                 except Exception, e:
                     logger.error('Unable to get revision: %s', e)
@@ -58,14 +66,26 @@ def get_system_info(package=None, module=None, **extra):
         revision = revision[revision.index('+') + 1:]
     elif not revision:
         revision = '?'
+    return version, revision, local_repo
+
+
+def get_system_info(package=None, module=None, extra=None):
+    # This function returns data for the sysinfo.html template
+    tplt_args = dict(info_sections=list())
+    # Project version
+    version, revision, local_repo = get_version(package, module)
     tplt_args['info_package'] = []
-    tplt_args['info_package'].append(dict(label=_('Django version'), value=getattr(django, 'VERSION', '?')))
     tplt_args['info_package'].append(dict(label=_('Version'), value=version))
     tplt_args['info_package'].append(dict(label=_('Revision'), value=revision))
+    tplt_args['info_package'].append(dict(label=_('Django version'), value=getattr(django, 'VERSION', '?')))
     tplt_args['local_repo'] = local_repo
+    tplt_args['version'] = version
+    tplt_args['revision'] = revision
     tplt_args['info_sections'].append(dict(label=_('Software'), info=tplt_args['info_package']))
     # OS info
     tplt_args['info_os'] = []
+    tplt_args['info_os'].append(dict(label=_('Uptime'), value=_get_output(['uptime', '-p'])))
+    tplt_args['info_os'].append(dict(label=_('Load'), value=_get_output(['cat', '/proc/loadavg'])))
     tplt_args['info_os'].append(dict(label=_('Kernel'), value=_get_output(['uname', '-r'])))
     tplt_args['info_os'].append(dict(label=_('Hostname'), value=_get_output(['uname', '-n'])))
     tplt_args['info_os'].append(dict(label=_('Platform'), value=_get_output(['uname', '-i'])))
@@ -115,10 +135,13 @@ def get_system_info(package=None, module=None, **extra):
     tplt_args['info_gpu'] = []
     gpu_model = _get_output('lspci | grep VGA').split(':')[-1].strip()
     tplt_args['info_gpu'].append(dict(label=_('Model'), value=gpu_model or '?'))
-    gup_temp = _get_output('nvidia-settings -q GPUCoreTemp | grep Attribute').split(':')[-1].strip(' .')
-    if gup_temp:
-        gup_temp += ' °C'
-    tplt_args['info_gpu'].append(dict(label=_('Temperature'), value=gup_temp or '?'))
+    gpu_temp = _get_output('nvidia-settings -q GPUCoreTemp | grep Attribute').split(':')[-1].strip(' .')
+    try:
+        int(gpu_temp)
+        gpu_temp += ' °C'
+    except ValueError:
+        pass
+    tplt_args['info_gpu'].append(dict(label=_('Temperature'), value=gpu_temp or '?'))
     tplt_args['info_sections'].append(dict(label=_('GPU'), info=tplt_args['info_gpu']))
     # Memory
     meminfo_file = _get_output(['cat', '/proc/meminfo'])
@@ -138,6 +161,9 @@ def get_system_info(package=None, module=None, **extra):
     except Exception, e:
         tplt_args['info_memory'].append(dict(label=_('Failed to get information'), value=e))
     tplt_args['info_sections'].append(dict(label=_('Memory'), info=tplt_args['info_memory']))
+    # Network
+    tplt_args['info_network'] = [dict(label='', value=_get_output(['ifconfig', '-a']))]
+    tplt_args['info_sections'].append(dict(label=_('Network'), info=tplt_args['info_network']))
     # Sensors
     tplt_args['info_sensors'] = [dict(label='', value=_get_output(['sensors']))]
     tplt_args['info_sections'].append(dict(label=_('Sensors'), info=tplt_args['info_sensors']))
@@ -145,7 +171,7 @@ def get_system_info(package=None, module=None, **extra):
     if extra:
         for section, values in extra.iteritems():
             if section in tplt_args:
-                tplt_args.extends(values)
+                tplt_args[section].extend(values)
             else:
                 tplt_args[section] = values
     return tplt_args
