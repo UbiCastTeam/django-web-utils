@@ -37,6 +37,8 @@ def get_version(package=None, module=None):
             git_dir = os.readlink(git_dir)
         if not os.path.exists(os.path.join(git_dir, '.git')):
             git_dir = os.path.dirname(git_dir)
+            if not os.path.exists(os.path.join(git_dir, '.git')):
+                git_dir = os.path.dirname(git_dir)
         git_dir = os.path.join(git_dir, '.git')
     else:
         git_dir = '.'
@@ -51,7 +53,7 @@ def get_version(package=None, module=None):
         if p.returncode == 0:
             if cmd.startswith('git'):
                 local_repo = True
-                # Get git repo version using same method as in autobuild script
+                # Get git repo version using last commit date and short hash
                 try:
                     last_commit_unix_ts = _get_output(['git', '--git-dir', git_dir, 'log', '-1', '--pretty=%ct'])
                     last_commit_ts = datetime.datetime.fromtimestamp(int(last_commit_unix_ts)).strftime('%Y%m%d%H%M%S')
