@@ -22,9 +22,13 @@ def _additional_translations():
 
 
 def _get_output(cmd):
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=not isinstance(cmd, list))
-    out, err = p.communicate()
-    return ((out or '') + (err or '')).strip()
+    try:
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=not isinstance(cmd, list))
+        out, err = p.communicate()
+    except OSError:
+        return ''
+    else:
+        return ((out or '') + (err or '')).strip()
 
 
 def get_version(package=None, module=None):
