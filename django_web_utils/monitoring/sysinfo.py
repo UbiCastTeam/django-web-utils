@@ -73,6 +73,7 @@ def get_version(package=None, module=None):
 
 def get_system_info(package=None, module=None, extra=None):
     # This function returns data for the sysinfo.html template
+    os.environ['LANG'] = 'C'
     tplt_args = dict(info_sections=list())
     # Project version
     version, revision, local_repo = get_version(package, module)
