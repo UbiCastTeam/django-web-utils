@@ -168,10 +168,14 @@ def get_system_info(package=None, module=None, extra=None):
         tplt_args['info_memory'].append(dict(label=_('Failed to get information'), value=e))
     tplt_args['info_sections'].append(dict(label=_('Memory'), info=tplt_args['info_memory']))
     # Network
-    tplt_args['info_network'] = [dict(label='', value=_get_output(['ifconfig', '-a']))]
+    tplt_args['info_network'] = []
+    for value in _get_output(['ifconfig', '-a']).split('\n\n'):
+        tplt_args['info_network'].append(dict(label='', value=value))
     tplt_args['info_sections'].append(dict(label=_('Network'), info=tplt_args['info_network']))
     # Sensors
-    tplt_args['info_sensors'] = [dict(label='', value=_get_output(['sensors']))]
+    tplt_args['info_sensors'] = []
+    for value in _get_output(['sensors']).split('\n\n'):
+        tplt_args['info_sensors'].append(dict(label='', value=value))
     tplt_args['info_sections'].append(dict(label=_('Sensors'), info=tplt_args['info_sensors']))
     # Extra data
     if extra:
