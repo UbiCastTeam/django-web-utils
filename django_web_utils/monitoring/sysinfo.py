@@ -175,12 +175,14 @@ def get_system_info(package=None, module=None, extra=None):
     tplt_args['info_network'] = []
     for value in _get_output(['ifconfig', '-a']).split('\n\n'):
         tplt_args['info_network'].append(dict(label='', value=value))
-    tplt_args['info_sections'].append(dict(label=_('Network'), info=tplt_args['info_network']))
+    if tplt_args['info_network']:
+        tplt_args['info_sections'].append(dict(label=_('Network'), info=tplt_args['info_network']))
     # Sensors
     tplt_args['info_sensors'] = []
     for value in _get_output(['sensors']).split('\n\n'):
         tplt_args['info_sensors'].append(dict(label='', value=value))
-    tplt_args['info_sections'].append(dict(label=_('Sensors'), info=tplt_args['info_sensors']))
+    if tplt_args['info_sensors']:
+        tplt_args['info_sections'].append(dict(label=_('Sensors'), info=tplt_args['info_sensors']))
     # Extra data
     if extra:
         for section, values in extra.iteritems():
