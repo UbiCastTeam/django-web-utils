@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
+from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 # Django web utils
 from django_web_utils import json_utils
@@ -84,8 +85,6 @@ def monitoring_command(request):
         daemon = info.DAEMONS.get(name)
         if not config.can_control_daemon(daemon, request):
             raise PermissionDenied()
-        if message:
-            message += u'\n\n'
         if not daemon or (not daemon.get('cls') and (command != 'clear_log' or not daemon.get('log_path'))):
             if all_daemons:
                 continue
@@ -100,9 +99,12 @@ def monitoring_command(request):
             else:
                 success, msg = utils.execute_daemon_command(daemon['cls'], command)
         if success:
-            message += u'%s\n%s' % (_('Command "%(cmd)s" on "%(name)s" successfully executed.') % dict(cmd=command, name=name), msg)
+            text = _('Command "%(cmd)s" on "%(name)s" successfully executed.')
         else:
-            message += u'%s\n%s' % (_('Command "%(cmd)s" on "%(name)s" failed.') % dict(cmd=command, name=name), msg)
+            text = _('Command "%(cmd)s" on "%(name)s" failed.')
+        message += u'<div class="success">%s</div>' % escape(unicode(text % dict(cmd=command, name=name)))
+        if msg:
+            message += u'<div>%s</div>' % escape(msg)
     return json_utils.success_response(message=message)
 
 
