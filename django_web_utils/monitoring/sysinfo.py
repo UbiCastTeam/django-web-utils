@@ -79,7 +79,10 @@ def get_system_info(package=None, module=None, extra=None):
     tplt_args['info_package'] = []
     tplt_args['info_package'].append(dict(label=_('Version'), value=version))
     tplt_args['info_package'].append(dict(label=_('Revision'), value=revision))
-    tplt_args['info_package'].append(dict(label=_('Django version'), value=getattr(django, 'VERSION', '?')))
+    dj_version = getattr(django, 'VERSION', '?')
+    if isinstance(dj_version, tuple):
+        dj_version = '.'.join([str(i) for i in dj_version])
+    tplt_args['info_package'].append(dict(label=_('Django version'), value=dj_version))
     tplt_args['local_repo'] = local_repo
     tplt_args['version'] = version
     tplt_args['revision'] = revision
