@@ -7,6 +7,7 @@ logger = logging.getLogger('djwutils.monitoring.views')
 from django.shortcuts import render
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
@@ -134,6 +135,7 @@ def monitoring_log(request, name=None, path=None):
         monitoring_page='log',
         monitoring_body='monitoring/log.html',
         title=u'%s - %s' % (label, _('log file')),
+        back_url=reverse('monitoring-panel'),
         **result
     ))
 
@@ -169,5 +171,6 @@ def monitoring_config(request, name=None, path=None):
         monitoring_page='config',
         monitoring_body='monitoring/config.html',
         title=_('Edit daemon configuration: %s') % name,
+        back_url=reverse('monitoring-panel'),
         **result
     ))

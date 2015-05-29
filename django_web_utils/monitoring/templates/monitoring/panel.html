@@ -11,7 +11,7 @@
         <th rowspan="2">{% trans "Status" %}</th>
         <th colspan="3">{% trans "Log file" %}</th>
         <th rowspan="2">{% trans "Commands" %}
-            <div class="bottom-bar">
+            <div class="bottom-bar center">
                 <button type="button" class="daemon-start" title="{% trans 'Start all' %}">▷</button>
                 <button type="button" class="daemon-stop" title="{% trans 'Stop all' %}">□</button>
                 <button type="button" class="daemon-restart" title="{% trans 'Restart all' %}">↻</button>
@@ -44,8 +44,8 @@
                 <td><span class="daemon-log-mtime"></span></td>
                 <td><span class="daemon-log-size"></span></td>
                 <td class="nowrap">
-                    <a href="{% url 'monitoring-log' daemon.name %}">{% trans "See" %}</a>
-                    <a href="{% url 'monitoring-log' daemon.name %}?tail">{% trans "See tail" %}</a>
+                    <a href="{% url 'monitoring-log' daemon.name %}"><button type="button">{% trans "See" %}</button></a>
+                    <a href="{% url 'monitoring-log' daemon.name %}?tail"><button type="button">{% trans "See tail" %}</button></a>
                     <button type="button" class="daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
                 </td>
                 <td class="nowrap">
@@ -57,7 +57,7 @@
                         {% if not daemon.only_stop %}
                             <button type="button" class="daemon-restart" title="{% trans 'Restart' %}">↻</button>
                         {% endif %}
-                        <a href="{% url 'monitoring-config' daemon.name %}" title="{% trans 'Edit configuration' %}">⚙</a>
+                        <a href="{% url 'monitoring-config' daemon.name %}" title="{% trans 'Edit configuration' %}"><button type="button">⚙</button></a>
                     {% endif %}
                 </td>
             </tr>

@@ -117,7 +117,7 @@ DaemonsManager.prototype.refresh_daemon_status = function() {
                         if (response[daemon_name].log_size)
                             $(".daemon-"+daemon_name+" .daemon-log-size").html(response[daemon_name].log_size);
                         else
-                            $(".daemon-"+daemon_name+" .daemon-log-size").html("0");
+                            $(".daemon-"+daemon_name+" .daemon-log-size").html("-");
                     }
                 }
             }
