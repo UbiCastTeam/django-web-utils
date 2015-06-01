@@ -1,0 +1,171 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Django web utils\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-06-01 10:02+0200\n"
+"PO-Revision-Date: 2015-06-01 10:02+0100\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: UbiCast <support@ubicast.eu>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: templates/file_browser/base.html:6 templates/file_browser/base.html:10
+#: templates/file_browser/body.html:6
+msgid "File browser"
+msgstr "Navigateur"
+
+#: templates/file_browser/body.html:9
+msgid "Root folder"
+msgstr "Dossier racine"
+
+#: templates/file_browser/body.html:16
+msgid "Add a folder"
+msgstr "Ajouter un dossier"
+
+#: templates/file_browser/body.html:17
+msgid "Add a file"
+msgstr "Ajouter un fichier"
+
+#: templates/file_browser/body.html:18 templates/file_browser/script.html:32
+msgid "Search"
+msgstr "Rechercher"
+
+#: templates/file_browser/body.html:26
+msgid "Show messages"
+msgstr "Voir les messages"
+
+#: templates/file_browser/body.html:27
+msgid "Hide messages"
+msgstr "Cacher les messages"
+
+#: templates/file_browser/body.html:38 templates/file_browser/script.html:16
+msgid "Loading"
+msgstr "Chargement"
+
+#: templates/file_browser/body.html:43
+msgid "Drop files here to add them"
+msgstr "Glissez vos fichiers ici pour les ajouter"
+
+#: templates/file_browser/body.html:45
+msgid "Upload in progress"
+msgstr "Envoi en cours"
+
+#: templates/file_browser/body.html:52
+msgid "Total size:"
+msgstr "Taille totale :"
+
+#: templates/file_browser/body.html:53
+msgid "Number of folders:"
+msgstr "Nombre de dossiers :"
+
+#: templates/file_browser/body.html:54
+msgid "Number of files:"
+msgstr "Nombre de fichiers :"
+
+#: templates/file_browser/body.html:55
+msgid "Order by:"
+msgstr "Trier par :"
+
+#: templates/file_browser/body.html:57 templates/file_browser/body.html:58
+msgid "name"
+msgstr "nom"
+
+#: templates/file_browser/body.html:59 templates/file_browser/body.html:60
+msgid "size"
+msgstr "taille"
+
+#: templates/file_browser/body.html:61 templates/file_browser/body.html:62
+msgid "modification date"
+msgstr "date de modification"
+
+#: templates/file_browser/body.html:65
+msgid "Refresh"
+msgstr "Rafraîchir"
+
+#: templates/file_browser/script.html:12
+msgid "The folder is empty."
+msgstr "le dossier est vide."
+
+#: templates/file_browser/script.html:13
+msgid "Size:"
+msgstr "Taille :"
+
+#: templates/file_browser/script.html:14
+msgid "Last modification:"
+msgstr "Dernière modification :"
+
+#: templates/file_browser/script.html:15
+msgid "root"
+msgstr "racine"
+
+#: templates/file_browser/script.html:17
+msgid "server unreachable"
+msgstr "le serveur ne peut pas être atteint"
+
+#: templates/file_browser/script.html:18
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/file_browser/script.html:19
+msgid "Add"
+msgstr "Ajouter"
+
+#: templates/file_browser/script.html:20
+msgid "Ok"
+msgstr "Ok"
+
+#: templates/file_browser/script.html:21
+msgid "Selected file(s):"
+msgstr "Fichier(s) sélectionné(s) :"
+
+#: templates/file_browser/script.html:22
+msgid "New folder name:"
+msgstr "Nom du nouveau dossier :"
+
+#: templates/file_browser/script.html:23
+msgid "Add a folder in"
+msgstr "Ajouter un dossier dans"
+
+#: templates/file_browser/script.html:24
+msgid "File to add:"
+msgstr "Fichier à ajouter :"
+
+#: templates/file_browser/script.html:25
+msgid "Add a file in"
+msgstr "Ajouter un fichier dans"
+
+#: templates/file_browser/script.html:26
+msgid "Rename"
+msgstr "Renommer"
+
+#: templates/file_browser/script.html:27
+msgid "files"
+msgstr "fichiers"
+
+#: templates/file_browser/script.html:28
+msgid "Move"
+msgstr "Déplacer"
+
+#: templates/file_browser/script.html:29
+msgid "Move to:"
+msgstr "Déplacer vers :"
+
+#: templates/file_browser/script.html:30
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/file_browser/script.html:31
+msgid "Are you sure to delete the selected file(s) ?"
+msgstr "Êtes vous certain de vouloir supprimer les fichiers sélectionnés ?"
+
+#: templates/file_browser/script.html:33
+msgid "Search only in current dir"
+msgstr "Rechercher uniquement dans le dossier courant"
