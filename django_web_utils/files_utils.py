@@ -29,7 +29,7 @@ def get_size(path):
 def get_unit(size=0, path=None):
     if path is not None:
         size = get_size(path)
-    unit = _('Bytes')
+    unit = _('B')
     if size / 1024.0 >= 1:
         size /= 1024.0
         unit = _('KB')

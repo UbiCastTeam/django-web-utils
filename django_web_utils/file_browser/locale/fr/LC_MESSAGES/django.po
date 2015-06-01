@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 10:56+0200\n"
-"PO-Revision-Date: 2015-06-01 10:44+0100\n"
+"POT-Creation-Date: 2015-06-01 11:13+0200\n"
+"PO-Revision-Date: 2015-06-01 11:12+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -16,6 +16,26 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.4\n"
+
+#: additional_translations.py:12
+msgid "B"
+msgstr "o"
+
+#: additional_translations.py:13
+msgid "KB"
+msgstr "Ko"
+
+#: additional_translations.py:14
+msgid "MB"
+msgstr "Mo"
+
+#: additional_translations.py:15
+msgid "GB"
+msgstr "Go"
+
+#: additional_translations.py:16
+msgid "TB"
+msgstr "To"
 
 #: templates/file_browser/base.html:6 templates/file_browser/base.html:10
 #: templates/file_browser/body.html:6
