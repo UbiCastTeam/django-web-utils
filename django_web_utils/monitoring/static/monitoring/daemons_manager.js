@@ -59,7 +59,7 @@ DaemonsManager.prototype.send_daemon_command = function(daemon, cmd) {
         if (response.error)
             msg = response.error;
         if (!msg)
-            msg = obj.translate("No messages returned.");
+            msg = obj.translate("No messages have been returned.");
         obj.overlay.show({
             title: obj.translate("Command result"),
             html: msg,
@@ -110,7 +110,7 @@ DaemonsManager.prototype.refresh_daemon_status = function() {
                         if (response[daemon_name].log_mtime)
                             $(".daemon-"+daemon_name+" .daemon-log-mtime").html(response[daemon_name].log_mtime);
                         else
-                            $(".daemon-"+daemon_name+" .daemon-log-mtime").html(obj.translate("unknown"));
+                            $(".daemon-"+daemon_name+" .daemon-log-mtime").html("-");
                     }
                     if (response[daemon_name].log_size !== stored.log_size) {
                         stored.log_size = response[daemon_name].log_size;

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 11:13+0200\n"
-"PO-Revision-Date: 2015-06-01 11:13+0100\n"
+"POT-Creation-Date: 2015-06-01 16:16+0200\n"
+"PO-Revision-Date: 2015-06-01 16:17+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -304,16 +304,25 @@ msgid "Command result"
 msgstr "Résultat de la commande"
 
 #: templates/monitoring/panel.html:76
-msgid "No messages returned."
-msgstr "Aucun message renvoyé."
+#| msgid "No messages returned."
+msgid "No messages have been returned."
+msgstr "Aucun message n'a été renvoyé."
 
 #: templates/monitoring/panel.html:77
+msgid "Close"
+msgstr "Fermer"
+
+#: templates/monitoring/panel.html:78
 msgid "running"
 msgstr "en cours"
 
-#: templates/monitoring/panel.html:78
+#: templates/monitoring/panel.html:79
 msgid "not running"
 msgstr "arrêté"
+
+#: templates/monitoring/panel.html:80
+msgid "server unreachable"
+msgstr "serveur inaccessible"
 
 #: utils.py:29
 #, python-format

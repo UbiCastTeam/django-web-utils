@@ -65,7 +65,7 @@
     {% endfor %}
 </table>
 
-<script type="text/javascript" src="{% static 'monitoring/daemons_manager.js' %}?_=1"></script>
+<script type="text/javascript" src="{% static 'monitoring/daemons_manager.js' %}?_=2"></script>
 <script type="text/javascript">
     var dman = new DaemonsManager({
         daemons: ["{{ daemons_names|join:'", "' }}"],
@@ -73,9 +73,11 @@
         status_url: "{% url 'monitoring-status' %}",
         translations: {
             "Command result": "{% trans "Command result" %}",
-            "No messages returned.": "{% trans "No messages returned." %}",
+            "No messages have been returned.": "{% trans "No messages have been returned." %}",
+            "Close": "{% trans "Close" %}",
             "running": "{% trans "running" %}",
-            "not running": "{% trans "not running" %}"
+            "not running": "{% trans "not running" %}",
+            "server unreachable": "{% trans "server unreachable" %}"
         }
     });
 </script>
