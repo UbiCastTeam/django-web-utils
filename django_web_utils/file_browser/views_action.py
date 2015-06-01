@@ -99,7 +99,7 @@ def storage_action(request, namespace=None):
             try:
                 os.makedirs(dir_path)
             except Exception, e:
-                msg = unicode(_('Failed to create dir.'))
+                msg = unicode(_('Failed to create folder.'))
                 if action == 'upload-old':
                     messages.error(request, msg)
                     return HttpResponseRedirect('%s#%s' % (red_url, path))
@@ -153,7 +153,7 @@ def storage_action(request, namespace=None):
             if e.errno == errno.EEXIST:
                 return json_utils.success_response(message=unicode(_('Folder already exists.')))
             else:
-                return json_utils.failure_response(message=u'%s %s' % (_('Failed to create dir.'), e))
+                return json_utils.failure_response(message=u'%s %s' % (_('Failed to create folder.'), e))
         return json_utils.success_response(message=unicode(_('Folder created.')))
 
     # search form

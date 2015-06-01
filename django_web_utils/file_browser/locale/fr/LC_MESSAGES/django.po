@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 10:02+0200\n"
-"PO-Revision-Date: 2015-06-01 10:02+0100\n"
+"POT-Creation-Date: 2015-06-01 10:44+0200\n"
+"PO-Revision-Date: 2015-06-01 10:44+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -169,3 +169,132 @@ msgstr "Êtes vous certain de vouloir supprimer les fichiers sélectionnés ?"
 #: templates/file_browser/script.html:33
 msgid "Search only in current dir"
 msgstr "Rechercher uniquement dans le dossier courant"
+
+#: views.py:58
+#, python-format
+msgid "Folder \"%s\" does not exist."
+msgstr "Le dossier \"%s\" n'existe pas."
+
+#: views.py:134
+#, python-format
+msgid "Folder \"%s\" does not exist"
+msgstr "Le dossier \"%s\" n'existe pas"
+
+#: views.py:203
+msgid "Parent folder"
+msgstr "Dossier parent"
+
+#: views_action.py:63
+msgid "Invalid request method."
+msgstr "Méthode de requête invalide."
+
+#: views_action.py:79 views_action.py:138 views_action.py:164
+#: views_action.py:225
+msgid "Invalid base path."
+msgstr "Chemin de base invalide."
+
+#: views_action.py:86
+msgid "No files in request."
+msgstr "Aucun fichier n'est présent dans la requête."
+
+#: views_action.py:102 views_action.py:156
+#| msgid "Failed to create dir."
+msgid "Failed to create folder."
+msgstr "Échec de la création du dossier."
+
+#: views_action.py:110
+msgid "The file has been uploaded and is available at the location:"
+msgstr "Le fichier a été envoyé et est disponible à l'adresse suivante :"
+
+#: views_action.py:112
+msgid "The files have been uploaded and are available at the locations:"
+msgstr ""
+"Les fichiers ont été envoyés et sont disponibles aux adresses suivantes :"
+
+#: views_action.py:141 views_action.py:240
+msgid "The name field is required."
+msgstr "Le champ nom est requis."
+
+#: views_action.py:144 views_action.py:247
+msgid "Invalid name."
+msgstr "Nom invalide."
+
+#: views_action.py:154
+msgid "Folder already exists."
+msgstr "Le dossier existe déjà."
+
+#: views_action.py:157
+msgid "Folder created."
+msgstr "Le dossier a été créé."
+
+#: views_action.py:170
+msgid "Requested path does not exist."
+msgstr "Le chemin demandé n'existe pas."
+
+#: views_action.py:212
+#, python-format
+msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
+msgstr "%(count)s résultats pour \"%(search)s\" dans \"%(path)s\"."
+
+#: views_action.py:214
+#, python-format
+msgid "%(count)s results for \"%(search)s\"."
+msgstr "%(count)s résultats pour \"%(search)s\"."
+
+#: views_action.py:216
+#, python-format
+msgid "No results for \"%(search)s\"."
+msgstr "Pas de résultat pour \"%(search)s\"."
+
+#: views_action.py:235
+msgid "No files selected."
+msgstr "Aucun fichier n'est sélectionné."
+
+#: views_action.py:260
+#, python-format
+msgid "The file \"%s\" already exists."
+msgstr "Le fichier \"%s\" existe déjà."
+
+#: views_action.py:263
+msgid "File renamed."
+msgstr "Fichier renommé."
+
+#: views_action.py:265
+msgid "Files renamed."
+msgstr "Fichiers renommés."
+
+#: views_action.py:270
+msgid "No path specfied to move files in."
+msgstr "Aucun chemin n'a été spécifié pour déplacer les fichiers."
+
+#: views_action.py:277
+msgid "Destination path does not exists."
+msgstr "Le chemin de destination n'existe pas."
+
+#: views_action.py:286
+#, python-format
+msgid "Unable to move file %s:"
+msgstr "Impossible de déplacer le fichier %s :"
+
+#: views_action.py:287
+#, python-format
+msgid "%s file(s) successfully moved."
+msgstr "%s fichier(s) déplacé(s) avec succès."
+
+#: views_action.py:301
+#, python-format
+msgid "Unable to delete file %s:"
+msgstr "Impossible de supprimer le fichier %s :"
+
+#: views_action.py:302
+#, python-format
+msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
+msgstr "%(f)s fichier(s) et %(d)s dossier(s) supprimé(s) avec succès."
+
+#: views_action.py:305
+msgid "Invalid action requested."
+msgstr "L'action demandée est invalide."
+
+#: views_action.py:307
+msgid "Unknown action."
+msgstr "Action inconnue."

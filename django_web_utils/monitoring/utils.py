@@ -123,7 +123,7 @@ def log_view(request, path=None, tail=None, date_adjust_fct=None):
                         break
             else:
                 if fsize > FILE_SIZE_LIMIT:
-                    content = unicode(_('File too large: %s.\nOnly tail and raw functions are available.\nWarning: getting the raw file can saturate system memory.') % size)
+                    content = unicode(_('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size)
                 else:
                     with open(path, 'r') as fd:
                         content = fd.read()
@@ -183,7 +183,7 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
             fsize = os.path.getsize(path)
             size = u'%s %s' % files_utils.get_unit(fsize)
             if fsize > FILE_SIZE_LIMIT:
-                content = unicode(_('File too large: %s.\nOnly function is available.\nWarning: getting the raw file can saturate system memory.') % size)
+                content = unicode(_('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size)
             else:
                 with open(path, 'r') as fd:
                     content = fd.read()

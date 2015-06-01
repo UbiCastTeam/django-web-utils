@@ -55,7 +55,7 @@ def storage_dirs(request, namespace=None):
     base_path = config.get_base_path(namespace)
 
     if not os.path.exists(base_path):
-        return json_utils.failure_response(message=unicode(_('Folder "%s" does not exist') % base_path))
+        return json_utils.failure_response(message=unicode(_('Folder "%s" does not exist.') % base_path))
 
     return json_utils.success_response(dirs=recursive_dirs(base_path))
 
