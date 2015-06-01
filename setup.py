@@ -35,7 +35,7 @@ for dirpath, dirnames, filenames in os.walk('django_web_utils'):
     package_name = '.'.join(parts)
     if '__init__.py' in filenames:
         packages.append(package_name)
-    filenames = [f for f in filenames if not f.endswith('.py')]
+        filenames = [f for f in filenames if not f.endswith('.py') and not f.endswith('.pyc')]
     if filenames:
         relative_path = []
         while '.'.join(parts) not in packages:
@@ -49,15 +49,14 @@ for dirpath, dirnames, filenames in os.walk('django_web_utils'):
         package_files.extend([os.path.join(path, f) for f in filenames])
 
 setup(
-    name = 'django_web_utils',
-    version = django_web_utils.__version__,
-    description = 'A collection of utilities for web projects based on Django.',
-    author = 'Stéphane Diemer',
-    author_email = 'stephane.diemer@ubicast.eu',
-    url = 'https://github.com/UbiCastTeam/django-web-utils',
-    license = 'cc-by-sa',
-    packages = packages,
-    package_data = package_data,
-    scripts = [],
+    name='django_web_utils',
+    version=django_web_utils.__version__,
+    description='A collection of utilities for web projects based on Django.',
+    author='Stéphane Diemer',
+    author_email='stephane.diemer@ubicast.eu',
+    url='https://github.com/UbiCastTeam/django-web-utils',
+    license='cc-by-sa',
+    packages=packages,
+    package_data=package_data,
+    scripts=[],
 )
-
