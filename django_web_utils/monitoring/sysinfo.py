@@ -129,6 +129,7 @@ def get_system_info(package=None, module=None, extra=None):
             cpuinfo['current freq'] = '%.2f GHz' % (value / 1000)
         except ValueError:
             pass
+    cpuinfo['model name'] = ' '.join(cpuinfo.get('model name', '').split())
     if '@' in cpuinfo.get('model name', ''):
         # Try to get default frequency
         index = cpuinfo['model name'].index('@')
