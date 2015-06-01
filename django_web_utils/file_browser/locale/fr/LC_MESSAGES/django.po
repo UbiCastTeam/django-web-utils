@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 10:44+0200\n"
+"POT-Creation-Date: 2015-06-01 10:56+0200\n"
 "PO-Revision-Date: 2015-06-01 10:44+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
@@ -198,7 +198,6 @@ msgid "No files in request."
 msgstr "Aucun fichier n'est présent dans la requête."
 
 #: views_action.py:102 views_action.py:156
-#| msgid "Failed to create dir."
 msgid "Failed to create folder."
 msgstr "Échec de la création du dossier."
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 10:33+0200\n"
+"POT-Creation-Date: 2015-06-01 10:56+0200\n"
 "PO-Revision-Date: 2015-06-01 10:36+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
@@ -54,7 +54,6 @@ msgid "Uptime"
 msgstr "Durée de fonctionnement"
 
 #: sysinfo.py:98
-#| msgid "Loading"
 msgid "Load"
 msgstr "Charge"
 
@@ -306,7 +305,6 @@ msgid "Can not clear log file: %s"
 msgstr "Impossible de vider le fichier de journalisation : %s"
 
 #: utils.py:30
-#| msgid "Log file"
 msgid "Log file cleared."
 msgstr "Fichier de journalisation vidé."
 
@@ -325,10 +323,6 @@ msgstr "Le script du démon est introuvable."
 
 #: utils.py:126
 #, python-format
-#| msgid ""
-#| "File too large: %s.\n"
-#| "Only tail and raw functions are available.\n"
-#| "Warning: getting the raw file can saturate system memory."
 msgid ""
 "File too large: %s.\n"
 "Only file tail and raw file are accessible.\n"
@@ -347,31 +341,23 @@ msgid "Error:"
 msgstr "Erreur :"
 
 #: utils.py:161
-#| msgid "Current configuration file path:"
 msgid "Unable to write configuration file."
 msgstr "Impossible d'écrire le fichier de configuration."
 
 #: utils.py:163
-#| msgid "Configuration file size:"
 msgid "Configuration file updated."
 msgstr "Fichier de configuration mis à jour."
 
 #: utils.py:170
-#| msgid "Current configuration file path:"
 msgid "Unable to delete configuration file."
 msgstr "Impossible de supprimer le fichier de configuration."
 
 #: utils.py:172
-#| msgid "Configuration file size:"
 msgid "Configuration file deleted."
 msgstr "Fichier de configuration supprimé."
 
 #: utils.py:186
 #, python-format
-#| msgid ""
-#| "File too large: %s.\n"
-#| "Only tail and raw functions are available.\n"
-#| "Warning: getting the raw file can saturate system memory."
 msgid ""
 "File too large: %s.\n"
 "Only the raw file is accessible.\n"
@@ -382,12 +368,10 @@ msgstr ""
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
 #: utils.py:196
-#| msgid "Current configuration file path:"
 msgid "Unable to display configuration file."
 msgstr "Impossible d'afficher le fichier de configuration."
 
 #: utils.py:216
-#| msgid "Default configuration"
 msgid "Unable to read default configuration file."
 msgstr "Impossible de lire le fichier de configuration par défaut."
 
@@ -407,6 +391,5 @@ msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
 
 #: views.py:173
 #, python-format
-#| msgid "Edit configuration"
 msgid "Edit daemon configuration: %s"
 msgstr "Modifier la configuration du démon : %s"
