@@ -35,12 +35,12 @@
                     <th rowspan="{{ group.rowspan }}" class="daemons-group-name"><div>{{ group.label }}</div></th>
                 {% endif %}
                 <td colspan="5">
-                    <b>{{ daemon.label }} {% if daemon.only_log %}- {% trans "log file" %}{% endif %}</b>
-                    <p class="helptext padded">{{ daemon.help_text }}</p>
+                    <b>{{ daemon.label }} {% if daemon.only_log %}- {% trans "log file" %}{% elif daemon.only_conf %}- {% trans "config file" %}{% endif %}</b>
+                    {% if daemon.help_text %}<p class="helptext marged">{{ daemon.help_text }}</p>{% endif %}
                 </td>
             </tr>
             <tr class="{% cycle 'even' 'odd' %} center daemon-{{ daemon.name }}">
-                <td style="width: 150px;">{% if daemon.only_log %}-{% endif %}<span class="daemon-status" {% if daemon.only_log %}style="display: none;"{% endif %}>{% trans "Loading" %}...</span></td>
+                <td style="width: 150px;">{% if daemon.only_log or daemon.only_conf %}-{% endif %}<span class="daemon-status" {% if daemon.only_log or daemon.only_conf %}style="display: none;"{% endif %}>{% trans "Loading" %}...</span></td>
                 <td><span class="daemon-log-mtime"></span></td>
                 <td><span class="daemon-log-size"></span></td>
                 <td class="nowrap">

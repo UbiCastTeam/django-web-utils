@@ -15,64 +15,65 @@ from django.utils.translation import ugettext_lazy as _
 # django_web_utils
 from django_web_utils.daemon.base import BaseDaemon
 from django_web_utils import files_utils
+from django_web_utils import system_utils
 
 
 FILE_SIZE_LIMIT = 524288000  # 500 MB
 
 
-def clear_log(path):
+def clear_log(request, path, is_root=False):
     if os.path.exists(path):
-        try:
-            with open(path, 'w+') as fd:
-                fd.write('')
-        except OSError, e:
-            return False, unicode(_('Can not clear log file: %s') % e)
+        success, msg = system_utils.write_file_as(request, '', path, 'root' if is_root else 'self')
+        if not success:
+            return success, msg
     return True, unicode(_('Log file cleared.'))
 
 
-def execute_daemon_command(daemon_class, command, args=None):
-    if not issubclass(daemon_class, BaseDaemon):
-        return False, unicode(_('Given daemon class is not a subclass of Django web utils BaseDaemon.'))
+def execute_daemon_command(request, daemon, command):
     if command not in ('start', 'restart', 'stop', 'clear_log'):
         return False, unicode(_('Invalid command.'))
-    name = daemon_class.DAEMON_NAME
-    path = sys.modules[daemon_class.__module__].__file__
+    cls = daemon.get('cls')
+    if cls and not issubclass(cls, BaseDaemon):
+        return False, unicode(_('Given daemon class is not a subclass of Django web utils BaseDaemon.'))
+
+    is_root = daemon.get('is_root')
+    if command == 'clear_log':
+        log_path = daemon.get('log_path')
+        if not log_path and cls:
+            log_path = cls.get_log_path()
+        if not log_path:
+            return False, unicode(_('No valid target for command.'))
+        return clear_log(request, log_path, is_root)
+    elif not cls:
+        return False, unicode(_('No valid target for command.'))
+
+    path = sys.modules[cls.__module__].__file__
     if path.endswith('pyc'):
         path = path[:-1]
     if not os.path.isfile(path):
         logger.error('The daemon script cannot be found. Path: %s' % path)
         return False, unicode(_('The daemon script cannot be found.'))
 
-    if command == 'clear_log':
-        log_path = os.path.join(daemon_class.LOG_DIR, '%s.log' % name)
-        return clear_log(log_path)
+    cmd = 'python %s %s' % (path, command)
+    success, output = system_utils.execute_command(cmd, user='root' if is_root else 'self', request=request)
+    if not output:
+        output = 'No output from command.'
+    return success, output
 
-    try:
-        cmd = 'python %s %s' % (path, command)
-        if args:
-            for a in args:
-                cmd += ' %s' % a
-        result = os.system(cmd)
-        msg = ''
-    except Exception, e:
-        result = -1
-        msg = unicode(e)
-    if result != 0:
-        return False, msg
+
+def get_daemon_status(request, daemon, date_adjust_fct=None):
+    if daemon.get('cls'):
+        pid_path = daemon['cls'].get_pid_path()
+        log_path = daemon['cls'].get_log_path()
     else:
-        return True, msg
-
-
-def get_daemon_status(pid_path=None, log_path=None, date_adjust_fct=None):
+        pid_path = daemon.get('pid_path')
+        log_path = daemon.get('log_path')
+    is_root = daemon.get('is_root')
     # Check if daemon is launched
-    pid = None
-    if pid_path and os.path.exists(pid_path):
-        try:
-            with open(pid_path, 'r') as fd:
-                pid = fd.read()
-        except Exception:
-            pass
-    running = pid and os.system('ps -p %s > /dev/null' % pid) == 0
+    if pid_path:
+        running = system_utils.is_pid_running(pid_path, user='root' if is_root else 'self', request=request)
+    else:
+        running = None
     # Get log file properties
     size = mtime = ''
     if log_path and os.path.exists(log_path):
@@ -92,7 +93,7 @@ def get_daemon_status(pid_path=None, log_path=None, date_adjust_fct=None):
 def log_view(request, path=None, tail=None, date_adjust_fct=None):
     # Clear log
     if request.method == 'POST' and request.POST.get('submitted_form') == 'clear_log':
-        success, message = clear_log(path)
+        success, message = clear_log(request, path)
         if success:
             messages.success(request, message)
         else:

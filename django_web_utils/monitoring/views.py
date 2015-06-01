@@ -55,13 +55,7 @@ def monitoring_status(request):
         daemon = info.DAEMONS[name]
         if not config.can_access_daemon(daemon, request):
             raise PermissionDenied()
-        if daemon.get('cls'):
-            pid_path = daemon['cls'].get_pid_path()
-            log_path = daemon['cls'].get_log_path()
-        else:
-            pid_path = daemon.get('pid_path')
-            log_path = daemon.get('log_path')
-        data[name] = utils.get_daemon_status(pid_path=pid_path, log_path=log_path, date_adjust_fct=date_adjust_fct)
+        data[name] = utils.get_daemon_status(request, daemon, date_adjust_fct=date_adjust_fct)
     return json_utils.success_response(**data)
 
 
@@ -92,13 +86,10 @@ def monitoring_command(request):
             success = False
             msg = u'%s %s' % (_('Invalid daemon name:'), name)
         else:
-            if command == 'clear_log':
-                path = daemon['log_path'] if daemon.get('log_path') else os.path.join(daemon['cls'].LOG_DIR, '%s.log' % name)
-                success, msg = utils.clear_log(path)
-            elif command in ('start', 'restart') and daemon.get('only_stop'):
+            if command in ('start', 'restart') and daemon.get('only_stop'):
                 continue
             else:
-                success, msg = utils.execute_daemon_command(daemon['cls'], command)
+                success, msg = utils.execute_daemon_command(request, daemon, command)
         if success:
             text = _('Command "%(cmd)s" on "%(name)s" successfully executed.')
         else:

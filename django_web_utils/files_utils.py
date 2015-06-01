@@ -108,4 +108,4 @@ def reverse_read(filename, buf_size=8192):
             segment = fh.read(min(remaining_size, buf_size))
             remaining_size -= buf_size
             yield segment
-        yield segment
+        yield None
