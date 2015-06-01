@@ -1,5 +1,5 @@
-<table>{% for section in info_sections %}
-    <tr class="{% cycle 'even' 'odd' as evenodd %}">
+<table class="even-odd hoverable">{% for section in info_sections %}
+    <tr class="{% cycle 'odd' 'even' as evenodd %}">
         <th rowspan="{{ section.info|length }}" style="vertical-align: top; text-align: center;">{{ section.label }}</th>
         {% for item in section.info %}{% if item.label %}<td style="text-align: right;">{{ item.label }} :</td>
         <td>{% else %}<td colspan="2">{% endif %}{% if item.value %}<pre style="margin: 0;">{{ item.value }}</pre>{% endif %}</td>
