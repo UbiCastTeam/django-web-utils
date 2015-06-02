@@ -36,7 +36,7 @@
                 {% endif %}
                 <td colspan="5">
                     <b>{{ daemon.label }} {% if daemon.only_log %}- {% trans "log file" %}{% elif daemon.only_conf %}- {% trans "config file" %}{% endif %}</b>
-                    {% if daemon.help_text %}<p class="helptext marged">{{ daemon.help_text }}</p>{% endif %}
+                    {% if daemon.help_text %}<p class="helptext padded">{{ daemon.help_text }}</p>{% endif %}
                 </td>
             </tr>
             <tr class="{% cycle 'even' 'odd' %} center daemon-{{ daemon.name }}">
