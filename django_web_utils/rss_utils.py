@@ -10,7 +10,7 @@ from django.utils.timezone import LocalTimezone
 # get_locale_tz_datetime function
 # ----------------------------------------------------------------------------
 def get_locale_tz_datetime(dt):
-    tz = LocalTimezone(dt)
+    tz = LocalTimezone()
     dt = dt.replace(tzinfo=tz)
     return dt
 
