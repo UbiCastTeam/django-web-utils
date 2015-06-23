@@ -292,50 +292,6 @@ utils.get_date_display = function (d) {
 
 // JavaScript classes related functions
 utils.setup_class = function (obj, options, allowed_options) {
-    // listeners
-    if (!obj._listeners)
-        obj._listeners = {};
-    if (!obj.constructor.prototype.add_listener)
-        obj.constructor.prototype.add_listener = function (evtname, arg1, arg2, arg3) {
-            // arguments: evtname, [receiver], [params], fct
-            var listener = {};
-            if (arg3 !== undefined) {
-                listener.receiver = arg1;
-                listener.params = arg2;
-                listener.fct = arg3;
-            }
-            else if (arg2 !== undefined) {
-                listener.receiver = arg1;
-                listener.fct = arg2;
-            }
-            else if (arg1 !== undefined) {
-                listener.fct = arg1;
-            }
-            else {
-                throw("Invalid listener for event "+evtname+" (no function given to add_listener function).");
-            }
-            if (!this._listeners[evtname])
-                this._listeners[evtname] = [listener];
-            else
-                this._listeners[evtname].push(listener);
-        };
-    if (!obj.constructor.prototype.call_listeners)
-        obj.constructor.prototype.call_listeners = function (evtname, data) {
-            if (!this._listeners[evtname])
-                return;
-            for (var i=0; i < this._listeners[evtname].length; i++) {
-                var listener = this._listeners[evtname][i];
-                try {
-                    if (listener.receiver)
-                        listener.fct(listener.receiver, data, listener.params);
-                    else
-                        listener.fct(data, listener.params);
-                }
-                catch (e) {
-                    console.log("Error when calling listener for event "+evtname+" of object "+this.constructor.name+".\n    Error: "+e+"\n    Receiver: "+listener.receiver+"\n    Receiving function is: "+listener.fct.toString());
-                }
-            }
-        };
     // translations
     if (!obj.constructor.prototype.add_translations)
         obj.constructor.prototype.add_translations = function (translations) {
