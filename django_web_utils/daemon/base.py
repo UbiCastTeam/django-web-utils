@@ -12,6 +12,7 @@ import imp
 import datetime
 import traceback
 import logging
+import logging.config
 logger = logging.getLogger('djwutils.daemon.base')
 # django_web_utils
 from django_web_utils.daemon.daemonization import daemonize
@@ -293,9 +294,12 @@ class BaseDaemon(object):
         try:
             # logger may not be initialized
             logger.error('%s\n%s' % (msg, traceback.format_exc()))
-        except Exception:
+        except Exception, e:
             print >>sys.stderr, e
-        self.send_error_email(msg, tb=True)
+        try:
+            self.send_error_email(msg, tb=True)
+        except Exception, e:
+            print >>sys.stderr, e
         self.exit(code)
 
     def start(self, argv=None):
