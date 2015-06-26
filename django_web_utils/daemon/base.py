@@ -304,7 +304,7 @@ class BaseDaemon(object):
 
     def start(self, argv=None):
         argv = self._cleaned_args if not argv else argv
-        # launch service
+        # Run daemon
         try:
             if argv:
                 logger.info('Staring daemon %s with arguments:\n    %s.' % (self.DAEMON_NAME, argv))
@@ -330,6 +330,7 @@ class BaseDaemon(object):
             except KeyboardInterrupt:
                 logger.info('Daemon %s mainloop interrupted by KeyboardInterrupt.' % (self.DAEMON_NAME))
                 self.exit(143)
+        self.exit(0)
     
     def restart(self, argv=None):
         # function to restart daemon itself
