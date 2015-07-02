@@ -153,6 +153,9 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
             messages.error(request, u'%s %s\n%s' % (_('Unable to display log file.'), _('Error:'), e))
     bottom_bar = lines > 20
 
+    query_string = request.META.get('QUERY_STRING')
+    if query_string and 'tail' in query_string:
+        query_string = query_string.replace('&tail', '').replace('tail', '')
     return {
         'content': content,
         'size': size,
@@ -161,7 +164,7 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
         'owner': owner,
         'bottom_bar': bottom_bar,
         'tail': tail_only,
-        'action': '?' + request.META['QUERY_STRING'] if request.META.get('QUERY_STRING') else '.',
+        'query_string': query_string,
     }
 
 
@@ -228,7 +231,10 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
                 default_conf_content = fd.read()
         except Exception, e:
             messages.error(request, u'%s %s\n%s' % (_('Unable to read default configuration file.'), _('Error:'), e))
-    
+
+    query_string = request.META.get('QUERY_STRING')
+    if query_string and 'tail' in query_string:
+        query_string = query_string.replace('&tail', '').replace('tail', '')
     return {
         'content': content,
         'size': size,
@@ -237,5 +243,5 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
         'owner': owner,
         'default_conf_content': default_conf_content,
         'default_conf_path': default_conf_path,
-        'action': '?' + request.META['QUERY_STRING'] if request.META.get('QUERY_STRING') else '.',
+        'query_string': query_string,
     }

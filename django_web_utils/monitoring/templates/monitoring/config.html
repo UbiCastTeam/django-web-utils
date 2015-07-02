@@ -8,7 +8,7 @@
     <span {% if back_url %}class="marged"{% endif %}><button onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
 
     {% if content %}
-        <span class="marged"><a href="?raw">{% trans "See raw content" %}</a></span>
+        <span class="marged"><a href="{% if query_string %}?{{ query_string }}&raw{% else %}?raw{% endif %}">{% trans "See raw content" %}</a></span>
     {% endif %}
 </div>
 
@@ -26,13 +26,13 @@
     </div>
 {% endif %}
 
-<form class="top-bar" action="{{ action }}" method="post" {% if owner != "self" %}onsubmit="javascript: return pwdman.on_submit(this);"{% endif %}>{% csrf_token %}
+<form class="top-bar" action="{% if query_string %}?{{ query_string }}{% else %}.{% endif %}" method="post" {% if owner != "self" %}onsubmit="javascript: return pwdman.on_submit(this);"{% endif %}>{% csrf_token %}
     <input type="hidden" name="submitted_form" value="change_conf"/>
     <span><b>{% trans "Current configuration file path:" %}</b> {{ path }}</span>
     <button type="submit" class="marged std-btn danger">{% trans "Reset file" %}</button>
 </form>
 
-<form action="{{ action }}" method="post" {% if owner != "self" %}onsubmit="javascript: return pwdman.on_submit(this);"{% endif %}>{% csrf_token %}
+<form action="{% if query_string %}?{{ query_string }}{% else %}.{% endif %}" method="post" {% if owner != "self" %}onsubmit="javascript: return pwdman.on_submit(this);"{% endif %}>{% csrf_token %}
     <input type="hidden" name="submitted_form" value="change_conf"/>
     <textarea name="conf_content" style="width: 100%; height: 400px; box-sizing: border-box;">{{ content }}</textarea>
     <div class="bottom-bar">
@@ -42,7 +42,7 @@
         {% endif %}
         <span {% if back_url %}class="marged"{% endif %}><button onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
         {% if content %}
-            <span class="marged"><a href="?raw">{% trans "See raw content" %}</a></span>
+            <span class="marged"><a href="{% if query_string %}?{{ query_string }}&raw{% else %}?raw{% endif %}">{% trans "See raw content" %}</a></span>
         {% endif %}
     </div>
 </form>
