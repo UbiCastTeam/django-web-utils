@@ -2,7 +2,7 @@
 
 {% if content %}
     <div class="top-bar float-container" style="line-height: 24px;">
-        <form class="right" action="." method="post">{% csrf_token %}
+        <form class="right" action="{{ action }}" method="post" {% if owner != "self" %}onsubmit="javascript: return pwdman.on_submit(this);"{% endif %}>{% csrf_token %}
             <input type="hidden" name="submitted_form" value="clear_log"/>
             <button type="submit" class="std-btn danger">{% trans "Clear" %}</button>
         </form>
@@ -34,7 +34,7 @@
 
     {% if bottom_bar %}
         <div class="bottom-bar float-container" style="line-height: 24px;">
-            <form class="right" action="." method="post">{% csrf_token %}
+            <form class="right" action="{{ action }}" method="post" {% if owner != "self" %}onsubmit="javascript: return pwdman.on_submit(this);"{% endif %}>{% csrf_token %}
                 <input type="hidden" name="submitted_form" value="clear_log"/>
                 <button type="submit" class="std-btn danger">{% trans "Clear" %}</button>
             </form>
@@ -76,4 +76,13 @@
             </div>
         </div>
     </div>
+{% endif %}
+
+{% if owner != "self" %}
+    <script type="text/javascript" src="{% static 'monitoring/pwd_manager.js' %}?_=1"></script>
+    <script type="text/javascript">
+        var pwdman = new PwdManager({
+            url: "{% url 'monitoring-check_password' %}"
+        });
+    </script>
 {% endif %}

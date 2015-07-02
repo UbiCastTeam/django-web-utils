@@ -5,7 +5,7 @@
     </div>
 {% endif %}
 {% csrf_token %}
-<table class="full daemon-list">
+<table class="daemon-list">
     <tr class="center daemon-all">
         <th rowspan="2"></th>
         <th rowspan="2">{% trans "Status" %}</th>
@@ -44,9 +44,11 @@
                 <td><span class="daemon-log-mtime"></span></td>
                 <td><span class="daemon-log-size"></span></td>
                 <td class="nowrap">
-                    <a href="{% url 'monitoring-log' daemon.name %}"><button type="button">{% trans "See" %}</button></a>
-                    <a href="{% url 'monitoring-log' daemon.name %}?tail"><button type="button">{% trans "See tail" %}</button></a>
-                    <button type="button" class="daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
+                    {% if not daemon.only_conf %}
+                        <a href="{% url 'monitoring-log' daemon.name %}"><button type="button">{% trans "See" %}</button></a>
+                        <a href="{% url 'monitoring-log' daemon.name %}?tail"><button type="button">{% trans "See tail" %}</button></a>
+                        <button type="button" class="daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
+                    {% endif %}
                 </td>
                 <td class="nowrap">
                     {% if not daemon.no_commands %}
@@ -57,6 +59,8 @@
                         {% if not daemon.only_stop %}
                             <button type="button" class="daemon-restart" title="{% trans 'Restart' %}">↻</button>
                         {% endif %}
+                    {% endif %}
+                    {% if daemon.conf_path %}
                         <a href="{% url 'monitoring-config' daemon.name %}" title="{% trans 'Edit configuration' %}"><button type="button">⚙</button></a>
                     {% endif %}
                 </td>
@@ -65,18 +69,29 @@
     {% endfor %}
 </table>
 
-<script type="text/javascript" src="{% static 'monitoring/daemons_manager.js' %}?_=2"></script>
+<script type="text/javascript" src="{% static 'monitoring/pwd_manager.js' %}?_=1"></script>
+<script type="text/javascript" src="{% static 'monitoring/daemons_manager.js' %}?_=3"></script>
 <script type="text/javascript">
     var dman = new DaemonsManager({
-        daemons: ["{{ daemons_names|join:'", "' }}"],
+        daemons: [
+        {% for group in daemons_groups %}
+            {% for daemon in group.members %}
+            { name: "{{ daemon.name }}"{% if daemon.is_root %}, is_root: true{% endif %} },
+            {% endfor %}
+        {% endfor %}
+            { name: "all" }
+        ],
         commands_url: "{% url 'monitoring-command' %}",
         status_url: "{% url 'monitoring-status' %}",
+        pwd_url: "{% url 'monitoring-check_password' %}",
         translations: {
             "Command result": "{% trans "Command result" %}",
             "No messages have been returned.": "{% trans "No messages have been returned." %}",
             "Close": "{% trans "Close" %}",
             "running": "{% trans "running" %}",
             "not running": "{% trans "not running" %}",
+            "need password": "{% trans "need password" %}",
+            "Click to enter password": "{% trans "Click to enter password" %}",
             "server unreachable": "{% trans "server unreachable" %}"
         }
     });

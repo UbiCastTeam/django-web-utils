@@ -21,9 +21,9 @@ from django_web_utils import system_utils
 FILE_SIZE_LIMIT = 524288000  # 500 MB
 
 
-def clear_log(request, path, is_root=False):
+def clear_log(request, path, owner='self'):
     if os.path.exists(path):
-        success, msg = system_utils.write_file_as(request, '', path, 'root' if is_root else 'self')
+        success, msg = system_utils.write_file_as(request, '', path, owner)
         if not success:
             return success, msg
     return True, unicode(_('Log file cleared.'))
@@ -43,7 +43,7 @@ def execute_daemon_command(request, daemon, command):
             log_path = cls.get_log_path()
         if not log_path:
             return False, unicode(_('No valid target for command.'))
-        return clear_log(request, log_path, is_root)
+        return clear_log(request, log_path, 'root' if is_root else 'self')
     elif not cls:
         return False, unicode(_('No valid target for command.'))
 
@@ -68,10 +68,24 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
     else:
         pid_path = daemon.get('pid_path')
         log_path = daemon.get('log_path')
+    if not log_path and daemon.get('only_conf'):
+        log_path = daemon.get('conf_path')
     is_root = daemon.get('is_root')
     # Check if daemon is launched
+    need_password = False
     if pid_path:
-        running = system_utils.is_pid_running(pid_path, user='root' if is_root else 'self', request=request)
+        if system_utils.is_pid_running(pid_path, user='self', request=request):
+            running = True
+        elif not is_root:
+            running = False
+        else:
+            if not request.session.get('pwd'):
+                running = None
+                need_password = True
+            elif system_utils.is_pid_running(pid_path, user='root', request=request):
+                running = True
+            else:
+                running = False
     else:
         running = None
     # Get log file properties
@@ -85,20 +99,21 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
         mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
     return dict(
         running=running,
+        need_password=need_password,
         log_size=size,
         log_mtime=mtime,
     )
 
 
-def log_view(request, path=None, tail=None, date_adjust_fct=None):
+def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
     # Clear log
     if request.method == 'POST' and request.POST.get('submitted_form') == 'clear_log':
-        success, message = clear_log(request, path)
+        success, message = clear_log(request, path, owner)
         if success:
             messages.success(request, message)
         else:
             messages.error(request, message)
-        return HttpResponseRedirect(request.path)
+        return HttpResponseRedirect(request.get_full_path())
 
     # Prepare display
     content = size = mtime = ''
@@ -137,41 +152,38 @@ def log_view(request, path=None, tail=None, date_adjust_fct=None):
         except Exception, e:
             messages.error(request, u'%s %s\n%s' % (_('Unable to display log file.'), _('Error:'), e))
     bottom_bar = lines > 20
-    
+
     return {
         'content': content,
         'size': size,
         'mtime': mtime,
+        'path': path,
+        'owner': owner,
         'bottom_bar': bottom_bar,
         'tail': tail_only,
+        'action': '?' + request.META['QUERY_STRING'] if request.META.get('QUERY_STRING') else '.',
     }
 
 
-def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None, date_adjust_fct=None):
+def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None, owner='user', date_adjust_fct=None):
     content = ''
     # Change configuration
     if request.method == 'POST' and request.POST.get('submitted_form') == 'change_conf':
         content = request.POST.get('conf_content')
         if content:
-            try:
-                if not os.path.exists(os.path.dirname(path)):
-                    os.makedirs(os.path.dirname(path))
-                with open(path, 'w+') as fd:
-                    fd.write(content.encode('utf-8'))
-            except Exception, e:
-                messages.error(request, u'%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), e))
+            success, msg = system_utils.write_file_as(request, content.encode('utf-8'), path, owner)
+            if not success:
+                messages.error(request, u'%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), msg))
             else:
                 messages.success(request, _('Configuration file updated.'))
-                return HttpResponseRedirect(request.path)
+                return HttpResponseRedirect(request.get_full_path())
         else:
-            try:
-                if os.path.exists(path):
-                    os.remove(path)
-            except Exception, e:
-                messages.error(request, u'%s %s\n%s' % (_('Unable to delete configuration file.'), _('Error:'), e))
+            success, msg = system_utils.write_file_as(request, '', path, owner)
+            if not success:
+                messages.error(request, u'%s %s\n%s' % (_('Unable to delete configuration file.'), _('Error:'), msg))
             else:
                 messages.success(request, _('Configuration file deleted.'))
-            return HttpResponseRedirect(request.path)
+            return HttpResponseRedirect(request.get_full_path())
     
     # Prepare display
     size = mtime = ''
@@ -183,11 +195,12 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
                     return HttpResponse(fd, content_type='text/plain')
             fsize = os.path.getsize(path)
             size = u'%s %s' % files_utils.get_unit(fsize)
-            if fsize > FILE_SIZE_LIMIT:
-                content = unicode(_('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size)
-            else:
-                with open(path, 'r') as fd:
-                    content = fd.read()
+            if not content:
+                if fsize > FILE_SIZE_LIMIT:
+                    content = unicode(_('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size)
+                else:
+                    with open(path, 'r') as fd:
+                        content = fd.read()
             mtime = os.path.getmtime(path)
             mtime = datetime.datetime.fromtimestamp(mtime)
             if date_adjust_fct:
@@ -221,6 +234,8 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
         'size': size,
         'mtime': mtime,
         'path': path,
+        'owner': owner,
         'default_conf_content': default_conf_content,
         'default_conf_path': default_conf_path,
+        'action': '?' + request.META['QUERY_STRING'] if request.META.get('QUERY_STRING') else '.',
     }

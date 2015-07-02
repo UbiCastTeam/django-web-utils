@@ -5,43 +5,46 @@
 *******************************************/
 
 function DaemonsManager(options) {
-    this.daemons = [];
+    // params
+    this.daemons = [];  // list of dict with at least a name attr
     this.commands_url = "";
     this.status_url = "";
+    this.pwd_url = "";
+    // vars
     this.data = {};
-    
-    /* translations
-        "Command result": "Command result",
-        "No messages returned.": "No messages returned.",
-        "running": "running",
-        "not running": "not running"
-    */
-    
-    utils.setup_class(this, options);
+    this.refresh_delay = 5000;
+
+    utils.setup_class(this, options, [
+        // allowed options
+        "daemons",
+        "commands_url",
+        "status_url",
+        "pwd_url"
+    ]);
 
     this.overlay = new OverlayDisplayManager();
+    this.pwdman = new PwdManager({ url: this.pwd_url });
     
     var obj = this;
-    $(document).ready(function() {
+    $(document).ready(function () {
         obj.init();
     });
 }
 
-DaemonsManager.prototype.init = function() {
+DaemonsManager.prototype.init = function () {
     var obj = this;
-    this.daemons.push("all");
     for (var i = 0; i < this.daemons.length; i++) {
         var daemon = this.daemons[i];
-        $(".daemon-"+daemon+" .daemon-log-clear").click({daemon: daemon}, function(event) {
+        $(".daemon-"+daemon.name+" .daemon-log-clear").click({daemon: daemon}, function (event) {
             obj.send_daemon_command(event.data.daemon, "clear_log");
         });
-        $(".daemon-"+daemon+" .daemon-start").click({daemon: daemon}, function(event) {
+        $(".daemon-"+daemon.name+" .daemon-start").click({daemon: daemon}, function (event) {
             obj.send_daemon_command(event.data.daemon, "start");
         });
-        $(".daemon-"+daemon+" .daemon-stop").click({daemon: daemon}, function(event) {
+        $(".daemon-"+daemon.name+" .daemon-stop").click({daemon: daemon}, function (event) {
             obj.send_daemon_command(event.data.daemon, "stop");
         });
-        $(".daemon-"+daemon+" .daemon-restart").click({daemon: daemon}, function(event) {
+        $(".daemon-"+daemon.name+" .daemon-restart").click({daemon: daemon}, function (event) {
             obj.send_daemon_command(event.data.daemon, "restart");
         });
     }
@@ -50,7 +53,19 @@ DaemonsManager.prototype.init = function() {
 };
 
 
-DaemonsManager.prototype.send_daemon_command = function(daemon, cmd) {
+DaemonsManager.prototype.send_daemon_command = function (daemon, cmd) {
+    if (!daemon.name)
+        return console.log("Invalid daemon given to send_daemon_command function.");
+    if (daemon.is_root) {
+        this.pwdman.check_password(function (success, data) {
+            if (success)
+                data.obj._send_daemon_command(data.daemon, data.cmd);
+        }, { obj: this, daemon: daemon, cmd: cmd });
+    }
+    else
+        this._send_daemon_command(daemon, cmd);
+};
+DaemonsManager.prototype._send_daemon_command = function (daemon, cmd) {
     var obj = this;
     var callback = function (response) {
         var msg;
@@ -64,17 +79,17 @@ DaemonsManager.prototype.send_daemon_command = function(daemon, cmd) {
             title: obj.translate("Command result"),
             html: msg,
             buttons: [
-                { label: obj.translate("Close"), close: true }
+                { klass: "std-btn", label: obj.translate("Close"), close: true }
             ]
         });
     };
     $.ajax({
         type: "POST",
         url: this.commands_url,
-        data: { daemon: daemon, cmd: cmd, csrfmiddlewaretoken: utils.get_cookie("csrftoken") },
+        data: { daemon: daemon.name, cmd: cmd, csrfmiddlewaretoken: utils.get_cookie("csrftoken") },
         dataType: "json",
         cache: false,
-        success: function(response) {
+        success: function (response) {
             callback(response);
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -86,44 +101,49 @@ DaemonsManager.prototype.send_daemon_command = function(daemon, cmd) {
     });
 };
 
-DaemonsManager.prototype.refresh_daemon_status = function() {
+DaemonsManager.prototype.refresh_daemon_status = function () {
     var obj = this;
     $.ajax({
         url: this.status_url,
         dataType: "json",
         cache: false,
-        success: function(response) {
-            if (typeof response == "object") {
-                for (var daemon_name in response) {
-                    if (!(daemon_name in obj.data))
-                        obj.data[daemon_name] = {};
-                    var stored = obj.data[daemon_name];
-                    if (response[daemon_name].running !== stored.running) {
-                        stored.running = response[daemon_name].running;
-                        if (response[daemon_name].running)
-                            $(".daemon-"+daemon_name+" .daemon-status").html("<span class=\"green\">"+obj.translate("running")+"</span>");
-                        else
-                            $(".daemon-"+daemon_name+" .daemon-status").html("<span class=\"red\">"+obj.translate("not running")+"</span>");
+        success: function (response) {
+            for (var daemon_name in response) {
+                if (!(daemon_name in obj.data))
+                    obj.data[daemon_name] = {};
+                var stored = obj.data[daemon_name];
+                if (response[daemon_name].running !== stored.running) {
+                    stored.running = response[daemon_name].running;
+                    if (response[daemon_name].running === true)
+                        $(".daemon-"+daemon_name+" .daemon-status").html("<span class=\"green\">"+obj.translate("running")+"</span>");
+                    else if (response[daemon_name].running === false)
+                        $(".daemon-"+daemon_name+" .daemon-status").html("<span class=\"red\">"+obj.translate("not running")+"</span>");
+                    else {
+                        var $link = $("<span class=\"yellow clickable\" title=\""+obj.translate("Click to enter password")+"\">? ("+obj.translate("need password")+")</span>");
+                        $link.click({ obj: obj }, function (event) {
+                            event.data.obj.pwdman.check_password();
+                        })
+                        $(".daemon-"+daemon_name+" .daemon-status").empty().append($link);
                     }
-                    if (response[daemon_name].log_mtime !== stored.log_mtime) {
-                        stored.log_mtime = response[daemon_name].log_mtime;
-                        if (response[daemon_name].log_mtime)
-                            $(".daemon-"+daemon_name+" .daemon-log-mtime").html(response[daemon_name].log_mtime);
-                        else
-                            $(".daemon-"+daemon_name+" .daemon-log-mtime").html("-");
-                    }
-                    if (response[daemon_name].log_size !== stored.log_size) {
-                        stored.log_size = response[daemon_name].log_size;
-                        if (response[daemon_name].log_size)
-                            $(".daemon-"+daemon_name+" .daemon-log-size").html(response[daemon_name].log_size);
-                        else
-                            $(".daemon-"+daemon_name+" .daemon-log-size").html("-");
-                    }
+                }
+                if (response[daemon_name].log_mtime !== stored.log_mtime) {
+                    stored.log_mtime = response[daemon_name].log_mtime;
+                    if (response[daemon_name].log_mtime)
+                        $(".daemon-"+daemon_name+" .daemon-log-mtime").html(response[daemon_name].log_mtime);
+                    else
+                        $(".daemon-"+daemon_name+" .daemon-log-mtime").html("-");
+                }
+                if (response[daemon_name].log_size !== stored.log_size) {
+                    stored.log_size = response[daemon_name].log_size;
+                    if (response[daemon_name].log_size)
+                        $(".daemon-"+daemon_name+" .daemon-log-size").html(response[daemon_name].log_size);
+                    else
+                        $(".daemon-"+daemon_name+" .daemon-log-size").html("-");
                 }
             }
         }
     });
-    setTimeout(function() {
+    setTimeout(function () {
         obj.refresh_daemon_status();
-    }, 5000);
+    }, this.refresh_delay);
 };

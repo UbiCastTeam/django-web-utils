@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 16:16+0200\n"
-"PO-Revision-Date: 2015-06-01 16:17+0100\n"
+"POT-Creation-Date: 2015-07-02 17:41+0200\n"
+"PO-Revision-Date: 2015-07-02 17:44+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -29,7 +29,7 @@ msgstr "Ko"
 msgid "MB"
 msgstr "Mo"
 
-#: additional_translations.py:15 sysinfo.py:168 sysinfo.py:169 sysinfo.py:170
+#: additional_translations.py:15 sysinfo.py:169 sysinfo.py:170 sysinfo.py:171
 msgid "GB"
 msgstr "Go"
 
@@ -97,59 +97,59 @@ msgstr "OS"
 msgid "HDD"
 msgstr "HDD"
 
-#: sysinfo.py:139 sysinfo.py:147
+#: sysinfo.py:140 sysinfo.py:148
 msgid "Model"
 msgstr "Modèle"
 
-#: sysinfo.py:140
+#: sysinfo.py:141
 msgid "Cores"
 msgstr "Cœurs"
 
-#: sysinfo.py:141
+#: sysinfo.py:142
 msgid "Default frequency"
 msgstr "Fréquence nominale"
 
-#: sysinfo.py:142
+#: sysinfo.py:143
 msgid "Current frequency"
 msgstr "Fréquence courante"
 
-#: sysinfo.py:143
+#: sysinfo.py:144
 msgid "CPU"
 msgstr "CPU"
 
-#: sysinfo.py:154
+#: sysinfo.py:155
 msgid "Temperature"
 msgstr "Température"
 
-#: sysinfo.py:155
+#: sysinfo.py:156
 msgid "GPU"
 msgstr "GPU"
 
-#: sysinfo.py:168
+#: sysinfo.py:169
 msgid "Total"
 msgstr "Total"
 
-#: sysinfo.py:169
+#: sysinfo.py:170
 msgid "Free"
 msgstr "Libre"
 
-#: sysinfo.py:170
+#: sysinfo.py:171
 msgid "Cached"
 msgstr "En cache"
 
-#: sysinfo.py:172
+#: sysinfo.py:173
 msgid "Failed to get information"
 msgstr "Échec de l'obtention des informations"
 
-#: sysinfo.py:173
+#: sysinfo.py:174
 msgid "Memory"
 msgstr "Mémoire"
 
-#: sysinfo.py:180
+#: sysinfo.py:181
 msgid "Network"
 msgstr "Réseau"
 
-#: sysinfo.py:187
+#: sysinfo.py:188
 msgid "Sensors"
 msgstr "Capteurs"
 
@@ -263,9 +263,14 @@ msgstr "Nettoyer tous les journaux"
 msgid "Actions"
 msgstr "Actions"
 
-#: templates/monitoring/panel.html:38 views.py:137
+#: templates/monitoring/panel.html:38 views.py:155
 msgid "log file"
 msgstr "fichier de journalisation"
+
+#: templates/monitoring/panel.html:38
+#| msgid "Log file"
+msgid "config file"
+msgstr "fichier de configuration"
 
 #: templates/monitoring/panel.html:43
 msgid "Loading"
@@ -299,54 +304,61 @@ msgstr "Redémarrer"
 msgid "Edit configuration"
 msgstr "Modifier la configuration"
 
-#: templates/monitoring/panel.html:75
+#: templates/monitoring/panel.html:84
 msgid "Command result"
 msgstr "Résultat de la commande"
 
-#: templates/monitoring/panel.html:76
-#| msgid "No messages returned."
+#: templates/monitoring/panel.html:85
 msgid "No messages have been returned."
 msgstr "Aucun message n'a été renvoyé."
 
-#: templates/monitoring/panel.html:77
+#: templates/monitoring/panel.html:86
 msgid "Close"
 msgstr "Fermer"
 
-#: templates/monitoring/panel.html:78
+#: templates/monitoring/panel.html:87
 msgid "running"
 msgstr "en cours"
 
-#: templates/monitoring/panel.html:79
+#: templates/monitoring/panel.html:88
 msgid "not running"
 msgstr "arrêté"
 
-#: templates/monitoring/panel.html:80
+#: templates/monitoring/panel.html:89
+msgid "need password"
+msgstr "mot de passe requis"
+
+#: templates/monitoring/panel.html:90
+msgid "Click to enter password"
+msgstr "Cliquez pour entrer le mot de passe"
+
+#: templates/monitoring/panel.html:91
 msgid "server unreachable"
 msgstr "serveur inaccessible"
 
 #: utils.py:29
-#, python-format
-msgid "Can not clear log file: %s"
-msgstr "Impossible de vider le fichier de journalisation : %s"
-
-#: utils.py:30
 msgid "Log file cleared."
 msgstr "Fichier de journalisation vidé."
 
-#: utils.py:35
+#: utils.py:34
+msgid "Invalid command."
+msgstr "Commande invalide."
+
+#: utils.py:37
 msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
 msgstr ""
 "La classe donnée n'est pas une sous classe de BaseDaemon de Django web utils."
 
-#: utils.py:37
-msgid "Invalid command."
-msgstr "Commande invalide."
+#: utils.py:45 utils.py:48
+#| msgid "Invalid command."
+msgid "No valid target for command."
+msgstr "Aucune cible valide pour la commande."
 
-#: utils.py:44
+#: utils.py:55
 msgid "The daemon script cannot be found."
 msgstr "Le script du démon est introuvable."
 
-#: utils.py:126
+#: utils.py:140
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -357,31 +369,31 @@ msgstr ""
 "Seul la fin du fichier et le fichier brut sont accessibles.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:137
+#: utils.py:151
 msgid "Unable to display log file."
 msgstr "Impossible d'afficher le fichier de journalisation."
 
-#: utils.py:137 utils.py:161 utils.py:170 utils.py:196 utils.py:216
+#: utils.py:151 utils.py:172 utils.py:179 utils.py:206 utils.py:226
 msgid "Error:"
 msgstr "Erreur :"
 
-#: utils.py:161
+#: utils.py:172
 msgid "Unable to write configuration file."
 msgstr "Impossible d'écrire le fichier de configuration."
 
-#: utils.py:163
+#: utils.py:174
 msgid "Configuration file updated."
 msgstr "Fichier de configuration mis à jour."
 
-#: utils.py:170
+#: utils.py:179
 msgid "Unable to delete configuration file."
 msgstr "Impossible de supprimer le fichier de configuration."
 
-#: utils.py:172
+#: utils.py:181
 msgid "Configuration file deleted."
 msgstr "Fichier de configuration supprimé."
 
-#: utils.py:186
+#: utils.py:196
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -392,29 +404,54 @@ msgstr ""
 "Seul le fichier brut est accessible.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:196
+#: utils.py:206
 msgid "Unable to display configuration file."
 msgstr "Impossible d'afficher le fichier de configuration."
 
-#: utils.py:216
+#: utils.py:226
 msgid "Unable to read default configuration file."
 msgstr "Impossible de lire le fichier de configuration par défaut."
 
-#: views.py:93
+#: views.py:24
+msgid "You don't have the permission to access this url."
+msgstr "Vous n'avez pas la permission d'accéder à cette url."
+
+#: views.py:29 views.py:39
+msgid "Please enter password."
+msgstr "Veuillez entrer le mot de passe."
+
+#: views.py:35
+#| msgid "Invalid command."
+msgid "Invalid password."
+msgstr "Mot de passe incorrect."
+
+#: views.py:111
 msgid "Invalid daemon name:"
 msgstr "Nom de démon invalide :"
 
-#: views.py:103
+#: views.py:118
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" successfully executed."
 msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a été exécutée avec succès."
 
-#: views.py:105
+#: views.py:120
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" failed."
 msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
 
-#: views.py:173
+#: views.py:123
+#| msgid "Command result"
+msgid "Command output:"
+msgstr "Sortie de la commande :"
+
+#: views.py:195
 #, python-format
-msgid "Edit daemon configuration: %s"
-msgstr "Modifier la configuration du démon : %s"
+#| msgid "Edit configuration"
+msgid "Edit configuration file: %s"
+msgstr "Éditer le fichier de configuration : %s"
+
+#~ msgid "Can not clear log file: %s"
+#~ msgstr "Impossible de vider le fichier de journalisation : %s"
+
+#~ msgid "Edit daemon configuration: %s"
+#~ msgstr "Modifier la configuration du démon : %s"

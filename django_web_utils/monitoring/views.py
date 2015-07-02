@@ -13,7 +13,31 @@ from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 # Django web utils
 from django_web_utils import json_utils
+from django_web_utils import system_utils
 from django_web_utils.monitoring import config, utils
+
+
+@json_utils.json_view
+@login_required
+def check_password(request):
+    if not request.user.is_superuser:
+        return json_utils.response_403(message=unicode(_('You don\'t have the permission to access this url.')), error='perm')
+    if request.method == 'POST':
+        # check that password is OK
+        pwd = request.POST.get('data')
+        if not pwd:
+            return json_utils.failure_response(message=unicode(_('Please enter password.')), error='nopwd')
+        success, output = system_utils.execute_command('echo \'test\'', user='root', pwd=pwd)
+        if success:
+            request.session['pwd'] = pwd
+            return json_utils.success_response()
+        else:
+            return json_utils.failure_response(message=unicode(_('Invalid password.')), error='wpwd')
+    else:
+        pwd = request.session.get('pwd')
+        if not pwd:
+            return json_utils.failure_response(message=unicode(_('Please enter password.')), error='nopwd')
+        return json_utils.success_response()
 
 
 @login_required
@@ -94,14 +118,15 @@ def monitoring_command(request):
             text = _('Command "%(cmd)s" on "%(name)s" successfully executed.')
         else:
             text = _('Command "%(cmd)s" on "%(name)s" failed.')
-        message += u'<div class="success">%s</div>' % escape(unicode(text % dict(cmd=command, name=name)))
+        message += u'<div class="message"><div class="success">%s</div></div>' % escape(unicode(text % dict(cmd=command, name=name)))
         if msg:
-            message += u'<div>%s</div>' % escape(msg)
+            message += u'<div><b>%s</b><br/>\n' % _('Command output:')
+            message += u'<pre>%s</pre></div>' % escape(msg)
     return json_utils.success_response(message=message)
 
 
 @login_required
-def monitoring_log(request, name=None, path=None):
+def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
     label = None
     if not path:
         info = config.get_daemons_info()
@@ -114,11 +139,13 @@ def monitoring_log(request, name=None, path=None):
             raise PermissionDenied()
         path = daemon['log_path'] if daemon.get('log_path') else os.path.join(daemon['cls'].LOG_DIR, '%s.log' % name)
         label = daemon.get('label')
+        if daemon.get('is_root'):
+            owner = 'root'
     if not label:
         label = os.path.basename(path)
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
-    result = utils.log_view(request, path=path, date_adjust_fct=date_adjust_fct)
+    result = utils.log_view(request, path=path, owner=owner, date_adjust_fct=date_adjust_fct)
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
@@ -126,13 +153,13 @@ def monitoring_log(request, name=None, path=None):
         monitoring_page='log',
         monitoring_body='monitoring/log.html',
         title=u'%s - %s' % (label, _('log file')),
-        back_url=reverse('monitoring-panel'),
+        back_url=back_url or reverse('monitoring-panel'),
         **result
     ))
 
 
 @login_required
-def monitoring_config(request, name=None, path=None):
+def monitoring_config(request, name=None, path=None, owner='self', back_url=None):
     default_conf = None
     if not path:
         info = config.get_daemons_info()
@@ -150,18 +177,22 @@ def monitoring_config(request, name=None, path=None):
                 default_conf['LOGGING_LEVEL'] = 'INFO'
         else:
             path = daemon.get('conf_path')
+        if daemon.get('is_root'):
+            owner = 'root'
     if not path:
         raise Exception('No configuration path given.')
+    if not name:
+        name = os.path.basename(path)
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
-    result = utils.edit_conf_view(request, path=path, default_conf=default_conf, date_adjust_fct=date_adjust_fct)
+    result = utils.edit_conf_view(request, path=path, default_conf=default_conf, owner=owner, date_adjust_fct=date_adjust_fct)
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
     return render(request, tplt, dict(
         monitoring_page='config',
         monitoring_body='monitoring/config.html',
-        title=_('Edit daemon configuration: %s') % name,
-        back_url=reverse('monitoring-panel'),
+        title=_('Edit configuration file: %s') % name,
+        back_url=back_url or reverse('monitoring-panel'),
         **result
     ))

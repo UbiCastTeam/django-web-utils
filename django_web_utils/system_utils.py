@@ -74,10 +74,10 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
         cmd_prompt = '/bin/bash -c "%s"'
         need_password = False
     elif user == 'root':
-        cmd_prompt = 'sudo%s /bin/bash -c "%%s"' % ('' if is_root else ' -S')
+        cmd_prompt = 'sudo%s /bin/bash -c "%%s"' % ('' if is_root else ' -kS')
         need_password = False if is_root else True
     else:
-        cmd_prompt = 'sudo%s su %s -c "%%s"' % ('' if is_root else ' -S', user)
+        cmd_prompt = 'sudo%s su %s -c "%%s"' % ('' if is_root else ' -kS', user)
         need_password = False if is_root else True
     
     command = cmd_prompt % cmd
@@ -135,9 +135,12 @@ def is_process_running(process_name, user='self', request=None):
 def write_file_as(request, content, file_path, user='self'):
     if os.path.isdir(file_path):
         return False, u'%s %s' % (_('Unable to write file.'), _('Specified path is a directory.'))
+    if '"' in file_path or '\'' in file_path or '$' in file_path:
+        return False, u'%s %s' % (_('Unable to write file.'), _('Invalid file path.'))
     try:
         # try to write file like usual
-        f = open(file_path, 'w+')
+        with open(file_path, 'w+') as fd:
+            fd.write(content)
     except Exception, e:
         if e.errno != errno.EACCES:
             return False, u'%s %s' % (_('Unable to write file.'), e)
@@ -152,20 +155,14 @@ def write_file_as(request, content, file_path, user='self'):
         date_dump = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S_%f')
         tmp_path = '/tmp/djwutils-tmp_%s_%s' % (date_dump, rd_chars)
         try:
-            f = open(tmp_path, 'w+')
+            with open(tmp_path, 'w+') as fd:
+                fd.write(content)
         except Exception, e:
             return False, u'%s %s' % (_('Unable to create temporary file "%s".') % tmp_path, e)
-        f.write(content.encode('utf-8'))
-        f.close()
-        # transfer content in final file
-        cmd = u'cp \'%s\' \'%s\'' % (tmp_path, file_path)
+        # transfer content in final file without altering file permissions
+        cmd = u'cat \'%s\' > \'%s\'' % (tmp_path, file_path)
         success, output = execute_command(cmd, user=user, request=request)
         os.remove(tmp_path)
-        if success:
-            return True, unicode(_('File updated.'))
-        else:
+        if not success:
             return False, u'%s %s' % (_('Unable to write file.'), output)
-    else:
-        f.write(content.encode('utf-8'))
-        f.close()
-        return True, unicode(_('File updated.'))
+    return True, unicode(_('File updated.'))
