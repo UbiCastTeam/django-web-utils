@@ -96,7 +96,7 @@ def send_template_emails(template, contexts=None, request=None, content_subtype=
         if ctx.get('recipient'):
             if hasattr(ctx['recipient'], 'email'):
                 # the recipient is a user model, use his information
-                if hasattr(ctx['recipient'], 'emails_lang'):
+                if getattr(ctx['recipient'], 'emails_lang', None):
                     ctx['lang'] = ctx['recipient'].emails_lang
                 if ctx['recipient'].get_full_name():
                     recipients = ['"%s" <%s>' % (ctx['recipient'].get_full_name(), ctx['recipient'].email)]
