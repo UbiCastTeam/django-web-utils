@@ -17,6 +17,7 @@ function OverlayDisplayManager(options) {
     this.hide_on_escape = true;
     
     // vars
+    this.pending_show_params = null;
     this.messages = {};
     this.$widget = null;
     this.max_width = 0;
@@ -108,6 +109,8 @@ OverlayDisplayManager.prototype._init = function () {
             event.data.obj.hide();
     });
     this.on_resize();
+    if (this.pending_show_params)
+        this.show(this.pending_show_params);
 };
 
 OverlayDisplayManager.prototype.set_language = function (lang) {
@@ -322,8 +325,11 @@ OverlayDisplayManager.prototype.change = function (params) {
         this._load_resource(resource);
 };
 OverlayDisplayManager.prototype.show = function (params) {
-    if (!this.$widget)
+    if (!this.$widget) {
+        this.pending_show_params = params;
         return;
+    }
+    this.pending_show_params = null;
     if (this.displayed)
         return this.change(params);
     
@@ -347,6 +353,8 @@ OverlayDisplayManager.prototype.show = function (params) {
     });
 };
 OverlayDisplayManager.prototype.hide = function () {
+    if (this.pending_show_params)
+        this.pending_show_params = null;
     if (!this.displayed)
         return;
     
