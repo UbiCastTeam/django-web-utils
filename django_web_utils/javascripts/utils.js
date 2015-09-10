@@ -54,6 +54,30 @@ utils.strip = function (str, character) {
     return result;
 };
 
+// add indexOf method to Array (for IE8)
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function(searchElement, fromIndex) {
+        if (this == null)
+            throw new TypeError("\"this\" is undefined or null.");
+        var O = Object(this);
+        var len = O.length >>> 0;
+        if (len === 0)
+            return -1;
+        var n = +fromIndex || 0;
+        if (Math.abs(n) === Infinity)
+            n = 0;
+        if (n >= len)
+            return -1;
+        var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+        while (k < len) {
+            if (k in O && O[k] === searchElement)
+                return k;
+            k++;
+        }
+        return -1;
+    };
+}
+
 // isinstance
 utils.isinstance = function (obj, type) {
     if (typeof obj == "object") {
@@ -130,7 +154,7 @@ utils._extract_browser_version = function (ua, re) {
     if (matches && !isNaN(parseFloat(matches[1])))
         return parseFloat(matches[1]);
     return 0.0;
-}
+};
 utils._get_browser_info = function () {
     // get browser name and version
     var name = "unknown";
@@ -202,7 +226,7 @@ utils._get_browser_info();
 // Translations utils
 utils._translations = { en: {} };
 utils._current_lang = "en";
-utils._current_catalog = utils._translations["en"];
+utils._current_catalog = utils._translations.en;
 utils.use_lang = function (lang) {
     utils._current_lang = lang;
     if (!utils._translations[lang])
@@ -226,8 +250,8 @@ utils.add_translations = function (translations, lang) {
 utils.translate = function (text) {
     if (text in utils._current_catalog)
         return utils._current_catalog[text];
-    else if (utils._current_lang != "en" && text in utils._translations["en"])
-        return utils._translations["en"][text];
+    else if (utils._current_lang != "en" && text in utils._translations.en)
+        return utils._translations.en[text];
     return text;
 };
 utils.get_date_display = function (d) {
