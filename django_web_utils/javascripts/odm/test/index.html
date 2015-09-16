@@ -43,6 +43,11 @@
                     { label: "test", callback: function () { alert("test"); } }
                 ]});
             });
+            $("#odm_locked").click(function () {
+                odm.show({ image: "4.jpg", title: "Locked overlay", locked: true, buttons: [
+                    { label: "close", close: true }
+                ], on_hide: function () { console.log("Locked overlay closed."); } });
+            });
             $("#odm_show").click(function () {
                 odm.show();
             });
@@ -86,6 +91,7 @@
         <button type="button" id="odm_object">Object content</button>
         <button type="button" id="odm_iframe">Iframe content</button>
         <button type="button" id="odm_iframe_buttons">Iframe content with buttons</button>
+        <button type="button" id="odm_locked">Locked (only closable by callback)</button>
         <button type="button" id="odm_show">Show</button>
     </div>
     
