@@ -39,14 +39,20 @@
                 odm.show({ title: "feegeg", iframe: "http://localhost/" });
             });
             $("#odm_iframe_buttons").click(function () {
-                odm.show({ title: "Iframe + buttons", iframe: "http://localhost/", buttons: [
-                    { label: "test", callback: function () { alert("test"); } }
-                ]});
+                odm.show({
+                    title: "Iframe + buttons",
+                    iframe: "http://localhost/",
+                    buttons: [{ label: "test", callback: function () { alert("test"); } }]
+                });
             });
             $("#odm_locked").click(function () {
-                odm.show({ image: "4.jpg", title: "Locked overlay", locked: true, buttons: [
-                    { label: "close", close: true }
-                ], on_hide: function () { console.log("Locked overlay closed."); } });
+                odm.show({
+                    image: "4.jpg",
+                    title: "Locked overlay",
+                    locked: true,
+                    buttons: [{ label: "close", close: true }],
+                    on_hide: function () { console.log("Locked overlay closed."); }
+                });
             });
             $("#odm_show").click(function () {
                 odm.show();
