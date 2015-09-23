@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
-Form utility functions
+Forms utility functions
 '''
 import os
 import logging
-logger = logging.getLogger('djwutils.form_utils')
+logger = logging.getLogger('djwutils.forms_utils')
 # Django
 from django import forms as dj_forms
 
