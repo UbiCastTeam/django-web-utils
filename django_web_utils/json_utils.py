@@ -83,7 +83,7 @@ JsonHttp404 = Http404
 
 # json_view function
 # ----------------------------------------------------------------------------
-def json_view(function=None, methods=None):
+def json_view(function=None, methods=None, login_required=False):
     '''
     Returns 400, 401, 403, 404, 405 and 500 errors in JSON format.
     The "methods" argument can be used to allow only some methods on a particular view.
@@ -99,6 +99,9 @@ def json_view(function=None, methods=None):
                 return response
             # Process view
             try:
+                # Check login
+                if login_required and not request.user.is_authenticated():
+                    raise JsonHttp401()
                 return fct(request, *args, **kwargs)
             except JsonHttp400:
                 return failure_response(code=400, error=u'%s (400)' % _('Bad request'))
