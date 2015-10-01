@@ -314,23 +314,23 @@ utils.get_date_display = function (d) {
 };
 
 // Versions comparison
-utils.compare_versions = function(v1, comparator, v2) {
+utils.compare_versions = function (v1, comparator, v2) {
     "use strict";
-    comparator = comparator == '=' ? '==' : comparator;
-    var v1parts = v1.split('.'), v2parts = v2.split('.');
+    comparator = comparator == "=" ? "==" : comparator;
+    var v1parts = v1.split("."), v2parts = v2.split(".");
     var maxLen = Math.max(v1parts.length, v2parts.length);
     var part1, part2;
     var cmp = 0;
-    for(var i = 0; i < maxLen && !cmp; i++) {
+    for (var i=0; i < maxLen && !cmp; i++) {
         part1 = parseInt(v1parts[i], 10) || 0;
         part2 = parseInt(v2parts[i], 10) || 0;
-        if(part1 < part2)
+        if (part1 < part2)
             cmp = 1;
-        if(part1 > part2)
+        if (part1 > part2)
             cmp = -1;
     }
-    return eval('0' + comparator + cmp);
-}
+    return eval("0" + comparator + cmp);
+};
 
 // JavaScript classes related functions
 utils.setup_class = function (obj, options, allowed_options) {
@@ -368,4 +368,3 @@ utils.setup_class = function (obj, options, allowed_options) {
     if (options)
         obj.set_options(options);
 };
-
