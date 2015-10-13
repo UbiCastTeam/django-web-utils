@@ -4,17 +4,27 @@
 
 import os
 import sys
+import re
 
 
 class Replacer(object):
-    PATH = '/sources/project/'
-    REPLACEMENT_LIST = [
-        ('a string', 'replacement'),
-    ]
-    
-    IGNORED_FILES = ['~', '.svn', '.git', '.mo', '.po', '.pyc', '.jpg', '.bmp', '.png', '.gif', '.ttf', '.sql']
+    '''This script replaces a given string with another one.'''
+
+    DEFAULT_IGNORED = r'.*.(svn|git|bzr).*$|.*~$|.*.(svn|git|mo|po|pyc|jpg|bmp|png|gif|ttf|sql)$'
     PRINT_IGNORED = False
-    
+
+    USAGE = '''Usage:
+    %s [-p=<path>] [-i=<ignore>] "old" "new" ["old2" "new2" ...]
+
+Parameters:
+    path:
+        Path of file or dir in which all files will be processed.
+        Default: current working dir: %s
+    ignore:
+        Regular expression matching file names to ignore.
+        Default: %s
+''' % (__file__, os.getcwd(), DEFAULT_IGNORED)
+
     RED = '\033[91m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
@@ -22,45 +32,54 @@ class Replacer(object):
     PURPLE = '\033[95m'
     TEAL = '\033[96m'
     DEFAULT = '\033[0m'
-    
-    ALLOWED_OPTIONS = ('path', 'replacement_list', 'ignored_files', 'print_ignored')
-    
-    def __init__(self, options=None):
-        object.__init__(self)
-        for option in self.ALLOWED_OPTIONS:
-            if options and option in options:
-                setattr(self, option, options[option])
-            else:
-                default = getattr(self, option.upper())
-                if isinstance(default, list):
-                    default = list(default)
-                if isinstance(default, dict):
-                    default = dict(default)
-                setattr(self, option, default)
-    
+
     def run(self, *args):
-        path = self.path
-        replacement_list = self.replacement_list
-        if len(args) > 1:
-            path = args[1]
-            if len(args) > 3:
-                replacement_list = [(args[2], args[3])]
+        if not args or '-h' in args or '--help' in args:
+            sys.stdout.write(self.__doc__ + '\n\n')
+            sys.stdout.write(self.USAGE)
+            return 0
+        path = None
+        ignore = None
+        replacements = list()
+        to_replace = None
+        for arg in args:
+            if arg.startswith('-p='):
+                path = arg[3:]
+            elif arg.startswith('-i='):
+                ignore = arg[3:]
+            elif not to_replace:
+                if not arg:
+                    continue
+                to_replace = arg
+            else:
+                replacements.append((to_replace, arg))
+                to_replace = None
+        if to_replace:
+            sys.stderr.write('Missing argument after a string to be replaced.\n')
+            sys.stderr.write(self.USAGE)
+            return 1
         
-        self.replace(path, replacement_list)
-    
-    def replace(self, path, replacement_list):
-        print u'Replacement list is:\n    %s' % u'\n    '.join([u'"%s%s%s" -> "%s%s%s"' % (self.TEAL, r[0], self.DEFAULT, self.PURPLE, r[1], self.DEFAULT) for r in replacement_list])
-        print u'Starting script'
-        analysed, changed, ignored = self._replace(path, replacement_list)
-        print u'%s files analysed, %s files changed and %s files ignored' % (analysed, changed, ignored)
-        print u'Done'
-    
-    def _replace(self, path, replacement_list):
+        return self.replace(replacements, path, ignore)
+
+    def replace(self, replacements, path=None, ignore=None):
+        if not path:
+            path = os.getcwd()
+        if not ignore:
+            ignore = self.DEFAULT_IGNORED
+        ignore_re = re.compile(ignore)
+        sys.stdout.write(u'Replacement list is:\n    %s\n' % u'\n    '.join([u'"%s%s%s" -> "%s%s%s"' % (self.TEAL, r[0], self.DEFAULT, self.PURPLE, r[1], self.DEFAULT) for r in replacements]))
+        sys.stdout.write('Starting script\n')
+        analysed, changed, ignored = self._replace(path, replacements, ignore_re)
+        sys.stdout.write('%s files analysed, %s files changed and %s files ignored.\n' % (analysed, changed, ignored))
+        sys.stdout.write('Done\n')
+        return 0
+
+    def _replace(self, path, replacements, ignore_re):
         analysed = 0
         changed = 0
         ignored = 0
         if not os.path.exists(path):
-            print u'%sThe path %s does not exist.%s' % (self.RED, path, self.DEFAULT)
+            sys.stderr.write(u'%sThe path %s does not exist.%s\n' % (self.RED, path, self.DEFAULT))
             return analysed, changed, ignored
         if os.path.isdir(path):
             files = os.listdir(path)
@@ -72,37 +91,31 @@ class Replacer(object):
             picked_path = os.path.join(path, picked_name)
             if os.path.isfile(picked_path):
                 skipped = False
-                for ignored_file in self.ignored_files:
-                    if ignored_file in picked_path:
-                        ignored += 1
-                        skipped = True
-                        if self.print_ignored:
-                            print u'%s    file ignored (contain %s):%s %s' % (self.GREEN, ignored_file, self.DEFAULT, picked_path)
+                if ignore_re.match(picked_path):
+                    ignored += 1
+                    skipped = True
+                    if self.PRINT_IGNORED:
+                        sys.stdout.write(u'    %sfile ignored:%s %s\n' % (self.GREEN, self.DEFAULT, picked_path))
                 if not skipped:
+                    #sys.stdout.write('    current file is: %s' % (picked_path)
                     analysed += 1
-                    
-                    #print '    current file is: %s' % (picked_path)
-                    picked_file = open(picked_path, 'r')
-                    content = picked_file.read()
-                    picked_file.close()
-                    
+                    with open(picked_path, 'r') as fd:
+                        content = fd.read()
+
                     file_has_changed = False
-                    for replacement in replacement_list:
-                        if replacement[0] in content:
-                            content = content.replace(replacement[0], replacement[1])
+                    for repl in replacements:
+                        if repl[0] in content:
+                            content = content.replace(repl[0], repl[1])
                             file_has_changed = True
-                    
+
                     if file_has_changed:
-                        picked_file = open(picked_path, 'w+')
-                        picked_file.write(content)
-                        #picked_file.write(content.encode('utf-8'))
-                        picked_file.close()
-                        
+                        with open(picked_path, 'w+') as fd:
+                            fd.write(content)
                         changed += 1
-                        print u'%s    file changed:%s %s' % (self.BLUE, self.DEFAULT, picked_path)
-            
+                        sys.stdout.write(u'    %sfile changed:%s %s\n' % (self.BLUE, self.DEFAULT, picked_path))
+
             elif os.path.isdir(picked_path):
-                result = self._replace(picked_path, replacement_list)
+                result = self._replace(picked_path, replacements, ignore_re)
                 analysed += result[0]
                 changed += result[1]
                 ignored += result[2]
@@ -111,4 +124,4 @@ class Replacer(object):
 
 if __name__ == '__main__':
     replacer = Replacer()
-    replacer.run(*sys.argv)
+    sys.exit(replacer.run(*sys.argv[1:]))
