@@ -10,7 +10,7 @@ from django.db import models as dj_models
 
 # register_module function
 # Automatic models registeration
-#-----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def register_module(models_module, allow_filters=False):
     for attr_name in dir(models_module):
         model = getattr(models_module, attr_name, None)
@@ -27,6 +27,7 @@ def register_module(models_module, allow_filters=False):
             fields.append(field.name)
             if field._choices and allow_filters:
                 list_filter.append(field.name)
+
         class ModelOptions(admin.ModelAdmin):
             save_on_top = True
             list_display = []
