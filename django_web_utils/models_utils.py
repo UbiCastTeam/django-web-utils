@@ -12,6 +12,5 @@ class SingletonModel():
         try:
             obj = cls.objects.all()[0]
         except IndexError:
-            obj = cls()
-            obj.save()
+            obj = cls.objects.create()
         return obj
