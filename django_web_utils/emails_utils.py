@@ -21,13 +21,14 @@ import traceback
 import logging
 logger = logging.getLogger('djwutils.emails_utils')
 # Django
-from django.template.loader import render_to_string
+from django.conf import settings
+from django.core import mail
+from django.db.models.query import QuerySet
 from django.template import Context
+from django.template.loader import render_to_string
+from django.utils import translation
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-from django.utils import translation
-from django.core import mail
-from django.conf import settings
 # utils
 import html_utils
 
@@ -92,7 +93,7 @@ def _get_recipients_list(recipients, context=None):
             else:
                 as_list.append(dict(email=key, info=value))
         recipients = as_list
-    elif not isinstance(recipients, (tuple, list)):
+    elif not isinstance(recipients, (tuple, list, QuerySet)):
         recipients = [recipients]
     # Clean recipients list (get a list of User model or dict with at least email in keys)
     cleaned_rcpts = list()
