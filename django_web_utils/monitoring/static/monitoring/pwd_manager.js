@@ -19,14 +19,9 @@ function PwdManager(options) {
         // allowed options
         "url"
     ]);
-    
-    var obj = this;
-    $(document).ready(function () {
-        obj.init();
-    });
 }
 
-PwdManager.prototype.init = function () {
+PwdManager.prototype.build = function () {
     this.overlay = new OverlayDisplayManager();
     
     var html = "<form class=\"margin-8\">";
@@ -135,6 +130,8 @@ PwdManager.prototype.display_message = function (type, text) {
 };
 
 PwdManager.prototype.open_pwd_form = function () {
+    if (!this.overlay)
+        this.build();
     var obj = this;
     this.success = false;
     this.overlay.show({
