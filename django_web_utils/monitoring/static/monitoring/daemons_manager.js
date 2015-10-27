@@ -35,6 +35,10 @@ DaemonsManager.prototype.init = function () {
     var obj = this;
     for (var i = 0; i < this.daemons.length; i++) {
         var daemon = this.daemons[i];
+        if (typeof daemon == "string") {
+            daemon = { name: daemon };
+            this.daemons[i] = daemon;
+        }
         $(".daemon-"+daemon.name+" .daemon-log-clear").click({daemon: daemon}, function (event) {
             obj.send_daemon_command(event.data.daemon, "clear_log");
         });

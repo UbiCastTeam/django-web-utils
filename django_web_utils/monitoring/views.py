@@ -118,7 +118,7 @@ def monitoring_command(request):
             text = _('Command "%(cmd)s" on "%(name)s" successfully executed.')
         else:
             text = _('Command "%(cmd)s" on "%(name)s" failed.')
-        message += u'<div class="message"><div class="success">%s</div></div>' % escape(unicode(text % dict(cmd=command, name=name)))
+        message += u'<div class="message"><div class="content success">%s</div></div>' % escape(unicode(text % dict(cmd=command, name=name)))
         if msg:
             message += u'<div><b>%s</b><br/>\n' % _('Command output:')
             message += u'<pre>%s</pre></div>' % escape(msg)
