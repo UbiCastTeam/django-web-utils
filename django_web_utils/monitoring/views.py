@@ -21,22 +21,22 @@ from django_web_utils.monitoring import config, utils
 @login_required
 def check_password(request):
     if not request.user.is_superuser:
-        return json_utils.response_403(message=unicode(_('You don\'t have the permission to access this url.')), error='perm')
+        return json_utils.response_403(message=str(_('You don\'t have the permission to access this url.')), error='perm')
     if request.method == 'POST':
         # check that password is OK
         pwd = request.POST.get('data')
         if not pwd:
-            return json_utils.failure_response(message=unicode(_('Please enter password.')), error='nopwd')
+            return json_utils.failure_response(message=str(_('Please enter password.')), error='nopwd')
         success, output = system_utils.execute_command('echo \'test\'', user='root', pwd=pwd)
         if success:
             request.session['pwd'] = pwd
             return json_utils.success_response()
         else:
-            return json_utils.failure_response(message=unicode(_('Invalid password.')), error='wpwd')
+            return json_utils.failure_response(message=str(_('Invalid password.')), error='wpwd')
     else:
         pwd = request.session.get('pwd')
         if not pwd:
-            return json_utils.failure_response(message=unicode(_('Please enter password.')), error='nopwd')
+            return json_utils.failure_response(message=str(_('Please enter password.')), error='nopwd')
         return json_utils.success_response()
 
 
@@ -91,7 +91,7 @@ def monitoring_command(request):
     name = request.POST.get('daemon')
     if name == 'all':
         all_daemons = True
-        names = info.DAEMONS.keys()
+        names = list(info.DAEMONS.keys())
         names.sort()
     else:
         if name not in info.DAEMONS:
@@ -99,7 +99,7 @@ def monitoring_command(request):
         all_daemons = False
         names = [name]
     
-    message = u''
+    message = ''
     for name in names:
         daemon = info.DAEMONS.get(name)
         if not config.can_control_daemon(daemon, request):
@@ -108,7 +108,7 @@ def monitoring_command(request):
             if all_daemons:
                 continue
             success = False
-            msg = u'%s %s' % (_('Invalid daemon name:'), name)
+            msg = '%s %s' % (_('Invalid daemon name:'), name)
         else:
             if command in ('start', 'restart') and daemon.get('only_stop'):
                 continue
@@ -118,10 +118,10 @@ def monitoring_command(request):
             text = _('Command "%(cmd)s" on "%(name)s" successfully executed.')
         else:
             text = _('Command "%(cmd)s" on "%(name)s" failed.')
-        message += u'<div class="message"><div class="content success">%s</div></div>' % escape(unicode(text % dict(cmd=command, name=name)))
+        message += '<div class="message"><div class="content success">%s</div></div>' % escape(str(text % dict(cmd=command, name=name)))
         if msg:
-            message += u'<div><b>%s</b><br/>\n' % _('Command output:')
-            message += u'<pre>%s</pre></div>' % escape(msg)
+            message += '<div><b>%s</b><br/>\n' % _('Command output:')
+            message += '<pre>%s</pre></div>' % escape(msg)
     return json_utils.success_response(message=message)
 
 
@@ -152,7 +152,7 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
     return render(request, tplt, dict(
         monitoring_page='log',
         monitoring_body='monitoring/log.html',
-        title=u'%s - %s' % (label, _('log file')),
+        title='%s - %s' % (label, _('log file')),
         back_url=back_url or reverse('monitoring-panel'),
         **result
     ))

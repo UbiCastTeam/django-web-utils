@@ -23,7 +23,7 @@ def get_login():
 
 # run_as function
 #------------------------------------------------------------------------------
-def run_as(username, umask=022, exit_on_error=True):
+def run_as(username, umask=0o22, exit_on_error=True):
     """
     Drop privileges to given user, and set up environment.
     Assumes the parent process has root privileges.
@@ -33,9 +33,9 @@ def run_as(username, umask=022, exit_on_error=True):
     
     try:
         pwent = pwd.getpwnam(username)
-    except KeyError, e:
+    except KeyError as e:
         if exit_on_error:
-            print >>sys.stderr, e
+            print(e, file=sys.stderr)
             sys.exit(1)
         else:
             raise
@@ -85,13 +85,13 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     if need_password:
         if not pwd and (not request or not request.session.get('pwd')):
-            return False, unicode(_('Password required.'))
+            return False, str(_('Password required.'))
         out, err = p.communicate(input=('%s\n' % (pwd if pwd else request.session['pwd']).encode('utf-8')))
     else:
         out, err = p.communicate()
     if p.returncode != 0:
         if not err:
-            err = unicode(_('Command exited with code %s.') % p.returncode)
+            err = str(_('Command exited with code %s.') % p.returncode)
         if out:
             return False, '%s\n---- stderr ----\n%s' % (out, err)
         return False, err
@@ -134,22 +134,22 @@ def is_process_running(process_name, user='self', request=None):
 #------------------------------------------------------------------------------
 def write_file_as(request, content, file_path, user='self'):
     if os.path.isdir(file_path):
-        return False, u'%s %s' % (_('Unable to write file.'), _('Specified path is a directory.'))
+        return False, '%s %s' % (_('Unable to write file.'), _('Specified path is a directory.'))
     if '"' in file_path or '\'' in file_path or '$' in file_path:
-        return False, u'%s %s' % (_('Unable to write file.'), _('Invalid file path.'))
+        return False, '%s %s' % (_('Unable to write file.'), _('Invalid file path.'))
     try:
         # try to write file like usual
         with open(file_path, 'w+') as fd:
             fd.write(content)
-    except Exception, e:
+    except Exception as e:
         if e.errno != errno.EACCES:
-            return False, u'%s %s' % (_('Unable to write file.'), e)
+            return False, '%s %s' % (_('Unable to write file.'), e)
         # write file as given user
         #   to write as given user we first write the content in a temporary file then we
         #   transfer the content to the destination file. This method is used to avoid
         #   problems with special characters.
         if 'pwd' not in request.session:
-            return False, unicode(_('You need to send the main password to edit this file.'))
+            return False, str(_('You need to send the main password to edit this file.'))
         # write tmp file
         rd_chars = ''.join([random.choice('0123456789abcdef') for i in range(10)])
         date_dump = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S_%f')
@@ -157,12 +157,12 @@ def write_file_as(request, content, file_path, user='self'):
         try:
             with open(tmp_path, 'w+') as fd:
                 fd.write(content)
-        except Exception, e:
-            return False, u'%s %s' % (_('Unable to create temporary file "%s".') % tmp_path, e)
+        except Exception as e:
+            return False, '%s %s' % (_('Unable to create temporary file "%s".') % tmp_path, e)
         # transfer content in final file without altering file permissions
-        cmd = u'cat \'%s\' > \'%s\'' % (tmp_path, file_path)
+        cmd = 'cat \'%s\' > \'%s\'' % (tmp_path, file_path)
         success, output = execute_command(cmd, user=user, request=request)
         os.remove(tmp_path)
         if not success:
-            return False, u'%s %s' % (_('Unable to write file.'), output)
-    return True, unicode(_('File updated.'))
+            return False, '%s %s' % (_('Unable to write file.'), output)
+    return True, str(_('File updated.'))

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author: Stéphane Diemer stephane.diemer@ubicast.eu
 
-from __future__ import print_function
+
 import os
 import sys
 import subprocess

@@ -27,7 +27,7 @@ class NoLinkClearableFileInput(dj_forms.ClearableFileInput):
     url_markup_template = '<b>{1}</b>'
 
     def render(self, name, value, attrs=None):
-        obj_value = FileInfo(value) if isinstance(value, (str, unicode)) else value
+        obj_value = FileInfo(value) if isinstance(value, str) else value
         return super(NoLinkClearableFileInput, self).render(name, obj_value, attrs)
 
 

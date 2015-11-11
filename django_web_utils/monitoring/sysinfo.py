@@ -63,7 +63,7 @@ def get_version(package=None, module=None):
                     last_commit_ts = datetime.datetime.fromtimestamp(int(last_commit_unix_ts)).strftime('%Y%m%d%H%M%S')
                     last_commit_shorthash = _get_output(['git', '--git-dir', git_dir, 'log', '-1', '--pretty=%h'])
                     revision = '%s-%s' % (last_commit_ts, last_commit_shorthash)
-                except Exception, e:
+                except Exception as e:
                     logger.error('Unable to get revision: %s', e)
             else:
                 revision = out.replace('Version: ', '')
@@ -166,10 +166,10 @@ def get_system_info(package=None, module=None, extra=None):
             except ValueError:
                 continue
             mem_dict[key.strip()] = value
-        tplt_args['info_memory'].append(dict(label=_('Total'), value=u'%.2f %s' % ((mem_dict.get('MemTotal', 0) / 1048576.), _('GB'))))
-        tplt_args['info_memory'].append(dict(label=_('Free'), value=u'%.2f %s' % ((mem_dict.get('MemFree', 0) / 1048576.), _('GB'))))
-        tplt_args['info_memory'].append(dict(label=_('Cached'), value=u'%.2f %s' % ((mem_dict.get('Cached', 0) / 1048576.), _('GB'))))
-    except Exception, e:
+        tplt_args['info_memory'].append(dict(label=_('Total'), value='%.2f %s' % ((mem_dict.get('MemTotal', 0) / 1048576.), _('GB'))))
+        tplt_args['info_memory'].append(dict(label=_('Free'), value='%.2f %s' % ((mem_dict.get('MemFree', 0) / 1048576.), _('GB'))))
+        tplt_args['info_memory'].append(dict(label=_('Cached'), value='%.2f %s' % ((mem_dict.get('Cached', 0) / 1048576.), _('GB'))))
+    except Exception as e:
         tplt_args['info_memory'].append(dict(label=_('Failed to get information'), value=e))
     tplt_args['info_sections'].append(dict(label=_('Memory'), info=tplt_args['info_memory']))
     # Network
@@ -188,7 +188,7 @@ def get_system_info(package=None, module=None, extra=None):
         tplt_args['info_sections'].append(dict(label=_('Sensors'), info=tplt_args['info_sensors']))
     # Extra data
     if extra:
-        for section, values in extra.iteritems():
+        for section, values in extra.items():
             if section in tplt_args:
                 tplt_args[section].extend(values)
             else:

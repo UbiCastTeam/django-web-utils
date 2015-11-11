@@ -51,7 +51,7 @@ def unzip(path, zip_path=None, zip_file=None):
             return False, 'No zip file specified.'
         try:
             used_zip_file = zipfile.ZipFile(zip_path, 'r')
-        except Exception, e:
+        except Exception as e:
             return False, 'Cannot open zip file (%s). Error: %s.' % (zip_path, e)
     try:
         # CRC test
@@ -62,7 +62,7 @@ def unzip(path, zip_path=None, zip_file=None):
         if not os.path.exists(os.path.dirname(path)):
             try:
                 os.makedirs(os.path.dirname(path))
-            except Exception, e:
+            except Exception as e:
                 return False, 'Cannot create folder "%s". Error is: %s' % (path, e)
         # extract files
         used_zip_file.extractall(path)

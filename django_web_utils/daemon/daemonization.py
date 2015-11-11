@@ -19,7 +19,7 @@ def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
         # and inherits the parent's process group ID.  This step is required
         # to insure that the next call to os.setsid is successful.
         pid = os.fork()
-    except OSError, e:
+    except OSError as e:
         raise Exception('%s [%d]' % (e.strerror, e.errno))
     
     if pid == 0:  # The first child.
@@ -38,7 +38,7 @@ def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
             # longer a session leader, preventing the daemon from ever acquiring
             # a controlling terminal.
             pid = os.fork()  # Fork a second child.
-        except OSError, e:
+        except OSError as e:
             raise Exception('%s [%d]' % (e.strerror, e.errno))
     
         if pid == 0:  # The second child.
@@ -61,7 +61,7 @@ def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
         # streams to be flushed twice and any temporary files may be unexpectedly
         # removed.  It's therefore recommended that child branches of a fork()
         # and the parent branch(es) of a daemon use _exit().
-        print >>sys.stdout, 'Process daemonized.'
+        print('Process daemonized.', file=sys.stdout)
         sys.stdout.flush()
         os._exit(0)  # Exit parent of the first child.
     
@@ -75,7 +75,7 @@ def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
     for ofd in range(0, maxfd_to_use):
         try:
             os.close(ofd)
-        except OSError, e:  # ERROR, ofd wasn't open to begin with (ignored)
+        except OSError as e:  # ERROR, ofd wasn't open to begin with (ignored)
             pass
     
     # Redirect the standard I/O file descriptors to the specified file.  Since
@@ -95,14 +95,14 @@ def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
         os.dup2(0, 1)  # standard output (1)
         if fd:
             sys.stdout = fd
-    except OSError, e:
+    except OSError as e:
         if e.errno != errno.EBADF:
             raise
     try:
         os.dup2(0, 2)  # standard error (2)
         if fd:
             sys.stderr = fd
-    except OSError, e:
+    except OSError as e:
         if e.errno != errno.EBADF:
             raise
     

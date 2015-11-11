@@ -113,17 +113,17 @@ class BaseDaemon(object):
         if not os.path.exists(self.get_conf_path()):
             return False
         cfg = imp.load_source('cfg', self.get_conf_path())
-        for key in cfg.__dict__.keys():
+        for key in list(cfg.__dict__.keys()):
             if not key.startswith('__'):
                 self.config[key] = cfg.__dict__[key]
         return True
 
     def save_config(self):
         # get modified keys
-        content = u''
-        for key, value in self.config.iteritems():
+        content = ''
+        for key, value in self.config.items():
             if value != self.DEFAULTS.get(key):
-                content += key + u' = ' + self.config[key] + u'\n'
+                content += key + ' = ' + self.config[key] + '\n'
         try:
             if not os.path.exists(os.path.dirname(self.get_conf_path())):
                 os.makedirs(os.path.dirname(self.get_conf_path()))
@@ -138,33 +138,33 @@ class BaseDaemon(object):
             # check if daemon is already launched
             pid = self._look_for_existing_process()
             if pid:
-                print >>sys.stdout, 'Stopping %s... ' % self.DAEMON_NAME
+                print('Stopping %s... ' % self.DAEMON_NAME, file=sys.stdout)
                 # kill process and its children
                 result = os.system('kill -- -$(ps hopgid %s | sed \'s/^ *//g\')' % pid)
                 if result != 0:
-                    print >>sys.stderr, 'Cannot stop %s' % self.DAEMON_NAME
+                    print('Cannot stop %s' % self.DAEMON_NAME, file=sys.stderr)
                     self.exit(129)
                 os.remove(self.get_pid_path())
-                print >>sys.stdout, '%s stopped' % self.DAEMON_NAME
+                print('%s stopped' % self.DAEMON_NAME, file=sys.stdout)
             else:
-                print >>sys.stdout, '%s is not running' % self.DAEMON_NAME
+                print('%s is not running' % self.DAEMON_NAME, file=sys.stdout)
         elif self._command == 'start':
             # check if daemon is already launched
             pid = self._look_for_existing_process()
             if pid and not self._simultaneous:
-                print >>sys.stderr, '%s is already running' % self.DAEMON_NAME
+                print('%s is already running' % self.DAEMON_NAME, file=sys.stderr)
                 self.exit(130)
         elif self._command == 'clear_log':
             if os.path.exists(self.get_log_path()):
                 with open(self.get_log_path(), 'w') as fd:
                     fd.write('')
-            print >>sys.stdout, 'Log file cleared for %s.' % self.DAEMON_NAME
+            print('Log file cleared for %s.' % self.DAEMON_NAME, file=sys.stdout)
         else:
-            print >>sys.stderr, self.USAGE % self.daemon_path
+            print(self.USAGE % self.daemon_path, file=sys.stderr)
             self.exit(128)
         
         if self._command in ('start', 'restart'):
-            print >>sys.stdout, 'Starting %s...' % self.DAEMON_NAME
+            print('Starting %s...' % self.DAEMON_NAME, file=sys.stdout)
             try:
                 if self._should_daemonize:
                     daemonize(redirect_to=self.get_log_path() if self._log_in_file else None)
@@ -199,11 +199,11 @@ class BaseDaemon(object):
             except Exception:
                 pass
         if not os.path.isdir(self.LOG_DIR):
-            print >>sys.stderr, 'Cannot create log directory %s' % self.LOG_DIR
+            print('Cannot create log directory %s' % self.LOG_DIR, file=sys.stderr)
             self.exit(131)
 
         loggers = logging.Logger.manager.loggerDict
-        if loggers.keys():
+        if list(loggers.keys()):
             logger.debug('Resetting loggers.')
 
         # configure logging and disable all existing loggers
@@ -248,7 +248,7 @@ class BaseDaemon(object):
         if self._log_in_file:
             logging.captureWarnings(False)
         # reset all loggers config
-        for key, lg in loggers.iteritems():
+        for key, lg in loggers.items():
             lg.handlers = []
             lg.propagate = 1
         logger.debug('Logging configured.')
@@ -274,8 +274,8 @@ class BaseDaemon(object):
                 os.makedirs(pid_dir)
             with open(self.get_pid_path(), 'w+') as fd:
                 fd.write('%s' % os.getpid())
-        except Exception, e:
-            print >>sys.stderr, 'Cannot write pid into pidfile %s' % self.get_pid_path()
+        except Exception as e:
+            print('Cannot write pid into pidfile %s' % self.get_pid_path(), file=sys.stderr)
             raise e
         else:
             self._pid_written = True
@@ -289,17 +289,17 @@ class BaseDaemon(object):
                     if msg:
                         fd.write(msg + '\n\n')
                     fd.write(traceback.format_exc())
-            except Exception, e:
-                print >>sys.stderr, e
+            except Exception as e:
+                print(e, file=sys.stderr)
         try:
             # logger may not be initialized
             logger.error('%s\n%s' % (msg, traceback.format_exc()))
-        except Exception, e:
-            print >>sys.stderr, e
+        except Exception as e:
+            print(e, file=sys.stderr)
         try:
             self.send_error_email(msg, tb=True)
-        except Exception, e:
-            print >>sys.stderr, e
+        except Exception as e:
+            print(e, file=sys.stderr)
         self.exit(code)
 
     def start(self, argv=None):
@@ -322,7 +322,7 @@ class BaseDaemon(object):
             import gobject
             #gobject.threads_init()
             ml = gobject.MainLoop()
-            print >>sys.stdout, '%s started' % self.DAEMON_NAME
+            print('%s started' % self.DAEMON_NAME, file=sys.stdout)
             try:
                 ml.run()
             except Exception:
@@ -338,7 +338,7 @@ class BaseDaemon(object):
         # remove pid file to avoid kill command when restarting
         try:
             os.remove(self.get_pid_path())
-        except Exception, e:
+        except Exception as e:
             logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.' % e)
         
         # execute restart command (if the daemon was not daemonized it will become so)
@@ -362,9 +362,9 @@ class BaseDaemon(object):
     def send_error_email(self, msg, tb=False, recipients=None):
         from django_web_utils import emails_utils
         message = msg.decode('utf-8')
-        logger.error(u'%s\n%s' % (message, traceback.format_exc().decode('utf-8')) if tb else message)
+        logger.error('%s\n%s' % (message, traceback.format_exc().decode('utf-8')) if tb else message)
         emails_utils.send_error_report_emails(
-            title=u'%s - %s' % (self.DAEMON_NAME, socket.gethostname()),
-            error=u'%s\n\nThe daemon was started with the following arguments:\n%s' % (message, sys.argv),
+            title='%s - %s' % (self.DAEMON_NAME, socket.gethostname()),
+            error='%s\n\nThe daemon was started with the following arguments:\n%s' % (message, sys.argv),
             recipients=recipients,
         )

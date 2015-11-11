@@ -93,7 +93,7 @@ def json_view(function=None, methods=None, login_required=False):
         def _wrapped_view(request, *args, **kwargs):
             # Check request method
             if methods and request.method not in methods:
-                data = dict(error=u'%s (405)' % _('Invalid request method'))
+                data = dict(error='%s (405)' % _('Invalid request method'))
                 response = HttpResponse(json.dumps(data), content_type='application/json', status=405)
                 response['Allow'] = methods
                 return response
@@ -104,17 +104,17 @@ def json_view(function=None, methods=None, login_required=False):
                     raise JsonHttp401()
                 return fct(request, *args, **kwargs)
             except JsonHttp400:
-                return failure_response(code=400, error=u'%s (400)' % _('Bad request'))
+                return failure_response(code=400, error='%s (400)' % _('Bad request'))
             except JsonHttp401:
-                return failure_response(code=401, error=u'%s (401)' % _('Authentication required'))
+                return failure_response(code=401, error='%s (401)' % _('Authentication required'))
             except JsonHttp403:
-                return failure_response(code=403, error=u'%s (403)' % _('Access denied'))
+                return failure_response(code=403, error='%s (403)' % _('Access denied'))
             except JsonHttp404:
-                return failure_response(code=404, error=u'%s (404)' % _('Page not found'))
+                return failure_response(code=404, error='%s (404)' % _('Page not found'))
             except Exception:
                 logger = logging.getLogger('django.request')
                 logger.error('Internal server error: %s', request.get_full_path(), exc_info=traceback.extract_stack(), extra={'status_code': 500, 'request': request})
-                return failure_response(code=500, error=u'%s (500)' % _('Internal server error'))
+                return failure_response(code=500, error='%s (500)' % _('Internal server error'))
         return _wrapped_view
     if function:
         return decorator(function)

@@ -6,7 +6,7 @@ To use this module, you should create the following templates:
     400.html, 401.html, 403.html, 404.html, 405.html, 500.html
 All these templates should be in a dir called iframe.
 '''
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import traceback
 import logging
 # Django
@@ -55,7 +55,7 @@ def iframe_view(function=None, methods=None, login_url=None, login_required=Fals
             except IframeHttp400:
                 return render(request, 'iframe/400.html', status=400)
             except IframeHttp401:
-                next = urllib.quote(request.get_full_path())
+                next = urllib.parse.quote(request.get_full_path())
                 if login_url:
                     url = login_url
                     if next:
@@ -64,7 +64,7 @@ def iframe_view(function=None, methods=None, login_url=None, login_required=Fals
                     return HttpResponseRedirect(url)
                 return render(request, 'iframe/401.html', {'next': next}, status=401)
             except IframeHttp403:
-                next = urllib.quote(request.get_full_path())
+                next = urllib.parse.quote(request.get_full_path())
                 if not request.user.is_authenticated() and login_url:
                     url = login_url
                     if next:

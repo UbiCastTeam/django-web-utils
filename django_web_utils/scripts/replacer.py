@@ -67,7 +67,7 @@ Parameters:
         if not ignore:
             ignore = self.DEFAULT_IGNORED
         ignore_re = re.compile(ignore)
-        sys.stdout.write(u'Replacement list is:\n    %s\n' % u'\n    '.join([u'"%s%s%s" -> "%s%s%s"' % (self.TEAL, r[0], self.DEFAULT, self.PURPLE, r[1], self.DEFAULT) for r in replacements]))
+        sys.stdout.write('Replacement list is:\n    %s\n' % '\n    '.join(['"%s%s%s" -> "%s%s%s"' % (self.TEAL, r[0], self.DEFAULT, self.PURPLE, r[1], self.DEFAULT) for r in replacements]))
         sys.stdout.write('Starting script\n')
         analysed, changed, ignored = self._replace(path, replacements, ignore_re)
         sys.stdout.write('%s files analysed, %s files changed and %s files ignored.\n' % (analysed, changed, ignored))
@@ -79,7 +79,7 @@ Parameters:
         changed = 0
         ignored = 0
         if not os.path.exists(path):
-            sys.stderr.write(u'%sThe path %s does not exist.%s\n' % (self.RED, path, self.DEFAULT))
+            sys.stderr.write('%sThe path %s does not exist.%s\n' % (self.RED, path, self.DEFAULT))
             return analysed, changed, ignored
         if os.path.isdir(path):
             files = os.listdir(path)
@@ -95,7 +95,7 @@ Parameters:
                     ignored += 1
                     skipped = True
                     if self.PRINT_IGNORED:
-                        sys.stdout.write(u'    %sfile ignored:%s %s\n' % (self.GREEN, self.DEFAULT, picked_path))
+                        sys.stdout.write('    %sfile ignored:%s %s\n' % (self.GREEN, self.DEFAULT, picked_path))
                 if not skipped:
                     #sys.stdout.write('    current file is: %s' % (picked_path)
                     analysed += 1
@@ -112,7 +112,7 @@ Parameters:
                         with open(picked_path, 'w+') as fd:
                             fd.write(content)
                         changed += 1
-                        sys.stdout.write(u'    %sfile changed:%s %s\n' % (self.BLUE, self.DEFAULT, picked_path))
+                        sys.stdout.write('    %sfile changed:%s %s\n' % (self.BLUE, self.DEFAULT, picked_path))
 
             elif os.path.isdir(picked_path):
                 result = self._replace(picked_path, replacements, ignore_re)

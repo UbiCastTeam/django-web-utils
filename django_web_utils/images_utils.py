@@ -7,7 +7,7 @@ import os
 import datetime
 from PIL import Image
 # utils
-from files_utils import get_new_path
+from .files_utils import get_new_path
 
 
 # get_image_ratio function

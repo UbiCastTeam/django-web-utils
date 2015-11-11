@@ -37,7 +37,7 @@ def recursive_dirs(path):
     dirs = list()
     try:
         files_names = os.listdir(path)
-    except OSError, e:
+    except OSError as e:
         logger.error(e)
     else:
         files_names.sort(lambda a, b: cmp(a.lower(), b.lower()))
@@ -55,7 +55,7 @@ def storage_dirs(request, namespace=None):
     base_path = config.get_base_path(namespace)
 
     if not os.path.exists(base_path):
-        return json_utils.failure_response(message=unicode(_('Folder "%s" does not exist.') % base_path))
+        return json_utils.failure_response(message=str(_('Folder "%s" does not exist.') % base_path))
 
     return json_utils.success_response(dirs=recursive_dirs(base_path))
 
@@ -131,13 +131,13 @@ def storage_content(request, namespace=None):
     folder_path = folder_path.encode('utf-8')
 
     if not os.path.exists(folder_path):
-        return json_utils.failure_response(message=unicode(_('Folder "%s" does not exist') % path))
+        return json_utils.failure_response(message=str(_('Folder "%s" does not exist') % path))
 
     try:
         files_names = os.listdir(folder_path)
-    except OSError, e:
+    except OSError as e:
         logger.error(e)
-        return json_utils.failure_response(message=unicode(e))
+        return json_utils.failure_response(message=str(e))
     if '.htaccess' in files_names:
         files_names.remove('.htaccess')
 
@@ -156,7 +156,7 @@ def storage_content(request, namespace=None):
         file_properties = {
             'name': file_name,
             'size': size,
-            'sizeh': u'%s %s' % get_unit(size),
+            'sizeh': '%s %s' % get_unit(size),
             'isdir': False,
             'nb_files': nb_files,
             'nb_dirs': nb_dirs,
@@ -178,7 +178,7 @@ def storage_content(request, namespace=None):
             file_properties['mdate'] = mdate
             files.append(file_properties)
         # else: socket or other, ignored
-    total_size = u'%s %s' % get_unit(total_size)
+    total_size = '%s %s' % get_unit(total_size)
 
     # ordering
     order = request.GET.get('order', 'name-asc')
@@ -200,7 +200,7 @@ def storage_content(request, namespace=None):
     if path:
         files.insert(0, {
             'name': 'parent',
-            'formated_name': u'← %s' % _('Parent folder'),
+            'formated_name': '← %s' % _('Parent folder'),
             'isdir': True,
             'isprevious': True,
         })

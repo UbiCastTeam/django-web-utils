@@ -49,13 +49,13 @@ def get_related_data(model, model_id):
     objs = list()
     collector.nested(lambda obj: objs.append(obj))
     # Prepare insert query
-    sql = u'BEGIN;\n'
+    sql = 'BEGIN;\n'
     for obj in objs:
-        fields = u','.join([u'`%s`' % f.column for f in obj.__class__._meta.fields])
-        values = u','.join([_get_sql_val(obj, f) for f in obj.__class__._meta.fields])
-        line = u'INSERT INTO `%s` (%s) VALUES (%s);' % (obj.__class__._meta.db_table, fields, values)
-        sql += line + u'\n'
-    sql += u'COMMIT;'
+        fields = ','.join(['`%s`' % f.column for f in obj.__class__._meta.fields])
+        values = ','.join([_get_sql_val(obj, f) for f in obj.__class__._meta.fields])
+        line = 'INSERT INTO `%s` (%s) VALUES (%s);' % (obj.__class__._meta.db_table, fields, values)
+        sql += line + '\n'
+    sql += 'COMMIT;'
     return sql.encode('utf-8')
 
 
@@ -63,11 +63,11 @@ def _get_sql_val(obj, field):
     val = getattr(obj, field.column)
     if val is None:
         if not field.null:
-            print >>sys.stderr, 'Error: Object %s with id %s: The field %s is NULL and cannot be!' % (obj.__class__.__name__, obj.id, field.column)
+            print('Error: Object %s with id %s: The field %s is NULL and cannot be!' % (obj.__class__.__name__, obj.id, field.column), file=sys.stderr)
         return 'NULL'
     elif isinstance(val, bool):
         return '1' if val else '0'
-    elif isinstance(val, (int, long, float, Decimal)):
+    elif isinstance(val, (int, float, Decimal)):
         return str(val)
     elif isinstance(val, datetime.datetime):
         val = val.strftime('%Y-%m-%d')
@@ -79,12 +79,12 @@ def _get_sql_val(obj, field):
         if not val:
             val = ''
         val = val.replace('\'', '\\\'')
-    return u'\'%s\'' % val
+    return '\'%s\'' % val
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print >>sys.stderr, 'Not enough arguments.\nTwo arguments are required: model python path and model id.\nExample: %s myapp.models.Test 25' % __file__
+        print('Not enough arguments.\nTwo arguments are required: model python path and model id.\nExample: %s myapp.models.Test 25' % __file__, file=sys.stderr)
         sys.exit(1)
     sql = get_related_data(*sys.argv[1:])
-    print >>sys.stdout, sql
+    print(sql, file=sys.stdout)

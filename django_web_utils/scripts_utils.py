@@ -18,12 +18,12 @@ class Colors():
 
 
 def log(msg, color=None):
-    print >>sys.stdout, '%s%s%s' % (color, msg, Colors.DEFAULT) if color else msg
+    print('%s%s%s' % (color, msg, Colors.DEFAULT) if color else msg, file=sys.stdout)
     sys.stdout.flush()
 
 
 def log_err(msg, color=None):
-    print >>sys.stderr, '%s%s%s' % (color, msg, Colors.DEFAULT) if color else msg
+    print('%s%s%s' % (color, msg, Colors.DEFAULT) if color else msg, file=sys.stderr)
     sys.stderr.flush()
 
 

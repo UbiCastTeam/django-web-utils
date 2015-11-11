@@ -33,7 +33,7 @@ class RGrepColor(object):
         else:
             self.CASE_SENSITIVE = True
         if len(args) < 2:
-            print 'Usage: rgrepcolor.py myword'
+            print('Usage: rgrepcolor.py myword')
             return 1
         elif len(args) == 2:
             search = args[1]
@@ -56,10 +56,10 @@ class RGrepColor(object):
         return self.rgrep(search, path)
     
     def rgrep(self, search, path):
-        print 'Files with following extensions are ignored: %s%s%s' % (rgrep_color.PURPLE, ', '.join(self.IGNORED_EXTENSIONS), rgrep_color.DEFAULT)
-        print 'Following files are ignored: %s%s%s' % (rgrep_color.PURPLE, ', '.join(self.IGNORED_FILES), rgrep_color.DEFAULT)
-        print 'Following paths are ignored: %s%s%s' % (rgrep_color.PURPLE, ', '.join(self.IGNORED_PATHS), rgrep_color.DEFAULT)
-        print 'Searching for |%s%s%s|' % (rgrep_color.YELLOW, search, rgrep_color.DEFAULT)
+        print('Files with following extensions are ignored: %s%s%s' % (rgrep_color.PURPLE, ', '.join(self.IGNORED_EXTENSIONS), rgrep_color.DEFAULT))
+        print('Following files are ignored: %s%s%s' % (rgrep_color.PURPLE, ', '.join(self.IGNORED_FILES), rgrep_color.DEFAULT))
+        print('Following paths are ignored: %s%s%s' % (rgrep_color.PURPLE, ', '.join(self.IGNORED_PATHS), rgrep_color.DEFAULT))
+        print('Searching for |%s%s%s|' % (rgrep_color.YELLOW, search, rgrep_color.DEFAULT))
 
         command = ['rgrep', '-F', '-n']
         if not self.CASE_SENSITIVE:
@@ -75,7 +75,7 @@ class RGrepColor(object):
         results_files = 0
         for line in lines:
             if line.startswith('grep: '):
-                print '%sError: %s%s' % (self.RED, self.DEFAULT, line)
+                print('%sError: %s%s' % (self.RED, self.DEFAULT, line))
                 return 1
             else:
                 splitted = line.split(':')
@@ -99,22 +99,22 @@ class RGrepColor(object):
                             file_path = '.'.join(tmp[:len(tmp) - 1])
                             if current_file.endswith('~'):
                                 file_path = file_path.replace(search, '%s%s%s' % (self.RED, search, self.BLUE))
-                                print '%sFile %s.%s%s%s' % (self.BLUE, file_path, self.RED, extension, self.DEFAULT)
+                                print('%sFile %s.%s%s%s' % (self.BLUE, file_path, self.RED, extension, self.DEFAULT))
                             else:
                                 file_path = file_path.replace(search, '%s%s%s' % (self.RED, search, self.BLUE))
-                                print '%sFile %s.%s%s' % (self.BLUE, file_path, extension, self.DEFAULT)
+                                print('%sFile %s.%s%s' % (self.BLUE, file_path, extension, self.DEFAULT))
                             results_files += 1
                         results += 1
                         code = ':'.join(splitted[2:])
                         code = code.replace(search, '%s%s%s' % (self.RED, search, self.DEFAULT))
                         if self.IGNORE_BIG_LINES and len(code) > self.BIG_LINES_LENGTH:
-                            print '%s    Line %s: %s%s' % (self.GREEN, splitted[1], self.DEFAULT, 'ignored line (too long)')
+                            print('%s    Line %s: %s%s' % (self.GREEN, splitted[1], self.DEFAULT, 'ignored line (too long)'))
                         else:
-                            print '%s    Line %s: %s%s' % (self.GREEN, splitted[1], self.DEFAULT, code)
+                            print('%s    Line %s: %s%s' % (self.GREEN, splitted[1], self.DEFAULT, code))
         if results:
-            print '%s results in %s files' % (results, results_files)
+            print('%s results in %s files' % (results, results_files))
         else:
-            print 'No result found'
+            print('No result found')
         return 0
 
 

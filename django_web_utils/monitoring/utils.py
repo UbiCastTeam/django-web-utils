@@ -26,15 +26,15 @@ def clear_log(request, path, owner='self'):
         success, msg = system_utils.write_file_as(request, '', path, owner)
         if not success:
             return success, msg
-    return True, unicode(_('Log file cleared.'))
+    return True, str(_('Log file cleared.'))
 
 
 def execute_daemon_command(request, daemon, command):
     if command not in ('start', 'restart', 'stop', 'clear_log'):
-        return False, unicode(_('Invalid command.'))
+        return False, str(_('Invalid command.'))
     cls = daemon.get('cls')
     if cls and not issubclass(cls, BaseDaemon):
-        return False, unicode(_('Given daemon class is not a subclass of Django web utils BaseDaemon.'))
+        return False, str(_('Given daemon class is not a subclass of Django web utils BaseDaemon.'))
 
     is_root = daemon.get('is_root')
     if command == 'clear_log':
@@ -42,17 +42,17 @@ def execute_daemon_command(request, daemon, command):
         if not log_path and cls:
             log_path = cls.get_log_path()
         if not log_path:
-            return False, unicode(_('No valid target for command.'))
+            return False, str(_('No valid target for command.'))
         return clear_log(request, log_path, 'root' if is_root else 'self')
     elif not cls:
-        return False, unicode(_('No valid target for command.'))
+        return False, str(_('No valid target for command.'))
 
     path = sys.modules[cls.__module__].__file__
     if path.endswith('pyc'):
         path = path[:-1]
     if not os.path.isfile(path):
         logger.error('The daemon script cannot be found. Path: %s' % path)
-        return False, unicode(_('The daemon script cannot be found.'))
+        return False, str(_('The daemon script cannot be found.'))
 
     cmd = 'python %s %s' % (path, command)
     success, output = system_utils.execute_command(cmd, user='root' if is_root else 'self', request=request)
@@ -91,7 +91,7 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
     # Get log file properties
     size = mtime = ''
     if log_path and os.path.exists(log_path):
-        size = u'%s %s' % files_utils.get_unit(os.path.getsize(log_path))
+        size = '%s %s' % files_utils.get_unit(os.path.getsize(log_path))
         mtime = os.path.getmtime(log_path)
         mtime = datetime.datetime.fromtimestamp(mtime)
         if date_adjust_fct:
@@ -126,7 +126,7 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
                 with open(path, 'r') as fd:
                     return HttpResponse(fd, content_type='text/plain')
             fsize = os.path.getsize(path)
-            size = u'%s %s' % files_utils.get_unit(fsize)
+            size = '%s %s' % files_utils.get_unit(fsize)
             if tail_only:
                 # Read only file end
                 for segment in files_utils.reverse_read(path):
@@ -139,7 +139,7 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
                         break
             else:
                 if fsize > FILE_SIZE_LIMIT:
-                    content = unicode(_('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size)
+                    content = str(_('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size)
                 else:
                     with open(path, 'r') as fd:
                         content = fd.read()
@@ -149,8 +149,8 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
             if date_adjust_fct:
                 mtime = date_adjust_fct(mtime)
             mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
-        except Exception, e:
-            messages.error(request, u'%s %s\n%s' % (_('Unable to display log file.'), _('Error:'), e))
+        except Exception as e:
+            messages.error(request, '%s %s\n%s' % (_('Unable to display log file.'), _('Error:'), e))
     bottom_bar = lines > 20
 
     query_string = request.META.get('QUERY_STRING')
@@ -176,14 +176,14 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
         if content:
             success, msg = system_utils.write_file_as(request, content.encode('utf-8'), path, owner)
             if not success:
-                messages.error(request, u'%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), msg))
+                messages.error(request, '%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), msg))
             else:
                 messages.success(request, _('Configuration file updated.'))
                 return HttpResponseRedirect(request.get_full_path())
         else:
             success, msg = system_utils.write_file_as(request, '', path, owner)
             if not success:
-                messages.error(request, u'%s %s\n%s' % (_('Unable to delete configuration file.'), _('Error:'), msg))
+                messages.error(request, '%s %s\n%s' % (_('Unable to delete configuration file.'), _('Error:'), msg))
             else:
                 messages.success(request, _('Configuration file deleted.'))
             return HttpResponseRedirect(request.get_full_path())
@@ -197,10 +197,10 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
                 with open(path, 'r') as fd:
                     return HttpResponse(fd, content_type='text/plain')
             fsize = os.path.getsize(path)
-            size = u'%s %s' % files_utils.get_unit(fsize)
+            size = '%s %s' % files_utils.get_unit(fsize)
             if not content:
                 if fsize > FILE_SIZE_LIMIT:
-                    content = unicode(_('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size)
+                    content = str(_('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size)
                 else:
                     with open(path, 'r') as fd:
                         content = fd.read()
@@ -209,28 +209,28 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
             if date_adjust_fct:
                 mtime = date_adjust_fct(mtime)
             mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
-        except Exception, e:
-            messages.error(request, u'%s %s\n%s' % (_('Unable to display configuration file.'), _('Error:'), e))
+        except Exception as e:
+            messages.error(request, '%s %s\n%s' % (_('Unable to display configuration file.'), _('Error:'), e))
     # Get default conf
-    default_conf_content = u''
+    default_conf_content = ''
     if isinstance(default_conf, dict):
-        keys = default_conf.keys()
+        keys = list(default_conf.keys())
         keys.sort()
         for key in keys:
             if key.startswith('__'):
                 continue
             val = default_conf[key]
             if isinstance(val, str):
-                val = u'\'%s\'' % val
-            elif isinstance(val, unicode):
-                val = u'u\'%s\'' % val
-            default_conf_content += u'%s = %s\n' % (key, val)
+                val = '\'%s\'' % val
+            elif isinstance(val, str):
+                val = 'u\'%s\'' % val
+            default_conf_content += '%s = %s\n' % (key, val)
     elif not default_conf and default_conf_path and os.path.isfile(default_conf_path):
         try:
             with open(default_conf_path, 'r') as fd:
                 default_conf_content = fd.read()
-        except Exception, e:
-            messages.error(request, u'%s %s\n%s' % (_('Unable to read default configuration file.'), _('Error:'), e))
+        except Exception as e:
+            messages.error(request, '%s %s\n%s' % (_('Unable to read default configuration file.'), _('Error:'), e))
 
     query_string = request.META.get('QUERY_STRING')
     if query_string and 'tail' in query_string:

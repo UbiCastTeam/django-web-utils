@@ -5,8 +5,8 @@ HTML utility functions
 '''
 import traceback
 import re
-import htmlentitydefs
-from HTMLParser import HTMLParser
+import html.entities
+from html.parser import HTMLParser
 import logging
 logger = logging.getLogger('djwutils.html_utils')
 # Django
@@ -25,15 +25,15 @@ def unescape(text):
             # character reference
             try:
                 if text[:3] == "&#x":
-                    return unichr(int(text[3:-1], 16))
+                    return chr(int(text[3:-1], 16))
                 else:
-                    return unichr(int(text[2:-1]))
+                    return chr(int(text[2:-1]))
             except ValueError:
                 pass
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = chr(html.entities.name2codepoint[text[1:-1]])
             except KeyError:
                 pass
         return text  # leave as is
@@ -55,15 +55,15 @@ def get_meta_tag_text(text):
 def get_html_traceback(tb=None):
     if not tb:
         tb = traceback.format_exc()
-    error_tb = unicode(defaultfilters.escape(tb))
+    error_tb = str(defaultfilters.escape(tb))
     lines = list()
-    for line in error_tb.split(u'\n'):
+    for line in error_tb.split('\n'):
         if line:
             nb_spaces = len(line) - len(line.lstrip())
-            lines.append(nb_spaces * u'&nbsp;' + line[nb_spaces:])
+            lines.append(nb_spaces * '&nbsp;' + line[nb_spaces:])
         else:
             lines.append(line)
-    return mark_safe(u'\n<br/>'.join(lines))
+    return mark_safe('\n<br/>'.join(lines))
 
 
 # get_short_text function
@@ -143,6 +143,6 @@ def get_short_text(html_text, max_length=300, margin=100):
         try:
             parser = TextHTMLParser(html_text, max_length)
             return parser.get_short()
-        except Exception, e:
+        except Exception as e:
             logger.error('Unable to create short html text. %s' % e)
     return ''
