@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 # Author: Stéphane Diemer stephane.diemer@ubicast.eu
 
-
+from __future__ import print_function
 import os
 import sys
 import subprocess
+
 
 class PyflakesColor(object):
     RED = '\033[91m'
@@ -40,22 +41,25 @@ class PyflakesColor(object):
             paths = [paths]
         for path in paths:
             if not os.path.exists(path):
-                print('%sPath "%s" does not exists%s' % (self.YELLOW, path, self.DEFAULT))
+                print('%sPath "%s" does not exists.%s' % (self.YELLOW, path, self.DEFAULT))
                 continue
             if os.path.isfile(path):
                 base_path = os.path.dirname(path)
                 list_dir = [os.path.basename(path)]
                 display_result_for_all_files = True
-            else:
+            elif os.path.isdir(path):
                 base_path = path
                 list_dir = os.listdir(path)
                 list_dir.sort()
+            else:
+                print('%sPath "%s" is neither a file nor a directory.%s' % (self.YELLOW, path, self.DEFAULT))
+                continue
             for picked_name in list_dir:
                 picked_path = os.path.join(base_path, picked_name)
                 if os.path.isfile(picked_path):
                     if picked_name.endswith('.py'):
                         text = 'file: %s \t path: %s' % (picked_name, picked_path)
-                        p = subprocess.Popen(['pyflakes', picked_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        p = subprocess.Popen(['python3', '-m', 'pyflakes', picked_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         out, err = p.communicate()
                         #decode from bytes to unicode
                         out = out.decode()
