@@ -53,7 +53,7 @@ def get_output(cmd):
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr, shell=shell)
     out, err = p.communicate()
     sys.stderr.flush()
-    return p.returncode == 0, out.strip() if out else ''
+    return p.returncode == 0, str(out).strip() if out else ''
 
 
 def create_link(src, dst):

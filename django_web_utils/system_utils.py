@@ -89,6 +89,10 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
         out, err = p.communicate(input=('%s\n' % (pwd if pwd else request.session['pwd']).encode('utf-8')))
     else:
         out, err = p.communicate()
+    if out:
+        out = str(out)
+    if err:
+        err = str(err)
     if p.returncode != 0:
         if not err:
             err = str(_('Command exited with code %s.') % p.returncode)
