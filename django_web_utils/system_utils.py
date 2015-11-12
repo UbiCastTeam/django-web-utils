@@ -90,9 +90,9 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
     else:
         out, err = p.communicate()
     if out:
-        out = str(out)
+        out = str(out, 'utf-8')
     if err:
-        err = str(err)
+        err = str(err, 'utf-8')
     if p.returncode != 0:
         if not err:
             err = str(_('Command exited with code %s.') % p.returncode)

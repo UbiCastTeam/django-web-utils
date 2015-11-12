@@ -345,6 +345,10 @@ class BaseDaemon(object):
         cmd = 'python %s restart %s' % (self.daemon_path, ' '.join(argv))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
+        if out:
+            out = str(out, 'utf-8')
+        if err:
+            err = str(err, 'utf-8')
         logger.debug('Restarting daemon.\n    Command: %s\n    Stdout: %s\n    Stderr: %s', cmd, out, err)
         if p.returncode != 0:
             logger.error('Error when restarting daemon:\n    %s' % err)

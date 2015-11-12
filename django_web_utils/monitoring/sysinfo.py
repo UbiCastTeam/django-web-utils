@@ -28,7 +28,7 @@ def _get_output(cmd):
     except OSError:
         return ''
     else:
-        return ((out or '') + (err or '')).strip()
+        return ((str(out, 'utf-8') if out else '') + (str(err, 'utf-8') if err else '')).strip()
 
 
 def get_version(package=None, module=None):
@@ -66,7 +66,7 @@ def get_version(package=None, module=None):
                 except Exception as e:
                     logger.error('Unable to get revision: %s', e)
             else:
-                revision = out.replace('Version: ', '')
+                revision = str(out, 'utf-8').replace('Version: ', '')
             break
     if '+' in revision:
         revision = revision[revision.index('+') + 1:]
