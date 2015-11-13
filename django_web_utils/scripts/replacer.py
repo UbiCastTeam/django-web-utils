@@ -99,8 +99,12 @@ Parameters:
                 if not skipped:
                     #sys.stdout.write('    current file is: %s' % (picked_path)
                     analysed += 1
-                    with open(picked_path, 'r') as fd:
-                        content = fd.read()
+                    try:
+                        with open(picked_path, 'r') as fd:
+                            content = fd.read()
+                    except UnicodeDecodeError:
+                        # Binary file
+                        continue
 
                     file_has_changed = False
                     for repl in replacements:
