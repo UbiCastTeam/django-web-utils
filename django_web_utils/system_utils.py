@@ -86,7 +86,7 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
     if need_password:
         if not pwd and (not request or not request.session.get('pwd')):
             return False, str(_('Password required.'))
-        out, err = p.communicate(input=('%s\n' % (pwd if pwd else request.session['pwd'])))
+        out, err = p.communicate(input=bytes('%s\n' % (pwd if pwd else request.session['pwd']), 'utf-8'))
     else:
         out, err = p.communicate()
     if out:
@@ -144,7 +144,7 @@ def write_file_as(request, content, file_path, user='self'):
     try:
         # try to write file like usual
         with open(file_path, 'w+') as fd:
-            fd.write(content.encode('utf-8'))
+            fd.write(content)
     except Exception as e:
         if e.errno != errno.EACCES:
             return False, '%s %s' % (_('Unable to write file.'), e)
@@ -160,7 +160,7 @@ def write_file_as(request, content, file_path, user='self'):
         tmp_path = '/tmp/djwutils-tmp_%s_%s' % (date_dump, rd_chars)
         try:
             with open(tmp_path, 'w+') as fd:
-                fd.write(content.encode('utf-8'))
+                fd.write(content)
         except Exception as e:
             return False, '%s %s' % (_('Unable to create temporary file "%s".') % tmp_path, e)
         # transfer content in final file without altering file permissions

@@ -128,7 +128,7 @@ class BaseDaemon(object):
             if not os.path.exists(os.path.dirname(self.get_conf_path())):
                 os.makedirs(os.path.dirname(self.get_conf_path()))
             with open(self.get_conf_path(), 'w+') as fd:
-                fd.write(content.encode('utf-8'))
+                fd.write(content)
         except Exception:
             return False
         return True
@@ -180,7 +180,8 @@ class BaseDaemon(object):
     
     def _setup_django(self):
         # set django settings, so that django modules can be imported
-        sys.path.append(self.SERVER_DIR)
+        if self.SERVER_DIR not in sys.path:
+            sys.path.append(self.SERVER_DIR)
         if not os.environ.get('DJANGO_SETTINGS_MODULE') or os.environ.get('DJANGO_SETTINGS_MODULE') != self.SETTINGS_MODULE:
             # if the DJANGO_SETTINGS_MODULE is already set,
             # the logging will not be changed to avoid possible
@@ -189,8 +190,8 @@ class BaseDaemon(object):
         import django
         try:
             django.setup()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning('Django setup failed: %s', e)
     
     def _setup_logging(self):
         if not os.path.exists(self.LOG_DIR):
@@ -273,7 +274,7 @@ class BaseDaemon(object):
             if not os.path.exists(pid_dir):
                 os.makedirs(pid_dir)
             with open(self.get_pid_path(), 'w+') as fd:
-                fd.write(str(os.getpid()).encode('utf-8'))
+                fd.write(str(os.getpid()))
         except Exception as e:
             print('Cannot write pid into pidfile %s' % self.get_pid_path(), file=sys.stderr)
             raise e
@@ -285,17 +286,12 @@ class BaseDaemon(object):
             # sys.stderr is not visible if daemonized
             try:
                 with open('/tmp/daemon-error_%s' % self.DAEMON_NAME, 'w+') as fd:
-                    fd.write(('Date: %s (local time).\n\n' % datetime.datetime.now()).encode('utf-8'))
+                    fd.write('Date: %s (local time).\n\n' % datetime.datetime.now())
                     if msg:
-                        fd.write((msg + '\n\n').encode('utf-8'))
-                    fd.write(traceback.format_exc().encode('utf-8'))
+                        fd.write(msg + '\n\n')
+                    fd.write(traceback.format_exc())
             except Exception as e:
                 print(e, file=sys.stderr)
-        try:
-            # logger may not be initialized
-            logger.error('%s\n%s' % (msg, traceback.format_exc()))
-        except Exception as e:
-            print(e, file=sys.stderr)
         try:
             self.send_error_email(msg, tb=True)
         except Exception as e:
@@ -365,10 +361,9 @@ class BaseDaemon(object):
     
     def send_error_email(self, msg, tb=False, recipients=None):
         from django_web_utils import emails_utils
-        message = msg.decode('utf-8')
-        logger.error('%s\n%s' % (message, traceback.format_exc().decode('utf-8')) if tb else message)
+        logger.error('%s\n%s' % (msg, traceback.format_exc()) if tb else msg)
         emails_utils.send_error_report_emails(
             title='%s - %s' % (self.DAEMON_NAME, socket.gethostname()),
-            error='%s\n\nThe daemon was started with the following arguments:\n%s' % (message, sys.argv),
+            error='%s\n\nThe daemon was started with the following arguments:\n%s' % (msg, sys.argv),
             recipients=recipients,
         )

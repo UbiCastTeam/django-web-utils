@@ -9,8 +9,8 @@ import datetime
 from decimal import Decimal
 os.environ['LANG'] = 'en_US.UTF-8'
 os.environ['LC_ALL'] = 'en_US.UTF-8'
-reload(sys)  # reload sys to make setdefaultencoding available
-sys.setdefaultencoding('utf-8')
+import locale
+locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 SETTINGS_MODULE = 'settings'
 

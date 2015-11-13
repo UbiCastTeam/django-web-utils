@@ -61,9 +61,9 @@ class PyflakesColor(object):
                         text = 'file: %s \t path: %s' % (picked_name, picked_path)
                         p = subprocess.Popen(['python3', '-m', 'pyflakes', picked_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                         out, err = p.communicate()
-                        #decode from bytes to unicode
-                        out = out.decode()
-                        err = err.decode()
+                        # decode from bytes to unicode
+                        out = out.decode('utf-8') if out else ''
+                        err = err.decode('utf-8') if err else ''
                         if p.returncode > self.returncode:
                             self.returncode = p.returncode
                         lines = out.split('\n') if out else list()

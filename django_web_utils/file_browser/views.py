@@ -40,7 +40,7 @@ def recursive_dirs(path):
     except OSError as e:
         logger.error(e)
     else:
-        files_names.sort(lambda a, b: cmp(a.lower(), b.lower()))
+        files_names.sort(key=lambda f: f.lower())
         for file_name in files_names:
             if '\'' in file_name or '"' in file_name:
                 continue
@@ -62,49 +62,6 @@ def storage_dirs(request, namespace=None):
 
 # storage_content
 # ----------------------------------------------------------------------------
-def sort_by_name(a, b, asc=True):
-    if a['isdir'] and not b['isdir']:
-        return -1
-    elif not a['isdir'] and b['isdir']:
-        return 1
-    elif asc:
-        return cmp(a['name'].lower(), b['name'].lower())
-    else:
-        return -cmp(a['name'].lower(), b['name'].lower())
-
-
-def sort_by_size(a, b, asc=True):
-    if a['isdir'] and not b['isdir']:
-        return -1
-    elif not a['isdir'] and b['isdir']:
-        return 1
-    elif asc:
-        diff = cmp(a['size'], b['size'])
-    else:
-        diff = -cmp(a['size'], b['size'])
-    if diff == 0:
-        return cmp(a['name'].lower(), b['name'].lower())
-    else:
-        return diff
-
-
-def sort_by_mdate(a, b, asc=True):
-    if a['isdir'] and not b['isdir']:
-        return -1
-    elif not a['isdir'] and b['isdir']:
-        return 1
-    elif a['isdir'] and b['isdir']:
-        diff = 0
-    elif asc:
-        diff = cmp(a['mdate'], b['mdate'])
-    else:
-        diff = -cmp(a['mdate'], b['mdate'])
-    if diff == 0:
-        return cmp(a['name'].lower(), b['name'].lower())
-    else:
-        return diff
-
-
 def get_info(path):
     size = 0
     nb_files = 0
@@ -182,20 +139,24 @@ def storage_content(request, namespace=None):
 
     # ordering
     order = request.GET.get('order', 'name-asc')
-    if order == 'name-asc':
-        files.sort(lambda a, b: sort_by_name(a, b))
-    elif order == 'name-desc':
-        files.sort(lambda a, b: sort_by_name(a, b, asc=False))
-    elif order == 'size-asc':
-        files.sort(lambda a, b: sort_by_size(a, b))
-    elif order == 'size-desc':
-        files.sort(lambda a, b: sort_by_size(a, b, asc=False))
-    elif order == 'mdate-asc':
-        files.sort(lambda a, b: sort_by_mdate(a, b))
-    elif order == 'mdate-desc':
-        files.sort(lambda a, b: sort_by_mdate(a, b, asc=False))
+    if order.startswith('size'):
+        if order.endswith('asc'):
+            files.sort(key=lambda f: (not f['isdir'], f['size']))
+        else:
+            files.sort(key=lambda f: (f['isdir'], f['size']))
+            files.reverse()
+    elif order.startswith('mdate'):
+        if order.endswith('asc'):
+            files.sort(key=lambda f: (not f['isdir'], f['mdate']))
+        else:
+            files.sort(key=lambda f: (f['isdir'], f['mdate']))
+            files.reverse()
     else:
-        files.sort(lambda a, b: sort_by_name(a, b))
+        if order.endswith('asc'):
+            files.sort(key=lambda f: (not f['isdir'], f['name'].lower()))
+        else:
+            files.sort(key=lambda f: (f['isdir'], f['name'].lower()))
+            files.reverse()
 
     if path:
         files.insert(0, {
