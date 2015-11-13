@@ -147,9 +147,9 @@ def storage_content(request, namespace=None):
             files.reverse()
     elif order.startswith('mdate'):
         if order.endswith('asc'):
-            files.sort(key=lambda f: (not f['isdir'], f['mdate']))
+            files.sort(key=lambda f: (not f['isdir'], f.get('mdate')))
         else:
-            files.sort(key=lambda f: (f['isdir'], f['mdate']))
+            files.sort(key=lambda f: (f['isdir'], f.get('mdate')))
             files.reverse()
     else:
         if order.endswith('asc'):
