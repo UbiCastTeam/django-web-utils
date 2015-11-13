@@ -144,7 +144,7 @@ def write_file_as(request, content, file_path, user='self'):
     try:
         # try to write file like usual
         with open(file_path, 'w+') as fd:
-            fd.write(content)
+            fd.write(content.encode('utf-8'))
     except Exception as e:
         if e.errno != errno.EACCES:
             return False, '%s %s' % (_('Unable to write file.'), e)
@@ -160,7 +160,7 @@ def write_file_as(request, content, file_path, user='self'):
         tmp_path = '/tmp/djwutils-tmp_%s_%s' % (date_dump, rd_chars)
         try:
             with open(tmp_path, 'w+') as fd:
-                fd.write(content)
+                fd.write(content.encode('utf-8'))
         except Exception as e:
             return False, '%s %s' % (_('Unable to create temporary file "%s".') % tmp_path, e)
         # transfer content in final file without altering file permissions

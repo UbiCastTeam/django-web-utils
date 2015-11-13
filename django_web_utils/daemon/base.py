@@ -128,7 +128,7 @@ class BaseDaemon(object):
             if not os.path.exists(os.path.dirname(self.get_conf_path())):
                 os.makedirs(os.path.dirname(self.get_conf_path()))
             with open(self.get_conf_path(), 'w+') as fd:
-                fd.write(content)
+                fd.write(content.encode('utf-8'))
         except Exception:
             return False
         return True
@@ -273,7 +273,7 @@ class BaseDaemon(object):
             if not os.path.exists(pid_dir):
                 os.makedirs(pid_dir)
             with open(self.get_pid_path(), 'w+') as fd:
-                fd.write('%s' % os.getpid())
+                fd.write(str(os.getpid()).encode('utf-8'))
         except Exception as e:
             print('Cannot write pid into pidfile %s' % self.get_pid_path(), file=sys.stderr)
             raise e
@@ -285,10 +285,10 @@ class BaseDaemon(object):
             # sys.stderr is not visible if daemonized
             try:
                 with open('/tmp/daemon-error_%s' % self.DAEMON_NAME, 'w+') as fd:
-                    fd.write('Date: %s (local time).\n\n' % datetime.datetime.now())
+                    fd.write(('Date: %s (local time).\n\n' % datetime.datetime.now()).encode('utf-8'))
                     if msg:
-                        fd.write(msg + '\n\n')
-                    fd.write(traceback.format_exc())
+                        fd.write((msg + '\n\n').encode('utf-8'))
+                    fd.write(traceback.format_exc().encode('utf-8'))
             except Exception as e:
                 print(e, file=sys.stderr)
         try:
