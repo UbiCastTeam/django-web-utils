@@ -7,7 +7,9 @@ from django.conf import settings
 # Take a look at the readme file for settings descriptions
 
 def _import(module):
-    if '.' in module:
+    if not isinstance(module, str):
+        return module
+    elif '.' in module:
         element = module.split('.')[-1]
         _tmp = __import__(module[:-len(element) - 1], fromlist=[element])
         return getattr(_tmp, element)

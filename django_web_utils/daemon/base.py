@@ -53,6 +53,7 @@ class BaseDaemon(object):
             self.daemon_path = os.path.join(os.getcwd(), sys.argv[0])
             os.environ['LANG'] = 'C'
             os.chdir('/')  # to avoid wrong imports
+            self._django_setup_done = False
             # Get config
             self.config = dict()
             self.load_config()
@@ -179,6 +180,8 @@ class BaseDaemon(object):
             self.exit(0)
     
     def _setup_django(self):
+        if self._django_setup_done:
+            return
         # set django settings, so that django modules can be imported
         if self.SERVER_DIR not in sys.path:
             sys.path.append(self.SERVER_DIR)
@@ -192,6 +195,7 @@ class BaseDaemon(object):
             django.setup()
         except Exception as e:
             logger.warning('Django setup failed: %s', e)
+        self._django_setup_done = True
     
     def _setup_logging(self):
         if not os.path.exists(self.LOG_DIR):
@@ -360,8 +364,10 @@ class BaseDaemon(object):
         sys.exit(code)
     
     def send_error_email(self, msg, tb=False, recipients=None):
-        from django_web_utils import emails_utils
         logger.error('%s\n%s' % (msg, traceback.format_exc()) if tb else msg)
+        if not self.NEED_DJANGO:
+            self._setup_django()
+        from django_web_utils import emails_utils
         emails_utils.send_error_report_emails(
             title='%s - %s' % (self.DAEMON_NAME, socket.gethostname()),
             error='%s\n\nThe daemon was started with the following arguments:\n%s' % (msg, sys.argv),
