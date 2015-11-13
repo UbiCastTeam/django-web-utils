@@ -93,7 +93,7 @@ def storage_action(request, namespace=None):
             dir_path = os.path.join(base_path, path)
         else:
             dir_path = base_path
-        dir_path = dir_path.encode('utf-8')
+        dir_path = dir_path
         # create upload folder
         if not os.path.exists(dir_path):
             try:
@@ -111,7 +111,7 @@ def storage_action(request, namespace=None):
         else:
             msg = str(_('The files have been uploaded and are available at the locations:'))
         for uploaded_file in list(request.FILES.values()):
-            file_name = clean_file_name(uploaded_file.name).encode('utf-8')
+            file_name = clean_file_name(uploaded_file.name)
             if file_name == '.htaccess':
                 file_name += '_'
             # write uploaded file
@@ -248,13 +248,13 @@ def storage_action(request, namespace=None):
             # execute action
             index = 0
             for name in names:
-                src = os.path.join(dir_path, name).encode('utf-8')
+                src = os.path.join(dir_path, name)
                 if len(names) == 1:
                     new = '%s%s' % (new_name, new_name_ext)
                 else:
                     index += 1
                     new = '%s-%s%s' % (new_name, index, new_name_ext)
-                dest = os.path.join(dir_path, new).encode('utf-8')
+                dest = os.path.join(dir_path, new)
                 if src != dest:
                     if os.path.exists(dest):
                         return json_utils.failure_response(message=str(_('The file "%s" already exists.')) % new)
@@ -272,12 +272,12 @@ def storage_action(request, namespace=None):
                 new_path = base_path
             else:
                 new_path = os.path.join(base_path, new_path)
-            new_path = new_path.encode('utf-8')
+            new_path = new_path
             if not os.path.exists(new_path):
                 return json_utils.failure_response(message=str(_('Destination path does not exists.')))
             moved = 0
             for name in names:
-                src = os.path.join(dir_path, name).encode('utf-8')
+                src = os.path.join(dir_path, name)
                 if src != new_path and not (os.path.isfile(src) and os.path.dirname(src) == new_path):
                     try:
                         shutil.move(src, new_path)
@@ -292,7 +292,7 @@ def storage_action(request, namespace=None):
             for name in names:
                 if not name:
                     continue
-                src = os.path.join(dir_path, name).encode('utf-8')
+                src = os.path.join(dir_path, name)
                 try:
                     fd, dd = recursive_remove(src)
                     files_deleted += fd

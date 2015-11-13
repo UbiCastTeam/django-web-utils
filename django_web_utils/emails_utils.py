@@ -177,7 +177,7 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         content = content[:subject_start - 9] + content[subject_end + 10:]
         # Send email
         address_with_name = address if not name else '"%s" <%s>' % (name, address)
-        msg = mail.EmailMessage(subject.encode('utf-8'), content.encode('utf-8'), sender, [address_with_name])
+        msg = mail.EmailMessage(subject, content, sender, [address_with_name])
         msg.content_subtype = content_subtype  # by default, set email content type to html
         try:
             if not connection:
@@ -216,7 +216,7 @@ def send_emails(subject, content, recipients=None, request=None, content_subtype
     sent = list()
     error = 'no recipient'
     for recipient in recipients:
-        msg = mail.EmailMessage(subject.encode('utf-8'), content.encode('utf-8'), sender, [recipient])
+        msg = mail.EmailMessage(subject, content, sender, [recipient])
         msg.content_subtype = content_subtype  # by default, set email content type to html
         try:
             if not connection:

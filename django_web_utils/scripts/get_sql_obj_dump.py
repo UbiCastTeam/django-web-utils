@@ -56,7 +56,7 @@ def get_related_data(model, model_id):
         line = 'INSERT INTO `%s` (%s) VALUES (%s);' % (obj.__class__._meta.db_table, fields, values)
         sql += line + '\n'
     sql += 'COMMIT;'
-    return sql.encode('utf-8')
+    return sql
 
 
 def _get_sql_val(obj, field):

@@ -174,7 +174,7 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
     if request.method == 'POST' and request.POST.get('submitted_form') == 'change_conf':
         content = request.POST.get('conf_content')
         if content:
-            success, msg = system_utils.write_file_as(request, content.encode('utf-8'), path, owner)
+            success, msg = system_utils.write_file_as(request, content, path, owner)
             if not success:
                 messages.error(request, '%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), msg))
             else:

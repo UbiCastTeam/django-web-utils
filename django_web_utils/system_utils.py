@@ -86,7 +86,7 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
     if need_password:
         if not pwd and (not request or not request.session.get('pwd')):
             return False, str(_('Password required.'))
-        out, err = p.communicate(input=('%s\n' % (pwd if pwd else request.session['pwd']).encode('utf-8')))
+        out, err = p.communicate(input=('%s\n' % (pwd if pwd else request.session['pwd'])))
     else:
         out, err = p.communicate()
     if out:
