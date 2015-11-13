@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 '''
 Daemon monitoring utilities
@@ -54,7 +54,7 @@ def execute_daemon_command(request, daemon, command):
         logger.error('The daemon script cannot be found. Path: %s' % path)
         return False, str(_('The daemon script cannot be found.'))
 
-    cmd = 'python %s %s' % (path, command)
+    cmd = 'python3 %s %s' % (path, command)
     success, output = system_utils.execute_command(cmd, user='root' if is_root else 'self', request=request)
     if not output:
         output = 'No output from command.'

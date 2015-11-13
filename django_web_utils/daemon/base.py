@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 '''
 Daemon base class
@@ -342,7 +342,7 @@ class BaseDaemon(object):
             logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.' % e)
         
         # execute restart command (if the daemon was not daemonized it will become so)
-        cmd = 'python %s restart %s' % (self.daemon_path, ' '.join(argv))
+        cmd = 'python3 %s restart %s' % (self.daemon_path, ' '.join(argv))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
         if out:
