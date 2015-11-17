@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------------
-# LDAP utilities functions
-# ----------------------------------------------------------------------------
+'''
+LDAP utility functions
+'''
 import ldap3
 import logging
 import ssl
