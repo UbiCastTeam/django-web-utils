@@ -16,13 +16,13 @@ from django.utils.translation import ugettext_lazy as _
 
 
 # get_login function
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def get_login():
     return pwd.getpwuid(os.getuid())[0]
 
 
 # run_as function
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def run_as(username, umask=0o22, exit_on_error=True):
     """
     Drop privileges to given user, and set up environment.
@@ -67,7 +67,7 @@ def run_as(username, umask=0o22, exit_on_error=True):
 
 
 # execute_command function
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
     cmd = cmd.replace('"', '\\"')
     if user == 'self':
@@ -105,7 +105,7 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
 
 
 # is_pid_running
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def is_pid_running(pid_file_path, user='self', request=None):
     if not os.path.exists(pid_file_path):
         return False
@@ -127,7 +127,7 @@ def is_pid_running(pid_file_path, user='self', request=None):
 
 
 # is_process_running
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def is_process_running(process_name, user='self', request=None):
     cmd = 'ps ax | grep \'%s\' | grep -v \'grep\' > /dev/null 2>&1' % process_name
     success, output = execute_command(cmd, user=user, request=request)
@@ -135,7 +135,7 @@ def is_process_running(process_name, user='self', request=None):
 
 
 # write_file_as
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def write_file_as(request, content, file_path, user='self'):
     if os.path.isdir(file_path):
         return False, '%s %s' % (_('Unable to write file.'), _('Specified path is a directory.'))

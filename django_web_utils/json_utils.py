@@ -81,7 +81,7 @@ JsonHttp403 = PermissionDenied
 JsonHttp404 = Http404
 
 
-# json_view function
+# json_view decorator
 # ----------------------------------------------------------------------------
 def json_view(function=None, methods=None, login_required=False):
     '''

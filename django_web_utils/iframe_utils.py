@@ -6,7 +6,9 @@ To use this module, you should create the following templates:
     400.html, 401.html, 403.html, 404.html, 405.html, 500.html
 All these templates should be in a dir called iframe.
 '''
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import traceback
 import logging
 # Django
@@ -31,7 +33,7 @@ IframeHttp403 = PermissionDenied
 IframeHttp404 = Http404
 
 
-# iframe_view function
+# iframe_view decorator
 # ----------------------------------------------------------------------------
 def iframe_view(function=None, methods=None, login_url=None, login_required=False):
     '''

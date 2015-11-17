@@ -8,14 +8,15 @@ import re
 import html.entities
 from html.parser import HTMLParser
 import logging
-logger = logging.getLogger('djwutils.html_utils')
 # Django
 from django.template import defaultfilters
 from django.utils.safestring import mark_safe
 
+logger = logging.getLogger('djwutils.html_utils')
+
 
 # unescape function
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def unescape(text):
     text = defaultfilters.striptags(text)
 
@@ -42,7 +43,7 @@ def unescape(text):
 
 
 # get_meta_tag_text function
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def get_meta_tag_text(text):
     result = defaultfilters.striptags(text)
     result = unescape(result)
@@ -51,7 +52,7 @@ def get_meta_tag_text(text):
 
 
 # get_html_traceback function
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def get_html_traceback(tb=None):
     if not tb:
         tb = traceback.format_exc()
@@ -67,7 +68,7 @@ def get_html_traceback(tb=None):
 
 
 # get_short_text function
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 class TextHTMLParser(HTMLParser):
     def __init__(self, html_text, max_length=300):
         HTMLParser.__init__(self)

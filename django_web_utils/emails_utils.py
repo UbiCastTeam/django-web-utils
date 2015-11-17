@@ -19,7 +19,6 @@ The email content
 import datetime
 import traceback
 import logging
-logger = logging.getLogger('djwutils.emails_utils')
 # Django
 from django.conf import settings
 from django.core import mail
@@ -31,6 +30,8 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 # utils
 from . import html_utils
+
+logger = logging.getLogger('djwutils.emails_utils')
 
 
 # get context

@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login
 
 
 # login_required_basicauth decorator
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 def login_required_basicauth(function):
     '''
     Check that user is authenticated and if not, return a basic http authentication request
@@ -46,8 +46,9 @@ def login_required_basicauth(function):
         return response
     return _wrapped_view
 
+
 # login_basicauth function
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 @login_required_basicauth
 def login_basicauth(request, redirect_to=None):
     rt = request.GET.get('next')
@@ -56,4 +57,3 @@ def login_basicauth(request, redirect_to=None):
         if not rt:
             rt = '/'
     return HttpResponseRedirect(rt)
-
