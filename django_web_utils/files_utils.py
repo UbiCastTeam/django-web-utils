@@ -97,7 +97,7 @@ def remove_dir(path):
 # (to read a file from its end without loading it competely)
 # ----------------------------------------------------------------------------
 def reverse_read(filename, buf_size=8192):
-    with open(filename) as fh:
+    with open(filename, 'rb') as fh:
         segment = None
         offset = 0
         fh.seek(0, os.SEEK_END)
@@ -107,5 +107,5 @@ def reverse_read(filename, buf_size=8192):
             fh.seek(-offset, os.SEEK_END)
             segment = fh.read(min(remaining_size, buf_size))
             remaining_size -= buf_size
-            yield segment
+            yield str(segment, 'utf-8')
         yield None
