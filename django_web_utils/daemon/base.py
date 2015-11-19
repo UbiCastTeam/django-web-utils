@@ -13,9 +13,10 @@ import datetime
 import traceback
 import logging
 import logging.config
-logger = logging.getLogger('djwutils.daemon.base')
 # django_web_utils
 from django_web_utils.daemon.daemonization import daemonize
+
+logger = logging.getLogger('djwutils.daemon.base')
 
 
 class BaseDaemon(object):
@@ -319,9 +320,9 @@ class BaseDaemon(object):
         
         # Gobject main loop
         if self.NEED_GOBJECT:
-            import gobject
-            #gobject.threads_init()
-            ml = gobject.MainLoop()
+            from gi.repository import GObject
+            #GObject.threads_init()
+            ml = GObject.MainLoop()
             print('%s started' % self.DAEMON_NAME, file=sys.stdout)
             try:
                 ml.run()
