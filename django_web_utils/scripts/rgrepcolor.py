@@ -108,9 +108,9 @@ class RGrepColor(object):
                         code = str(b':'.join(splitted[2:]), 'utf-8')
                         code = code.replace(search, '%s%s%s' % (self.RED, search, self.DEFAULT))
                         if self.IGNORE_BIG_LINES and len(code) > self.BIG_LINES_LENGTH:
-                            print('%s    Line %s: %s%s' % (self.GREEN, splitted[1], self.DEFAULT, 'ignored line (too long)'))
+                            print('%s    Line %s: %s%s' % (self.GREEN, str(splitted[1], 'utf-8'), self.DEFAULT, 'ignored line (too long)'))
                         else:
-                            print('%s    Line %s: %s%s' % (self.GREEN, splitted[1], self.DEFAULT, code))
+                            print('%s    Line %s: %s%s' % (self.GREEN, str(splitted[1], 'utf-8'), self.DEFAULT, code))
         if results:
             print('%s results in %s files' % (results, results_files))
         else:
