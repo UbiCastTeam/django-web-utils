@@ -79,10 +79,10 @@ class PyflakesColor(object):
                                 if not line.strip():
                                     continue
                                 line = line.replace('%s:' % picked_path, 'line ')
-                                if 'redefinition of function' in line or 'redefinition of unused' in line or 'unable to detect undefined names' in line:
+                                if 'unable to detect undefined names' in line:
                                     color = self.GREEN
                                     info += 1
-                                elif 'is assigned to but never used' in line or 'imported but unused' in line:
+                                elif 'redefinition of function' in line or 'redefinition of unused' in line or 'is assigned to but never used' in line or 'imported but unused' in line:
                                     color = self.YELLOW
                                     warning += 1
                                 elif 'undefined name' in line or 'referenced before assignment' in line or 'invalid syntax' in line:
