@@ -59,16 +59,6 @@ html.file-browser-default {
     background: #eee;
     border-right: 1px solid #0a83d4;
 }
-.file-browser .menu-place h3 {
-    margin: 8px 0;
-    padding: 4px 6px;
-    overflow: hidden;
-    background: #fff;
-    border-radius: 4px;
-}
-.file-browser .menu-place h3 a {
-    float: right;
-}
 .file-browser .content-place {
     top: 0;
     bottom: 0;
@@ -150,6 +140,9 @@ html.file-browser-default {
 
 
 /* menu list */
+.file-browser .menu-place a {
+    display: block;
+}
 .file-browser .menu-place ul {
     padding: 5px 0;
     word-wrap: break-word;
@@ -203,7 +196,6 @@ html.file-browser-default {
 }
 .file-browser .menu-place li a {
     margin-left: 21px;
-    display: block;
 }
 .file-browser .menu-place .content-container p {
     margin: 0;
