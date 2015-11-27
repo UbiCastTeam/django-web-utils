@@ -167,6 +167,7 @@ class BaseDaemon(object):
         
         if self._command in ('start', 'restart'):
             print('Starting %s...' % self.DAEMON_NAME, file=sys.stdout)
+            sys.stdout.flush()
             try:
                 if self._should_daemonize:
                     daemonize(redirect_to=self.get_log_path() if self._log_in_file else None)
