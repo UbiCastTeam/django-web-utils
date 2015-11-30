@@ -4,14 +4,15 @@
 Daemonization function
 '''
 import os
-import sys
 import resource
-import errno
+import sys
 
 
-def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
+def daemonize(redirect_to=None, rundir='/', umask=None, close_all_files=False):
     '''Detach a process from the controlling terminal and run it in the background as a daemon.'''
-    
+    sys.stdout.flush()
+    sys.stderr.flush()
+
     try:
         # Fork a child process so the parent can exit.  This returns control to
         # the command-line or shell.  It also guarantees that the child will not
@@ -21,13 +22,13 @@ def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
         pid = os.fork()
     except OSError as e:
         raise Exception('%s [%d]' % (e.strerror, e.errno))
-    
+
     if pid == 0:  # The first child.
         # To become the session leader of this new session and the process group
         # leader of the new process group, we call os.setsid().  The process is
         # also guaranteed not to have a controlling terminal.
         os.setsid()
-        
+
         try:
             # Fork a second child and exit immediately to prevent zombies.  This
             # causes the second child process to be orphaned, making the init
@@ -64,46 +65,40 @@ def daemonize(redirect_to=None, rundir='/', umask=None, maxfd=1024):
         print('Process daemonized.', file=sys.stdout)
         sys.stdout.flush()
         os._exit(0)  # Exit parent of the first child.
-    
+
     # Close all open file descriptors.  This prevents the child from keeping
     # open any file descriptors inherited from the parent.
-    maxfd_to_use = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
-    if maxfd_to_use == resource.RLIM_INFINITY:
-        maxfd_to_use = maxfd
-    
-    # Iterate through and close all file descriptors.
+    if not close_all_files:
+        # If we're not closing all open files, we at least need to
+        # reset stdin, stdout, and stderr.
+        maxfd_to_use = 3
+    else:
+        maxfd_to_use = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
+        if maxfd_to_use == resource.RLIM_INFINITY:
+            # If the limit is infinity, use a more reasonable limit
+            maxfd_to_use = 2048
+
+    # Iterate through and close file descriptors.
     for ofd in range(0, maxfd_to_use):
         try:
             os.close(ofd)
         except OSError as e:  # ERROR, ofd wasn't open to begin with (ignored)
             pass
-    
+
     # Redirect the standard I/O file descriptors to the specified file.  Since
     # the daemon has no controlling terminal, most daemons redirect stdin,
     # stdout, and stderr to /dev/null.  This is done to prevent side-effects
     # from reads and writes to the standard I/O file descriptors.
-    
+
     # This call to open is guaranteed to return the lowest file descriptor,
     # which will be 0 (stdin), since it was closed above.
-    try:
-        fd = os.open(redirect_to or os.devnull, os.O_CREAT | os.O_RDWR | os.O_APPEND)  # standard input (0)
-    except OSError:
-        fd = None
-    
-    # Duplicate standard input to standard output and standard error.
-    try:
-        os.dup2(0, 1)  # standard output (1)
-        if fd:
-            sys.stdout = fd
-    except OSError as e:
-        if e.errno != errno.EBADF:
-            raise
-    try:
-        os.dup2(0, 2)  # standard error (2)
-        if fd:
-            sys.stderr = fd
-    except OSError as e:
-        if e.errno != errno.EBADF:
-            raise
-    
+    os.open(os.devnull, os.O_CREAT | os.O_RDWR)  # standard input (0)
+    os.open(redirect_to or os.devnull, os.O_CREAT | os.O_APPEND)  # standard output (1)
+    os.dup2(1, 2)  # standard error (2)
+
+    # Change sys.stdout and sys.stderr
+    fd = open(redirect_to or os.devnull, 'a+')
+    sys.stdout = fd
+    sys.stderr = fd
+
     return 0
