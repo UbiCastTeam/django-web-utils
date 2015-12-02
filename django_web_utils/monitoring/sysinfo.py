@@ -3,14 +3,16 @@
 '''
 System information
 '''
-import os
-import subprocess
 import datetime
 import logging
-logger = logging.getLogger('djwutils.monitoring.sysinfo')
+import os
+import subprocess
+import sys
 # Django
-import django
 from django.utils.translation import ugettext_lazy as _
+import django
+
+logger = logging.getLogger('djwutils.monitoring.sysinfo')
 
 
 def _additional_translations():
@@ -88,6 +90,7 @@ def get_system_info(package=None, module=None, extra=None):
     if isinstance(dj_version, tuple):
         dj_version = '.'.join([str(i) for i in dj_version])
     tplt_args['info_package'].append(dict(label=_('Django version'), value=dj_version))
+    tplt_args['info_package'].append(dict(label=_('Python version'), value=sys.version))
     tplt_args['local_repo'] = local_repo
     tplt_args['version'] = version
     tplt_args['revision'] = revision
