@@ -77,13 +77,8 @@ def daemonize(redirect_to=None, rundir='/', umask=None, close_all_files=False):
         if maxfd_to_use == resource.RLIM_INFINITY:
             # If the limit is infinity, use a more reasonable limit
             maxfd_to_use = 2048
-
-    # Iterate through and close file descriptors.
-    for ofd in range(0, maxfd_to_use):
-        try:
-            os.close(ofd)
-        except OSError as e:  # ERROR, ofd wasn't open to begin with (ignored)
-            pass
+    # close file descriptors.
+    os.closerange(0, maxfd_to_use)
 
     # Redirect the standard I/O file descriptors to the specified file.  Since
     # the daemon has no controlling terminal, most daemons redirect stdin,

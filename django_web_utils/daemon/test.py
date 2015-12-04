@@ -60,10 +60,9 @@ if __name__ == '__main__':
     print('---------')
     os.environ = dict()
     print(str(os.environ))
+    _exec('lsof', '-p', str(os.getpid()))
     print('---------')
     sys.stdout.flush()
-
-    os.system('/usr/bin/tail -f /var/log/syslog')
 
     _log('\n---- Starting external command ----\n')
     os.execl('/usr/bin/tail', 'tail', '-f', '/var/log/syslog')
