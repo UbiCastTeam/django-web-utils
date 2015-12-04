@@ -68,31 +68,29 @@ def daemonize(redirect_to=None, rundir='/', umask=None, close_all_files=False):
 
     # Close all open file descriptors.  This prevents the child from keeping
     # open any file descriptors inherited from the parent.
-    if not close_all_files:
-        # If we're not closing all open files, we at least need to
-        # reset stdin, stdout, and stderr.
-        maxfd_to_use = 3
-    else:
+    # WARNING: This causes problems in Python 3, especially when using os.exec
+    if close_all_files:
         maxfd_to_use = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
         if maxfd_to_use == resource.RLIM_INFINITY:
             # If the limit is infinity, use a more reasonable limit
             maxfd_to_use = 2048
-    # close file descriptors.
-    os.closerange(0, maxfd_to_use)
+        # close file descriptors.
+        os.closerange(0, maxfd_to_use)
 
     # Redirect the standard I/O file descriptors to the specified file.  Since
     # the daemon has no controlling terminal, most daemons redirect stdin,
     # stdout, and stderr to /dev/null.  This is done to prevent side-effects
     # from reads and writes to the standard I/O file descriptors.
-
-    # This call to open is guaranteed to return the lowest file descriptor,
-    # which will be 0 (stdin), since it was closed above.
-    os.open(os.devnull, os.O_CREAT | os.O_RDWR)  # standard input (0)
-    fd = open(redirect_to or os.devnull, 'a+')  # standard output (1)
-    os.dup2(fd.fileno(), 2)  # standard error (2)
-
-    # Change sys.stdout and sys.stderr
-    sys.stdout = fd
-    sys.stderr = fd
+    fdi = os.open(os.devnull, os.O_CREAT | os.O_RDWR)
+    fdo = os.open(redirect_to or os.devnull, os.O_CREAT | os.O_RDWR | os.O_APPEND)
+    os.dup2(fdi, 0)
+    os.dup2(fdo, 1)
+    os.dup2(fdo, 2)
+    os.close(fdi)
+    os.close(fdo)
+    # Reassign sys attributes
+    sys.stdin = os.fdopen(0, 'r')
+    sys.stdout = os.fdopen(1, 'a+')
+    sys.stderr = sys.stdout
 
     return 0

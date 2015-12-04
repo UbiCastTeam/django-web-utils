@@ -46,13 +46,14 @@ if __name__ == '__main__':
         sys.exit(1)
     # Daemonize
     wd = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    daemonize(redirect_to=LOG_PATH, rundir=wd, close_all_files=True)
+    daemonize(redirect_to=LOG_PATH, rundir=wd)
     sys.path.append(wd)
     # Write initial info in log
-    user_id = sys.argv[2] if len(sys.argv) > 2 else '?'
-    _log('Started on %s by user %s.' % (now.strftime('%Y-%m-%d %H:%M:%S'), user_id))
-    _log('\n---- Stopping server ----\n')
-    rc = _exec('pkill', '-f', '--', 'tail -f /var/log/syslog')
+    _log('Started on %s.' % (now.strftime('%Y-%m-%d %H:%M:%S')))
+    _log('\n---- ps aux ----\n')
+    _exec('ps aux | grep -v grep | grep watch')
+    _log('\n---- killing ----\n')
+    rc = _exec('pkill', '-f', '--', 'watch date')
     _log('pkill return code: %s' % rc)
     if action == 'stop':
         sys.exit(0)
@@ -65,4 +66,6 @@ if __name__ == '__main__':
     sys.stdout.flush()
 
     _log('\n---- Starting external command ----\n')
-    os.execl('/usr/bin/tail', 'tail', '-f', '/var/log/syslog')
+    os.fsync(1)
+    os.fsync(2)
+    os.execl('/usr/bin/watch', 'watch', 'date')
