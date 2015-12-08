@@ -37,7 +37,7 @@ for i in *; do
         echo -e "\033[94mGenerating translations for path: $dir\033[0m"
         cd $dir
         maketranslations
-        cd -
+        cd - > /dev/null
         echo ""
         found=true
     fi
