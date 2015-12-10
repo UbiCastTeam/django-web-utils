@@ -185,6 +185,8 @@ class BaseDaemon(object):
         if self._django_setup_done:
             return
         # set django settings, so that django modules can be imported
+        if not os.path.isdir(self.SERVER_DIR):
+            logger.error('Server dir "%s" does not exist, trying to setup Django anyway.', self.SERVER_DIR)
         if self.SERVER_DIR not in sys.path:
             sys.path.append(self.SERVER_DIR)
         if not os.environ.get('DJANGO_SETTINGS_MODULE') or os.environ.get('DJANGO_SETTINGS_MODULE') != self.SETTINGS_MODULE:
