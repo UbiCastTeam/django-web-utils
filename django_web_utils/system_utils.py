@@ -12,7 +12,10 @@ import pwd
 import grp
 import subprocess
 # Django
-from django.utils.translation import ugettext_lazy as _
+try:
+    from django.utils.translation import ugettext_lazy as _
+except ImportError:
+    _ = lambda text: text
 
 
 # get_login function
