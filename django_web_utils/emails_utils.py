@@ -244,6 +244,11 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
         title = 'Error report - %s' % title
     else:
         title = 'Error report'
+
+    if settings.DEBUG:
+        print(title)
+        traceback.print_exc()
+        return True, 'Debug mode is enabled, no emails were sent.'
     
     fieldset_style = 'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'
     content = '<div style="margin-bottom: 8px;">Message sent at: %s</div>' % datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
