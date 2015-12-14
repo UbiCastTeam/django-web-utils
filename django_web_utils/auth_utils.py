@@ -24,7 +24,7 @@ def login_required_basicauth(function):
             to_decode = request.META['HTTP_AUTHORIZATION']
             to_decode = to_decode.split(' ')[-1]
             try:
-                decoded = base64.b64decode(to_decode)
+                decoded = base64.b64decode(to_decode).decode('utf-8')
             except Exception:
                 pass
             else:
