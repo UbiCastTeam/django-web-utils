@@ -7,10 +7,10 @@ import os
 import sys
 import datetime
 from decimal import Decimal
-os.environ['LANG'] = 'en_US.UTF-8'
-os.environ['LC_ALL'] = 'en_US.UTF-8'
+os.environ['LANG'] = 'en_GB.UTF-8'
+os.environ['LC_ALL'] = 'en_GB.UTF-8'
 import locale
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+locale.setlocale(locale.LC_ALL, 'en_GB.UTF-8')
 
 SETTINGS_MODULE = 'settings'
 
