@@ -1,10 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import os
-import datetime
 from PIL import Image
+import datetime
 import logging
-logger = logging.getLogger('djwutils.file_browser.views')
+import os
 # Django
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
@@ -15,6 +14,7 @@ from django_web_utils import json_utils
 from django_web_utils.files_utils import get_unit
 from django_web_utils.file_browser import config
 
+logger = logging.getLogger('djwutils.file_browser.views')
 
 IMAGES_EXTENSION = ['png', 'gif', 'bmp', 'tiff', 'jpg', 'jpeg']
 
