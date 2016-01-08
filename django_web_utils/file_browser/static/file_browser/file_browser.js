@@ -425,17 +425,18 @@ FileBrowser.prototype.on_file_click = function (file, evt) {
 
 
 /* actions */
-FileBrowser.prototype.execute_action = function (data, cb) {
+FileBrowser.prototype.execute_action = function (data, method, cb) {
     // show loading overlay
     this.overlay.show({
         title: " ",
         html: "<div class=\"file-browser-overlay message-loading\">"+this.translate("Loading")+"...</div>"
     });
     // execute request
-    data.csrfmiddlewaretoken = this.csrf_token;
+    if (method == "post")
+        data.csrfmiddlewaretoken = this.csrf_token;
     var obj = this;
     $.ajax({
-        type: "POST",
+        type: method,
         url: this.action_url,
         data: data,
         dataType: "json",
@@ -554,7 +555,7 @@ FileBrowser.prototype._add_folder = function () {
         name: $("#new_folder_name", this.folder_form).val()
     };
     this.folder_form.detach();
-    this.execute_action(data);
+    this.execute_action(data, "post");
 };
 FileBrowser.prototype.add_file = function () {
     if (!this.upload_form) {
@@ -609,7 +610,7 @@ FileBrowser.prototype.rename_files = function () {
                 data["name_"+i] = selected[i].name;
             }
             obj.rename_form.detach();
-            obj.execute_action(data);
+            obj.execute_action(data, "post");
             return false;
         });
     }
@@ -704,7 +705,7 @@ FileBrowser.prototype.move_files = function () {
                 for (var i=0; i < selected.length; i++) {
                     data["name_"+i] = selected[i].name;
                 }
-                obj.execute_action(data, function () {
+                obj.execute_action(data, "post", function () {
                     // refresh dirs tree if a dir has been moved
                     if (banned.length > 0)
                         obj.load_dirs();
@@ -750,7 +751,7 @@ FileBrowser.prototype.delete_files = function () {
                 for (var i=0; i < selected.length; i++) {
                     data["name_"+i] = selected[i].name;
                 }
-                obj.execute_action(data);
+                obj.execute_action(data, "post");
             } },
             { label: this.translate("Cancel"), close: true }
         ]
@@ -778,7 +779,7 @@ FileBrowser.prototype.search = function () {
             if ($("#search_in_current", obj.search_form).is(":checked"))
                 data.path = obj.path;
             obj.search_form.detach();
-            obj.execute_action(data, function (response) {
+            obj.execute_action(data, "get", function (response) {
                 // display search results
                 var html = "<p><b>"+response.msg+"</b></p>";
                 if (response.dirs && response.dirs.length > 0) {
