@@ -23,7 +23,6 @@ import logging
 from django.conf import settings
 from django.core import mail
 from django.db.models.query import QuerySet
-from django.template import Context
 from django.template.loader import render_to_string
 from django.utils import translation
 from django.utils.html import conditional_escape
@@ -171,7 +170,8 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         # Get subject and content
         ctx = dict(base_ctx)
         ctx['recipient'] = recipient
-        content = render_to_string(template, ctx, Context(dict(LANGUAGE_CODE=lang)))
+        ctx['LANGUAGE_CODE'] = lang
+        content = render_to_string(template, ctx)
         subject_start = content.index('<subject>') + 9
         subject_end = subject_start + content[subject_start:].index('</subject>')
         subject = content[subject_start:subject_end].strip()
