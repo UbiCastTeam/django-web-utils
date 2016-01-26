@@ -39,6 +39,8 @@ function CoverList(options) {
                 this.add_element(options.elements[i]);
             }
         }
+        if (this.color == "-")
+            this.color = "transparent";
     }
     
     var obj = this;
