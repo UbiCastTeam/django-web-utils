@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-01 11:13+0200\n"
-"PO-Revision-Date: 2015-06-01 11:12+0100\n"
+"POT-Creation-Date: 2016-01-27 09:47+0100\n"
+"PO-Revision-Date: 2016-01-27 09:48+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -43,70 +43,74 @@ msgid "File browser"
 msgstr "Navigateur"
 
 #: templates/file_browser/body.html:9
+msgid "Quit"
+msgstr "Quitter"
+
+#: templates/file_browser/body.html:10
 msgid "Root folder"
 msgstr "Dossier racine"
 
-#: templates/file_browser/body.html:16
+#: templates/file_browser/body.html:17
 msgid "Add a folder"
 msgstr "Ajouter un dossier"
 
-#: templates/file_browser/body.html:17
+#: templates/file_browser/body.html:18
 msgid "Add a file"
 msgstr "Ajouter un fichier"
 
-#: templates/file_browser/body.html:18 templates/file_browser/script.html:32
+#: templates/file_browser/body.html:19 templates/file_browser/script.html:32
 msgid "Search"
 msgstr "Rechercher"
 
-#: templates/file_browser/body.html:26
+#: templates/file_browser/body.html:27
 msgid "Show messages"
 msgstr "Voir les messages"
 
-#: templates/file_browser/body.html:27
+#: templates/file_browser/body.html:28
 msgid "Hide messages"
 msgstr "Cacher les messages"
 
-#: templates/file_browser/body.html:38 templates/file_browser/script.html:16
+#: templates/file_browser/body.html:39 templates/file_browser/script.html:16
 msgid "Loading"
 msgstr "Chargement"
 
-#: templates/file_browser/body.html:43
+#: templates/file_browser/body.html:44
 msgid "Drop files here to add them"
 msgstr "Glissez vos fichiers ici pour les ajouter"
 
-#: templates/file_browser/body.html:45
+#: templates/file_browser/body.html:46
 msgid "Upload in progress"
 msgstr "Envoi en cours"
 
-#: templates/file_browser/body.html:52
+#: templates/file_browser/body.html:53
 msgid "Total size:"
 msgstr "Taille totale :"
 
-#: templates/file_browser/body.html:53
+#: templates/file_browser/body.html:54
 msgid "Number of folders:"
 msgstr "Nombre de dossiers :"
 
-#: templates/file_browser/body.html:54
+#: templates/file_browser/body.html:55
 msgid "Number of files:"
 msgstr "Nombre de fichiers :"
 
-#: templates/file_browser/body.html:55
+#: templates/file_browser/body.html:56
 msgid "Order by:"
 msgstr "Trier par :"
 
-#: templates/file_browser/body.html:57 templates/file_browser/body.html:58
+#: templates/file_browser/body.html:58 templates/file_browser/body.html:59
 msgid "name"
 msgstr "nom"
 
-#: templates/file_browser/body.html:59 templates/file_browser/body.html:60
+#: templates/file_browser/body.html:60 templates/file_browser/body.html:61
 msgid "size"
 msgstr "taille"
 
-#: templates/file_browser/body.html:61 templates/file_browser/body.html:62
+#: templates/file_browser/body.html:62 templates/file_browser/body.html:63
 msgid "modification date"
 msgstr "date de modification"
 
-#: templates/file_browser/body.html:65
+#: templates/file_browser/body.html:66
 msgid "Refresh"
 msgstr "Rafraîchir"
 
@@ -195,125 +199,123 @@ msgstr "Rechercher uniquement dans le dossier courant"
 msgid "Folder \"%s\" does not exist."
 msgstr "Le dossier \"%s\" n'existe pas."
 
-#: views.py:134
+#: views.py:91
 #, python-format
 msgid "Folder \"%s\" does not exist"
 msgstr "Le dossier \"%s\" n'existe pas"
 
-#: views.py:203
+#: views.py:164
 msgid "Parent folder"
 msgstr "Dossier parent"
 
-#: views_action.py:63
-msgid "Invalid request method."
-msgstr "Méthode de requête invalide."
-
-#: views_action.py:79 views_action.py:138 views_action.py:164
-#: views_action.py:225
+#: views_action.py:64 views_action.py:123 views_action.py:149
+#: views_action.py:235
 msgid "Invalid base path."
 msgstr "Chemin de base invalide."
 
-#: views_action.py:86
+#: views_action.py:71
 msgid "No files in request."
 msgstr "Aucun fichier n'est présent dans la requête."
 
-#: views_action.py:102 views_action.py:156
+#: views_action.py:87 views_action.py:141
 msgid "Failed to create folder."
 msgstr "Échec de la création du dossier."
 
-#: views_action.py:110
+#: views_action.py:95
 msgid "The file has been uploaded and is available at the location:"
 msgstr "Le fichier a été envoyé et est disponible à l'adresse suivante :"
 
-#: views_action.py:112
+#: views_action.py:97
 msgid "The files have been uploaded and are available at the locations:"
 msgstr ""
 "Les fichiers ont été envoyés et sont disponibles aux adresses suivantes :"
 
-#: views_action.py:141 views_action.py:240
+#: views_action.py:126 views_action.py:164
 msgid "The name field is required."
 msgstr "Le champ nom est requis."
 
-#: views_action.py:144 views_action.py:247
+#: views_action.py:129 views_action.py:171
 msgid "Invalid name."
 msgstr "Nom invalide."
 
-#: views_action.py:154
+#: views_action.py:139
 msgid "Folder already exists."
 msgstr "Le dossier existe déjà."
 
-#: views_action.py:157
+#: views_action.py:142
 msgid "Folder created."
 msgstr "Le dossier a été créé."
 
-#: views_action.py:170
-msgid "Requested path does not exist."
-msgstr "Le chemin demandé n'existe pas."
-
-#: views_action.py:212
-#, python-format
-msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
-msgstr "%(count)s résultats pour \"%(search)s\" dans \"%(path)s\"."
-
-#: views_action.py:214
-#, python-format
-msgid "%(count)s results for \"%(search)s\"."
-msgstr "%(count)s résultats pour \"%(search)s\"."
-
-#: views_action.py:216
-#, python-format
-msgid "No results for \"%(search)s\"."
-msgstr "Pas de résultat pour \"%(search)s\"."
-
-#: views_action.py:235
+#: views_action.py:159
 msgid "No files selected."
 msgstr "Aucun fichier n'est sélectionné."
 
-#: views_action.py:260
+#: views_action.py:184
 #, python-format
 msgid "The file \"%s\" already exists."
 msgstr "Le fichier \"%s\" existe déjà."
 
-#: views_action.py:263
+#: views_action.py:187
 msgid "File renamed."
 msgstr "Fichier renommé."
 
-#: views_action.py:265
+#: views_action.py:189
 msgid "Files renamed."
 msgstr "Fichiers renommés."
 
-#: views_action.py:270
+#: views_action.py:194
 msgid "No path specfied to move files in."
 msgstr "Aucun chemin n'a été spécifié pour déplacer les fichiers."
 
-#: views_action.py:277
+#: views_action.py:201
 msgid "Destination path does not exists."
 msgstr "Le chemin de destination n'existe pas."
 
-#: views_action.py:286
+#: views_action.py:210
 #, python-format
 msgid "Unable to move file %s:"
 msgstr "Impossible de déplacer le fichier %s :"
 
-#: views_action.py:287
+#: views_action.py:211
 #, python-format
 msgid "%s file(s) successfully moved."
 msgstr "%s fichier(s) déplacé(s) avec succès."
 
-#: views_action.py:301
+#: views_action.py:225
 #, python-format
 msgid "Unable to delete file %s:"
 msgstr "Impossible de supprimer le fichier %s :"
 
-#: views_action.py:302
+#: views_action.py:226
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
 msgstr "%(f)s fichier(s) et %(d)s dossier(s) supprimé(s) avec succès."
 
-#: views_action.py:305
+#: views_action.py:241
+msgid "Requested path does not exist."
+msgstr "Le chemin demandé n'existe pas."
+
+#: views_action.py:281
+#, python-format
+msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
+msgstr "%(count)s résultats pour \"%(search)s\" dans \"%(path)s\"."
+
+#: views_action.py:283
+#, python-format
+msgid "%(count)s results for \"%(search)s\"."
+msgstr "%(count)s résultats pour \"%(search)s\"."
+
+#: views_action.py:285
+#, python-format
+msgid "No results for \"%(search)s\"."
+msgstr "Pas de résultat pour \"%(search)s\"."
+
+#: views_action.py:289
 msgid "Invalid action requested."
 msgstr "L'action demandée est invalide."
 
-#: views_action.py:307
-msgid "Unknown action."
-msgstr "Action inconnue."
+#~ msgid "Invalid request method."
+#~ msgstr "Méthode de requête invalide."
+
+#~ msgid "Unknown action."
+#~ msgstr "Action inconnue."

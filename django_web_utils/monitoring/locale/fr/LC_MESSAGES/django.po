@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-02 17:41+0200\n"
-"PO-Revision-Date: 2015-07-02 17:44+0100\n"
+"POT-Creation-Date: 2016-01-27 09:47+0100\n"
+"PO-Revision-Date: 2016-01-27 09:48+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -29,7 +29,7 @@ msgstr "Ko"
 msgid "MB"
 msgstr "Mo"
 
-#: additional_translations.py:15 sysinfo.py:169 sysinfo.py:170 sysinfo.py:171
+#: additional_translations.py:15 sysinfo.py:172 sysinfo.py:173 sysinfo.py:174
 msgid "GB"
 msgstr "Go"
 
@@ -37,119 +37,124 @@ msgstr "Go"
 msgid "TB"
 msgstr "To"
 
-#: sysinfo.py:18
+#: sysinfo.py:20
 msgid "Distributor ID"
 msgstr "Identifiant du distributeur"
 
-#: sysinfo.py:19
+#: sysinfo.py:21
 msgid "Description"
 msgstr "Description"
 
-#: sysinfo.py:20
+#: sysinfo.py:22
 msgid "Release"
 msgstr ""
 
-#: sysinfo.py:21
+#: sysinfo.py:23
 msgid "Codename"
 msgstr "Nom de code"
 
-#: sysinfo.py:85
+#: sysinfo.py:87
 msgid "Version"
 msgstr "Version"
 
-#: sysinfo.py:86
+#: sysinfo.py:88
 msgid "Revision"
 msgstr "Révision"
 
-#: sysinfo.py:90
+#: sysinfo.py:92
 msgid "Django version"
 msgstr "Version de Django"
 
-#: sysinfo.py:94
+#: sysinfo.py:93
+#| msgid "Django version"
+msgid "Python version"
+msgstr "Version de Python"
+
+#: sysinfo.py:97
 msgid "Software"
 msgstr "Logiciel"
 
-#: sysinfo.py:97
+#: sysinfo.py:100
 msgid "Uptime"
 msgstr "Durée de fonctionnement"
 
-#: sysinfo.py:98
+#: sysinfo.py:101
 msgid "Load"
 msgstr "Charge"
 
-#: sysinfo.py:99
+#: sysinfo.py:102
 msgid "Kernel"
 msgstr "Noyau"
 
-#: sysinfo.py:100
+#: sysinfo.py:103
 msgid "Hostname"
 msgstr "Nom d'hôte"
 
-#: sysinfo.py:101
+#: sysinfo.py:104
 msgid "Platform"
 msgstr "Plate-forme"
 
-#: sysinfo.py:109
+#: sysinfo.py:112
 msgid "OS"
 msgstr "OS"
 
-#: sysinfo.py:112
+#: sysinfo.py:115
 msgid "HDD"
 msgstr "HDD"
 
-#: sysinfo.py:140 sysinfo.py:148
+#: sysinfo.py:143 sysinfo.py:151
 msgid "Model"
 msgstr "Modèle"
 
-#: sysinfo.py:141
+#: sysinfo.py:144
 msgid "Cores"
 msgstr "Cœurs"
 
-#: sysinfo.py:142
+#: sysinfo.py:145
 msgid "Default frequency"
 msgstr "Fréquence nominale"
 
-#: sysinfo.py:143
+#: sysinfo.py:146
 msgid "Current frequency"
 msgstr "Fréquence courante"
 
-#: sysinfo.py:144
+#: sysinfo.py:147
 msgid "CPU"
 msgstr "CPU"
 
-#: sysinfo.py:155
+#: sysinfo.py:158
 msgid "Temperature"
 msgstr "Température"
 
-#: sysinfo.py:156
+#: sysinfo.py:159
 msgid "GPU"
 msgstr "GPU"
 
-#: sysinfo.py:169
+#: sysinfo.py:172
 msgid "Total"
 msgstr "Total"
 
-#: sysinfo.py:170
+#: sysinfo.py:173
 msgid "Free"
 msgstr "Libre"
 
-#: sysinfo.py:171
+#: sysinfo.py:174
 msgid "Cached"
 msgstr "En cache"
 
-#: sysinfo.py:173
+#: sysinfo.py:176
 msgid "Failed to get information"
 msgstr "Échec de l'obtention des informations"
 
-#: sysinfo.py:174
+#: sysinfo.py:177
 msgid "Memory"
 msgstr "Mémoire"
 
-#: sysinfo.py:181
+#: sysinfo.py:184
 msgid "Network"
 msgstr "Réseau"
 
-#: sysinfo.py:188
+#: sysinfo.py:191
 msgid "Sensors"
 msgstr "Capteurs"
 
@@ -157,49 +162,49 @@ msgstr "Capteurs"
 msgid "Daemons monitoring"
 msgstr "Surveillance des démons"
 
-#: templates/monitoring/config.html:4 templates/monitoring/config.html:40
-#: templates/monitoring/log.html:11 templates/monitoring/log.html.py:43
-#: templates/monitoring/log.html:66 templates/monitoring/panel.html:4
+#: templates/monitoring/config.html:5 templates/monitoring/config.html:41
+#: templates/monitoring/log.html.py:11 templates/monitoring/log.html:43
+#: templates/monitoring/log.html.py:66 templates/monitoring/panel.html:4
 msgid "Back"
 msgstr "Retour"
 
-#: templates/monitoring/config.html:7 templates/monitoring/config.html:42
-#: templates/monitoring/log.html:14 templates/monitoring/log.html.py:46
-#: templates/monitoring/log.html:69
+#: templates/monitoring/config.html:8 templates/monitoring/config.html:43
+#: templates/monitoring/log.html.py:14 templates/monitoring/log.html:46
+#: templates/monitoring/log.html.py:69
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: templates/monitoring/config.html:10 templates/monitoring/config.html:44
-#: templates/monitoring/log.html:27 templates/monitoring/log.html.py:59
+#: templates/monitoring/config.html:11 templates/monitoring/config.html:45
+#: templates/monitoring/log.html.py:27 templates/monitoring/log.html:59
 msgid "See raw content"
 msgstr "Voir le contenu brut"
 
-#: templates/monitoring/config.html:15
+#: templates/monitoring/config.html:16
 msgid "Default configuration"
 msgstr "Configuration par défaut"
 
-#: templates/monitoring/config.html:18
+#: templates/monitoring/config.html:19
 msgid "Configuration override"
 msgstr "Outrepassement de la configuration"
 
-#: templates/monitoring/config.html:23
+#: templates/monitoring/config.html:24
 msgid "Configuration file size:"
 msgstr "Taille du fichier de configuration :"
 
-#: templates/monitoring/config.html:24 templates/monitoring/log.html:21
-#: templates/monitoring/log.html.py:53
+#: templates/monitoring/config.html:25 templates/monitoring/log.html.py:21
+#: templates/monitoring/log.html:53
 msgid "Last modification:"
 msgstr "Dernière modification :"
 
-#: templates/monitoring/config.html:30
+#: templates/monitoring/config.html:31
 msgid "Current configuration file path:"
 msgstr "Chemin du fichier de configuration actuel :"
 
-#: templates/monitoring/config.html:31
+#: templates/monitoring/config.html:32
 msgid "Reset file"
 msgstr "Réinitialiser le fichier"
 
-#: templates/monitoring/config.html:38
+#: templates/monitoring/config.html:39
 msgid "Apply modifications"
 msgstr "Appliquer les modifications"
 
@@ -268,7 +273,6 @@ msgid "log file"
 msgstr "fichier de journalisation"
 
 #: templates/monitoring/panel.html:38
-#| msgid "Log file"
 msgid "config file"
 msgstr "fichier de configuration"
 
@@ -276,63 +280,63 @@ msgstr "fichier de configuration"
 msgid "Loading"
 msgstr "Chargement"
 
-#: templates/monitoring/panel.html:47
+#: templates/monitoring/panel.html:48
 msgid "See"
 msgstr "Voir"
 
-#: templates/monitoring/panel.html:48
+#: templates/monitoring/panel.html:49
 msgid "See tail"
 msgstr "Voir la fin"
 
-#: templates/monitoring/panel.html:49
+#: templates/monitoring/panel.html:50
 msgid "Clear log"
 msgstr "Nettoyer le journal"
 
-#: templates/monitoring/panel.html:54
+#: templates/monitoring/panel.html:56
 msgid "Start"
 msgstr "Démarrer"
 
-#: templates/monitoring/panel.html:56
+#: templates/monitoring/panel.html:58
 msgid "Stop"
 msgstr "Arrêter"
 
-#: templates/monitoring/panel.html:58
+#: templates/monitoring/panel.html:60
 msgid "Restart"
 msgstr "Redémarrer"
 
-#: templates/monitoring/panel.html:60
+#: templates/monitoring/panel.html:64
 msgid "Edit configuration"
 msgstr "Modifier la configuration"
 
-#: templates/monitoring/panel.html:84
+#: templates/monitoring/panel.html:88
 msgid "Command result"
 msgstr "Résultat de la commande"
 
-#: templates/monitoring/panel.html:85
+#: templates/monitoring/panel.html:89
 msgid "No messages have been returned."
 msgstr "Aucun message n'a été renvoyé."
 
-#: templates/monitoring/panel.html:86
+#: templates/monitoring/panel.html:90
 msgid "Close"
 msgstr "Fermer"
 
-#: templates/monitoring/panel.html:87
+#: templates/monitoring/panel.html:91
 msgid "running"
 msgstr "en cours"
 
-#: templates/monitoring/panel.html:88
+#: templates/monitoring/panel.html:92
 msgid "not running"
 msgstr "arrêté"
 
-#: templates/monitoring/panel.html:89
+#: templates/monitoring/panel.html:93
 msgid "need password"
 msgstr "mot de passe requis"
 
-#: templates/monitoring/panel.html:90
+#: templates/monitoring/panel.html:94
 msgid "Click to enter password"
 msgstr "Cliquez pour entrer le mot de passe"
 
-#: templates/monitoring/panel.html:91
+#: templates/monitoring/panel.html:95
 msgid "server unreachable"
 msgstr "serveur inaccessible"
 
@@ -350,7 +354,6 @@ msgstr ""
 "La classe donnée n'est pas une sous classe de BaseDaemon de Django web utils."
 
 #: utils.py:45 utils.py:48
-#| msgid "Invalid command."
 msgid "No valid target for command."
 msgstr "Aucune cible valide pour la commande."
 
@@ -358,7 +361,7 @@ msgstr "Aucune cible valide pour la commande."
 msgid "The daemon script cannot be found."
 msgstr "Le script du démon est introuvable."
 
-#: utils.py:140
+#: utils.py:142
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -369,31 +372,32 @@ msgstr ""
 "Seul la fin du fichier et le fichier brut sont accessibles.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:151
+#: utils.py:153
 msgid "Unable to display log file."
 msgstr "Impossible d'afficher le fichier de journalisation."
 
-#: utils.py:151 utils.py:172 utils.py:179 utils.py:206 utils.py:226
+#: utils.py:153 utils.py:181 utils.py:185 utils.py:192 utils.py:219
+#: utils.py:239
 msgid "Error:"
 msgstr "Erreur :"
 
-#: utils.py:172
+#: utils.py:181 utils.py:185
 msgid "Unable to write configuration file."
 msgstr "Impossible d'écrire le fichier de configuration."
 
-#: utils.py:174
+#: utils.py:187
 msgid "Configuration file updated."
 msgstr "Fichier de configuration mis à jour."
 
-#: utils.py:179
+#: utils.py:192
 msgid "Unable to delete configuration file."
 msgstr "Impossible de supprimer le fichier de configuration."
 
-#: utils.py:181
+#: utils.py:194
 msgid "Configuration file deleted."
 msgstr "Fichier de configuration supprimé."
 
-#: utils.py:196
+#: utils.py:209
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -404,11 +408,11 @@ msgstr ""
 "Seul le fichier brut est accessible.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:206
+#: utils.py:219
 msgid "Unable to display configuration file."
 msgstr "Impossible d'afficher le fichier de configuration."
 
-#: utils.py:226
+#: utils.py:239
 msgid "Unable to read default configuration file."
 msgstr "Impossible de lire le fichier de configuration par défaut."
 
@@ -421,7 +425,6 @@ msgid "Please enter password."
 msgstr "Veuillez entrer le mot de passe."
 
 #: views.py:35
-#| msgid "Invalid command."
 msgid "Invalid password."
 msgstr "Mot de passe incorrect."
 
@@ -440,13 +443,11 @@ msgid "Command \"%(cmd)s\" on \"%(name)s\" failed."
 msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
 
 #: views.py:123
-#| msgid "Command result"
 msgid "Command output:"
 msgstr "Sortie de la commande :"
 
 #: views.py:195
 #, python-format
-#| msgid "Edit configuration"
 msgid "Edit configuration file: %s"
 msgstr "Éditer le fichier de configuration : %s"
 
