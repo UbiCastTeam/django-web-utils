@@ -148,6 +148,7 @@ def get_system_info(package=None, module=None, extra=None):
     # GPU
     tplt_args['info_gpu'] = []
     gpu_model = _get_output('lspci | grep VGA').split(':')[-1].strip()
+    gpu_model = gpu_model.replace('Gen Core', 'Gen\nCore')
     tplt_args['info_gpu'].append(dict(label=_('Model'), value=gpu_model or '?'))
     gpu_temp = _get_output('nvidia-settings -q GPUCoreTemp | grep Attribute').split(':')[-1].strip(' .')
     try:
