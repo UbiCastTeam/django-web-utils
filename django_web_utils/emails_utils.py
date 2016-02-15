@@ -17,18 +17,18 @@ For example, a valid template could look like this:
 The email content
 '''
 import datetime
-import traceback
 import logging
+import traceback
 # Django
 from django.conf import settings
 from django.core import mail
 from django.db.models.query import QuerySet
-from django.template.loader import render_to_string
+from django.template import Context, Engine
 from django.utils import translation
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 # utils
-from . import html_utils
+from django_web_utils import html_utils
 
 logger = logging.getLogger('djwutils.emails_utils')
 
@@ -138,6 +138,14 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         msg = 'No emails have been sent: no valid recipients given.'
         logger.error('%s\nEmail context: %s', msg, base_ctx)
         return False, msg
+    # Get template
+    engine = Engine.get_default()
+    if template.startswith('/'):
+        with open(template, 'r') as file_obj:
+            template = file_obj.read()
+        tplt = engine.from_string(template)
+    else:
+        tplt = engine.get_template(template)
     # Prepare emails messages
     connection = None
     sent = list()
@@ -171,7 +179,7 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         ctx = dict(base_ctx)
         ctx['recipient'] = recipient
         ctx['LANGUAGE_CODE'] = lang
-        content = render_to_string(template, ctx)
+        content = tplt.render(Context(ctx))
         subject_start = content.index('<subject>') + 9
         subject_end = subject_start + content[subject_start:].index('</subject>')
         subject = content[subject_start:subject_end].strip()
