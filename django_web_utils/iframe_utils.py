@@ -13,6 +13,7 @@ import traceback
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 
 # classic errors classes
@@ -40,6 +41,7 @@ def iframe_view(function=None, methods=None, login_url=None, login_required=Fals
     To allow several methods, use this format: "GET, PUT".
     '''
     def decorator(fct):
+        @xframe_options_exempt
         def _wrapped_view(request, *args, **kwargs):
             # Check request method
             if methods and request.method not in methods:
