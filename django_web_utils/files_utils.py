@@ -3,6 +3,7 @@
 '''
 Files utility functions
 '''
+import errno
 import os
 # Django
 from django.utils.translation import ugettext_lazy as _
@@ -11,17 +12,22 @@ from django.utils.translation import ugettext_lazy as _
 # get_size function
 # to get size of a dir
 # ----------------------------------------------------------------------------
-def get_size(path):
-    if os.path.isfile(path):
-        return os.path.getsize(path)
-    elif os.path.isdir(path):
-        size = 0
-        for f in os.listdir(path):
-            size += get_size(os.path.join(path, f))
-        return size
-    else:
-        # socket or something else
-        return 0
+def get_size(path, ignore_denied=False):
+    try:
+        if os.path.isfile(path):
+            return os.path.getsize(path)
+        elif os.path.isdir(path):
+            size = 0
+            for f in os.listdir(path):
+                size += get_size(os.path.join(path, f), ignore_denied=ignore_denied)
+            return size
+        else:
+            # socket or something else
+            return 0
+    except Exception as e:
+        if ignore_denied and e.errno == errno.EACCES:
+            return 0
+        raise
 
 
 # get_unit function
