@@ -11,7 +11,7 @@
             <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
         {% endif %}
 
-        <span {% if back_url %}class="marged"{% endif %}><button onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
+        <span {% if back_url %}class="marged"{% endif %}><button type="button" onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
 
         {% if size %}
             <span class="marged"><b>{% trans "File size:" %}</b> {{ size }}</span>
@@ -43,7 +43,7 @@
                 <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
             {% endif %}
 
-            <span {% if back_url %}class="marged"{% endif %}><button onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
+            <span {% if back_url %}class="marged"{% endif %}><button type="button" onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
 
             {% if size %}
                 <span class="marged"><b>{% trans "File size:" %}</b> {{ size }}</span>
@@ -66,7 +66,7 @@
             <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
         {% endif %}
 
-        <span {% if back_url %}class="marged"{% endif %}><button onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
+        <span {% if back_url %}class="marged"{% endif %}><button type="button" onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
     </div>
 
     <div class="margin-32">
