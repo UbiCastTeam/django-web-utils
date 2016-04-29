@@ -368,3 +368,36 @@ utils.setup_class = function (obj, options, allowed_options) {
     if (options)
         obj.set_options(options);
 };
+
+// MD5 sum computation (requires the SparkMD5 library)
+utils.compute_md5 = function (file, callback) {
+    var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
+    var chunkSize = 2097152; // Read in chunks of 2MB
+    var chunks = Math.ceil(file.size / chunkSize);
+    var currentChunk = 0;
+    var spark = new SparkMD5.ArrayBuffer();
+    var fileReader = new FileReader();
+
+    fileReader.onload = function (e) {
+        spark.append(e.target.result); // Append array buffer
+        ++currentChunk;
+
+        if (currentChunk < chunks) {
+            loadNext();
+        } else {
+            callback(spark.end());
+        }
+    };
+
+    fileReader.onerror = function () {
+        console.warn('MD5 computation failed');
+    };
+
+    function loadNext() {
+        var start = currentChunk * chunkSize;
+        var end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+    }
+
+    loadNext();
+};
