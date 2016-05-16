@@ -31,11 +31,11 @@ function maketranslations {
 
 found=false
 for i in *; do
-    dir=${i}
+    dir="${i}"
     locale="$dir/locale"
-    if [ -d $locale ]; then
+    if [ -d "$locale" ]; then
         echo -e "\033[94mGenerating translations for path: $dir\033[0m"
-        cd $dir
+        cd "$dir"
         maketranslations
         cd - > /dev/null
         echo ""
