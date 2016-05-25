@@ -52,7 +52,7 @@ def get_image_info(path):
 def rotate_image(path, clockwise=True, rename=True):
     img = Image.open(path)
     img.load()
-    img = img.rotate(-90 if clockwise else 90)
+    img = img.rotate(-90 if clockwise else 90, expand=1)
     if rename:
         dest = get_new_path(path)
     else:
