@@ -7,9 +7,6 @@ import os
 import zipfile
 
 
-# _add_to_zip function
-# internal function
-# ----------------------------------------------------------------------------
 def _add_to_zip(zip_file, path, ignored=None, path_in_zip=None):
     for name in os.listdir(path):
         if ignored and name in ignored:
@@ -22,13 +19,14 @@ def _add_to_zip(zip_file, path, ignored=None, path_in_zip=None):
             _add_to_zip(zip_file, picked_path, ignored, picked_path_in_zip)
 
 
-# create_zip function
-# ----------------------------------------------------------------------------
-def create_zip(path, zip_path, ignored=None, prefix=None):
+def add_to_zip(path, zip_path, ignored=None, prefix=None, append=True):
     if not os.path.exists(os.path.dirname(zip_path)):
         os.makedirs(os.path.dirname(zip_path))
     
-    zip_file = zipfile.ZipFile(zip_path, 'w')
+    if append and os.path.exists(zip_path):
+        zip_file = zipfile.ZipFile(zip_path, 'a')
+    else:
+        zip_file = zipfile.ZipFile(zip_path, 'w')
     try:
         _add_to_zip(zip_file, path, ignored, path_in_zip=prefix)
     except Exception:
@@ -40,8 +38,10 @@ def create_zip(path, zip_path, ignored=None, prefix=None):
         zip_file.close()
 
 
-# unzip function
-# ----------------------------------------------------------------------------
+def create_zip(path, zip_path, ignored=None, prefix=None):
+    return add_to_zip(path, zip_path, ignored, prefix, append=False)
+
+
 def unzip(path, zip_path=None, zip_file=None):
     if zip_file:
         used_zip_file = zip_file
