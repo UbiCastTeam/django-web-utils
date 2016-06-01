@@ -415,13 +415,19 @@ html.file-browser-default {
 .file-browser .buttons-bar .btn-search { background-image: url("img/icons/search.png"); }
 
 #fm_drop_zone {
-    margin: 10px;
-    top: 0;
-    bottom: 0;
+    top: 36px;
+    bottom: 32px;
     left: 0;
     right: 0;
     position: absolute;
     display: none;
+}
+#fm_drop_zone .drop-zone-bg {
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    position: absolute;
     background: rgba(40, 180, 255, 0.3);
     border: 2px dashed #29f;
 }
