@@ -1,18 +1,21 @@
 /*******************************************
 * Utilities functions                      *
-* Copyright: UbiCast, all rights reserved  *
 * Author: Stephane Diemer                  *
 *******************************************/
 
-// add console log function for old browsers
+// add console functions for old browsers
 if (!window.console)
     window.console = {};
 if (!window.console.log)
-    window.console.log = function () {
-        //for (var i=0; i < arguments.length; i++) {
-        //    $("body").append("<p>Argument-" + i + ": " + arguments[i] + "</p>");
-        //}
-    };
+    window.console.log = function () {};
+if (!window.console.error)
+    window.console.error = window.console.log;
+if (!window.console.debug)
+    window.console.debug = window.console.log;
+if (!window.console.info)
+    window.console.info = window.console.log;
+if (!window.console.warn)
+    window.console.warn = window.console.log;
 
 
 var utils = {};
@@ -26,7 +29,7 @@ utils.get_cookie = function (c_name, c_default) {
             var c_end = document.cookie.indexOf(";", c_start);
             if (c_end == -1)
                 c_end = document.cookie.length;
-            return unescape(document.cookie.substring(c_start, c_end));
+            return window.unescape(document.cookie.substring(c_start, c_end));
         }
     }
     return c_default !== undefined ? c_default : "";
@@ -34,7 +37,7 @@ utils.get_cookie = function (c_name, c_default) {
 utils.set_cookie = function (c_name, value, expiredays) {
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + (expiredays ? expiredays : 360));
-    document.cookie = c_name+"="+escape(value)+"; expires="+exdate.toUTCString()+"; path=/";
+    document.cookie = c_name+"="+window.escape(value)+"; expires="+exdate.toUTCString()+"; path=/";
 };
 
 // strip function
@@ -390,7 +393,7 @@ utils.compute_md5 = function (file, callback) {
     };
 
     fileReader.onerror = function () {
-        console.warn('MD5 computation failed');
+        console.warn("MD5 computation failed");
     };
 
     function loadNext() {
