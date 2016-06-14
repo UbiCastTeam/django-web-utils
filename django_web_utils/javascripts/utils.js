@@ -2,6 +2,7 @@
 * Utilities functions                      *
 * Author: Stephane Diemer                  *
 *******************************************/
+/* globals SparkMD5 */
 
 // add console functions for old browsers
 if (!window.console)
@@ -79,6 +80,44 @@ if (!Array.prototype.indexOf) {
         }
         return -1;
     };
+}
+
+// add keys method to Object (for IE < 9)
+// from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+if (!Object.keys) {
+    Object.keys = (function() {
+        "use strict";
+        var hasOwnProperty = Object.prototype.hasOwnProperty,
+            hasDontEnumBug = !({ toString: null }).propertyIsEnumerable("toString"),
+            dontEnums = [
+                "toString",
+                "toLocaleString",
+                "valueOf",
+                "hasOwnProperty",
+                "isPrototypeOf",
+                "propertyIsEnumerable",
+                "constructor"
+            ],
+            dontEnumsLength = dontEnums.length;
+
+        return function(obj) {
+            if (typeof obj !== "object" && (typeof obj !== "function" || obj === null))
+                throw new TypeError("Object.keys called on non-object");
+
+            var result = [], prop, i;
+            for (prop in obj) {
+                if (hasOwnProperty.call(obj, prop))
+                  result.push(prop);
+            }
+            if (hasDontEnumBug) {
+                for (i = 0; i < dontEnumsLength; i++) {
+                    if (hasOwnProperty.call(obj, dontEnums[i]))
+                        result.push(dontEnums[i]);
+                }
+            }
+            return result;
+        };
+    }());
 }
 
 // isinstance
@@ -217,7 +256,7 @@ utils._get_browser_info = function () {
     utils.browser_name = name;
     utils["browser_is_"+name] = true;
     utils.browser_version = version;
-    
+
     // detect type of device
     utils.is_phone = ua.indexOf("iphone") != -1 || ua.indexOf("ipod") != -1 || ua.indexOf("android") != -1 || ua.indexOf("iemobile") != -1 || ua.indexOf("opera mobi") != -1 || ua.indexOf("opera mini") != -1 || ua.indexOf("windows ce") != -1 || ua.indexOf("fennec") != -1 || ua.indexOf("series60") != -1 || ua.indexOf("symbian") != -1 || ua.indexOf("blackberry") != -1 || window.orientation !== undefined;
     utils.is_tablet = window.navigator && window.navigator.platform == "iPad";
@@ -374,13 +413,14 @@ utils.setup_class = function (obj, options, allowed_options) {
 
 // MD5 sum computation (requires the SparkMD5 library)
 utils.compute_md5 = function (file, callback) {
-    var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
+    if (!window.File)
+        return callback("unsupported");
+    var blobSlice = window.File.prototype.slice || window.File.prototype.mozSlice || window.File.prototype.webkitSlice;
     var chunkSize = 2097152; // Read in chunks of 2MB
     var chunks = Math.ceil(file.size / chunkSize);
     var currentChunk = 0;
     var spark = new SparkMD5.ArrayBuffer();
     var fileReader = new FileReader();
-
     fileReader.onload = function (e) {
         spark.append(e.target.result); // Append array buffer
         ++currentChunk;
@@ -391,16 +431,13 @@ utils.compute_md5 = function (file, callback) {
             callback(spark.end());
         }
     };
-
     fileReader.onerror = function () {
         console.warn("MD5 computation failed");
     };
-
     function loadNext() {
         var start = currentChunk * chunkSize;
         var end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
         fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
     }
-
     loadNext();
 };
