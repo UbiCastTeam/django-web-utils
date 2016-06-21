@@ -16,6 +16,7 @@ function CoverList(options) {
     this.min_size = 0.8;
     this.selected = -1;
     this.color = "#666";
+    this.box_bg = "#fff";
     this.force_html = false;
     // vars
     this.$widget = null;
@@ -37,6 +38,7 @@ function CoverList(options) {
         "min_size",
         "selected",
         "color",
+        "box_bg",
         "force_html"
     ];
     if (options) {
@@ -221,7 +223,7 @@ CoverList.prototype.hide_loading = function () {
 /* cover list with basic html */
 CoverList.prototype.html_cover_init = function () {
     this.hide_loading();
-    var box_style = "border-color: "+this.color;
+    var box_style = "border-color: "+this.color+"; background: "+this.box_bg+";";
     for (var i = 0; i < this.elements.length; i++) {
         var element = this.elements[i];
         
@@ -342,6 +344,7 @@ CoverList.prototype.canvas_cover_init = function () {
             h: attrs.height,
             z: attrs.zindex,
             color: this.color,
+            box_bg: this.box_bg,
             thumb: element.thumb,
             url: element.url,
             callback: callback
@@ -470,6 +473,7 @@ function CoverCanvasBox(options) {
         z: 0, z_step: 0
     };
     this.color = "#666";
+    this.box_bg = "#fff";
     this.thumb = "";
     this.url = "";
     this.callback = null;
@@ -505,18 +509,32 @@ CoverCanvasBox.prototype.on_load = function (img, success) {
     this.canvas.width = this.bw;
     this.canvas.height = this.bh;
 
-    var imgw = this.bw - 2 * this.padding;
-    var imgh = this.bh - 2 * this.padding;
+    var innerw = this.bw - 2 * this.padding;
+    var innerh = this.bh - 2 * this.padding;
 
     var ctx = this.canvas.getContext("2d");
     ctx.fillStyle = this.color;
     ctx.fillRect(0, 0, this.bw, this.bh);
-    if (success)
-        ctx.drawImage(img, this.padding, this.padding, imgw, imgh);
+    ctx.fillStyle = this.box_bg;
+    ctx.fillRect(this.padding, this.padding, innerw, innerh);
+    if (success) {
+        // draw image (preserve ratio)
+        var img_ratio = img.width / img.height;
+        var img_w = img.width, img_h = img.height;
+        if (img_w > innerw) {
+            img_w = innerw;
+            img_h = innerw / img_ratio;
+        }
+        if (img_h > innerh) {
+            img_h = innerh;
+            img_w = innerh * img_ratio;
+        }
+        ctx.drawImage(img, this.padding + Math.floor((innerw - img_w) / 2), this.padding + Math.floor((innerh - img_h) / 2), img_w, img_h);
+    }
     if (this.title) {
         // draw black mask
         ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-        ctx.fillRect(this.padding, this.padding + imgh - this.title_h, imgw, this.title_h);
+        ctx.fillRect(this.padding, this.padding + innerh - this.title_h, innerw, this.title_h);
         // get title position
         var font_height = 16;
         ctx.font = "italic "+font_height+"px Arial";
@@ -524,8 +542,8 @@ CoverCanvasBox.prototype.on_load = function (img, success) {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         var text_x, text_y;
-        text_x = this.padding + Math.floor(imgw / 2);
-        var max_w = imgw - 10;
+        text_x = this.padding + Math.floor(innerw / 2);
+        var max_w = innerw - 10;
         var line_top = "", line_bot = "", need_bot = true;
         var size = ctx.measureText(this.title).width;
         if (size > max_w) {
@@ -580,12 +598,12 @@ CoverCanvasBox.prototype.on_load = function (img, success) {
         }
         // write title
         if (line_top && line_bot) {
-            text_y = this.padding + imgh - Math.floor((this.title_h + font_height) / 2);
+            text_y = this.padding + innerh - Math.floor((this.title_h + font_height) / 2);
             ctx.fillText(line_top, text_x, text_y);
             text_y += 4 + font_height;
             ctx.fillText(line_bot, text_x, text_y);
         } else {
-            text_y = this.padding + imgh - Math.floor(this.title_h / 2);
+            text_y = this.padding + innerh - Math.floor(this.title_h / 2);
             ctx.fillText(line_top, text_x, text_y);
         }
     }
