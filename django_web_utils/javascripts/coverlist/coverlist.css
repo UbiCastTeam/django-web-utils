@@ -83,6 +83,7 @@
     display: block;
     position: relative;
     text-align: center;
+    overflow: hidden;
     background: transparent url("img/black_mask.png") 0 0 repeat;
     border: 3px solid #888;
 }
