@@ -16,12 +16,18 @@ function CoverList(options) {
     this.min_size = 0.8;
     this.selected = -1;
     this.color = "#666";
+    this.force_html = false;
     // vars
     this.$widget = null;
     this.widget_width = 0;
     this.widget_height = 0;
     this.elements = [];
     this.positions = [];
+    this.animation = {
+        duration: 200,
+        interval: 25,
+        current_time: 0
+    };
     
     this.allowed_options = [
         "widget_place",
@@ -30,7 +36,8 @@ function CoverList(options) {
         "box_height",
         "min_size",
         "selected",
-        "color"
+        "color",
+        "force_html"
     ];
     if (options) {
         this.set_options(options);
@@ -97,14 +104,16 @@ CoverList.prototype.init_cover_list = function () {
         this.selected = this.elements.length - 1;
     
     this.mode = null;
-    try {
-        this.canvas_cover_init();
-        this.mode = "canvas";
+    if (!this.force_html) {
+        try {
+            this.canvas_cover_init();
+            this.mode = "canvas";
+        }
+        catch (e) {
+            //console.log("Error when trying to initialize cover list in canvas mode: "+e);
+        }
     }
-    catch (e) {
-        //console.log("Error when trying to initialize cover list in canvas mode: "+e);
-    }
-    if (this.mode == null) {
+    if (!this.mode) {
         // fallback
         this.html_cover_init();
         this.mode = "html";
@@ -112,21 +121,21 @@ CoverList.prototype.init_cover_list = function () {
     
     // cover bar display
     if (this.elements.length < 2)
-        $(".cover-bar", this.widget).css("display", "none");
+        $(".cover-bar", this.$widget).css("display", "none");
     else
-        $(".cover-bar", this.widget).css("display", "block");
+        $(".cover-bar", this.$widget).css("display", "block");
     
     // init events
     var obj = this;
-    $(".cover-previous", this.widget).click({ obj: this }, function (e) {
+    $(".cover-previous", this.$widget).click({ obj: this }, function (e) {
         e.data.obj.go_to_previous();
         return false;
     });
-    $(".cover-next", this.widget).click({ obj: this }, function (e) {
+    $(".cover-next", this.$widget).click({ obj: this }, function (e) {
         e.data.obj.go_to_next();
         return false;
     });
-    $(".cover-slider", this.widget).slider({
+    $(".cover-slider", this.$widget).slider({
         min: 0,
         max: this.elements.length - 1,
         value: this.selected,
@@ -141,8 +150,7 @@ CoverList.prototype.init_cover_list = function () {
 CoverList.prototype.calculate_positions = function () {
     if (this.elements.length == 0) {
         this.positions = [];
-    }
-    else if (this.elements.length == 1) {
+    } else if (this.elements.length == 1) {
         var top = (this.widget_height - this.box_height) / 2 + this.y_offset;
         var offset = (this.widget_width - this.box_width) / 2;
         
@@ -155,8 +163,7 @@ CoverList.prototype.calculate_positions = function () {
             top: top,
             offset: offset
         });
-    }
-    else {
+    } else {
         var positions_length = this.elements.length;
         var multiplier = 1;
         if (positions_length < 5) {
@@ -207,13 +214,14 @@ CoverList.prototype.go_to_next = function () {
         this.html_cover_go_to_index(this.selected + 1, true);
 };
 CoverList.prototype.hide_loading = function () {
-    $(".cover-loading", this.widget).css("display", "none");
+    $(".cover-loading", this.$widget).css("display", "none");
 };
 
 
 /* cover list with basic html */
 CoverList.prototype.html_cover_init = function () {
     this.hide_loading();
+    var box_style = "border-color: "+this.color;
     for (var i = 0; i < this.elements.length; i++) {
         var element = this.elements[i];
         
@@ -225,11 +233,12 @@ CoverList.prototype.html_cover_init = function () {
         else
             position += "left: "+attrs.offset+"px;";
         
-        var style = "width: "+attrs.width+"px; height: "+attrs.height+"px; z-index: "+attrs.zindex+"; "+position;
+        var style = "width: "+attrs.width+"px; height: "+attrs.height+"px; font-size: "+Math.floor(100 * (1 - attrs.factor))+"%; z-index: "+attrs.zindex+"; "+position;
         var box = "<div class=\"cover-box\" id=\"cover_box_"+i+"\" style=\""+style+"\">";
-        box +=      "<div class=\"cover-box-content\">";
-        //box +=          "<div class=\"cover-box-title\">"+element.title+"</div>";
+        box +=      "<div class=\"cover-box-content\" style=\""+box_style+"\">";
         box +=          "<img src=\""+element.thumb+"\"/>";
+        if (element.title)
+            box +=      "<div>"+element.title+"</div>";
         box +=      "</div>";
         box += "</div>";
         box = $(box);
@@ -266,13 +275,14 @@ CoverList.prototype.html_cover_go_to_index = function (index, update_slider) {
         else
             style.left = attrs.offset;
         
-        var box = $("#cover_box_"+i, this.widget);
+        var box = $("#cover_box_"+i, this.$widget);
         box.stop(true, false);
         box.css("z-index", attrs.zindex);
+        box.css("font-size", Math.floor(100 * (1 - attrs.factor))+"%");
         box.animate(style, 500);
     }
     if (update_slider)
-        $(".cover-slider", this.widget).slider("value", this.selected);
+        $(".cover-slider", this.$widget).slider("value", this.selected);
 };
 
 
@@ -285,17 +295,12 @@ CoverList.prototype.canvas_cover_init = function () {
     this.width = this.canvas.width;
     this.height = this.canvas.height;
     this.ctx = this.canvas.getContext("2d");
-    this.animation = {
-        duration: 200,
-        interval: 25,
-        current_time: 0
-    };
-    
+
     this.boxes = [];
     this.boxes_dict = {};
     this.nb_images_loaded = 0;
     this.images_loaded = false;
-    
+
     // click events
     $(this.canvas).click({ obj: this }, function (evt) {
         var dom = evt.data.obj.canvas, x_offset = 0, y_offset = 0;
@@ -309,7 +314,7 @@ CoverList.prototype.canvas_cover_init = function () {
         var y = evt.pageY - y_offset;
         evt.data.obj.canvas_cover_on_click(x, y);
     });
-    
+
     var obj = this;
     var callback = function (success) {
         obj.canvas_cover_on_image_load(success);
@@ -324,10 +329,13 @@ CoverList.prototype.canvas_cover_init = function () {
             left = this.widget_width - attrs.width - attrs.offset;
         else
             left = attrs.offset;
-        
+
         this.canvas_cover_add_box(new CoverCanvasBox({
             id: i,
-            padding: this.padding * (1 - attrs.factor),
+            bw: this.box_width,
+            bh: this.box_height,
+            padding: this.padding,
+            title: element.title,
             x: left,
             y: attrs.top,
             w: attrs.width,
@@ -364,7 +372,6 @@ CoverList.prototype.canvas_cover_go_to_index = function (index, update_slider) {
         
         this.boxes_dict["box_"+i].set_target({
             steps: steps,
-            padding: this.padding * (1 - attrs.factor),
             x: left,
             y: attrs.top,
             w: attrs.width,
@@ -377,7 +384,7 @@ CoverList.prototype.canvas_cover_go_to_index = function (index, update_slider) {
     this.canvas_cover_animate();
     
     if (update_slider)
-        $(".cover-slider", this.widget).slider("value", this.selected);
+        $(".cover-slider", this.$widget).slider("value", this.selected);
 };
 CoverList.prototype.canvas_cover_add_box = function (box) {
     this.boxes.push(box);
@@ -445,14 +452,17 @@ CoverList.prototype.canvas_cover_animate_loop = function () {
 function CoverCanvasBox(options) {
     this.FIELDS = ["padding", "x", "y", "w", "h", "z"];
     this.id = 0;
-    this.padding = 0;
+    this.bw = 240;  // base width
+    this.bh = 180;  // base height
+    this.padding = 3;
+    this.title = "";
+    this.title_h = 45;
     this.x = 0;
     this.y = 0;
     this.w = 1;
     this.h = 1;
     this.z = 0;
     this.target = {
-        padding: 0, padding_step: 0,
         x: 0, x_step: 0,
         y: 0, y_step: 0,
         w: 1, w_step: 0,
@@ -463,34 +473,126 @@ function CoverCanvasBox(options) {
     this.thumb = "";
     this.url = "";
     this.callback = null;
-    
+
     for (var f in options) {
         this[f] = options[f];
     }
-    
-    this.image = null;
+
+    this.canvas = null;
 }
 CoverCanvasBox.prototype.load_image = function () {
-    if (!this.thumb)
+    if (!this.thumb) {
+        this.on_load(null, false);
         return;
-    this.image = new Image();
-    this.image.src = this.thumb;
+    }
+    var image = new Image();
     if (this.callback != null) {
-        if (this.image.complete)
-            this.callback(this.id, true);
-        else {
-            var obj = this;
-            this.image.onload = function () {
-                obj.callback(obj.id, true);
-            };
-            this.image.onabort = function () {
-                obj.callback(obj.id, true);
-            };
-            this.image.onerror = function () {
-                obj.callback(obj.id, false);
-            };
+        var obj = this;
+        image.onload = function () {
+            obj.on_load(this, true);
+        };
+        image.onabort = function () {
+            obj.on_load(this, true);
+        };
+        image.onerror = function () {
+            obj.on_load(this, false);
+        };
+    }
+    image.src = this.thumb;
+};
+CoverCanvasBox.prototype.on_load = function (img, success) {
+    this.canvas = document.createElement("canvas");
+    this.canvas.width = this.bw;
+    this.canvas.height = this.bh;
+
+    var imgw = this.bw - 2 * this.padding;
+    var imgh = this.bh - 2 * this.padding;
+
+    var ctx = this.canvas.getContext("2d");
+    ctx.fillStyle = this.color;
+    ctx.fillRect(0, 0, this.bw, this.bh);
+    if (success)
+        ctx.drawImage(img, this.padding, this.padding, imgw, imgh);
+    if (this.title) {
+        // draw black mask
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(this.padding, this.padding + imgh - this.title_h, imgw, this.title_h);
+        // get title position
+        var font_height = 16;
+        ctx.font = "italic "+font_height+"px Arial";
+        ctx.fillStyle = "#fff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        var text_x, text_y;
+        text_x = this.padding + Math.floor(imgw / 2);
+        var max_w = imgw - 10;
+        var line_top = "", line_bot = "", need_bot = true;
+        var size = ctx.measureText(this.title).width;
+        if (size > max_w) {
+            // text is too long, use 2 lines
+            text_y = 20;
+            var splitted = this.title.split(" ");
+            var words = splitted.length;
+            var i, j, word;
+            for (i=0; i < words; i++) {
+                word = splitted[0];
+                if (ctx.measureText(line_top+" "+word).width > max_w) {
+                    if (!line_top) {
+                        // the word is too long
+                        for (j=0; j < word.length; j++) {
+                            if (ctx.measureText(line_top+word[j]).width > max_w - 20) {
+                                line_top += " ...";
+                                need_bot = false;
+                                break;
+                            }
+                            line_top += word[j];
+                        }
+                    }
+                    break;
+                }
+                line_top += " "+word;
+                splitted.shift();
+            }
+            if (need_bot) {
+                for (i=0; i < words; i++) {
+                    word = splitted[0];
+                    if (ctx.measureText(line_bot+" "+word).width > max_w - 20) {
+                        if (!line_bot) {
+                            // the word is too long
+                            for (j=0; j < word.length; j++) {
+                                if (ctx.measureText(line_bot+word[j]).width > max_w - 20) {
+                                    line_bot += " ...";
+                                    break;
+                                }
+                                line_bot += word[j];
+                            }
+                        } else {
+                            line_bot += " ...";
+                        }
+                        break;
+                    }
+                    line_bot += " "+word;
+                    splitted.shift();
+                }
+            }
+        } else {
+            line_top = this.title;
+        }
+        // write title
+        if (line_top && line_bot) {
+            text_y = this.padding + imgh - Math.floor((this.title_h + font_height) / 2);
+            ctx.fillText(line_top, text_x, text_y);
+            text_y += 4 + font_height;
+            ctx.fillText(line_bot, text_x, text_y);
+        } else {
+            text_y = this.padding + imgh - Math.floor(this.title_h / 2);
+            ctx.fillText(line_top, text_x, text_y);
         }
     }
+    ctx.save();
+
+    if (this.callback != null)
+        this.callback(this.id, false);
 };
 CoverCanvasBox.prototype.set_target = function (options) {
     var steps = 50;
@@ -516,36 +618,24 @@ CoverCanvasBox.prototype.increment = function () {
     }
 };
 CoverCanvasBox.prototype.draw = function (ctx) {
-    if (!this.image)
+    if (!this.canvas)
         return;
-    var x = this.x + this.padding;
-    var y = this.y + this.padding;
-    var w = this.w - 2*this.padding;
-    var h = this.h - 2*this.padding;
-    var xr = x;
-    var yr = -y - 2*h - 2*this.padding;
-    
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.w, this.h);
-    
-    ctx.drawImage(this.image, x, y, w, h);
-    
+    var xr = this.x;
+    var yr = -this.y - 2 * this.h;
+
+    ctx.drawImage(this.canvas, this.x, this.y, this.w, this.h);
     ctx.save(); // save transformation states
-    
+
     // draw reflection
     ctx.scale(1, -1);
-    
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, yr - this.padding, this.w, this.h);
-    
-    ctx.drawImage(this.image, xr, yr, w, h);
-    
+    ctx.drawImage(this.canvas, xr, yr, this.w, this.h);
+    // fade reflection
     var grad = ctx.createLinearGradient(0, yr, 0, yr + this.h);
     grad.addColorStop(0, "rgba(255, 255, 255, 1)");
     grad.addColorStop(1, "rgba(255, 255, 255, 0.5)");
     ctx.fillStyle = grad;
-    ctx.fillRect(this.x, yr - this.padding, this.w, this.h);
-    
+    ctx.fillRect(this.x, yr, this.w, this.h);
+
     ctx.restore(); // retore transformation states
 };
 CoverCanvasBox.prototype.contains = function (x, y) {
