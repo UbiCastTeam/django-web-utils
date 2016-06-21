@@ -12,7 +12,7 @@ function CoverList(options) {
     this.y_offset = -10;
     this.padding = 3;
     this.box_width = 240 + 2*this.padding;
-    this.box_height = 180 + 2*this.padding;
+    this.box_height = 135 + 2*this.padding;
     this.min_size = 0.8;
     this.selected = -1;
     this.color = "#666";
@@ -456,7 +456,7 @@ function CoverCanvasBox(options) {
     this.FIELDS = ["padding", "x", "y", "w", "h", "z"];
     this.id = 0;
     this.bw = 240;  // base width
-    this.bh = 180;  // base height
+    this.bh = 135;  // base height
     this.padding = 3;
     this.title = "";
     this.title_h = 45;
