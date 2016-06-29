@@ -58,5 +58,6 @@ setup(
     license='cc-by-sa',
     packages=packages,
     package_data=package_data,
+    install_requires=['bleach'],
     scripts=[],
 )

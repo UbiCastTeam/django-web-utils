@@ -3,22 +3,45 @@
 '''
 HTML utility functions
 '''
-import traceback
-import re
-import html.entities
 from html.parser import HTMLParser
+import bleach
+import html.entities
 import logging
+import re
+import traceback
 # Django
-from django.template import defaultfilters
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 logger = logging.getLogger('djwutils.html_utils')
+
+ALLOWED_TAGS = ['div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'img', 'fieldset', 'legend']
+ALLOWED_ATTRS = {
+    '*': ['class', 'style'],
+    'a': ['href', 'rel'],
+    'img': ['alt'],
+}
+ALLOWED_STYLES = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow']
+
+
+# clean_html_tags function
+# remove all non basic tags in the given html code
+# ----------------------------------------------------------------------------
+def clean_html_tags(html):
+    return bleach.clean(html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS, styles=ALLOWED_STYLES)
+
+
+# strip_html_tags function
+# remove all html tags
+# ----------------------------------------------------------------------------
+def strip_html_tags(html):
+    return bleach.clean(html, strip=True)
 
 
 # unescape function
 # ----------------------------------------------------------------------------
 def unescape(text):
-    text = defaultfilters.striptags(text)
+    text = strip_html_tags(text)
 
     def fixup(m):
         text = m.group(0)
@@ -45,7 +68,7 @@ def unescape(text):
 # get_meta_tag_text function
 # ----------------------------------------------------------------------------
 def get_meta_tag_text(text):
-    result = defaultfilters.striptags(text)
+    result = strip_html_tags(text)
     result = unescape(result)
     result = result.replace("\"", "''")
     return result
@@ -56,7 +79,7 @@ def get_meta_tag_text(text):
 def get_html_traceback(tb=None):
     if not tb:
         tb = traceback.format_exc()
-    error_tb = str(defaultfilters.escape(tb))
+    error_tb = str(escape(tb))
     lines = list()
     for line in error_tb.split('\n'):
         if line:
