@@ -15,7 +15,7 @@ from django.utils.safestring import mark_safe
 
 logger = logging.getLogger('djwutils.html_utils')
 
-ALLOWED_TAGS = ['div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'img', 'fieldset', 'legend']
+ALLOWED_TAGS = ['div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'img', 'fieldset', 'legend', 'pre']
 ALLOWED_ATTRS = {
     '*': ['class', 'style'],
     'a': ['href', 'rel'],
