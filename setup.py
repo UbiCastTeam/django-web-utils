@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import os
-from distutils.core import setup
+from setuptools import setup
 import django_web_utils
 
 
@@ -58,6 +58,7 @@ setup(
     license='cc-by-sa',
     packages=packages,
     package_data=package_data,
-    install_requires=['bleach'],
     scripts=[],
+    install_requires=['bleach'],
+    setup_requires=['setuptools >= 3.3'],
 )
