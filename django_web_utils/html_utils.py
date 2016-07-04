@@ -15,11 +15,13 @@ from django.utils.safestring import mark_safe
 
 logger = logging.getLogger('djwutils.html_utils')
 
-ALLOWED_TAGS = ['div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'img', 'fieldset', 'legend', 'pre']
+ALLOWED_TAGS = ['div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'img', 'fieldset', 'legend', 'pre']
 ALLOWED_ATTRS = {
     '*': ['class', 'style'],
     'a': ['href', 'target', 'title'],
     'img': ['alt', 'src', 'title'],
+    'td': ['rowspan', 'colspan'],
+    'th': ['rowspan', 'colspan'],
 }
 ALLOWED_STYLES = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow']
 
