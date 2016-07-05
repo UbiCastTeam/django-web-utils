@@ -25,14 +25,14 @@ LIST_FIELDS = (
 # register_module function
 # Automatic models registeration
 # ----------------------------------------------------------------------------
-def register_module(models_module):
+def register_module(models_module, options=dict()):
     for attr_name in dir(models_module):
         model = getattr(models_module, attr_name, None)
         if not hasattr(model, '__class__') or not hasattr(model, '_meta') \
-            or getattr(model._meta, 'abstract', False) \
-            or model in admin.site._registry \
-            or not issubclass(model.__class__, dj_models.Model.__class__) \
-            or not model.__module__.startswith(models_module.__name__):
+           or getattr(model._meta, 'abstract', False) \
+           or model in admin.site._registry \
+           or not issubclass(model.__class__, dj_models.Model.__class__) \
+           or not model.__module__.startswith(models_module.__name__):
             continue
 
         fields = []
@@ -59,5 +59,10 @@ def register_module(models_module):
         ModelOptions.list_filter = lfields
         ModelOptions.search_fields = sfields
         ModelOptions.date_hierarchy = dfield
+
+        if options.get(attr_name):
+            for key in options[attr_name].keys():
+                if hasattr(ModelOptions, key):
+                    setattr(ModelOptions, key, options[attr_name][key])
 
         admin.site.register(model, ModelOptions)
