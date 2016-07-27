@@ -412,7 +412,7 @@ utils.setup_class = function (obj, options, allowed_options) {
 };
 
 // MD5 sum computation (requires the SparkMD5 library)
-utils.compute_md5 = function (file, callback) {
+utils.compute_md5 = function (file, callback, progress_callback) {
     if (!window.File)
         return callback("unsupported");
     var blobSlice = window.File.prototype.slice || window.File.prototype.mozSlice || window.File.prototype.webkitSlice;
@@ -424,6 +424,9 @@ utils.compute_md5 = function (file, callback) {
     fileReader.onload = function (e) {
         spark.append(e.target.result); // Append array buffer
         ++currentChunk;
+        if (progress_callback) {
+            progress_callback(Math.min(currentChunk * chunkSize, file.size) / file.size);
+        }
 
         if (currentChunk < chunks) {
             loadNext();
