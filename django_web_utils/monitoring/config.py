@@ -23,6 +23,8 @@ class _Info(object):
 
 BASE_TEMPLATE = getattr(settings, 'MONITORING_BASE_TEMPLATE', None)
 
+TEMPLATE_DATA = getattr(settings, 'MONITORING_TEMPLATE_DATA', None)
+
 DATE_ADJUST_FCT = getattr(settings, 'MONITORING_DATE_ADJUST_FCT', None)
 
 

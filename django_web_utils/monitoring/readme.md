@@ -13,6 +13,10 @@ It must contain this include tag:
 
     {% include monitoring_body %} (somewhere in page's body)
 
+``MONITORING_TEMPLATE_DATA``:
+Some extra data to give to the template.
+This setting must be either a dict or None.
+
 ``MONITORING_DAEMONS_INFO``:
 The module in which daemons informations can be found.
 Something like "a.module".

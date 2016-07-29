@@ -1,20 +1,21 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import os
 import logging
-logger = logging.getLogger('djwutils.monitoring.views')
+import os
 # Django
-from django.shortcuts import render
-from django.http import Http404
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.shortcuts import render
 from django.utils.html import escape
 from django.utils.translation import ugettext_lazy as _
 # Django web utils
 from django_web_utils import json_utils
 from django_web_utils import system_utils
 from django_web_utils.monitoring import config, utils
+
+logger = logging.getLogger('djwutils.monitoring.views')
 
 
 @json_utils.json_view
@@ -43,7 +44,6 @@ def check_password(request):
 @login_required
 def monitoring_panel(request):
     info = config.get_daemons_info()
-    tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
     groups = list()
     daemons_names = list()
     for name in info.GROUPS_NAMES:
@@ -57,14 +57,18 @@ def monitoring_panel(request):
             groups.append(dict(info.GROUPS[name]))
     if info.GROUPS_NAMES and not daemons_names:
         raise PermissionDenied()
-    return render(request, tplt, dict(
+    tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
+    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else dict()
+    tplt_data.update(dict(
         monitoring_page='panel',
         monitoring_body='monitoring/panel.html',
         daemons_names=daemons_names,
         daemons_groups=groups,
     ))
+    return render(request, tplt, tplt_data)
 
 
+@json_utils.json_view(methods='GET')
 @login_required
 def monitoring_status(request):
     info = config.get_daemons_info()
@@ -149,13 +153,15 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
-    return render(request, tplt, dict(
+    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else dict()
+    tplt_data.update(dict(
         monitoring_page='log',
         monitoring_body='monitoring/log.html',
         title='%s - %s' % (label, _('log file')),
         back_url=back_url or reverse('monitoring-panel'),
         **result
     ))
+    return render(request, tplt, tplt_data)
 
 
 @login_required
@@ -189,10 +195,12 @@ def monitoring_config(request, name=None, path=None, owner='self', back_url=None
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
-    return render(request, tplt, dict(
+    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else dict()
+    tplt_data.update(dict(
         monitoring_page='config',
         monitoring_body='monitoring/config.html',
         title=_('Edit configuration file: %s') % name,
         back_url=back_url or reverse('monitoring-panel'),
         **result
     ))
+    return render(request, tplt, tplt_data)
