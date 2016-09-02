@@ -234,7 +234,7 @@ utils._get_browser_info = function () {
     }
     else if (ua.indexOf("trident") != -1) {
         name = "ie";
-        version = utils._extract_browser_version(ua, /rv (\d+\.\d+)/);
+        version = utils._extract_browser_version(ua, /rv.{1}(\d+\.\d+)/);
         utils.browser_is_ie9 = true;
     }
     else if (ua.indexOf("opera") != -1) {
