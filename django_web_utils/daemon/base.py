@@ -31,10 +31,10 @@ class BaseDaemon(object):
     PID file is located in PID_DIR/<daemon_name>.pid
     '''
     
-    SERVER_DIR = os.path.expanduser('~/server')
-    LOG_DIR = os.path.join(SERVER_DIR, 'logs')
-    CONF_DIR = os.path.join(SERVER_DIR, 'conf')
-    PID_DIR = os.path.join(SERVER_DIR, 'temporary')
+    CONF_DIR = '/tmp/djwutils-daemon'
+    LOG_DIR = '/tmp/djwutils-daemon'
+    PID_DIR = '/tmp/djwutils-daemon'
+    SERVER_DIR = None  # Dir to append in sys.path
     SETTINGS_MODULE = 'settings'
     
     USAGE = '''USAGE: %s start|restart|stop|clear_log [-n] [-f] [*options]
@@ -185,9 +185,7 @@ class BaseDaemon(object):
         if self._django_setup_done:
             return
         # set django settings, so that django modules can be imported
-        if not os.path.isdir(self.SERVER_DIR):
-            logger.error('Server dir "%s" does not exist, trying to setup Django anyway.', self.SERVER_DIR)
-        if self.SERVER_DIR not in sys.path:
+        if self.SERVER_DIR and os.path.isdir(self.SERVER_DIR) and self.SERVER_DIR not in sys.path:
             sys.path.append(self.SERVER_DIR)
         if not os.environ.get('DJANGO_SETTINGS_MODULE') or os.environ.get('DJANGO_SETTINGS_MODULE') != self.SETTINGS_MODULE:
             # if the DJANGO_SETTINGS_MODULE is already set,
@@ -324,7 +322,7 @@ class BaseDaemon(object):
         # Gobject main loop
         if self.NEED_GOBJECT:
             from gi.repository import GObject
-            #GObject.threads_init()
+            # GObject.threads_init()
             ml = GObject.MainLoop()
             print('%s started' % self.DAEMON_NAME, file=sys.stdout)
             try:
