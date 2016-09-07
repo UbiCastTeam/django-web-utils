@@ -25,10 +25,9 @@ class BaseDaemon(object):
     
     To create a daemon, just create a class which
     herits from this one and implement the run function.
-    Also, you will have to set the var DAEMON_NAME with the name of the file.
     
-    Log file will be located in LOG_DIR/<daemon_name>.log
-    PID file is located in PID_DIR/<daemon_name>.pid
+    Log file will be located in LOG_DIR/<daemon_file_name>.log
+    PID file is located in PID_DIR/<daemon_file_name>.pid
     '''
     
     CONF_DIR = '/tmp/djwutils-daemon'
@@ -41,7 +40,6 @@ class BaseDaemon(object):
     -n: launch daemon in current thread and not in background
     -s: allow simultaneous execution
     -f: force log to use a file and not the standard output'''
-    DAEMON_NAME = 'unamed_daemon'
     NEED_GOBJECT = False
     NEED_DJANGO = True
     DEFAULTS = dict(LOGGING_LEVEL='INFO')
@@ -85,26 +83,32 @@ class BaseDaemon(object):
             self._exit_with_error('Error when initializing base daemon.')
 
     def run(self, *args):
-        msg = 'Function "run" is not implemented in daemon "%s"' % self.DAEMON_NAME
+        msg = 'Function "run" is not implemented in daemon "%s"' % self.get_name()
         logger.error(msg)
         raise NotImplementedError(msg)
 
     @classmethod
+    def get_name(cls):
+        if not hasattr(cls, '_file_name'):
+            cls._file_name = os.path.basename(sys.modules[cls.__module__].__file__)[:-3]
+        return cls._file_name
+
+    @classmethod
     def get_pid_path(cls):
         if not hasattr(cls, '_pid_path'):
-            cls._pid_path = os.path.join(cls.PID_DIR, '%s.pid' % cls.DAEMON_NAME)
+            cls._pid_path = os.path.join(cls.PID_DIR, '%s.pid' % cls.get_name())
         return cls._pid_path
 
     @classmethod
     def get_log_path(cls):
         if not hasattr(cls, '_log_path'):
-            cls._log_path = os.path.join(cls.LOG_DIR, '%s.log' % cls.DAEMON_NAME)
+            cls._log_path = os.path.join(cls.LOG_DIR, '%s.log' % cls.get_name())
         return cls._log_path
 
     @classmethod
     def get_conf_path(cls):
         if not hasattr(cls, '_conf_path'):
-            cls._conf_path = os.path.join(cls.CONF_DIR, '%s.py' % cls.DAEMON_NAME)
+            cls._conf_path = os.path.join(cls.CONF_DIR, '%s.py' % cls.get_name())
         return cls._conf_path
 
     def get_config(self, option, default=None):
@@ -140,33 +144,33 @@ class BaseDaemon(object):
             # check if daemon is already launched
             pid = self._look_for_existing_process()
             if pid:
-                print('Stopping %s... ' % self.DAEMON_NAME, file=sys.stdout)
+                print('Stopping %s... ' % self.get_name(), file=sys.stdout)
                 # kill process and its children
                 result = os.system('kill -- -$(ps hopgid %s | sed \'s/^ *//g\')' % pid)
                 if result != 0:
-                    print('Cannot stop %s' % self.DAEMON_NAME, file=sys.stderr)
+                    print('Cannot stop %s' % self.get_name(), file=sys.stderr)
                     self.exit(129)
                 os.remove(self.get_pid_path())
-                print('%s stopped' % self.DAEMON_NAME, file=sys.stdout)
+                print('%s stopped' % self.get_name(), file=sys.stdout)
             else:
-                print('%s is not running' % self.DAEMON_NAME, file=sys.stdout)
+                print('%s is not running' % self.get_name(), file=sys.stdout)
         elif self._command == 'start':
             # check if daemon is already launched
             pid = self._look_for_existing_process()
             if pid and not self._simultaneous:
-                print('%s is already running' % self.DAEMON_NAME, file=sys.stderr)
+                print('%s is already running' % self.get_name(), file=sys.stderr)
                 self.exit(130)
         elif self._command == 'clear_log':
             if os.path.exists(self.get_log_path()):
                 with open(self.get_log_path(), 'w') as fd:
                     fd.write('')
-            print('Log file cleared for %s.' % self.DAEMON_NAME, file=sys.stdout)
+            print('Log file cleared for %s.' % self.get_name(), file=sys.stdout)
         else:
             print(self.USAGE % self.daemon_path, file=sys.stderr)
             self.exit(128)
         
         if self._command in ('start', 'restart'):
-            print('Starting %s...' % self.DAEMON_NAME, file=sys.stdout)
+            print('Starting %s...' % self.get_name(), file=sys.stdout)
             sys.stdout.flush()
             try:
                 if self._should_daemonize:
@@ -177,7 +181,7 @@ class BaseDaemon(object):
                     self._setup_django()
                 self._setup_logging()
             except Exception:
-                self._exit_with_error('Error when starting %s.' % self.DAEMON_NAME, code=134)
+                self._exit_with_error('Error when starting %s.' % self.get_name(), code=134)
         else:
             self.exit(0)
     
@@ -291,7 +295,7 @@ class BaseDaemon(object):
         if self._should_daemonize:
             # sys.stderr is not visible if daemonized
             try:
-                with open('/tmp/daemon-error_%s' % self.DAEMON_NAME, 'w+') as fd:
+                with open('/tmp/daemon-error_%s' % self.get_name(), 'w+') as fd:
                     fd.write('Date: %s (local time).\n\n' % datetime.datetime.now())
                     if msg:
                         fd.write(msg + '\n\n')
@@ -309,14 +313,14 @@ class BaseDaemon(object):
         # Run daemon
         try:
             if argv:
-                logger.info('Staring daemon %s with arguments:\n    %s.' % (self.DAEMON_NAME, argv))
+                logger.info('Staring daemon %s with arguments:\n    %s.' % (self.get_name(), argv))
             else:
-                logger.info('Staring daemon %s without arguments.' % self.DAEMON_NAME)
+                logger.info('Staring daemon %s without arguments.' % self.get_name())
             self.run(*argv)
         except Exception:
-            self._exit_with_error('Error when running %s.' % self.DAEMON_NAME, code=140)
+            self._exit_with_error('Error when running %s.' % self.get_name(), code=140)
         except KeyboardInterrupt:
-            logger.info('%s interrupted by KeyboardInterrupt' % (self.DAEMON_NAME))
+            logger.info('%s interrupted by KeyboardInterrupt' % (self.get_name()))
             self.exit(141)
         
         # Gobject main loop
@@ -324,13 +328,13 @@ class BaseDaemon(object):
             from gi.repository import GObject
             # GObject.threads_init()
             ml = GObject.MainLoop()
-            print('%s started' % self.DAEMON_NAME, file=sys.stdout)
+            print('%s started' % self.get_name(), file=sys.stdout)
             try:
                 ml.run()
             except Exception:
-                self._exit_with_error('Daemon %s mainloop interrupted by error.' % self.DAEMON_NAME, code=142)
+                self._exit_with_error('Daemon %s mainloop interrupted by error.' % self.get_name(), code=142)
             except KeyboardInterrupt:
-                logger.info('Daemon %s mainloop interrupted by KeyboardInterrupt.' % (self.DAEMON_NAME))
+                logger.info('Daemon %s mainloop interrupted by KeyboardInterrupt.' % (self.get_name()))
                 self.exit(143)
         self.exit(0)
     
@@ -362,7 +366,7 @@ class BaseDaemon(object):
                 os.remove(self.get_pid_path())
             except Exception:
                 pass
-        logger.debug('Daemon %s ended (return code: %s).\n' % (self.DAEMON_NAME, code))
+        logger.debug('Daemon %s ended (return code: %s).\n' % (self.get_name(), code))
         sys.exit(code)
     
     def send_error_email(self, msg, tb=False, recipients=None):
@@ -371,7 +375,7 @@ class BaseDaemon(object):
             self._setup_django()
         from django_web_utils import emails_utils
         emails_utils.send_error_report_emails(
-            title='%s - %s' % (self.DAEMON_NAME, socket.gethostname()),
+            title='%s - %s' % (self.get_name(), socket.gethostname()),
             error='%s\n\nThe daemon was started with the following arguments:\n%s' % (msg, sys.argv),
             recipients=recipients,
         )
