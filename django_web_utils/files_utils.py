@@ -3,8 +3,8 @@
 '''
 Files utility functions
 '''
-import errno
 import os
+import subprocess
 # Django
 from django.utils.translation import ugettext_lazy as _
 
@@ -12,22 +12,24 @@ from django.utils.translation import ugettext_lazy as _
 # get_size function
 # to get size of a dir
 # ----------------------------------------------------------------------------
-def get_size(path, ignore_denied=False):
-    try:
-        if os.path.isfile(path):
-            return os.path.getsize(path)
-        elif os.path.isdir(path):
-            size = 0
-            for f in os.listdir(path):
-                size += get_size(os.path.join(path, f), ignore_denied=ignore_denied)
-            return size
-        else:
-            # socket or something else
-            return 0
-    except Exception as e:
-        if ignore_denied and e.errno == errno.EACCES:
-            return 0
-        raise
+def get_size(path):
+    if os.path.isfile(path):
+        return os.path.getsize(path)
+    elif os.path.isdir(path):
+        # "du" is much faster than getting size file of all files using python
+        p = subprocess.Popen(['du', '-sb', path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        out, err = p.communicate()
+        out = out.decode('utf-8') if out else ''
+        err = err.decode('utf-8') if err else ''
+        if p.returncode != 0:
+            raise Exception('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
+        try:
+            return int(out.split('\t')[0])
+        except Exception as e:
+            raise Exception('Failed to get size using "du". Error: %s. Stdout: %s, Stderr: %s' % (e, out, err))
+    else:
+        # socket or something else
+        return 0
 
 
 # get_unit function
