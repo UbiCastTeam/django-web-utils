@@ -150,7 +150,7 @@ def authenticate(user_dn, password):
 
 # update_user_email function
 # ----------------------------------------------------------------------------
-def update_user_email(user, user_info):
+def update_user_email(user, user_info, unique=False):
     if user.id and not lsettings.ALWAYS_UPDATE:
         return
     if lsettings.EMAIL_FIELD and user_info.get(lsettings.EMAIL_FIELD):
@@ -158,6 +158,13 @@ def update_user_email(user, user_info):
         if isinstance(email, (list, tuple)):
             email = email[0]
         if user.email != email:
+            if unique:
+                suffix = 0
+                user_query = user.__class__.objects.exclude(id=user.id) if user.id else user.__class__.objects.all()
+                while user_query.filter(email=email).exists():
+                    to_rep = '+%s@' % suffix if suffix else '@'
+                    email = email.replace(to_rep, '+%s@' % suffix)
+                    suffix += 1
             user.email = email
             if user.id:
                 user.save(update_fields=['email'])
