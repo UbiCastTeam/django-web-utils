@@ -171,7 +171,9 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
             name = name.replace('"', '”').replace('\'', '’')
         # Activate correct lang
         if not lang:
-            lang = 'en'
+            lang = base_ctx.get('lang')
+            if not lang:
+                lang = 'en'
         if lang != last_lang:
             last_lang = lang
             translation.activate(lang)
