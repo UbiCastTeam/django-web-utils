@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 # get_size function
 # to get size of a dir
 # ----------------------------------------------------------------------------
-def get_size(path):
+def get_size(path, ignore_du_errors=True):
     if os.path.isfile(path):
         return os.path.getsize(path)
     elif os.path.isdir(path):
@@ -21,12 +21,12 @@ def get_size(path):
         out, err = p.communicate()
         out = out.decode('utf-8') if out else ''
         err = err.decode('utf-8') if err else ''
-        if p.returncode != 0:
+        if not ignore_du_errors and p.returncode != 0:
             raise Exception('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
         try:
             return int(out.split('\t')[0])
-        except Exception as e:
-            raise Exception('Failed to get size using "du". Error: %s. Stdout: %s, Stderr: %s' % (e, out, err))
+        except Exception:
+            raise Exception('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
     else:
         # socket or something else
         return 0
