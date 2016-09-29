@@ -59,6 +59,6 @@ setup(
     packages=packages,
     package_data=package_data,
     scripts=[],
-    install_requires=['bleach'],
+    install_requires=['bleach', 'pil'],
     setup_requires=['setuptools >= 3.3'],
 )
