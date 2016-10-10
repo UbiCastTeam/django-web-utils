@@ -23,7 +23,7 @@ function DaemonsManager(options) {
     ]);
 
     this.overlay = new OverlayDisplayManager();
-    this.pwdman = new PwdManager({ url: this.pwd_url });
+    this.pwd_man = new PwdManager({ url: this.pwd_url });
     
     var obj = this;
     $(document).ready(function () {
@@ -61,7 +61,7 @@ DaemonsManager.prototype.send_daemon_command = function (daemon, cmd) {
     if (!daemon.name)
         return console.log("Invalid daemon given to send_daemon_command function.");
     if (daemon.is_root) {
-        this.pwdman.check_password(function (success, data) {
+        this.pwd_man.check_password(function (success, data) {
             if (success)
                 data.obj._send_daemon_command(data.daemon, data.cmd);
         }, { obj: this, daemon: daemon, cmd: cmd });
@@ -125,7 +125,7 @@ DaemonsManager.prototype.refresh_daemon_status = function () {
                     else {
                         var $link = $("<span class=\"yellow clickable\" title=\""+obj.translate("Click to enter password")+"\">? ("+obj.translate("need password")+")</span>");
                         $link.click({ obj: obj }, function (event) {
-                            event.data.obj.pwdman.check_password();
+                            event.data.obj.pwd_man.check_password();
                         })
                         $(".daemon-"+daemon_name+" .daemon-status").empty().append($link);
                     }
