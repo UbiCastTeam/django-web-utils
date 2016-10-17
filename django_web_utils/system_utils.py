@@ -13,9 +13,18 @@ import grp
 import subprocess
 # Django
 try:
-    from django.utils.translation import ugettext_lazy as _
+    from django.utils.translation import ugettext
 except Exception:
-    _ = lambda text: text
+    ugettext = None
+
+
+def _(text):
+    if ugettext:
+        try:
+            return ugettext(text)
+        except Exception:
+            pass
+    return text
 
 
 # get_login function
@@ -91,13 +100,12 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
         out, err = p.communicate(input=bytes('%s\n' % (pwd if pwd else request.session['pwd']), 'utf-8'))
     else:
         out, err = p.communicate()
-    if out:
-        out = str(out, 'utf-8')
-    if err:
-        err = str(err, 'utf-8')
+    out = out.decode('utf-8') if out else ''
     if p.returncode != 0:
-        if not err:
-            err = str(_('Command exited with code %s.') % p.returncode)
+        if err:
+            err = err.decode('utf-8')
+        else:
+            err = str(_('Command exited with code %s.' % p.returncode))
         if out:
             return False, '%s\n---- stderr ----\n%s' % (out, err)
         return False, err
