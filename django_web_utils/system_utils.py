@@ -14,7 +14,7 @@ import subprocess
 # Django
 try:
     from django.utils.translation import ugettext_lazy as _
-except ImportError:
+except Exception:
     _ = lambda text: text
 
 
@@ -65,7 +65,7 @@ def run_as(username, umask=0o22, exit_on_error=True):
     os.environ['USER'] = pwent.pw_name
     os.environ['LOGNAME'] = pwent.pw_name
     os.environ['SHELL'] = pwent.pw_shell
-    #os.environ['PATH'] = '/bin:/usr/bin:/usr/local/bin'
+    # os.environ['PATH'] = '/bin:/usr/bin:/usr/local/bin'
     return
 
 
@@ -84,7 +84,6 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
         need_password = False if is_root else True
     
     command = cmd_prompt % cmd
-    #print '    Executing command: %s' %command
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     if need_password:
         if not pwd and (not request or not request.session.get('pwd')):
