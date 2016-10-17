@@ -119,7 +119,7 @@ def is_pid_running(pid_file_path, user='self', request=None):
         pass
     else:
         try:
-            pid = int(pidfile.read())
+            pid = int(pidfile.read().strip())
         except Exception:
             pass
         finally:

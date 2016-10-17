@@ -3,20 +3,20 @@
 '''
 Daemon monitoring utilities
 '''
-import os
-import sys
 import datetime
 import logging
-logger = logging.getLogger('djwutils.monitoring.utils')
+import os
+import sys
 # Django
-from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
+from django.http import HttpResponseRedirect, HttpResponse
 from django.utils.translation import ugettext_lazy as _
 # django_web_utils
-from django_web_utils.daemon.base import BaseDaemon
 from django_web_utils import files_utils
 from django_web_utils import system_utils
+from django_web_utils.daemon.base import BaseDaemon
 
+logger = logging.getLogger('djwutils.monitoring.utils')
 
 FILE_SIZE_LIMIT = 524288000  # 500 MB
 
