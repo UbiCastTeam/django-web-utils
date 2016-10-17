@@ -117,22 +117,10 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
 # is_pid_running
 # ----------------------------------------------------------------------------
 def is_pid_running(pid_file_path, user='self', request=None):
-    if not os.path.exists(pid_file_path):
-        return False
-    pid = None
-    try:
-        pidfile = open(pid_file_path, 'r')
-    except Exception:
-        pass
-    else:
-        try:
-            pid = int(pidfile.read().strip())
-        except Exception:
-            pass
-        finally:
-            pidfile.close()
-    cmd = 'ps -p %s > /dev/null 2>&1' % pid
-    success, output = execute_command(cmd, user=user, request=request)
+    success, output = execute_command('cat %s' % pid_file_path, user=user, request=request)
+    if success:
+        cmd = 'ps -p %s' % output.strip()
+        success, output = execute_command(cmd, user=user, request=request)
     return success
 
 
