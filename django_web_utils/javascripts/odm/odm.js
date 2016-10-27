@@ -50,8 +50,20 @@ function OverlayDisplayManager(options) {
         obj.on_resize();
     });
     $(document).keydown(function (event) {
-        if (!obj.locked && obj.hide_on_escape && event.keyCode == 27)
-            obj.hide();
+        if (!obj.displayed)
+            return;
+        switch (event.keyCode) {
+            case 27:
+                if (!obj.locked && obj.hide_on_escape)
+                    obj.hide();
+                break;
+            case 37:
+                obj.previous();
+                break;
+            case 39:
+                obj.next();
+                break;
+        }
     });
 }
 

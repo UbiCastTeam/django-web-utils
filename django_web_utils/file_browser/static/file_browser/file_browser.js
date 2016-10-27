@@ -259,6 +259,7 @@ FileBrowser.prototype.parse_content_response = function (response) {
         // display files
         this.files = response.files;
         this.$place.html("");
+        var ovls = [];
         for (var i=0; i < this.files.length; i++) {
             var file = this.files[i];
             var fclass;
@@ -322,7 +323,13 @@ FileBrowser.prototype.parse_content_response = function (response) {
                 evt.data.obj.move_files();
             });
             this.$place.append($entry);
+            if (file.ext in this.images_extenstions) {
+                file.overlay_index = ovls.length;
+                ovls.push(file.url);
+            }
         }
+        if (ovls.length > 0)
+            this.overlay.change(ovls);
     }
     // create path tree
     var full_path = "#";
@@ -371,8 +378,10 @@ FileBrowser.prototype.on_file_click = function (file, evt) {
             return true; // use url in link
         }
         else {
-            if (file.ext in this.images_extenstions)
-                this.overlay.show(file.url);
+            if (!isNaN(file.overlay_index)) {
+                this.overlay.go_to_index(file.overlay_index);
+                this.overlay.show();
+            }
             else
                 return true; // use url in link
         }
