@@ -5,9 +5,10 @@ Forms utility functions
 '''
 import os
 import logging
-logger = logging.getLogger('djwutils.forms_utils')
 # Django
 from django import forms as dj_forms
+
+logger = logging.getLogger('djwutils.forms_utils')
 
 
 # FileInfo field
@@ -24,7 +25,10 @@ class FileInfo():
 # NoLinkClearableFileInput field
 # ----------------------------------------------------------------------------
 class NoLinkClearableFileInput(dj_forms.ClearableFileInput):
-    url_markup_template = '<b>{1}</b>'
+    template_with_initial = (
+        '%(initial_text)s: <b>%(initial)s</b> '
+        '%(clear_template)s<br />%(input_text)s: %(input)s'
+    )
 
     def render(self, name, value, attrs=None):
         obj_value = FileInfo(value) if isinstance(value, str) else value
