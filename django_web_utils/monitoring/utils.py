@@ -135,14 +135,16 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
             size = '%s %s' % files_utils.get_unit(fsize)
             if tail_only:
                 # Read only file end
+                content = b''
                 for segment in files_utils.reverse_read(path):
                     if segment is None:
                         break
                     content = segment + content
-                    lines += segment.count('\n')
+                    lines += segment.count(b'\n')
                     if lines > 50:
-                        content = '...%s' % content[content.index('\n'):]
+                        content = b'...%s' % content[content.index(b'\n'):]
                         break
+                content = content.decode('utf-8')
             else:
                 if fsize > FILE_SIZE_LIMIT:
                     content = str(_('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size)

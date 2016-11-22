@@ -105,6 +105,7 @@ def remove_dir(path):
 # (to read a file from its end without loading it competely)
 # ----------------------------------------------------------------------------
 def reverse_read(filename, buf_size=8192):
+    # utf-8 decoding is not in this function to avoid splitting unicode characters.
     with open(filename, 'rb') as fh:
         segment = None
         offset = 0
@@ -115,5 +116,5 @@ def reverse_read(filename, buf_size=8192):
             fh.seek(-offset, os.SEEK_END)
             segment = fh.read(min(remaining_size, buf_size))
             remaining_size -= buf_size
-            yield str(segment, 'utf-8')
+            yield segment
         yield None
