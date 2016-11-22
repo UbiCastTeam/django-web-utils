@@ -6,10 +6,12 @@ Daemon monitoring utilities
 import datetime
 import logging
 import os
+import stat
 import sys
 # Django
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import FileResponse, HttpResponseRedirect
+from django.utils.http import http_date
 from django.utils.translation import ugettext_lazy as _
 # django_web_utils
 from django_web_utils import files_utils
@@ -123,8 +125,12 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
         try:
             if 'raw' in request.GET:
                 # Get raw content
-                with open(path, 'r') as fd:
-                    return HttpResponse(fd, content_type='text/plain')
+                statobj = os.stat(path)
+                response = FileResponse(open(path, 'rb'), content_type='text/plain')
+                response['Last-Modified'] = http_date(statobj.st_mtime)
+                if stat.S_ISREG(statobj.st_mode):
+                    response['Content-Length'] = statobj.st_size
+                return response
             fsize = os.path.getsize(path)
             size = '%s %s' % files_utils.get_unit(fsize)
             if tail_only:
@@ -200,8 +206,12 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
         try:
             if 'raw' in request.GET:
                 # Get raw content
-                with open(path, 'r') as fd:
-                    return HttpResponse(fd, content_type='text/plain')
+                statobj = os.stat(path)
+                response = FileResponse(open(path, 'rb'), content_type='text/plain')
+                response['Last-Modified'] = http_date(statobj.st_mtime)
+                if stat.S_ISREG(statobj.st_mode):
+                    response['Content-Length'] = statobj.st_size
+                return response
             fsize = os.path.getsize(path)
             size = '%s %s' % files_utils.get_unit(fsize)
             if not content:
