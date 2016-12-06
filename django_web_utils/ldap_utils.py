@@ -21,8 +21,12 @@ class LDAPSettings(object):
     SERVER_URI = 'ldap://server.net'
     USER_SEARCH_SCOPE = 'ou=People,dc=server,dc=net'
     USER_SEARCH_FILTER = '(uid=%(user)s)'
+    GROUP_SEARCH_SCOPE = 'ou=group,dc=server,dc=net'
+    GROUP_SEARCH_FILTER = '(gidNumber=%(group)s)'
     ALWAYS_UPDATE = True
-    EMAIL_FIELD = 'mail'
+    USER_EMAIL_FIELD = 'mail'
+    USER_GROUP_FIELD = 'gidNumber'
+    GROUP_MEMBERS_FIELD = 'memberUid'
     START_TLS = False
     TLS_VERSION = None
     CHECK_CERT = True
@@ -142,6 +146,27 @@ def get_user_info(username, connection=None):
     return results[0]['dn'], results[0]['attributes']
 
 
+# get_user_groups function
+# ----------------------------------------------------------------------------
+def get_user_groups(username, attributes, connection=None):
+    if not connection:
+        connection = get_connection()
+    groups = dict()
+    # get groups referred by group objects
+    if lsettings.GROUP_MEMBERS_FIELD:
+        results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, username), connection=connection)
+        for group in results:
+            groups[group['dn']] = group['attributes']
+    # get groups referred by user object
+    if lsettings.USER_GROUP_FIELD and hasattr(attributes, 'items') and attributes.get(lsettings.USER_GROUP_FIELD):
+        for name in attributes[lsettings.USER_GROUP_FIELD]:
+            results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, lsettings.GROUP_SEARCH_FILTER % dict(group=name), connection=connection)
+            for group in results:
+                if group['dn'] not in groups:
+                    groups[group['dn']] = group['attributes']
+    return groups
+
+
 # authenticate function
 # ----------------------------------------------------------------------------
 def authenticate(user_dn, password):
@@ -153,8 +178,8 @@ def authenticate(user_dn, password):
 def update_user_email(user, user_info, unique=False):
     if user.id and not lsettings.ALWAYS_UPDATE:
         return
-    if lsettings.EMAIL_FIELD and user_info.get(lsettings.EMAIL_FIELD):
-        email = user_info[lsettings.EMAIL_FIELD]
+    if lsettings.USER_EMAIL_FIELD and user_info.get(lsettings.USER_EMAIL_FIELD):
+        email = user_info[lsettings.USER_EMAIL_FIELD]
         if isinstance(email, (list, tuple)):
             email = email[0]
         if user.email != email:
@@ -172,7 +197,7 @@ def update_user_email(user, user_info, unique=False):
 
 # test_connection function
 # ----------------------------------------------------------------------------
-def test_ldap_connection(username, password=None):
+def test_ldap_connection(username, password=None, get_groups=False):
     try:
         connection = get_connection()
         user_dn, user_info = get_user_info(username, connection)
@@ -189,7 +214,22 @@ def test_ldap_connection(username, password=None):
                 msg = '%s\n<br/>%s\n<br/>\n<br/>' % (escape(_('Login failed (however the user exists in LDAP).')), defaultfilters.linebreaksbr(escape(e)))
             else:
                 msg = '%s\n<br/>\n<br/>' % escape(_('Login succeeded.'))
-        msg += '%s' % escape(_('User "%s" data:') % username)
+        msg += '%s<ul>' % escape(_('User "%s" data:') % username)
         for k, v in user_info.items():
-            msg += '\n<br/>    <b>%s:</b> %s' % (escape(k), escape(v))
+            msg += '\n<li><b>%s:</b> %s</li>' % (escape(k), escape(v))
+        msg += '\n</ul>'
+        if get_groups and user_info:
+            msg += '\n<br/>%s\n<br/>' % escape(_('User groups:'))
+            try:
+                groups = get_user_groups(username, user_info, connection=connection)
+            except Exception as e:
+                msg += '%s\n<br/>%s\n<br/>' % (escape(_('Error when trying to get groups.')), e)
+            else:
+                gids = list(groups.keys())
+                gids.sort()
+                for gid in gids:
+                    msg += '\n<br/><b>%s</b><ul>' % escape(gid)
+                    for k, v in groups[gid].items():
+                        msg += '\n<li><b>%s:</b> %s</li>' % (escape(k), escape(v))
+                    msg += '\n</ul>'
         return success, mark_safe(msg)
