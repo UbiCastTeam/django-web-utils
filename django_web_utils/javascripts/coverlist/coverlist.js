@@ -572,6 +572,7 @@ CoverCanvasBox.prototype.on_load = function (img, success) {
                 splitted.shift();
             }
             if (need_bot) {
+                words = splitted.length;
                 for (i=0; i < words; i++) {
                     word = splitted[0];
                     if (ctx.measureText(line_bot+" "+word).width > max_w - 20) {
