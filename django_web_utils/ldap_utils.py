@@ -21,8 +21,10 @@ class LDAPSettings(object):
     SERVER_URI = 'ldap://server.net'
     USER_SEARCH_SCOPE = 'ou=People,dc=server,dc=net'
     USER_SEARCH_FILTER = '(uid=%(user)s)'
+    USER_LIST_FILTER = '(objectClass=person)'
     GROUP_SEARCH_SCOPE = 'ou=group,dc=server,dc=net'
     GROUP_SEARCH_FILTER = '(gidNumber=%(group)s)'
+    GROUP_LIST_FILTER = '(objectClass=posixGroup)'
     ALWAYS_UPDATE = True
     USER_EMAIL_FIELD = 'mail'
     USER_GROUP_FIELD = 'gidNumber'
@@ -35,7 +37,7 @@ class LDAPSettings(object):
     USE_SASL = False
     BIND_DN = ''
     BIND_PASSWORD = ''
-    TIEMOUT = 15
+    TIMEOUT = 15
 lsettings = LDAPSettings
 
 
@@ -120,7 +122,7 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
         attrs = ldap3.ALL_ATTRIBUTES
     # search user lsettings
     try:
-        connection.search(base_dn, search_filter=sfilter, attributes=attrs, size_limit=lsettings.SEARCH_LIMIT, time_limit=lsettings.TIEMOUT)
+        connection.search(base_dn, search_filter=sfilter, attributes=attrs, size_limit=lsettings.SEARCH_LIMIT, time_limit=lsettings.TIMEOUT)
         results = connection.response
     except Exception as e:
         raise Exception('%s\n%s %s\n%s\nBase dn: %s\nFilter: %s\nAttrs: %s' % (
@@ -133,6 +135,26 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
             attrs,
         ))
     return results
+
+
+# get_all_users function
+# ----------------------------------------------------------------------------
+def get_all_users(connection=None):
+    users = dict()
+    results = ldap_search(lsettings.USER_SEARCH_SCOPE, lsettings.USER_LIST_FILTER, connection=connection)
+    for user in results:
+        users[user['dn']] = user['attributes']
+    return users
+
+
+# get_all_groups function
+# ----------------------------------------------------------------------------
+def get_all_groups(connection=None):
+    groups = dict()
+    results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, lsettings.GROUP_LIST_FILTER, connection=connection)
+    for group in results:
+        groups[group['dn']] = group['attributes']
+    return groups
 
 
 # get_user_info function
