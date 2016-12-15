@@ -30,7 +30,7 @@ class LDAPSettings(object):
     USER_GROUP_FIELD = 'gidNumber'
     GROUP_MEMBERS_FIELD = 'memberUid'
     START_TLS = False
-    TLS_VERSION = None
+    TLS_VERSION = None  # ssl.PROTOCOL_SSLv23
     CHECK_CERT = True
     SEARCH_LIMIT = 50000
     CA_CERT = None
@@ -70,12 +70,10 @@ def get_connection(bind_dn=None, bind_password=None):
                 tls_params = dict(validate=ssl.CERT_REQUIRED)
             else:
                 tls_params = dict(validate=ssl.CERT_OPTIONAL)
-            if lsettings.TLS_VERSION == 'v1':
-                tls_params['version'] = ssl.PROTOCOL_TLSv1
-            else:
-                tls_params['version'] = ssl.PROTOCOL_SSLv3
+            if lsettings.TLS_VERSION:
+                tls_params['version'] = lsettings.TLS_VERSION
             if lsettings.CA_CERT:
-                tls_params['ca_certs_file'] = ssl.CA_CERT
+                tls_params['ca_certs_file'] = lsettings.CA_CERT
             tls = ldap3.Tls(**tls_params)
             sv_params['tls'] = tls
             sv_params['use_ssl'] = True
