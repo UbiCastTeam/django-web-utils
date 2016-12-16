@@ -181,6 +181,8 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         ctx = dict(base_ctx)
         ctx['recipient'] = recipient
         ctx['LANGUAGE_CODE'] = lang
+        # Get attachments
+        attachments = ctx.get('attachments')
         content = tplt.render(Context(ctx))
         subject_start = content.index('<subject>') + 9
         subject_end = subject_start + content[subject_start:].index('</subject>')
@@ -189,6 +191,8 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         # Send email
         address_with_name = address if not name else '"%s" <%s>' % (name, address)
         msg = mail.EmailMessage(subject, content, sender, [address_with_name])
+        for attachment in attachments:
+            msg.attach_file(attachment)
         msg.content_subtype = content_subtype  # by default, set email content type to html
         try:
             if not connection:
@@ -227,7 +231,11 @@ def send_emails(subject, content, recipients=None, request=None, content_subtype
     sent = list()
     error = 'no recipient'
     for recipient in recipients:
+        # Get attachments
+        attachments = ctx.get('attachments')
         msg = mail.EmailMessage(subject, content, sender, [recipient])
+        for attachment in attachments:
+            msg.attach_file(attachment)
         msg.content_subtype = content_subtype  # by default, set email content type to html
         try:
             if not connection:
@@ -259,7 +267,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
         print(title)
         traceback.print_exc()
         return True, 'Debug mode is enabled, no emails were sent.'
-    
+
     fieldset_style = 'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'
     content = '<div style="margin-bottom: 8px;">Message sent at: %s</div>' % datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     # Error information
