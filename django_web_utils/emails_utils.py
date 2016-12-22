@@ -181,19 +181,19 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         ctx = dict(base_ctx)
         ctx['recipient'] = recipient
         ctx['LANGUAGE_CODE'] = lang
-        # Get attachments
-        attachments = ctx.get('attachments')
         content = tplt.render(Context(ctx))
         subject_start = content.index('<subject>') + 9
         subject_end = subject_start + content[subject_start:].index('</subject>')
         subject = content[subject_start:subject_end].strip()
         content = content[:subject_start - 9] + content[subject_end + 10:]
-        # Send email
+        # Prepare email
         address_with_name = address if not name else '"%s" <%s>' % (name, address)
         msg = mail.EmailMessage(subject, content, sender, [address_with_name])
-        for attachment in attachments:
-            msg.attach_file(attachment)
+        if ctx.get('attachments'):
+            for attachment in ctx['attachments']:
+                msg.attach_file(attachment)
         msg.content_subtype = content_subtype  # by default, set email content type to html
+        # Send email
         try:
             if not connection:
                 connection = mail.get_connection()
