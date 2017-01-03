@@ -26,9 +26,11 @@ class LDAPSettings(object):
     GROUP_SEARCH_FILTER = '(gidNumber=%(group)s)'
     GROUP_LIST_FILTER = '(objectClass=posixGroup)'
     ALWAYS_UPDATE = True
+    USER_ID_FIELD = 'uid'
     USER_EMAIL_FIELD = 'mail'
     USER_GROUP_FIELD = 'gidNumber'
     GROUP_MEMBERS_FIELD = 'memberUid'
+    GROUP_MEMBERS_USE_DN = False
     START_TLS = False
     TLS_VERSION = None  # ssl.PROTOCOL_SSLv23
     CHECK_CERT = True
@@ -168,18 +170,25 @@ def get_user_info(username, connection=None):
 
 # get_user_groups function
 # ----------------------------------------------------------------------------
-def get_user_groups(username, attributes, connection=None):
+def get_user_groups(user_dn, user_attrs, connection=None):
     if not connection:
         connection = get_connection()
     groups = dict()
     # get groups referred by group objects
     if lsettings.GROUP_MEMBERS_FIELD:
-        results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, username), connection=connection)
-        for group in results:
-            groups[group['dn']] = group['attributes']
+        if lsettings.GROUP_MEMBERS_USE_DN:
+            search_filter = '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, user_dn)
+        elif hasattr(user_attrs, 'items') and user_attrs.get(lsettings.USER_ID_FIELD):
+            search_filter = '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, user_attrs[lsettings.USER_ID_FIELD][0])
+        else:
+            search_filter = None
+        if search_filter:
+            results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, search_filter, connection=connection)
+            for group in results:
+                groups[group['dn']] = group['attributes']
     # get groups referred by user object
-    if lsettings.USER_GROUP_FIELD and hasattr(attributes, 'items') and attributes.get(lsettings.USER_GROUP_FIELD):
-        for name in attributes[lsettings.USER_GROUP_FIELD]:
+    if lsettings.USER_GROUP_FIELD and hasattr(user_attrs, 'items') and user_attrs.get(lsettings.USER_GROUP_FIELD):
+        for name in user_attrs[lsettings.USER_GROUP_FIELD]:
             results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, lsettings.GROUP_SEARCH_FILTER % dict(group=name), connection=connection)
             for group in results:
                 if group['dn'] not in groups:
@@ -241,15 +250,18 @@ def test_ldap_connection(username, password=None, get_groups=False):
         if get_groups and user_info:
             msg += '\n<br/>%s\n<br/>' % escape(_('User groups:'))
             try:
-                groups = get_user_groups(username, user_info, connection=connection)
+                groups = get_user_groups(user_dn, user_info, connection=connection)
             except Exception as e:
                 msg += '%s\n<br/>%s\n<br/>' % (escape(_('Error when trying to get groups.')), e)
             else:
                 gids = list(groups.keys())
-                gids.sort()
-                for gid in gids:
-                    msg += '\n<br/><b>%s</b><ul>' % escape(gid)
-                    for k, v in groups[gid].items():
-                        msg += '\n<li><b>%s:</b> %s</li>' % (escape(k), escape(v))
-                    msg += '\n</ul>'
+                if gids:
+                    gids.sort()
+                    for gid in gids:
+                        msg += '\n<br/><b>%s</b><ul>' % escape(gid)
+                        for k, v in groups[gid].items():
+                            msg += '\n<li><b>%s:</b> %s</li>' % (escape(k), escape(v))
+                        msg += '\n</ul>'
+                else:
+                    msg += '%s' % (escape(_('No groups found.')))
         return success, mark_safe(msg)
