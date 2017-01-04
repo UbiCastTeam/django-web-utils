@@ -27,9 +27,11 @@ class LDAPSettings(object):
     GROUP_SEARCH_FILTER = '(gidNumber=%(group)s)'
     GROUP_LIST_FILTER = '(objectClass=posixGroup)'
     ALWAYS_UPDATE = True
+    VIRTUAL_ATTRIBUTES = None
     USER_ID_FIELD = 'uid'
     USER_EMAIL_FIELD = 'mail'
-    USER_GROUP_FIELD = 'gidNumber'
+    USER_GROUPS_FIELD = 'gidNumber'
+    USER_GROUPS_USE_DN = False
     GROUP_MEMBERS_FIELD = 'memberUid'
     GROUP_MEMBERS_USE_DN = False
     START_TLS = False
@@ -120,7 +122,9 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
     if not connection:
         connection = get_connection()
     if attrs == 'all':
-        attrs = ldap3.ALL_ATTRIBUTES
+        attrs = [ldap3.ALL_ATTRIBUTES]
+        if lsettings.VIRTUAL_ATTRIBUTES:
+            attrs.extend(lsettings.VIRTUAL_ATTRIBUTES.split(','))
     # search user lsettings
     try:
         connection.search(base_dn, search_filter=sfilter, attributes=attrs, size_limit=lsettings.SEARCH_LIMIT, time_limit=lsettings.TIMEOUT)
@@ -193,9 +197,12 @@ def get_user_groups(user_dn, user_attrs, connection=None):
             for group in results:
                 groups[group['dn']] = group['attributes']
     # get groups referred by user object
-    if lsettings.USER_GROUP_FIELD and hasattr(user_attrs, 'items') and user_attrs.get(lsettings.USER_GROUP_FIELD):
-        for name in user_attrs[lsettings.USER_GROUP_FIELD]:
-            results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, lsettings.GROUP_SEARCH_FILTER % dict(group=name), connection=connection)
+    if lsettings.USER_GROUPS_FIELD and hasattr(user_attrs, 'items') and user_attrs.get(lsettings.USER_GROUPS_FIELD):
+        for name in user_attrs[lsettings.USER_GROUPS_FIELD]:
+            if lsettings.USER_GROUPS_USE_DN:
+                results = ldap_search(name, lsettings.GROUP_LIST_FILTER, connection=connection)
+            else:
+                results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, lsettings.GROUP_SEARCH_FILTER % dict(group=name), connection=connection)
             for group in results:
                 if group['dn'] not in groups:
                     groups[group['dn']] = group['attributes']
