@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 LDAP utility functions
+Requires ldap3 > 2.1
 '''
 import ldap3
 import logging
@@ -87,15 +88,15 @@ def get_connection(bind_dn=None, bind_password=None):
         password = bind_password or lsettings.BIND_PASSWORD
         params = dict(server=server)
         if lsettings.USE_SASL:
-            params['authentication'] = ldap3.AUTH_SASL
+            params['authentication'] = ldap3.SASL
             params['sasl_mechanism'] = 'DIGEST-MD5'
             params['sasl_credentials'] = (dn, password)
         elif dn:
-            params['authentication'] = ldap3.AUTH_SIMPLE
+            params['authentication'] = ldap3.SIMPLE
             params['user'] = dn
             params['password'] = password
         else:
-            params['authentication'] = ldap3.AUTH_ANONYMOUS
+            params['authentication'] = ldap3.ANONYMOUS
         connection = ldap3.Connection(**params)
 
         if lsettings.START_TLS:
@@ -123,7 +124,12 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
     # search user lsettings
     try:
         connection.search(base_dn, search_filter=sfilter, attributes=attrs, size_limit=lsettings.SEARCH_LIMIT, time_limit=lsettings.TIMEOUT)
-        results = connection.response
+        results = list()
+        for r in connection.response:
+            decoded_attrs = dict(r['raw_attributes'])
+            for key, values in decoded_attrs.items():
+                decoded_attrs[key] = [v.decode('utf-8') for v in values]
+            results.append(dict(dn=r['dn'], attributes=decoded_attrs, raw_attributes=r['raw_attributes']))
     except Exception as e:
         raise Exception('%s\n%s %s\n%s\nBase dn: %s\nFilter: %s\nAttrs: %s' % (
             _('Search on LDAP server failed.'),
@@ -164,7 +170,7 @@ def get_user_info(username, connection=None):
     if not results:
         raise Exception(str(_('User not found.')))
     if len(results) > 1:
-        logger.warning('Multiple results found in LDAP server for search:\n%s\n%s\n%s', lsettings.USER_SEARCH_SCOPE, 'ldap3.SCOPE_SUBTREE', lsettings.USER_SEARCH_FILTER % dict(user=username))
+        logger.warning('Multiple results found in LDAP server for search:\n%s\n%s\n%s', lsettings.USER_SEARCH_SCOPE, 'ldap3.SUBTREE', lsettings.USER_SEARCH_FILTER % dict(user=username))
     return results[0]['dn'], results[0]['attributes']
 
 
