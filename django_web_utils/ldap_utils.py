@@ -132,7 +132,8 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
         for r in connection.response:
             decoded_attrs = dict(r['raw_attributes'])
             for key, values in decoded_attrs.items():
-                decoded_attrs[key] = [v.decode('utf-8') for v in values]
+                if values:
+                    decoded_attrs[key] = [v.decode('utf-8') for v in values]
             results.append(dict(dn=r['dn'], attributes=decoded_attrs, raw_attributes=r['raw_attributes']))
     except Exception as e:
         raise Exception('%s\n%s %s\n%s\nBase dn: %s\nFilter: %s\nAttrs: %s' % (
