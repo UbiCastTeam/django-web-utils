@@ -130,10 +130,10 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
         connection.search(base_dn, search_filter=sfilter, attributes=attrs, size_limit=lsettings.SEARCH_LIMIT, time_limit=lsettings.TIMEOUT)
         results = list()
         for r in connection.response:
-            decoded_attrs = dict(r['raw_attributes'])
-            for key, values in decoded_attrs.items():
+            decoded_attrs = dict()
+            for key, values in r['raw_attributes'].items():
                 if values:
-                    decoded_attrs[key] = [v.decode('utf-8') for v in values]
+                    decoded_attrs[key] = [v.decode('utf-8', 'replace') for v in values]
             results.append(dict(dn=r['dn'], attributes=decoded_attrs, raw_attributes=r['raw_attributes']))
     except Exception as e:
         raise Exception('%s\n%s %s\n%s\nBase dn: %s\nFilter: %s\nAttrs: %s' % (
