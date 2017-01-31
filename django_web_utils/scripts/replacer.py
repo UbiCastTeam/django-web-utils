@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: Stéphane Diemer stephane.diemer@ubicast.eu
 
@@ -97,7 +97,7 @@ Parameters:
                     if self.PRINT_IGNORED:
                         sys.stdout.write('    %sfile ignored:%s %s\n' % (self.GREEN, self.DEFAULT, picked_path))
                 if not skipped:
-                    #sys.stdout.write('    current file is: %s' % (picked_path)
+                    # sys.stdout.write('    current file is: %s' % (picked_path)
                     analysed += 1
                     try:
                         with open(picked_path, 'r') as fd:

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: Stéphane Diemer stephane.diemer@ubicast.eu
 
@@ -69,18 +69,18 @@ class RGrepColor(object):
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=sys.stderr, shell=False)
         result = p.communicate()[0]
 
-        lines = result.split(b'\n')
+        lines = result.decode('utf-8').split('\n') if result else list()
         last_file = None
         results = 0
         results_files = 0
         for line in lines:
-            if line.startswith(b'grep: '):
+            if line.startswith('grep: '):
                 print('%sError: %s%s' % (self.RED, self.DEFAULT, line))
                 return 1
             else:
-                splitted = line.split(b':')
+                splitted = line.split(':')
                 if len(splitted) > 2:
-                    current_file = str(splitted[0], 'utf-8')
+                    current_file = splitted[0]
                     ign = False
                     for ign_path in self.IGNORED_PATHS:
                         if ign_path in current_file:
@@ -105,12 +105,12 @@ class RGrepColor(object):
                                 print('%sFile %s.%s%s' % (self.BLUE, file_path, extension, self.DEFAULT))
                             results_files += 1
                         results += 1
-                        code = str(b':'.join(splitted[2:]), 'utf-8')
+                        code = ':'.join(splitted[2:])
                         code = code.replace(search, '%s%s%s' % (self.RED, search, self.DEFAULT))
                         if self.IGNORE_BIG_LINES and len(code) > self.BIG_LINES_LENGTH:
-                            print('%s    Line %s: %s%s' % (self.GREEN, str(splitted[1], 'utf-8'), self.DEFAULT, 'ignored line (too long)'))
+                            print('%s    Line %s: %s%s' % (self.GREEN, splitted[1], self.DEFAULT, 'ignored line (too long)'))
                         else:
-                            print('%s    Line %s: %s%s' % (self.GREEN, str(splitted[1], 'utf-8'), self.DEFAULT, code))
+                            print('%s    Line %s: %s%s' % (self.GREEN, splitted[1], self.DEFAULT, code))
         if results:
             print('%s results in %s files' % (results, results_files))
         else:
