@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # This scrip outputs the SQL insert commands for an object and all its related objects.
 # The related objects are the same as the ones that will be deleted by cascade if the object is deleted.
