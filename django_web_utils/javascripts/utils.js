@@ -208,6 +208,10 @@ utils._get_browser_info = function () {
         if (!version)
             version = utils._extract_browser_version(ua, /rv:(\d+\.\d+)/);
     }
+    else if (ua.indexOf("edge") != -1) {
+        name = "edge";
+        version = utils._extract_browser_version(ua, /edge\/(\d+\.\d+)/);
+    }
     else if (ua.indexOf("chromium") != -1) {
         name = "chromium";
         version = utils._extract_browser_version(ua, /chromium\/(\d+\.\d+)/);
