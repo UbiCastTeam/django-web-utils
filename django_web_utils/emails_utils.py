@@ -213,7 +213,7 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
 
 # send_emails (to send emails without template)
 # ----------------------------------------------------------------------------
-def send_emails(subject, content, recipients=None, request=None, content_subtype='html'):
+def send_emails(subject, content, recipients=None, request=None, content_subtype='html', attachments=None):
     # Get common context
     ctx = _get_context(request)
     # Get sender
@@ -231,12 +231,13 @@ def send_emails(subject, content, recipients=None, request=None, content_subtype
     sent = list()
     error = 'no recipient'
     for recipient in recipients:
-        # Get attachments
-        attachments = ctx.get('attachments')
+        # Prepare email
         msg = mail.EmailMessage(subject, content, sender, [recipient])
-        for attachment in attachments:
-            msg.attach_file(attachment)
+        if attachments:
+            for attachment in attachments:
+                msg.attach_file(attachment)
         msg.content_subtype = content_subtype  # by default, set email content type to html
+        # Send email
         try:
             if not connection:
                 connection = mail.get_connection()
