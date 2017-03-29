@@ -267,6 +267,7 @@ def test_ldap_connection(username, password=None, get_groups=False):
             try:
                 groups = get_user_groups(user_dn, user_info, connection=connection)
             except Exception as e:
+                success = False
                 msg += '%s\n<br/>%s\n<br/>' % (escape(_('Error when trying to get groups.')), e)
             else:
                 gids = list(groups.keys())
