@@ -1,3 +1,6 @@
 [submodule "utils-js"]
 	path = utils-js
 	url = https://github.com/UbiCastTeam/utils-js.git
+[submodule "overlay-display-manager"]
+	path = overlay-display-manager
+	url = https://github.com/UbiCastTeam/overlay-display-manager.git
