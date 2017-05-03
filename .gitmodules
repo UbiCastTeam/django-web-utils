@@ -1,0 +1,3 @@
+[submodule "utils-js"]
+	path = utils-js
+	url = https://github.com/UbiCastTeam/utils-js.git
