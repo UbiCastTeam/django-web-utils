@@ -28,7 +28,7 @@ root_dir = os.path.dirname(__file__)
 if root_dir != '':
     os.chdir(root_dir)
 
-for dirpath, dirnames, filenames in os.walk('django_web_utils'):
+for dirpath, dirnames, filenames in os.walk('django_web_utils', followlinks=True):
     # Ignore PEP 3147 cache dirs and those whose names start with '.'
     dirnames[:] = [d for d in dirnames if not d.startswith('.') and d != '__pycache__']
     parts = fullsplit(dirpath)
