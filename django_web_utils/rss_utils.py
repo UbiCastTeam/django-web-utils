@@ -3,15 +3,20 @@
 '''
 Rss utility functions
 '''
-# Django
-from django.utils.timezone import LocalTimezone
+import pytz
+
+from django.conf import settings
 
 
 # get_locale_tz_datetime function
 # ----------------------------------------------------------------------------
 def get_locale_tz_datetime(dt):
-    tz = LocalTimezone()
-    dt = dt.replace(tzinfo=tz)
+    tz_name = getattr(settings, 'TIME_ZONE', None)
+    if tz_name:
+        tz = pytz.timezone(tz_name)
+    else:
+        tz = pytz.utc
+    dt = tz.localize(dt)
     return dt
 
 
