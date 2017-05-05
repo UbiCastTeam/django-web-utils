@@ -100,7 +100,7 @@ def json_view(function=None, methods=None, login_required=False):
             # Process view
             try:
                 # Check login
-                if login_required and not request.user.is_authenticated():
+                if login_required and not request.user.is_authenticated:
                     raise JsonHttp401()
                 return fct(request, *args, **kwargs)
             except JsonHttp400:

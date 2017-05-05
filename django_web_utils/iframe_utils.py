@@ -51,7 +51,7 @@ def iframe_view(function=None, methods=None, login_url=None, login_required=Fals
             # Process view
             try:
                 # Check authentication
-                if login_required and not request.user.is_authenticated():
+                if login_required and not request.user.is_authenticated:
                     raise IframeHttp401()
                 return fct(request, *args, **kwargs)
             except IframeHttp400:
@@ -67,7 +67,7 @@ def iframe_view(function=None, methods=None, login_url=None, login_required=Fals
                 return render(request, 'iframe/401.html', {'next': next}, status=401)
             except IframeHttp403:
                 next = quote(request.get_full_path())
-                if not request.user.is_authenticated() and login_url:
+                if not request.user.is_authenticated and login_url:
                     url = login_url
                     if next:
                         url += '?' if '?' not in url else '&'

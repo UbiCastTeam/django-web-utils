@@ -6,7 +6,7 @@ import shutil
 import unicodedata
 import re
 # Django
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _

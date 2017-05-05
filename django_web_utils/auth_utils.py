@@ -16,7 +16,7 @@ def login_required_basicauth(function):
     Check that user is authenticated and if not, return a basic http authentication request
     '''
     def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return function(request, *args, **kwargs)
         
         msg = 'Access authentication'
