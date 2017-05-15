@@ -8,7 +8,7 @@ import resource
 import sys
 
 
-def daemonize(redirect_to=None, rundir='/', umask=None, close_all_files=False):
+def daemonize(redirect_to=None, rundir='/', umask=0o022, close_all_files=False):
     '''Detach a process from the controlling terminal and run it in the background as a daemon.'''
     sys.stdout.flush()
     sys.stderr.flush()
