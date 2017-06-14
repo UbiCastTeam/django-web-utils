@@ -37,7 +37,6 @@ class LDAPSettings(object):
     START_TLS = False
     TLS_VERSION = None  # ssl.PROTOCOL_SSLv23
     CHECK_CERT = True
-    SEARCH_LIMIT = 50000
     CA_CERT = None
     USE_SASL = False
     BIND_DN = ''
@@ -127,15 +126,15 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
             attrs.extend(lsettings.VIRTUAL_ATTRIBUTES.split(','))
     # search user lsettings
     try:
-        connection.search(base_dn, search_filter=sfilter, attributes=attrs, size_limit=lsettings.SEARCH_LIMIT, time_limit=lsettings.TIMEOUT)
+        entry_generator = connection.extend.standard.paged_search(base_dn, search_filter=sfilter, attributes=attrs, paged_size=1000, time_limit=lsettings.TIMEOUT, generator=True)
         results = list()
-        for r in connection.response:
-            if 'dn' in r and 'raw_attributes' in r:
+        for entry in entry_generator:
+            if 'dn' in entry and 'raw_attributes' in entry:
                 decoded_attrs = dict()
-                for key, values in r['raw_attributes'].items():
+                for key, values in entry['raw_attributes'].items():
                     if values:
                         decoded_attrs[key] = [v.decode('utf-8', 'replace') for v in values]
-                results.append(dict(dn=r['dn'], attributes=decoded_attrs, raw_attributes=r['raw_attributes']))
+                results.append(dict(dn=entry['dn'], attributes=decoded_attrs, raw_attributes=entry['raw_attributes']))
     except Exception as e:
         raise Exception('%s\n%s %s\n%s\nBase dn: %s\nFilter: %s\nAttrs: %s' % (
             _('Search on LDAP server failed.'),
