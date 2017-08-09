@@ -45,7 +45,7 @@ def get_version(package=None, module=None):
                 except Exception as e:
                     logger.error('Unable to get revision: %s', e)
             else:
-                revision = str(out, 'utf-8').replace('Version: ', '')
+                revision = out.replace('Version: ', '')
             break
     if '+' in revision:
         revision = revision[revision.index('+') + 1:]
