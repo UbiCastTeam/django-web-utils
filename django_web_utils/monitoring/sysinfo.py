@@ -3,16 +3,14 @@
 '''
 System information
 '''
-import datetime
-import logging
 import os
 import subprocess
 import sys
 # Django
 from django.utils.translation import ugettext_lazy as _
 import django
-
-logger = logging.getLogger('djwutils.monitoring.sysinfo')
+# django_web_utils
+from django_web_utils.packages_utils import get_version
 
 
 def _additional_translations():
@@ -31,50 +29,6 @@ def _get_output(cmd):
         return ''
     else:
         return ((str(out, 'utf-8') if out else '') + (str(err, 'utf-8') if err else '')).strip()
-
-
-def get_version(package=None, module=None):
-    version = ''
-    revision = ''
-    if module:
-        version = getattr(module, '__version__', '')
-        git_dir = module.__path__[0]
-        if os.path.islink(git_dir):
-            git_dir = os.readlink(git_dir)
-        if not os.path.exists(os.path.join(git_dir, '.git')):
-            git_dir = os.path.dirname(git_dir)
-            if not os.path.exists(os.path.join(git_dir, '.git')):
-                git_dir = os.path.dirname(git_dir)
-        git_dir = os.path.join(git_dir, '.git')
-    else:
-        git_dir = '.'
-    cmds = [
-        'dpkg -s "%s" | grep Version' % package,
-        'git --git-dir \'%s\' log -1' % git_dir,
-    ]
-    local_repo = False
-    for cmd in cmds:
-        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        out, err = p.communicate()
-        if p.returncode == 0:
-            if cmd.startswith('git'):
-                local_repo = True
-                # Get git repo version using last commit date and short hash
-                try:
-                    last_commit_unix_ts = _get_output(['git', '--git-dir', git_dir, 'log', '-1', '--pretty=%ct'])
-                    last_commit_ts = datetime.datetime.utcfromtimestamp(int(last_commit_unix_ts)).strftime('%Y%m%d%H%M%S')
-                    last_commit_shorthash = _get_output(['git', '--git-dir', git_dir, 'log', '-1', '--pretty=%h'])
-                    revision = '%s-%s' % (last_commit_ts, last_commit_shorthash)
-                except Exception as e:
-                    logger.error('Unable to get revision: %s', e)
-            else:
-                revision = str(out, 'utf-8').replace('Version: ', '')
-            break
-    if '+' in revision:
-        revision = revision[revision.index('+') + 1:]
-    elif not revision:
-        revision = '?'
-    return version, revision, local_repo
 
 
 def get_system_info(package=None, module=None, extra=None):
