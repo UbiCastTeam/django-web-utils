@@ -62,7 +62,7 @@ def get_version(package=None, module=None):
                 # Get git repo version using last commit date and short hash
                 try:
                     last_commit_unix_ts = _get_output(['git', '--git-dir', git_dir, 'log', '-1', '--pretty=%ct'])
-                    last_commit_ts = datetime.datetime.fromtimestamp(int(last_commit_unix_ts)).strftime('%Y%m%d%H%M%S')
+                    last_commit_ts = datetime.datetime.utcfromtimestamp(int(last_commit_unix_ts)).strftime('%Y%m%d%H%M%S')
                     last_commit_shorthash = _get_output(['git', '--git-dir', git_dir, 'log', '-1', '--pretty=%h'])
                     revision = '%s-%s' % (last_commit_ts, last_commit_shorthash)
                 except Exception as e:
