@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 Lock function
+This simple lock system is using the system hostname as reference.
 '''
 from functools import wraps
 import datetime
@@ -18,12 +19,15 @@ def acquire_lock(path, timeout=None):
         os.makedirs(os.path.dirname(path))
     hostname = socket.gethostname()
     if os.path.exists(path):
-        if timeout:
-            mtime = datetime.datetime.fromtimestamp(os.path.getmtime(path))
-            if mtime < datetime.datetime.now() - timeout:
-                logger.info('Lock file "%s" has timed out.', path)
+        if timeout and datetime.datetime.fromtimestamp(os.path.getmtime(path)) < datetime.datetime.now() - timeout:
+            logger.info('Lock file "%s" has timed out.', path)
         else:
-            return False
+            with open(path, 'r') as fo:
+                content = fo.read()
+            if content != hostname:
+                return False
+            else:
+                logger.info('Lock file "%s" already exists and is attributed to current hostname.', path)
     with open(path, 'w') as fo:
         fo.write(hostname)
     logger.info('Lock file "%s" acquired.', path)
