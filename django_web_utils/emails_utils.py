@@ -184,7 +184,7 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         content = tplt.render(Context(ctx))
         subject_start = content.index('<subject>') + 9
         subject_end = subject_start + content[subject_start:].index('</subject>')
-        subject = content[subject_start:subject_end].strip()
+        subject = content[subject_start:subject_end].replace('\r', '').replace('\n', ' ').strip()
         content = content[:subject_start - 9] + content[subject_end + 10:]
         # Prepare email
         address_with_name = address if not name else '"%s" <%s>' % (name, address)
@@ -227,6 +227,7 @@ def send_emails(subject, content, recipients=None, request=None, content_subtype
     elif not isinstance(recipients, (tuple, list)):
         recipients = [recipients]
     # Prepare emails messages
+    subject = subject.replace('\r', '').replace('\n', ' ').strip()
     connection = None
     sent = list()
     error = 'no recipient'
