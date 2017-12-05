@@ -25,12 +25,12 @@ PwdManager.prototype.build = function () {
     this.overlay = new OverlayDisplayManager();
     
     var html = "<form class=\"margin-8\">";
-    html += "<div class=\"message\" style=\"display: none; margin-bottom: 16px;\"></div>";
+    html += "<div class=\"messages\" style=\"display: none; margin-bottom: 16px;\"></div>";
     html += "<label for=\"id_data\">"+this.translate("Password:")+"</label> ";
     html += "<input type=\"password\" id=\"id_data\" name=\"data\" value=\"\" style=\"width: 250px;\"/>";
     html += "</form>";
     this.$form = $(html);
-    this.$msg = $(".message", this.$form);
+    this.$msg = $(".messages", this.$form);
     
     // events
     var obj = this;
@@ -110,7 +110,7 @@ PwdManager.prototype.send_request = function (post) {
 };
 
 PwdManager.prototype.display_message = function (type, text) {
-    var html = "<div class=\""+type+"\">"+text+"</div>";
+    var html = "<div class=\"message "+type+"\">"+(type == "loading" ? "<i class=\"fa fa-spin fa-spinner\"></i> " : "")+utils.escape_html(text)+"</div>";
     if (this.msg_timeout) {
         clearTimeout(this.msg_timeout);
         this.msg_timeout = null;
