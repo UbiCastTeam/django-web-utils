@@ -258,7 +258,7 @@ def test_ldap_connection(username, password=None, get_groups=False):
             else:
                 msg = '%s\n<br/>\n<br/>' % escape(_('Login succeeded.'))
         msg += '%s<ul>' % escape(_('User "%s" data:') % username)
-        for k, v in user_info.items():
+        for k, v in sorted(user_info.items()):
             msg += '\n<li><b>%s:</b> %s</li>' % (escape(k), escape(v))
         msg += '\n</ul>'
         if get_groups and user_info:
