@@ -40,7 +40,6 @@ class BaseDaemon(object):
     -n: launch daemon in current thread and not in background
     -s: allow simultaneous execution
     -f: force log to use a file and not the standard output'''
-    NEED_GOBJECT = False
     NEED_DJANGO = True
     DEFAULTS = dict(LOGGING_LEVEL='INFO')
     
@@ -313,29 +312,15 @@ class BaseDaemon(object):
         # Run daemon
         try:
             if argv:
-                logger.info('Staring daemon %s with arguments:\n    %s.' % (self.get_name(), argv))
+                logger.info('Staring daemon %s with arguments: "%s".', self.get_name(), '" "'.join(argv))
             else:
-                logger.info('Staring daemon %s without arguments.' % self.get_name())
+                logger.info('Staring daemon %s without arguments.', self.get_name())
             self.run(*argv)
         except Exception:
             self._exit_with_error('Error when running %s.' % self.get_name(), code=140)
         except KeyboardInterrupt:
-            logger.info('%s interrupted by KeyboardInterrupt' % (self.get_name()))
+            logger.info('%s interrupted by KeyboardInterrupt', self.get_name())
             self.exit(141)
-        
-        # Gobject main loop
-        if self.NEED_GOBJECT:
-            from gi.repository import GObject
-            # GObject.threads_init()
-            ml = GObject.MainLoop()
-            print('%s started' % self.get_name(), file=sys.stdout)
-            try:
-                ml.run()
-            except Exception:
-                self._exit_with_error('Daemon %s mainloop interrupted by error.' % self.get_name(), code=142)
-            except KeyboardInterrupt:
-                logger.info('Daemon %s mainloop interrupted by KeyboardInterrupt.' % (self.get_name()))
-                self.exit(143)
         self.exit(0)
     
     def restart(self, argv=None):
@@ -345,19 +330,17 @@ class BaseDaemon(object):
         try:
             os.remove(self.get_pid_path())
         except Exception as e:
-            logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.' % e)
+            logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.', e)
         
         # execute restart command (if the daemon was not daemonized it will become so)
         cmd = 'python3 %s restart %s' % (self.daemon_path, ' '.join(argv))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = p.communicate()
-        if out:
-            out = str(out, 'utf-8')
-        if err:
-            err = str(err, 'utf-8')
+        out = out.decode('utf-8') if out else ''
+        err = err.decode('utf-8') if err else ''
         logger.debug('Restarting daemon.\n    Command: %s\n    Stdout: %s\n    Stderr: %s', cmd, out, err)
         if p.returncode != 0:
-            logger.error('Error when restarting daemon:\n    %s' % err)
+            logger.error('Error when restarting daemon:\n    %s', err)
         sys.exit(0)
     
     def exit(self, code=0):
@@ -366,11 +349,11 @@ class BaseDaemon(object):
                 os.remove(self.get_pid_path())
             except Exception:
                 pass
-        logger.debug('Daemon %s ended (return code: %s).\n' % (self.get_name(), code))
+        logger.debug('Daemon %s ended (return code: %s).\n', self.get_name(), code)
         sys.exit(code)
     
     def send_error_email(self, msg, tb=False, recipients=None):
-        logger.error('%s\n%s' % (msg, traceback.format_exc()) if tb else msg)
+        logger.error('%s\n%s', msg, traceback.format_exc() if tb else msg)
         if not self.NEED_DJANGO:
             self._setup_django()
         from django_web_utils import emails_utils
