@@ -35,8 +35,13 @@ class SingletonModel(object):
     def get_singleton_class_mtime(cls):
         mtime = getattr(cls, '_class_mtime', None)
         if not mtime:
-            class_path = os.path.abspath(sys.modules[cls.__module__].__file__)
-            mtime = os.path.getmtime(class_path)
+            if cls.__module__ in sys.modules:
+                class_path = os.path.abspath(sys.modules[cls.__module__].__file__)
+                mtime = os.path.getmtime(class_path)
+            else:
+                # fallback: use class id as mtime
+                # can happen for fake class
+                mtime = id(cls)
             cls._class_mtime = mtime
         return mtime
 
