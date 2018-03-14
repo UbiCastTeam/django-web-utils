@@ -3,14 +3,53 @@
 '''
 Models utility functions
 '''
+import os
+import sys
+
+from django.core.cache import cache
 
 
-class SingletonModel():
+class SingletonModel(object):
+    '''
+    The model using this should inherit SingletonModel first.
+    For example:
+        class SiteSettings(SingletonModel, models.Model)
+    The model is stored in cache and depends on file mtime.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        # since Django Model is inherited as second,
+        # super will call the Django Model method
+        super(SingletonModel, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # since Django Model is inherited as second,
+        # super will call the Django Model method
+        result = super(SingletonModel, self).save(*args, **kwargs)
+        cache_key = 'SingletonModel-%s' % self.__class__.__name__
+        mtime = self.__class__.get_singleton_class_mtime()
+        cache.set(cache_key, (mtime, self), timeout=25 * 3600)
+        return result
+
+    @classmethod
+    def get_singleton_class_mtime(cls):
+        mtime = getattr(cls, '_class_mtime', None)
+        if not mtime:
+            class_path = os.path.abspath(sys.modules[cls.__module__].__file__)
+            mtime = os.path.getmtime(class_path)
+            cls._class_mtime = mtime
+        return mtime
 
     @classmethod
     def get_singleton(cls):
+        cache_key = 'SingletonModel-%s' % cls.__name__
+        mtime = cls.get_singleton_class_mtime()
+        cached = cache.get(cache_key)
+        if cached and isinstance(cached, tuple) and cached[0] == mtime:
+            return cached[1]
         try:
             obj = cls.objects.all()[0]
         except IndexError:
             obj = cls.objects.create()
+        cache.set(cache_key, (mtime, obj), timeout=25 * 3600)
         return obj
