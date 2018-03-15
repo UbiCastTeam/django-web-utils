@@ -16,6 +16,7 @@ class SingletonModel(object):
         class SiteSettings(SingletonModel, models.Model)
     The model is stored in cache and depends on file mtime.
     '''
+    SINGLETON_CACHE = True
 
     def __init__(self, *args, **kwargs):
         # since Django Model is inherited as second,
@@ -26,10 +27,15 @@ class SingletonModel(object):
         # since Django Model is inherited as second,
         # super will call the Django Model method
         result = super(SingletonModel, self).save(*args, **kwargs)
-        cache_key = 'SingletonModel-%s' % self.__class__.__name__
-        mtime = self.__class__.get_singleton_class_mtime()
-        cache.set(cache_key, (mtime, self), timeout=25 * 3600)
+        if self.SINGLETON_CACHE:
+            cache_key = self.__class__.get_singleton_cache_key()
+            mtime = self.__class__.get_singleton_class_mtime()
+            cache.set(cache_key, (mtime, self), timeout=25 * 3600)
         return result
+
+    @classmethod
+    def get_singleton_cache_key(cls):
+        return 'SingletonModel-%s' % cls.__name__
 
     @classmethod
     def get_singleton_class_mtime(cls):
@@ -47,14 +53,16 @@ class SingletonModel(object):
 
     @classmethod
     def get_singleton(cls):
-        cache_key = 'SingletonModel-%s' % cls.__name__
-        mtime = cls.get_singleton_class_mtime()
-        cached = cache.get(cache_key)
-        if cached and isinstance(cached, tuple) and cached[0] == mtime:
-            return cached[1]
+        if cls.SINGLETON_CACHE:
+            cache_key = cls.get_singleton_cache_key()
+            mtime = cls.get_singleton_class_mtime()
+            cached = cache.get(cache_key)
+            if cached and isinstance(cached, tuple) and cached[0] == mtime:
+                return cached[1]
         try:
             obj = cls.objects.all()[0]
         except IndexError:
             obj = cls.objects.create()
-        cache.set(cache_key, (mtime, obj), timeout=25 * 3600)
+        if cls.SINGLETON_CACHE:
+            cache.set(cache_key, (mtime, obj), timeout=25 * 3600)
         return obj
