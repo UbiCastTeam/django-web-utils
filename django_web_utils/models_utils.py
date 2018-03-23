@@ -28,9 +28,7 @@ class SingletonModel(object):
         # super will call the Django Model method
         result = super(SingletonModel, self).save(*args, **kwargs)
         if self.SINGLETON_CACHE:
-            cache_key = self.__class__.get_singleton_cache_key()
-            mtime = self.__class__.get_singleton_class_mtime()
-            cache.set(cache_key, (mtime, self), timeout=25 * 3600)
+            self.set_singleton_cache()
         return result
 
     @classmethod
@@ -51,18 +49,34 @@ class SingletonModel(object):
             cls._class_mtime = mtime
         return mtime
 
+    def set_singleton_cache(self):
+        cache_key = self.__class__.get_singleton_cache_key()
+        mtime = self.__class__.get_singleton_class_mtime()
+        data = dict()
+        for field in self._meta.fields:
+            data[field.name] = getattr(self, field.name)
+        cache.set(cache_key, (mtime, data), version=2, timeout=25 * 3600)
+
+    @classmethod
+    def get_singleton_cache(cls):
+        cache_key = cls.get_singleton_cache_key()
+        mtime = cls.get_singleton_class_mtime()
+        cached = cache.get(cache_key, version=2)
+        if cached and isinstance(cached, tuple) and cached[0] == mtime:
+            data = cached[1]
+            obj = cls(**data)
+            return obj
+
     @classmethod
     def get_singleton(cls):
         if cls.SINGLETON_CACHE:
-            cache_key = cls.get_singleton_cache_key()
-            mtime = cls.get_singleton_class_mtime()
-            cached = cache.get(cache_key)
-            if cached and isinstance(cached, tuple) and cached[0] == mtime:
-                return cached[1]
+            obj = cls.get_singleton_cache()
+            if obj:
+                return obj
         try:
             obj = cls.objects.all()[0]
         except IndexError:
             obj = cls.objects.create()
         if cls.SINGLETON_CACHE:
-            cache.set(cache_key, (mtime, obj), timeout=25 * 3600)
+            obj.set_singleton_cache()
         return obj
