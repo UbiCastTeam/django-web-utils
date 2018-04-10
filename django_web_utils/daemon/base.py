@@ -22,27 +22,27 @@ logger = logging.getLogger('djwutils.daemon.base')
 class BaseDaemon(object):
     '''
     Class to initialize daemons.
-    
+
     To create a daemon, just create a class which
     herits from this one and implement the run function.
-    
+
     Log file will be located in LOG_DIR/<daemon_file_name>.log
     PID file is located in PID_DIR/<daemon_file_name>.pid
     '''
-    
+
     CONF_DIR = '/tmp/djwutils-daemon'
     LOG_DIR = '/tmp/djwutils-daemon'
     PID_DIR = '/tmp/djwutils-daemon'
     SERVER_DIR = None  # Dir to append in sys.path
     SETTINGS_MODULE = 'settings'
-    
+
     USAGE = '''USAGE: %s start|restart|stop|clear_log [-n] [-f] [*options]
     -n: launch daemon in current thread and not in background
     -s: allow simultaneous execution
     -f: force log to use a file and not the standard output'''
     NEED_DJANGO = True
     DEFAULTS = dict(LOGGING_LEVEL='INFO')
-    
+
     def __init__(self, argv=None):
         object.__init__(self)
         try:
@@ -167,7 +167,7 @@ class BaseDaemon(object):
         else:
             print(self.USAGE % self.daemon_path, file=sys.stderr)
             self.exit(128)
-        
+
         if self._command in ('start', 'restart'):
             print('Starting %s...' % self.get_name(), file=sys.stdout)
             sys.stdout.flush()
@@ -183,7 +183,7 @@ class BaseDaemon(object):
                 self._exit_with_error('Error when starting %s.' % self.get_name(), code=134)
         else:
             self.exit(0)
-    
+
     def _setup_django(self):
         if self._django_setup_done:
             return
@@ -201,7 +201,7 @@ class BaseDaemon(object):
         except Exception as e:
             logger.warning('Django setup failed: %s', e)
         self._django_setup_done = True
-    
+
     def _setup_logging(self):
         if not os.path.exists(self.LOG_DIR):
             try:
@@ -262,7 +262,7 @@ class BaseDaemon(object):
             lg.handlers = []
             lg.propagate = 1
         logger.debug('Logging configured.')
-    
+
     def _look_for_existing_process(self):
         '''check if the daemon is already launched and return its pid if it is, else None'''
         pid = None
@@ -289,7 +289,7 @@ class BaseDaemon(object):
             raise e
         else:
             self._pid_written = True
-    
+
     def _exit_with_error(self, msg=None, code=-1):
         if self._should_daemonize:
             # sys.stderr is not visible if daemonized
@@ -312,9 +312,9 @@ class BaseDaemon(object):
         # Run daemon
         try:
             if argv:
-                logger.info('Staring daemon %s with arguments: "%s".', self.get_name(), '" "'.join(argv))
+                logger.info('Starting daemon %s with arguments: "%s".', self.get_name(), '" "'.join(argv))
             else:
-                logger.info('Staring daemon %s without arguments.', self.get_name())
+                logger.info('Starting daemon %s without arguments.', self.get_name())
             self.run(*argv)
         except Exception:
             self._exit_with_error('Error when running %s.' % self.get_name(), code=140)
@@ -322,7 +322,7 @@ class BaseDaemon(object):
             logger.info('%s interrupted by KeyboardInterrupt', self.get_name())
             self.exit(141)
         self.exit(0)
-    
+
     def restart(self, argv=None):
         # function to restart daemon itself
         argv = self._cleaned_args if not argv else argv
@@ -331,7 +331,7 @@ class BaseDaemon(object):
             os.remove(self.get_pid_path())
         except Exception as e:
             logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.', e)
-        
+
         # execute restart command (if the daemon was not daemonized it will become so)
         cmd = 'python3 %s restart %s' % (self.daemon_path, ' '.join(argv))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -342,7 +342,7 @@ class BaseDaemon(object):
         if p.returncode != 0:
             logger.error('Error when restarting daemon:\n    %s', err)
         sys.exit(0)
-    
+
     def exit(self, code=0):
         if getattr(self, '_pid_written', False):
             try:
@@ -351,7 +351,7 @@ class BaseDaemon(object):
                 pass
         logger.debug('Daemon %s ended (return code: %s).\n', self.get_name(), code)
         sys.exit(code)
-    
+
     def send_error_email(self, msg, tb=False, recipients=None):
         logger.error('%s\n%s', msg, traceback.format_exc() if tb else msg)
         if not self.NEED_DJANGO:
