@@ -96,10 +96,10 @@ DaemonsManager.prototype._send_daemon_command = function (daemon, cmd) {
         success: function (response) {
             callback(response);
         },
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, thrownError) {
             callback({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
+                message: textStatus+" ("+(thrownError ? thrownError : obj.translate("server unreachable"))+")"
             });
         }
     });

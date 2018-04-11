@@ -132,10 +132,10 @@ FileBrowser.prototype.load_dirs = function () {
         success: function (response) {
             obj.parse_dirs_response(response);
         },
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, thrownError) {
             obj.parse_dirs_response({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
+                message: textStatus+" ("+(thrownError ? thrownError : obj.translate("server unreachable"))+")"
             });
         }
     });
@@ -238,10 +238,10 @@ FileBrowser.prototype.load_content = function () {
         success: function (response) {
             obj.parse_content_response(response);
         },
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, thrownError) {
             obj.parse_content_response({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
+                message: textStatus+" ("+(thrownError ? thrownError : obj.translate("server unreachable"))+")"
             });
         }
     });
@@ -456,10 +456,10 @@ FileBrowser.prototype.execute_action = function (data, method, cb) {
             if (cb)
                 cb(response);
         },
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, thrownError) {
             obj.on_action_executed({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
+                message: textStatus+" ("+(thrownError ? thrownError : obj.translate("server unreachable"))+")"
             });
         }
     });
@@ -522,11 +522,11 @@ FileBrowser.prototype.on_files_drop = function (evt) {
             obj.$drop_zone.attr("class", "");
             obj.on_action_executed(response);
         },
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: function (jqXHR, textStatus, thrownError) {
             obj.$drop_zone.attr("class", "");
             obj.on_action_executed({
                 success: false,
-                message: textStatus+" ("+(errorThrown ? errorThrown : obj.translate("server unreachable"))+")"
+                message: textStatus+" ("+(thrownError ? thrownError : obj.translate("server unreachable"))+")"
             });
         }
     });
