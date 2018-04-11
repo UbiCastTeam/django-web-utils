@@ -18,6 +18,7 @@ The email content
 '''
 import datetime
 import logging
+import os
 import traceback
 # Django
 from django.conf import settings
@@ -271,7 +272,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
         return True, 'Debug mode is enabled, no emails were sent.'
 
     fieldset_style = 'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'
-    content = '<div style="margin-bottom: 8px;">Message sent at: %s</div>' % datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    content = '<div style="margin-bottom: 8px;">Message sent at: %s<br/>\nUnix user: %s</div>' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), os.environ.get('USER'))
     # Error information
     if error:
         content += '<fieldset %s>\n' % fieldset_style
