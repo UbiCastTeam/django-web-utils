@@ -4,6 +4,7 @@
 LDAP utility functions
 Requires ldap3 > 2.1
 '''
+from ldap3.utils.conv import escape_filter_chars
 import ldap3
 import logging
 import ssl
@@ -171,7 +172,7 @@ def get_all_groups(connection=None):
 # get_user_info function
 # ----------------------------------------------------------------------------
 def get_user_info(username, connection=None):
-    results = ldap_search(lsettings.USER_SEARCH_SCOPE, lsettings.USER_SEARCH_FILTER % dict(user=username), connection=connection)
+    results = ldap_search(lsettings.USER_SEARCH_SCOPE, lsettings.USER_SEARCH_FILTER % dict(user=escape_filter_chars(username)), connection=connection)
     if not results:
         raise Exception(str(_('User not found.')))
     if len(results) > 1:
@@ -188,9 +189,9 @@ def get_user_groups(user_dn, user_attrs, connection=None):
     # get groups referred by group objects
     if lsettings.GROUP_MEMBERS_FIELD:
         if lsettings.GROUP_MEMBERS_USE_DN:
-            search_filter = '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, user_dn)
+            search_filter = '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, escape_filter_chars(user_dn))
         elif hasattr(user_attrs, 'items') and user_attrs.get(lsettings.USER_ID_FIELD):
-            search_filter = '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, user_attrs[lsettings.USER_ID_FIELD][0])
+            search_filter = '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, escape_filter_chars(user_attrs[lsettings.USER_ID_FIELD][0]))
         else:
             search_filter = None
         if search_filter:
@@ -203,7 +204,7 @@ def get_user_groups(user_dn, user_attrs, connection=None):
             if lsettings.USER_GROUPS_USE_DN:
                 results = ldap_search(name, lsettings.GROUP_LIST_FILTER, connection=connection)
             else:
-                results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, lsettings.GROUP_SEARCH_FILTER % dict(group=name), connection=connection)
+                results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, lsettings.GROUP_SEARCH_FILTER % dict(group=escape_filter_chars(name)), connection=connection)
             for group in results:
                 if group['dn'] not in groups:
                     groups[group['dn']] = group['attributes']
