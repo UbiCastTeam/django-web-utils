@@ -28,9 +28,7 @@ html.file-browser-default {
 .file-browser .title-bar,
 .file-browser .footer-bar {
     color: #fff;
-    background: #0a83d4;
-    background: -moz-linear-gradient(top, #0a83d4, #29427a);
-    background: -webkit-gradient(linear, left top, left bottom, from(#0a83d4), to(#29427a));
+    background: #1c73bf;
 }
 .file-browser .title-bar {
     padding: 6px 8px;
@@ -57,7 +55,7 @@ html.file-browser-default {
     position: absolute;
     width: 250px;
     background: #eee;
-    border-right: 1px solid #0a83d4;
+    border-right: 1px solid #1c73bf;
 }
 .file-browser .content-place {
     top: 0;
@@ -104,6 +102,13 @@ html.file-browser-default {
 .file-browser .footer-bar .buttons-bar {
     margin-right: 60px;
 }
+.file-browser button,
+.file-browser select {
+    padding: 2px 4px;
+    height: 20px;
+    line-height: 20px;
+    box-sizing: border-box;
+}
 .file-browser .file-browser-btn {
     margin-right: 8px;
     padding: 2px 4px;
@@ -120,16 +125,17 @@ html.file-browser-default {
     border-radius: 4px;
     transition-property: background-color, color, border-color;
     transition-duration: 0.5s;
+    box-sizing: border-box;
 }
 .file-browser .file-browser-btn:hover {
-    color: #0a83d4;
+    color: #1c73bf;
     background-color: #fff;
     border-color: #ddd;
 }
 .file-browser .file-browser-btn.disabled
 .file-browser .file-browser-btn:disabled {
     cursor: default;
-    color: #0a83d4;
+    color: #1c73bf;
     background-color: #ddd;
     border-color: #ccc;
     opacity: 0.6;
@@ -303,7 +309,7 @@ html.file-browser-default {
 }
 .file-browser .file-block:hover a.file-link {
     background: rgba(35, 190, 255, 0.2);
-    border-color: #0a83d4;
+    border-color: #1c73bf;
 }
 .file-browser .file-block .file-icon {
     text-align: center;
