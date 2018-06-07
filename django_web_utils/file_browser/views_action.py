@@ -36,8 +36,8 @@ def recursive_remove(path):
 def clean_file_name(name):
     # This function is like the slugify function of Django, but it allows points and uppercase letters
     name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
-    name = re.sub('[^\.\w\s-]', '', name).strip()
-    name = re.sub('[-\s]+', '-', name)
+    name = re.sub(r'[^\.\w\s-]', '', name).strip()
+    name = re.sub(r'[-\s]+', '-', name)
     return name
 
 
