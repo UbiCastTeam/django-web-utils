@@ -101,11 +101,12 @@ def register_module(models_module, options=dict()):
         ModelOptions.list_filter = lfields
         ModelOptions.search_fields = sfields
         ModelOptions.date_hierarchy = dfield
-        ModelOptions.actions = [_export_as_csv_action("CSV Export", fields=fields)]
 
         if options.get(attr_name):
             for key in options[attr_name].keys():
                 if hasattr(ModelOptions, key):
                     setattr(ModelOptions, key, options[attr_name][key])
-
+        if not ModelOptions.actions:
+            ModelOptions.actions = []
+        ModelOptions.actions.append(_export_as_csv_action("CSV Export", fields=ModelOptions.list_display))
         admin.site.register(model, ModelOptions)
