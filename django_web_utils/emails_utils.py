@@ -174,7 +174,9 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         if not lang:
             lang = base_ctx.get('lang')
             if not lang:
-                lang = 'en'
+                lang = settings.LANGUAGE_CODE[:2]
+                if not lang:
+                    lang = 'en'
         if lang != last_lang:
             last_lang = lang
             translation.activate(lang)
