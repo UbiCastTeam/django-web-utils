@@ -132,8 +132,8 @@ class BaseDaemon(object):
         try:
             if not os.path.exists(os.path.dirname(self.get_conf_path())):
                 os.makedirs(os.path.dirname(self.get_conf_path()))
-            with open(self.get_conf_path(), 'w+') as fd:
-                fd.write(content)
+            with open(self.get_conf_path(), 'w+') as fo:
+                fo.write(content)
         except Exception:
             return False
         return True
@@ -161,8 +161,8 @@ class BaseDaemon(object):
                 self.exit(130)
         elif self._command == 'clear_log':
             if os.path.exists(self.get_log_path()):
-                with open(self.get_log_path(), 'w') as fd:
-                    fd.write('')
+                with open(self.get_log_path(), 'w') as fo:
+                    fo.write('')
             print('Log file cleared for %s.' % self.get_name(), file=sys.stdout)
         else:
             print(self.USAGE % self.daemon_path, file=sys.stderr)
@@ -267,12 +267,14 @@ class BaseDaemon(object):
         '''check if the daemon is already launched and return its pid if it is, else None'''
         pid = None
         try:
-            with open(self.get_pid_path(), 'r') as fd:
-                pid = int(fd.read())
+            with open(self.get_pid_path(), 'r') as fo:
+                pid = int(fo.read())
         except Exception:
             pass
         else:
-            if pid and os.system('ps -p %s > /dev/null' % pid) != 0:
+            mod = sys.modules[self.__class__.__module__]
+            if pid and os.system('ps -p %s -f | grep "%s" >/dev/null' % (pid, os.path.basename(mod.__file__))) != 0:
+                os.remove(self.get_pid_path())
                 pid = None
         return pid
 
@@ -282,8 +284,8 @@ class BaseDaemon(object):
         try:
             if not os.path.exists(pid_dir):
                 os.makedirs(pid_dir)
-            with open(self.get_pid_path(), 'w+') as fd:
-                fd.write(str(os.getpid()))
+            with open(self.get_pid_path(), 'w+') as fo:
+                fo.write(str(os.getpid()))
         except Exception as e:
             print('Cannot write pid into pidfile %s' % self.get_pid_path(), file=sys.stderr)
             raise e
@@ -294,11 +296,11 @@ class BaseDaemon(object):
         if self._should_daemonize:
             # sys.stderr is not visible if daemonized
             try:
-                with open('/tmp/daemon-error_%s' % self.get_name(), 'w+') as fd:
-                    fd.write('Date: %s (local time).\n\n' % datetime.datetime.now())
+                with open('/tmp/daemon-error_%s' % self.get_name(), 'w+') as fo:
+                    fo.write('Date: %s (local time).\n\n' % datetime.datetime.now())
                     if msg:
-                        fd.write(msg + '\n\n')
-                    fd.write(traceback.format_exc())
+                        fo.write(msg + '\n\n')
+                    fo.write(traceback.format_exc())
             except Exception as e:
                 print(e, file=sys.stderr)
         try:
