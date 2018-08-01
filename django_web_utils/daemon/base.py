@@ -36,7 +36,7 @@ class BaseDaemon(object):
     SERVER_DIR = None  # Dir to append in sys.path
     SETTINGS_MODULE = 'settings'
 
-    USAGE = '''USAGE: %s start|restart|stop|clear_log [-n] [-f] [*options]
+    USAGE = '''USAGE: %s start|restart|stop|clear_log [-n] [-s] [-f] [*options]
     -n: launch daemon in current thread and not in background
     -s: allow simultaneous execution
     -f: force log to use a file and not the standard output'''
