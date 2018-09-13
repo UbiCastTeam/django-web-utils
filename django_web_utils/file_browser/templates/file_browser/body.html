@@ -14,9 +14,9 @@
 <div class="content-place">
     <div class="title-bar">
         <span class="buttons-bar">
-            <button class="file-browser-btn btn-add-folder" id="fm_btn_add_folder">{% trans "Add a folder" %}</button>
-            <button class="file-browser-btn btn-add-file" id="fm_btn_add_file">{% trans "Add a file" %}</button>
-            <button class="file-browser-btn btn-search" id="fm_btn_search">{% trans "Search" %}</button>
+            <button type="button" class="file-browser-btn btn-add-folder" id="fm_btn_add_folder">{% trans "Add a folder" %}</button>
+            <button type="button" class="file-browser-btn btn-add-file" id="fm_btn_add_file">{% trans "Add a file" %}</button>
+            <button type="button" class="file-browser-btn btn-search" id="fm_btn_search">{% trans "Search" %}</button>
         </span>
         <h2 id="path_bar"></h2>
     </div>
@@ -24,8 +24,8 @@
         {% csrf_token %}
         {% if messages %}
             <div class="messages-container">
-                <div class="file-browser-btn show-messages-btn" onclick="javascript: fbrowser.show_messages();">{% trans "Show messages" %}</div>
-                <div class="file-browser-btn hide-messages-btn" onclick="javascript: fbrowser.hide_messages();">{% trans "Hide messages" %}</div>
+                <button type="button" class="file-browser-btn show-messages-btn" onclick="javascript: fbrowser.show_messages();">{% trans "Show messages" %}</button>
+                <button type="button" class="file-browser-btn hide-messages-btn" onclick="javascript: fbrowser.hide_messages();">{% trans "Hide messages" %}</button>
                 <div class="messages-list">
                     <!-- django message block -->
                     {% for message in messages %}
@@ -64,7 +64,7 @@
                 <option value="mdate-desc">{% trans "modification date" %} ↓</option>
             </select>
         </span>
-        <span><button id="fm_btn_refresh">{% trans "Refresh" %}</button></span>
+        <span><button type="button" id="fm_btn_refresh">{% trans "Refresh" %}</button></span>
     </div>
 </div>
 

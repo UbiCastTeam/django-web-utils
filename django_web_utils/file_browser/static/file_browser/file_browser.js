@@ -186,16 +186,16 @@ FileBrowser.prototype.get_tree_dirs = function (dirs, $container, flat_tree, rel
         var dir_relative_path = relative_path+dirs[i].dir_name+"/";
         flat_tree.push({ path: dir_relative_path, name: dirs[i].dir_name, level: level });
         var $li = $("<li class=\"closed\"></li>");
-        var $span;
+        var $btn;
         if (dirs[i].sub_dirs.length > 0) {
-            $span = $("<span class=\"list-entry\"></span>");
-            $span.click({ obj: this, dir_name: dirs[i].dir_name, relative_path: dir_relative_path }, function (evt) {
+            $btn = $("<button type=\"button\" class=\"list-entry\"></button>");
+            $btn.click({ obj: this, dir_name: dirs[i].dir_name, relative_path: dir_relative_path }, function (evt) {
                 evt.data.obj.toggle(evt.data.relative_path);
             });
+        } else {
+            $btn = $("<button type=\"button\" class=\"list-none\"></button>");
         }
-        else
-            $span = $("<span class=\"list-none\"></span>");
-        $li.append($span);
+        $li.append($btn);
         $li.append("<a href=\"#"+dir_relative_path+"\">"+dirs[i].dir_name+"</a>");
         if (dirs[i].sub_dirs.length > 0) {
             var $sub_cont = $("<ul class=\"sub-menu\"></ul>");
@@ -297,9 +297,9 @@ FileBrowser.prototype.parse_content_response = function (response) {
             }
             html += "</a>";
             if (!file.isprevious) {
-                html += "<span class=\"file-delete\" title=\""+this.translate("Delete")+"\"></span>";
-                html += "<span class=\"file-rename\" title=\""+this.translate("Rename")+"\"></span>";
-                html += "<span class=\"file-move\" title=\""+this.translate("Move")+"\"></span>";
+                html += "<button type=\"button\" class=\"file-delete\" title=\""+this.translate("Delete")+"\"></button>";
+                html += "<button type=\"button\" class=\"file-rename\" title=\""+this.translate("Rename")+"\"></button>";
+                html += "<button type=\"button\" class=\"file-move\" title=\""+this.translate("Move")+"\"></button>";
             }
             html += "</div>";
             var $entry = $(html);
