@@ -16,7 +16,7 @@ logger = logging.getLogger('djwutils.forms_utils')
 class FileInfo():
     def __init__(self, path):
         self.name = os.path.basename(path) if path else ''
-        self.url = ''
+        self.url = '#'  # if no url, the value is ignored in the Django widget
 
     def __str__(self):
         return self.name
@@ -25,14 +25,10 @@ class FileInfo():
 # NoLinkClearableFileInput field
 # ----------------------------------------------------------------------------
 class NoLinkClearableFileInput(dj_forms.ClearableFileInput):
-    template_with_initial = (
-        '%(initial_text)s: <b>%(initial)s</b> '
-        '%(clear_template)s<br />%(input_text)s: %(input)s'
-    )
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, *args, **kwargs):
         obj_value = FileInfo(value) if isinstance(value, str) else value
-        return super(NoLinkClearableFileInput, self).render(name, obj_value, attrs)
+        return super().render(name, obj_value, *args, **kwargs)
 
 
 # ProtectedFileField field
@@ -43,7 +39,7 @@ class ProtectedFileField(dj_forms.FileField):
     '''
 
     def __init__(self, *args, **kwargs):
-        super(ProtectedFileField, self).__init__(widget=NoLinkClearableFileInput(), *args, **kwargs)
+        super().__init__(widget=NoLinkClearableFileInput(), *args, **kwargs)
 
     @classmethod
     def handle_uploaded_file(cls, ufile, upload_to, validator=None):
