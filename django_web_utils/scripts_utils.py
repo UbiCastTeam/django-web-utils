@@ -27,6 +27,10 @@ def log_err(msg, color=None):
     sys.stderr.flush()
 
 
+def log_info(msg):
+    log(msg, Colors.TEAL)
+
+
 def log_succes(msg):
     log(msg, Colors.GREEN)
 
@@ -41,8 +45,7 @@ def log_error(msg):
 
 def run_cmd(cmd):
     shell = not isinstance(cmd, (list, tuple))
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=sys.stdout, stderr=sys.stderr, shell=shell)
-    p.communicate()
+    p = subprocess.run(cmd, stdin=subprocess.PIPE, stdout=sys.stdout, stderr=sys.stderr, shell=shell)
     sys.stdout.flush()
     sys.stderr.flush()
     return p.returncode == 0
@@ -50,10 +53,9 @@ def run_cmd(cmd):
 
 def get_output(cmd):
     shell = not isinstance(cmd, (list, tuple))
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr, shell=shell)
-    out, err = p.communicate()
+    p = subprocess.run(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr, shell=shell)
     sys.stderr.flush()
-    return p.returncode == 0, str(out, 'utf-8').strip() if out else ''
+    return p.returncode == 0, p.stdout.decode('utf-8') if p.stdout else ''
 
 
 def create_link(src, dst):
@@ -61,8 +63,8 @@ def create_link(src, dst):
 
 
 def is_different(src, dst):
-    p1 = subprocess.Popen(['diff', src, dst], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr)
-    p2 = subprocess.Popen(['grep', '\-\-\-'], stdin=p1.stdout, stdout=subprocess.PIPE, stderr=sys.stderr)
+    p1 = subprocess.Popen(['diff', '-Naur', src, dst], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr)
+    p2 = subprocess.Popen(['grep', '--', '---'], stdin=p1.stdout, stdout=subprocess.PIPE, stderr=sys.stderr)
     p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
     p2.communicate()
     sys.stderr.flush()
