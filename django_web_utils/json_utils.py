@@ -94,7 +94,9 @@ def json_view(function=None, methods=None, login_required=False):
             except Exception:
                 logger = logging.getLogger('django.request')
                 logger.error('Internal server error: %s', request.get_full_path(), exc_info=traceback.extract_stack(), extra={'status_code': 500, 'request': request})
-                return failure_response(code=500, error='%s (500)' % _('Internal server error'))
+                response = failure_response(code=500, error='%s (500)' % _('Internal server error'))
+                response._has_been_logged = True
+                return response
         return _wrapped_view
     if function:
         return decorator(function)
