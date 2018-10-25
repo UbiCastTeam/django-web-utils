@@ -65,22 +65,6 @@ def failure_response(*args, **kwargs):
     return HttpResponse(json.dumps(kwargs), content_type='application/json', status=code)
 
 
-# classic errors classes
-# ----------------------------------------------------------------------------
-class JsonHttp400(Exception):
-    pass
-
-
-class JsonHttp401(Exception):
-    pass
-
-
-JsonHttp403 = PermissionDenied
-
-
-JsonHttp404 = Http404
-
-
 # json_view decorator
 # ----------------------------------------------------------------------------
 def json_view(function=None, methods=None, login_required=False):
@@ -101,15 +85,11 @@ def json_view(function=None, methods=None, login_required=False):
             try:
                 # Check login
                 if login_required and not request.user.is_authenticated:
-                    raise JsonHttp401()
+                    return failure_response(code=401, error='%s (401)' % _('Authentication required'))
                 return fct(request, *args, **kwargs)
-            except JsonHttp400:
-                return failure_response(code=400, error='%s (400)' % _('Bad request'))
-            except JsonHttp401:
-                return failure_response(code=401, error='%s (401)' % _('Authentication required'))
-            except JsonHttp403:
+            except PermissionDenied:
                 return failure_response(code=403, error='%s (403)' % _('Access denied'))
-            except JsonHttp404:
+            except Http404:
                 return failure_response(code=404, error='%s (404)' % _('Page not found'))
             except Exception:
                 logger = logging.getLogger('django.request')
