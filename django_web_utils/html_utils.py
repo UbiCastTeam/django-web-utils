@@ -72,7 +72,7 @@ def unescape(text):
 def get_meta_tag_text(text):
     result = strip_html_tags(text)
     result = unescape(result)
-    result = result.replace("\"", "''")
+    result = result.strip().replace('"', '\'\'')
     return result
 
 
@@ -101,10 +101,10 @@ class TextHTMLParser(HTMLParser):
         self._length = 0
         self._stop = False
         self._tags_to_end = list()
-        
+
         self._max_length = max_length
         self.feed(html_text)
-    
+
     def handle_starttag(self, tag, attrs):
         if not self._stop:
             self._short += '<%s' % tag
@@ -121,14 +121,14 @@ class TextHTMLParser(HTMLParser):
             if len(self._tags_to_end) != 0:
                 if self._tags_to_end[0] == tag:
                     self._tags_to_end.pop(0)
-    
+
     def handle_startendtag(self, tag, attrs):
         if not self._stop:
             self._short += '<%s' % tag
             for attr in attrs:
                 self._short += ' %s="%s"' % (attr[0], attr[1])
             self._short += '/>'
-    
+
     def handle_data(self, data):
         if not self._stop:
             if self._length + len(data) > self._max_length:
@@ -147,18 +147,18 @@ class TextHTMLParser(HTMLParser):
         if not self._stop:
             self._short += '&#%s;' % name
             self._length += 1
-    
+
     def handle_entityref(self, name):
         if not self._stop:
             self._short += '&%s;' % name
             self._length += 1
-    
+
     def _insert_tags_end(self):
         for tag in self._tags_to_end:
             self._short += '</%s>' % tag
-    
+
     def get_short(self):
-        return self._short
+        return self._short.strip()
 
 
 def get_short_text(html_text, max_length=300, margin=100):
