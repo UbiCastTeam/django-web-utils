@@ -344,6 +344,7 @@ html.file-browser-default {
 .file-browser .file-block.file-avi .file-icon { background-image: url("img/types/video.png"); }
 .file-browser .file-block.file-7z .file-icon,
 .file-browser .file-block.file-bz2 .file-icon,
+.file-browser .file-block.file-deb .file-icon,
 .file-browser .file-block.file-gz .file-icon,
 .file-browser .file-block.file-xz .file-icon,
 .file-browser .file-block.file-zip .file-icon { background-image: url("img/types/zip.png"); }
