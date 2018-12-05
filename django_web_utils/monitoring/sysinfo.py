@@ -40,11 +40,18 @@ def get_system_info(package=None, module=None, extra=None):
     tplt_args['info_package'] = []
     tplt_args['info_package'].append(dict(label=_('Version'), value=version))
     tplt_args['info_package'].append(dict(label=_('Revision'), value=revision))
+    tplt_args['info_package'].append(dict(label=_('Python version'), value=sys.version))
     dj_version = getattr(django, 'VERSION', '?')
     if isinstance(dj_version, tuple):
         dj_version = '.'.join([str(i) for i in dj_version])
     tplt_args['info_package'].append(dict(label=_('Django version'), value=dj_version))
-    tplt_args['info_package'].append(dict(label=_('Python version'), value=sys.version))
+    try:
+        from django.conf import settings
+        db_engine = ', '.join([db['ENGINE'] for db in settings.DATABASES.values()])
+    except Exception:
+        pass
+    else:
+        tplt_args['info_package'].append(dict(label=_('Database engine'), value=db_engine))
     tplt_args['local_repo'] = local_repo
     tplt_args['version'] = version
     tplt_args['revision'] = revision
