@@ -19,6 +19,7 @@ The email content
 import datetime
 import logging
 import os
+import socket
 import traceback
 # Django
 from django.conf import settings
@@ -274,7 +275,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
         return True, 'Debug mode is enabled, no emails were sent.'
 
     fieldset_style = 'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'
-    content = '<div style="margin-bottom: 8px;">Message sent at: %s<br/>\nUnix user: %s</div>' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), os.environ.get('USER'))
+    content = '<div style="margin-bottom: 8px;">Message sent at: %s<br/>\nUnix user: %s<br/>\nSystem hostname: %s</div>' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), os.environ.get('USER'), socket.gethostname())
     # Error information
     if error:
         content += '<fieldset %s>\n' % fieldset_style
@@ -286,13 +287,13 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
     content += '<legend><b> Traceback </b></legend>\n'
     content += '<div style="color: #800;">%s</div>\n' % html_utils.get_html_traceback()
     content += '</fieldset>\n\n'
-    # Request's info
+    # Request info
     if request:
         left_col_style = 'vertical-align: top; color: #666; padding-right: 8px; text-align: right;'
         right_col_style = 'vertical-align: top;'
-        # Main request's info
+        # Main request info
         content += '<fieldset %s>\n' % fieldset_style
-        content += '<legend><b> Main request\'s info </b></legend>\n'
+        content += '<legend><b> Main request info </b></legend>\n'
         content += '<table>\n'
         content += '<tr> <td style="%s"><b>HTTP_USER_AGENT</b></td>\n' % left_col_style
         content += '     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, conditional_escape(request.META.get('HTTP_USER_AGENT', 'unknown')))
@@ -300,9 +301,9 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
         content += '     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, conditional_escape(request.META.get('REMOTE_ADDR', 'unknown')))
         content += '</table>\n'
         content += '</fieldset>\n\n'
-        # Other request's info
+        # Other request info
         content += '<fieldset %s>\n' % fieldset_style
-        content += '<legend><b> Other request\'s info </b></legend>\n'
+        content += '<legend><b> Other request info </b></legend>\n'
         content += '<table>\n'
         keys = list(request.META.keys())
         keys.sort()
