@@ -41,7 +41,7 @@ def daemonize(redirect_to=None, rundir='/', umask=0o022, close_all_files=False):
             pid = os.fork()  # Fork a second child.
         except OSError as e:
             raise Exception('%s [%d]' % (e.strerror, e.errno))
-    
+
         if pid == 0:  # The second child.
             # Since the current working directory may be a mounted filesystem, we
             # avoid the issue of not being able to unmount the filesystem at

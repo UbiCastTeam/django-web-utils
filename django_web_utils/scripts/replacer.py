@@ -58,7 +58,7 @@ Parameters:
             sys.stderr.write('Missing argument after a string to be replaced.\n')
             sys.stderr.write(self.USAGE)
             return 1
-        
+
         return self.replace(replacements, path, ignore)
 
     def replace(self, replacements, path=None, ignore=None):

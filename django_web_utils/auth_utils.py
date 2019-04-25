@@ -18,7 +18,7 @@ def login_required_basicauth(function):
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated:
             return function(request, *args, **kwargs)
-        
+
         msg = 'Access authentication'
         if request.META.get('HTTP_AUTHORIZATION'):
             to_decode = request.META['HTTP_AUTHORIZATION']
@@ -40,7 +40,7 @@ def login_required_basicauth(function):
                             msg = 'Your account has been disabled !'
                     else:
                         msg = 'Your username and password were incorrect.'
-        
+
         response = HttpResponse(msg, status=401)
         response['WWW-Authenticate'] = 'Basic realm="Access authentication"'
         return response

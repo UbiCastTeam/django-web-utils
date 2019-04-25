@@ -42,7 +42,7 @@ def run_as(username, umask=0o22, exit_on_error=True):
     """
     if get_login() == username:
         return
-    
+
     try:
         pwent = pwd.getpwnam(username)
     except KeyError as e:
@@ -51,19 +51,19 @@ def run_as(username, umask=0o22, exit_on_error=True):
             sys.exit(1)
         else:
             raise
-    
+
     os.umask(umask)
     home = pwent.pw_dir
     try:
         os.chdir(home)
     except OSError:
         os.chdir('/')
-    
+
     groups = list()
     for group in grp.getgrall():
         if username in group.gr_mem:
             groups.append(group.gr_gid)
-    
+
     # drop privs to user
     os.setgroups(groups)
     os.setgid(pwent.pw_gid)
@@ -91,7 +91,7 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
     else:
         cmd_prompt = 'sudo%s su %s -c "%%s"' % ('' if is_root else ' -kS', user)
         need_password = False if is_root else True
-    
+
     command = cmd_prompt % cmd
     p = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     if need_password:

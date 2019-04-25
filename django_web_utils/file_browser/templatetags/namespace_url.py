@@ -12,4 +12,5 @@ def namespace_url(namespace, view_name, *args, **kwargs):
     else:
         return reverse(view_name, *args, **kwargs)
 
+
 register.simple_tag(namespace_url)

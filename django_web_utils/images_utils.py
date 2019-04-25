@@ -36,7 +36,7 @@ def get_image_info(path):
         file_size = os.path.getsize(path)
         file_extension = path.split('.')[-1]
         file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(path))
-    
+
     size = (0, 0)
     try:
         img = Image.open(path)

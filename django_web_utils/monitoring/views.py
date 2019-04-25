@@ -102,7 +102,7 @@ def monitoring_command(request):
             raise Http404()
         all_daemons = False
         names = [name]
-    
+
     message = ''
     for name in names:
         daemon = info.DAEMONS.get(name)

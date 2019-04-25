@@ -43,6 +43,8 @@ class LDAPSettings(object):
     BIND_DN = ''
     BIND_PASSWORD = ''
     TIMEOUT = 15
+
+
 lsettings = LDAPSettings
 
 
@@ -59,6 +61,7 @@ def update_ldap_settings(s, prefix=None):
         for name in dir(LDAPSettings):
             if not name.startswith('_') and hasattr(s, '%s_%s' % (prefix, name)):
                 setattr(lsettings, name, getattr(s, '%s_%s' % (prefix, name)))
+
 
 # Update settings with Django settings file
 update_ldap_settings(settings, getattr(settings, 'LDAP_SETTINGS_PREFIX', None))

@@ -8,9 +8,10 @@ import csv
 from django.contrib import admin
 from django.db import models as dj_models
 from django.http import HttpResponse
+from django.utils.translation import ugettext_lazy as _
 
 
-def _export_as_csv_action(description="Export selected objects as CSV file", fields=None, exclude=None, header=True):
+def _export_as_csv_action(description=_('Export selected objects as CSV file'), fields=None, exclude=None, header=True):
     """
     This function returns an export csv action
     'fields' and 'exclude' work like in django ModelForm
@@ -108,5 +109,5 @@ def register_module(models_module, options=dict()):
                     setattr(ModelOptions, key, options[attr_name][key])
         if not ModelOptions.actions:
             ModelOptions.actions = []
-        ModelOptions.actions.append(_export_as_csv_action("CSV Export", fields=ModelOptions.list_display))
+        ModelOptions.actions.append(_export_as_csv_action(_('CSV export'), fields=ModelOptions.list_display))
         admin.site.register(model, ModelOptions)

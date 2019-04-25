@@ -201,7 +201,7 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
             else:
                 messages.success(request, _('Configuration file deleted.'))
             return HttpResponseRedirect(request.get_full_path())
-    
+
     # Prepare display
     size = mtime = ''
     if os.path.exists(path):

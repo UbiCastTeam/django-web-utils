@@ -13,7 +13,7 @@ class RGrepColor(object):
     IGNORE_BIG_LINES = True
     BIG_LINES_LENGTH = 500
     CASE_SENSITIVE = True
-    
+
     RED = '\033[91m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
@@ -21,10 +21,10 @@ class RGrepColor(object):
     PURPLE = '\033[95m'
     TEAL = '\033[96m'
     DEFAULT = '\033[0m'
-    
+
     def __init__(self):
         object.__init__(self)
-    
+
     def run(self, *args):
         args = list(args)
         if '-i' in args:
@@ -54,7 +54,7 @@ class RGrepColor(object):
             search = ' '.join(search)
             path = args[path_index]
         return self.rgrep(search, path)
-    
+
     def rgrep(self, search, path):
         print('Files with following extensions are ignored: %s%s%s' % (rgrep_color.PURPLE, ', '.join(self.IGNORED_EXTENSIONS), rgrep_color.DEFAULT))
         print('Following files are ignored: %s%s%s' % (rgrep_color.PURPLE, ', '.join(self.IGNORED_FILES), rgrep_color.DEFAULT))

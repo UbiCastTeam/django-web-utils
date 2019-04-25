@@ -22,7 +22,7 @@ def _add_to_zip(zip_file, path, ignored=None, path_in_zip=None):
 def add_to_zip(path, zip_path, ignored=None, prefix=None, append=True):
     if not os.path.exists(os.path.dirname(zip_path)):
         os.makedirs(os.path.dirname(zip_path))
-    
+
     if append and os.path.exists(zip_path):
         zip_file = zipfile.ZipFile(zip_path, 'a')
     else:

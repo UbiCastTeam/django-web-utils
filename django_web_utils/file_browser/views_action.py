@@ -84,7 +84,7 @@ def storage_action(request, namespace=None):
                 try:
                     os.makedirs(dir_path)
                 except Exception as e:
-                    msg = str(_('Failed to create folder.'))
+                    msg = '%s %s' % (_('Failed to create folder:'), e)
                     if action == 'upload-old':
                         messages.error(request, msg)
                         return HttpResponseRedirect('%s#%s' % (red_url, path))
