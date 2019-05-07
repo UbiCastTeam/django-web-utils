@@ -59,6 +59,6 @@ setup(
     packages=packages,
     package_data=package_data,
     scripts=[],
-    install_requires=['bleach', 'pil'],
+    install_requires=['bleach', 'Pillow'],
     setup_requires=['setuptools >= 3.3'],
 )
