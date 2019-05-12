@@ -16,7 +16,7 @@ def get_version(package=None, module=None):
     revision = ''
     if module:
         version = getattr(module, '__version__', '')
-        git_dir = module.__path__[0]
+        git_dir = list(module.__path__)[0]
         if os.path.islink(git_dir):
             git_dir = os.readlink(git_dir)
         if not os.path.exists(os.path.join(git_dir, '.git')):
