@@ -55,7 +55,7 @@ setup(
     author='Stéphane Diemer',
     author_email='stephane.diemer@ubicast.eu',
     url='https://github.com/UbiCastTeam/django-web-utils',
-    license='cc-by-sa',
+    license='LGPLv3',
     packages=packages,
     package_data=package_data,
     scripts=[],
