@@ -16,7 +16,6 @@ http://flake8.pycqa.org/en/latest/user/error-codes.html
 
 Ignored errors:
 - E501: line too long
-- E731: do not assign a lambda expression, use a def
 - W503: line break before binary operator (deprecated rule)
 - W505: doc line too long
 '''
@@ -35,7 +34,7 @@ class PyflakesColor(object):
     PURPLE = '\033[95m'
     TEAL = '\033[96m'
     DEFAULT = '\033[0m'
-    IGNORED = 'E501,E731,W503,W505'
+    IGNORED = 'E501,W503,W505'
 
     def __init__(self):
         object.__init__(self)
