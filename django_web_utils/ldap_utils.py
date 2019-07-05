@@ -36,7 +36,7 @@ class LDAPSettings(object):
     GROUP_MEMBERS_FIELD = 'memberUid'
     GROUP_MEMBERS_USE_DN = False
     START_TLS = False
-    TLS_VERSION = None  # ssl.PROTOCOL_SSLv23
+    TLS_VERSION = None  # ssl.PROTOCOL_TLSv1_2
     CHECK_CERT = True
     CA_CERT = None
     USE_SASL = False
@@ -77,7 +77,7 @@ def get_connection(bind_dn=None, bind_password=None):
             if lsettings.CHECK_CERT:
                 tls_params = dict(validate=ssl.CERT_REQUIRED)
             else:
-                tls_params = dict(validate=ssl.CERT_OPTIONAL)
+                tls_params = dict(validate=ssl.CERT_NONE)
             if lsettings.TLS_VERSION:
                 tls_params['version'] = lsettings.TLS_VERSION
             if lsettings.CA_CERT:
