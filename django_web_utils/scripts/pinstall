@@ -1,7 +1,0 @@
-#!/bin/bash
-if [[ $# > 0 ]]; then
-    cd $1
-    sudo python setup.py install
-else
-    sudo python setup.py install
-fi
