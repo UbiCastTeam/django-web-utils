@@ -4,15 +4,15 @@
 Daemon base class
 To create daemon (which can use django easily).
 '''
-import os
-import sys
-import subprocess
-import socket
-import imp
 import datetime
-import traceback
+import importlib.util
 import logging
 import logging.config
+import os
+import socket
+import subprocess
+import sys
+import traceback
 # django_web_utils
 from django_web_utils.daemon.daemonization import daemonize
 
@@ -117,7 +117,9 @@ class BaseDaemon(object):
         self.config = dict(self.DEFAULTS)
         if not os.path.exists(self.get_conf_path()):
             return False
-        cfg = imp.load_source('cfg', self.get_conf_path())
+        spec = importlib.util.spec_from_file_location('cfg', self.get_conf_path())
+        cfg = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cfg)
         for key in list(cfg.__dict__.keys()):
             if not key.startswith('__'):
                 self.config[key] = cfg.__dict__[key]
