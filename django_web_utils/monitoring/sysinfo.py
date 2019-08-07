@@ -22,13 +22,8 @@ def _additional_translations():
 
 
 def _get_output(cmd):
-    try:
-        p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=not isinstance(cmd, list))
-        out, err = p.communicate()
-    except OSError:
-        return ''
-    else:
-        return ((str(out, 'utf-8') if out else '') + (str(err, 'utf-8') if err else '')).strip()
+    p = subprocess.run(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=not isinstance(cmd, list))
+    return p.stdout.decode('utf-8').strip()
 
 
 def get_system_info(package=None, module=None, extra=None):

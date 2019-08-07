@@ -24,8 +24,7 @@ def _log(text=''):
 def _exec(*args):
     _log('>>> %s' % ' '.join(args))
     shell = len(args) == 1 and '|' in args[0]
-    p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=sys.stdout, stderr=sys.stderr, shell=shell)
-    p.communicate()
+    p = subprocess.run(args, stdin=subprocess.PIPE, stdout=sys.stdout, stderr=sys.stderr, shell=shell)
     sys.stdout.flush()
     return p.returncode
 

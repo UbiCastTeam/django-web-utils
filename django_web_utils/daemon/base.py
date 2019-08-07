@@ -338,10 +338,9 @@ class BaseDaemon(object):
 
         # execute restart command (if the daemon was not daemonized it will become so)
         cmd = 'python3 %s restart %s' % (self.daemon_path, ' '.join(argv))
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        out, err = p.communicate()
-        out = out.decode('utf-8') if out else ''
-        err = err.decode('utf-8') if err else ''
+        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out = p.stdout.decode('utf-8').strip()
+        err = p.stderr.decode('utf-8').strip()
         logger.debug('Restarting daemon.\n    Command: %s\n    Stdout: %s\n    Stderr: %s', cmd, out, err)
         if p.returncode != 0:
             logger.error('Error when restarting daemon:\n    %s', err)

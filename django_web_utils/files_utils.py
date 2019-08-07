@@ -17,10 +17,9 @@ def get_size(path, ignore_du_errors=True):
         return os.path.getsize(path)
     elif os.path.isdir(path):
         # "du" is much faster than getting size file of all files using python
-        p = subprocess.Popen(['du', '-sb', path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-        out, err = p.communicate()
-        out = out.decode('utf-8') if out else ''
-        err = err.decode('utf-8') if err else ''
+        p = subprocess.run(['du', '-sb', path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        out = p.stdout.decode('utf-8').strip()
+        err = p.stderr.decode('utf-8').strip()
         if not ignore_du_errors and p.returncode != 0:
             raise Exception('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
         try:
@@ -38,16 +37,16 @@ def get_unit(size=0, path=None):
     if path is not None:
         size = get_size(path)
     unit = _('B')
-    if size / 1024.0 >= 1:
+    if size > 1024:
         size /= 1024.0
         unit = _('KB')
-        if size / 1024.0 >= 1:
+        if size > 1024:
             size /= 1024.0
             unit = _('MB')
-            if size / 1024.0 >= 1:
+            if size > 1024:
                 size /= 1024.0
                 unit = _('GB')
-                if size / 1024.0 >= 1:
+                if size > 1024:
                     size /= 1024.0
                     unit = _('TB')
     size = round(size, 2)
