@@ -67,8 +67,12 @@ def get_system_info(package=None, module=None, extra=None):
             tplt_args['info_os'].append(dict(label=_(field), value=value))
     tplt_args['info_sections'].append(dict(label=_('OS'), info=tplt_args['info_os']))
     # HDD
-    tplt_args['info_hdd'] = [dict(label='', value=_get_output(['df', '-h']))]
-    tplt_args['info_sections'].append(dict(label=_('HDD'), info=tplt_args['info_hdd']))
+    dfh = _get_output(['df', '-h']).strip()
+    if dfh:
+        tplt_args['info_hdd'] = []
+        for value in dfh.split('\n'):
+            tplt_args['info_hdd'].append(dict(label='', value=value))
+        tplt_args['info_sections'].append(dict(label=_('HDD'), info=tplt_args['info_hdd']))
     # CPU
     cpuinfo_file = _get_output(['cat', '/proc/cpuinfo'])
     cpuinfo = {'total cores': 0}
@@ -138,10 +142,10 @@ def get_system_info(package=None, module=None, extra=None):
         tplt_args['info_memory'].append(dict(label=_('Failed to get information'), value=e))
     tplt_args['info_sections'].append(dict(label=_('Memory'), info=tplt_args['info_memory']))
     # Network
-    ifconfig = _get_output(['ifconfig', '-a']).strip()
-    if ifconfig:
+    ipaddr = _get_output(['ip', 'addr']).strip()
+    if ipaddr:
         tplt_args['info_network'] = []
-        for value in ifconfig.split('\n\n'):
+        for value in ipaddr.split('\n'):
             tplt_args['info_network'].append(dict(label='', value=value))
         tplt_args['info_sections'].append(dict(label=_('Network'), info=tplt_args['info_network']))
     # Sensors
