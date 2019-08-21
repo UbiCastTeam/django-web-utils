@@ -22,7 +22,10 @@ def _additional_translations():
 
 
 def _get_output(cmd):
-    p = subprocess.run(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=not isinstance(cmd, list))
+    try:
+        p = subprocess.run(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=not isinstance(cmd, list))
+    except Exception as e:
+        return str(e).strip()
     return p.stdout.decode('utf-8').strip()
 
 
