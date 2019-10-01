@@ -105,6 +105,7 @@ def get_connection(bind_dn=None, bind_password=None):
         connection = ldap3.Connection(**params)
 
         if lsettings.START_TLS:
+            connection.open()
             connection.start_tls()
 
         if not connection.bind():
