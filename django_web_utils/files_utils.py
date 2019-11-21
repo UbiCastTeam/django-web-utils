@@ -37,17 +37,17 @@ def get_unit(size=0, path=None):
     if path is not None:
         size = get_size(path)
     unit = _('B')
-    if size > 1024:
-        size /= 1024.0
+    if size > 1000:
+        size /= 1000.0
         unit = _('KB')
-        if size > 1024:
-            size /= 1024.0
+        if size > 1000:
+            size /= 1000.0
             unit = _('MB')
-            if size > 1024:
-                size /= 1024.0
+            if size > 1000:
+                size /= 1000.0
                 unit = _('GB')
-                if size > 1024:
-                    size /= 1024.0
+                if size > 1000:
+                    size /= 1000.0
                     unit = _('TB')
     size = round(size, 2)
     return size, unit
