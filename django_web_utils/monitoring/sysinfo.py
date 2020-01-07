@@ -7,7 +7,7 @@ import os
 import subprocess
 import sys
 # Django
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 import django
 # django_web_utils
 from django_web_utils.packages_utils import get_version

@@ -13,15 +13,15 @@ import grp
 import subprocess
 # Django
 try:
-    from django.utils.translation import ugettext
+    from django.utils.translation import gettext
 except Exception:
-    ugettext = None
+    gettext = None
 
 
 def _(text):
-    if ugettext:
+    if gettext:
         try:
-            return ugettext(text)
+            return gettext(text)
         except Exception:
             pass
     return text

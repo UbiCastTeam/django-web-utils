@@ -8,7 +8,7 @@ import csv
 from django.contrib import admin
 from django.db import models as dj_models
 from django.http import HttpResponse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 def _export_as_csv_action(description=_('Export selected objects as CSV file'), fields=None, exclude=None, header=True):

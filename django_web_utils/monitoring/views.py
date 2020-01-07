@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.http import Http404
 from django.shortcuts import render
 from django.utils.html import escape
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 # Django web utils
 from django_web_utils import json_utils
 from django_web_utils import system_utils

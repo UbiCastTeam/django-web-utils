@@ -9,7 +9,7 @@ import re
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 # Django web utils
 from django_web_utils import json_utils
 from django_web_utils.file_browser import config
