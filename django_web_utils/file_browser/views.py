@@ -127,7 +127,7 @@ def storage_content(request, namespace=None):
             total_nb_files += 1
             splitted = file_name.split('.')
             file_properties['ext'] = splitted[-1].lower() if len(splitted) > 0 else ''
-            if file_properties['ext'] in IMAGES_EXTENSION and size < 10485760:
+            if file_properties['ext'] in IMAGES_EXTENSION and size < 10000000:
                 # allow previes for images < 10MB
                 file_properties['preview'] = True
             # get modification time

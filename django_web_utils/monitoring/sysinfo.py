@@ -138,9 +138,9 @@ def get_system_info(package=None, module=None, extra=None):
             except ValueError:
                 continue
             mem_dict[key.strip()] = value
-        tplt_args['info_memory'].append(dict(label=_('Total'), value='%.2f %s' % ((mem_dict.get('MemTotal', 0) / 1048576.), _('GB'))))
-        tplt_args['info_memory'].append(dict(label=_('Free'), value='%.2f %s' % ((mem_dict.get('MemFree', 0) / 1048576.), _('GB'))))
-        tplt_args['info_memory'].append(dict(label=_('Cached'), value='%.2f %s' % ((mem_dict.get('Cached', 0) / 1048576.), _('GB'))))
+        tplt_args['info_memory'].append(dict(label=_('Total'), value='%.2f %s' % ((mem_dict.get('MemTotal', 0) / 1000000.), _('GB'))))
+        tplt_args['info_memory'].append(dict(label=_('Free'), value='%.2f %s' % ((mem_dict.get('MemFree', 0) / 1000000.), _('GB'))))
+        tplt_args['info_memory'].append(dict(label=_('Cached'), value='%.2f %s' % ((mem_dict.get('Cached', 0) / 1000000.), _('GB'))))
     except Exception as e:
         tplt_args['info_memory'].append(dict(label=_('Failed to get information'), value=e))
     tplt_args['info_sections'].append(dict(label=_('Memory'), info=tplt_args['info_memory']))
