@@ -7,29 +7,29 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-27 09:47+0100\n"
-"PO-Revision-Date: 2016-01-27 09:48+0100\n"
+"POT-Creation-Date: 2020-01-29 14:15+0100\n"
+"PO-Revision-Date: 2020-01-29 14:17+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: additional_translations.py:12
 msgid "B"
 msgstr "o"
 
 #: additional_translations.py:13
-msgid "KB"
-msgstr "Ko"
+msgid "kB"
+msgstr "ko"
 
 #: additional_translations.py:14
 msgid "MB"
 msgstr "Mo"
 
-#: additional_translations.py:15 sysinfo.py:172 sysinfo.py:173 sysinfo.py:174
+#: additional_translations.py:15 sysinfo.py:141 sysinfo.py:142 sysinfo.py:143
 msgid "GB"
 msgstr "Go"
 
@@ -37,145 +37,148 @@ msgstr "Go"
 msgid "TB"
 msgstr "To"
 
-#: sysinfo.py:20
+#: sysinfo.py:18
 msgid "Distributor ID"
 msgstr "Identifiant du distributeur"
 
-#: sysinfo.py:21
+#: sysinfo.py:19
 msgid "Description"
 msgstr "Description"
 
-#: sysinfo.py:22
+#: sysinfo.py:20
 msgid "Release"
-msgstr ""
+msgstr "Jalon"
 
-#: sysinfo.py:23
+#: sysinfo.py:21
 msgid "Codename"
 msgstr "Nom de code"
 
-#: sysinfo.py:87
+#: sysinfo.py:39
 msgid "Version"
 msgstr "Version"
 
-#: sysinfo.py:88
+#: sysinfo.py:40
 msgid "Revision"
 msgstr "Révision"
 
-#: sysinfo.py:92
-msgid "Django version"
-msgstr "Version de Django"
-
-#: sysinfo.py:93
-#| msgid "Django version"
+#: sysinfo.py:41
 msgid "Python version"
 msgstr "Version de Python"
 
-#: sysinfo.py:97
+#: sysinfo.py:45
+msgid "Django version"
+msgstr "Version de Django"
+
+#: sysinfo.py:52
+msgid "Database engine"
+msgstr "Moteur de base de données"
+
+#: sysinfo.py:56
 msgid "Software"
 msgstr "Logiciel"
 
-#: sysinfo.py:100
+#: sysinfo.py:59
 msgid "Uptime"
 msgstr "Durée de fonctionnement"
 
-#: sysinfo.py:101
+#: sysinfo.py:60
 msgid "Load"
 msgstr "Charge"
 
-#: sysinfo.py:102
+#: sysinfo.py:61
 msgid "Kernel"
 msgstr "Noyau"
 
-#: sysinfo.py:103
+#: sysinfo.py:62
 msgid "Hostname"
 msgstr "Nom d'hôte"
 
-#: sysinfo.py:104
+#: sysinfo.py:63
 msgid "Platform"
 msgstr "Plate-forme"
 
-#: sysinfo.py:112
+#: sysinfo.py:71
 msgid "OS"
 msgstr "OS"
 
-#: sysinfo.py:115
+#: sysinfo.py:78
 msgid "HDD"
 msgstr "HDD"
 
-#: sysinfo.py:143 sysinfo.py:151
+#: sysinfo.py:106 sysinfo.py:120
 msgid "Model"
 msgstr "Modèle"
 
-#: sysinfo.py:144
+#: sysinfo.py:107
 msgid "Cores"
 msgstr "Cœurs"
 
-#: sysinfo.py:145
+#: sysinfo.py:108
 msgid "Default frequency"
 msgstr "Fréquence nominale"
 
-#: sysinfo.py:146
+#: sysinfo.py:109
 msgid "Current frequency"
 msgstr "Fréquence courante"
 
-#: sysinfo.py:147
+#: sysinfo.py:110
 msgid "CPU"
 msgstr "CPU"
 
-#: sysinfo.py:158
+#: sysinfo.py:127
 msgid "Temperature"
 msgstr "Température"
 
-#: sysinfo.py:159
+#: sysinfo.py:128
 msgid "GPU"
 msgstr "GPU"
 
-#: sysinfo.py:172
+#: sysinfo.py:141
 msgid "Total"
 msgstr "Total"
 
-#: sysinfo.py:173
+#: sysinfo.py:142
 msgid "Free"
 msgstr "Libre"
 
-#: sysinfo.py:174
+#: sysinfo.py:143
 msgid "Cached"
 msgstr "En cache"
 
-#: sysinfo.py:176
+#: sysinfo.py:145
 msgid "Failed to get information"
 msgstr "Échec de l'obtention des informations"
 
-#: sysinfo.py:177
+#: sysinfo.py:146
 msgid "Memory"
 msgstr "Mémoire"
 
-#: sysinfo.py:184
+#: sysinfo.py:153
 msgid "Network"
 msgstr "Réseau"
 
-#: sysinfo.py:191
+#: sysinfo.py:160
 msgid "Sensors"
 msgstr "Capteurs"
 
-#: templates/monitoring/base.html:6 templates/monitoring/base.html.py:10
+#: templates/monitoring/base.html:6 templates/monitoring/base.html:10
 msgid "Daemons monitoring"
 msgstr "Surveillance des démons"
 
 #: templates/monitoring/config.html:5 templates/monitoring/config.html:41
-#: templates/monitoring/log.html.py:11 templates/monitoring/log.html:43
-#: templates/monitoring/log.html.py:66 templates/monitoring/panel.html:4
+#: templates/monitoring/log.html:11 templates/monitoring/log.html:43
+#: templates/monitoring/log.html:66 templates/monitoring/panel.html:4
 msgid "Back"
 msgstr "Retour"
 
 #: templates/monitoring/config.html:8 templates/monitoring/config.html:43
-#: templates/monitoring/log.html.py:14 templates/monitoring/log.html:46
-#: templates/monitoring/log.html.py:69
+#: templates/monitoring/log.html:14 templates/monitoring/log.html:46
+#: templates/monitoring/log.html:69
 msgid "Refresh"
 msgstr "Rafraîchir"
 
 #: templates/monitoring/config.html:11 templates/monitoring/config.html:45
-#: templates/monitoring/log.html.py:27 templates/monitoring/log.html:59
+#: templates/monitoring/log.html:27 templates/monitoring/log.html:59
 msgid "See raw content"
 msgstr "Voir le contenu brut"
 
@@ -191,7 +194,7 @@ msgstr "Outrepassement de la configuration"
 msgid "Configuration file size:"
 msgstr "Taille du fichier de configuration :"
 
-#: templates/monitoring/config.html:25 templates/monitoring/log.html.py:21
+#: templates/monitoring/config.html:25 templates/monitoring/log.html:21
 #: templates/monitoring/log.html:53
 msgid "Last modification:"
 msgstr "Dernière modification :"
@@ -208,23 +211,23 @@ msgstr "Réinitialiser le fichier"
 msgid "Apply modifications"
 msgstr "Appliquer les modifications"
 
-#: templates/monitoring/log.html:7 templates/monitoring/log.html.py:39
+#: templates/monitoring/log.html:7 templates/monitoring/log.html:39
 msgid "Clear"
 msgstr "Nettoyer"
 
-#: templates/monitoring/log.html:17 templates/monitoring/log.html.py:49
+#: templates/monitoring/log.html:17 templates/monitoring/log.html:49
 msgid "File size:"
 msgstr "Taille du fichier :"
 
-#: templates/monitoring/log.html:24 templates/monitoring/log.html.py:56
+#: templates/monitoring/log.html:24 templates/monitoring/log.html:56
 msgid "See complete file"
 msgstr "Voir le fichier complet"
 
-#: templates/monitoring/log.html:24 templates/monitoring/log.html.py:56
+#: templates/monitoring/log.html:24 templates/monitoring/log.html:56
 msgid "See only end"
 msgstr "Voir seulement la fin"
 
-#: templates/monitoring/log.html:75
+#: templates/monitoring/log.html:74
 msgid "Log file is empty."
 msgstr "Le fichier de journalisation est vide."
 
@@ -268,7 +271,7 @@ msgstr "Nettoyer tous les journaux"
 msgid "Actions"
 msgstr "Actions"
 
-#: templates/monitoring/panel.html:38 views.py:155
+#: templates/monitoring/panel.html:38 views.py:160
 msgid "log file"
 msgstr "fichier de journalisation"
 
@@ -340,28 +343,27 @@ msgstr "Cliquez pour entrer le mot de passe"
 msgid "server unreachable"
 msgstr "serveur inaccessible"
 
-#: utils.py:29
+#: utils.py:31
 msgid "Log file cleared."
 msgstr "Fichier de journalisation vidé."
 
-#: utils.py:34
+#: utils.py:36
 msgid "Invalid command."
 msgstr "Commande invalide."
 
-#: utils.py:37
+#: utils.py:39
 msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
-msgstr ""
-"La classe donnée n'est pas une sous classe de BaseDaemon de Django web utils."
+msgstr "La classe donnée n'est pas une sous classe de BaseDaemon de Django web utils."
 
-#: utils.py:45 utils.py:48
+#: utils.py:47 utils.py:50
 msgid "No valid target for command."
 msgstr "Aucune cible valide pour la commande."
 
-#: utils.py:55
+#: utils.py:57
 msgid "The daemon script cannot be found."
 msgstr "Le script du démon est introuvable."
 
-#: utils.py:142
+#: utils.py:150
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -372,32 +374,32 @@ msgstr ""
 "Seul la fin du fichier et le fichier brut sont accessibles.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:153
+#: utils.py:161
 msgid "Unable to display log file."
 msgstr "Impossible d'afficher le fichier de journalisation."
 
-#: utils.py:153 utils.py:181 utils.py:185 utils.py:192 utils.py:219
-#: utils.py:239
+#: utils.py:161 utils.py:189 utils.py:193 utils.py:200 utils.py:231
+#: utils.py:251
 msgid "Error:"
 msgstr "Erreur :"
 
-#: utils.py:181 utils.py:185
+#: utils.py:189 utils.py:193
 msgid "Unable to write configuration file."
 msgstr "Impossible d'écrire le fichier de configuration."
 
-#: utils.py:187
+#: utils.py:195
 msgid "Configuration file updated."
 msgstr "Fichier de configuration mis à jour."
 
-#: utils.py:192
+#: utils.py:200
 msgid "Unable to delete configuration file."
 msgstr "Impossible de supprimer le fichier de configuration."
 
-#: utils.py:194
+#: utils.py:202
 msgid "Configuration file deleted."
 msgstr "Fichier de configuration supprimé."
 
-#: utils.py:209
+#: utils.py:221
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -408,48 +410,51 @@ msgstr ""
 "Seul le fichier brut est accessible.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:219
+#: utils.py:231
 msgid "Unable to display configuration file."
 msgstr "Impossible d'afficher le fichier de configuration."
 
-#: utils.py:239
+#: utils.py:251
 msgid "Unable to read default configuration file."
 msgstr "Impossible de lire le fichier de configuration par défaut."
 
-#: views.py:24
+#: views.py:25
 msgid "You don't have the permission to access this url."
 msgstr "Vous n'avez pas la permission d'accéder à cette url."
 
-#: views.py:29 views.py:39
+#: views.py:30 views.py:40
 msgid "Please enter password."
 msgstr "Veuillez entrer le mot de passe."
 
-#: views.py:35
+#: views.py:36
 msgid "Invalid password."
 msgstr "Mot de passe incorrect."
 
-#: views.py:111
+#: views.py:115
 msgid "Invalid daemon name:"
 msgstr "Nom de démon invalide :"
 
-#: views.py:118
+#: views.py:122
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" successfully executed."
 msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a été exécutée avec succès."
 
-#: views.py:120
+#: views.py:124
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" failed."
 msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
 
-#: views.py:123
+#: views.py:127
 msgid "Command output:"
 msgstr "Sortie de la commande :"
 
-#: views.py:195
+#: views.py:202
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Éditer le fichier de configuration : %s"
+
+#~ msgid "KB"
+#~ msgstr "Ko"
 
 #~ msgid "Can not clear log file: %s"
 #~ msgstr "Impossible de vider le fichier de journalisation : %s"

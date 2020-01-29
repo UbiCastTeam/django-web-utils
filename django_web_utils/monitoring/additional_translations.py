@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 def _additional_translations():
     # Translations for sizes
     _('B')
-    _('KB')
+    _('kB')
     _('MB')
     _('GB')
     _('TB')

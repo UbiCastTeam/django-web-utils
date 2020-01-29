@@ -7,23 +7,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-27 09:47+0100\n"
-"PO-Revision-Date: 2016-01-27 09:48+0100\n"
+"POT-Creation-Date: 2020-01-29 14:16+0100\n"
+"PO-Revision-Date: 2020-01-29 14:16+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: additional_translations.py:12
 msgid "B"
 msgstr "o"
 
 #: additional_translations.py:13
-msgid "KB"
-msgstr "Ko"
+msgid "kB"
+msgstr "ko"
 
 #: additional_translations.py:14
 msgid "MB"
@@ -74,49 +74,49 @@ msgstr "Cacher les messages"
 msgid "Loading"
 msgstr "Chargement"
 
-#: templates/file_browser/body.html:44
+#: templates/file_browser/body.html:45
 msgid "Drop files here to add them"
 msgstr "Glissez vos fichiers ici pour les ajouter"
 
-#: templates/file_browser/body.html:46
+#: templates/file_browser/body.html:47
 msgid "Upload in progress"
 msgstr "Envoi en cours"
 
-#: templates/file_browser/body.html:53
+#: templates/file_browser/body.html:54
 msgid "Total size:"
 msgstr "Taille totale :"
 
-#: templates/file_browser/body.html:54
+#: templates/file_browser/body.html:55
 msgid "Number of folders:"
 msgstr "Nombre de dossiers :"
 
-#: templates/file_browser/body.html:55
+#: templates/file_browser/body.html:56
 msgid "Number of files:"
 msgstr "Nombre de fichiers :"
 
-#: templates/file_browser/body.html:56
+#: templates/file_browser/body.html:57
 msgid "Order by:"
 msgstr "Trier par :"
 
-#: templates/file_browser/body.html:58 templates/file_browser/body.html:59
+#: templates/file_browser/body.html:59 templates/file_browser/body.html:60
 msgid "name"
 msgstr "nom"
 
-#: templates/file_browser/body.html:60 templates/file_browser/body.html:61
+#: templates/file_browser/body.html:61 templates/file_browser/body.html:62
 msgid "size"
 msgstr "taille"
 
-#: templates/file_browser/body.html:62 templates/file_browser/body.html:63
+#: templates/file_browser/body.html:63 templates/file_browser/body.html:64
 msgid "modification date"
 msgstr "date de modification"
 
-#: templates/file_browser/body.html:66
+#: templates/file_browser/body.html:67
 msgid "Refresh"
 msgstr "Rafraîchir"
 
 #: templates/file_browser/script.html:12
 msgid "The folder is empty."
-msgstr "le dossier est vide."
+msgstr "Le dossier est vide."
 
 #: templates/file_browser/script.html:13
 msgid "Size:"
@@ -217,9 +217,9 @@ msgstr "Chemin de base invalide."
 msgid "No files in request."
 msgstr "Aucun fichier n'est présent dans la requête."
 
-#: views_action.py:87 views_action.py:141
-msgid "Failed to create folder."
-msgstr "Échec de la création du dossier."
+#: views_action.py:87
+msgid "Failed to create folder:"
+msgstr "Échec de la création du dossier :"
 
 #: views_action.py:95
 msgid "The file has been uploaded and is available at the location:"
@@ -227,8 +227,7 @@ msgstr "Le fichier a été envoyé et est disponible à l'adresse suivante :"
 
 #: views_action.py:97
 msgid "The files have been uploaded and are available at the locations:"
-msgstr ""
-"Les fichiers ont été envoyés et sont disponibles aux adresses suivantes :"
+msgstr "Les fichiers ont été envoyés et sont disponibles aux adresses suivantes :"
 
 #: views_action.py:126 views_action.py:164
 msgid "The name field is required."
@@ -241,6 +240,10 @@ msgstr "Nom invalide."
 #: views_action.py:139
 msgid "Folder already exists."
 msgstr "Le dossier existe déjà."
+
+#: views_action.py:141
+msgid "Failed to create folder."
+msgstr "Échec de la création du dossier."
 
 #: views_action.py:142
 msgid "Folder created."
@@ -313,6 +316,9 @@ msgstr "Pas de résultat pour \"%(search)s\"."
 #: views_action.py:289
 msgid "Invalid action requested."
 msgstr "L'action demandée est invalide."
+
+#~ msgid "KB"
+#~ msgstr "Ko"
 
 #~ msgid "Invalid request method."
 #~ msgstr "Méthode de requête invalide."

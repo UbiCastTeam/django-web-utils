@@ -39,7 +39,7 @@ def get_unit(size=0, path=None):
     unit = _('B')
     if size > 1000:
         size /= 1000.0
-        unit = _('KB')
+        unit = _('kB')
         if size > 1000:
             size /= 1000.0
             unit = _('MB')
