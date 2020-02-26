@@ -42,6 +42,7 @@ class LDAPSettings(object):
     USE_SASL = False
     BIND_DN = ''
     BIND_PASSWORD = ''
+    PAGE_SIZE = 1000
     TIMEOUT = 15
 
 
@@ -131,7 +132,7 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
             attrs.extend(lsettings.VIRTUAL_ATTRIBUTES.split(','))
     # search user lsettings
     try:
-        entry_generator = connection.extend.standard.paged_search(base_dn, search_filter=sfilter, attributes=attrs, paged_size=1000, time_limit=lsettings.TIMEOUT, generator=True)
+        entry_generator = connection.extend.standard.paged_search(base_dn, search_filter=sfilter, attributes=attrs, paged_size=lsettings.PAGE_SIZE, time_limit=lsettings.TIMEOUT, generator=True)
         results = list()
         for entry in entry_generator:
             if 'dn' in entry and 'raw_attributes' in entry:
