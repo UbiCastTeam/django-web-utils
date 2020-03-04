@@ -49,7 +49,7 @@ def get_unit(size=0, path=None):
                 if size > 1000:
                     size /= 1000.0
                     unit = _('TB')
-    size = round(size, 2)
+    size = round(size, 1)
     return size, unit
 
 
