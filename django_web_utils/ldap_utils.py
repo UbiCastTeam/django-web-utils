@@ -33,8 +33,11 @@ class LDAPSettings(object):
     USER_EMAIL_FIELD = 'mail'
     USER_GROUPS_FIELD = 'gidNumber'
     USER_GROUPS_USE_DN = False
+    GROUP_NAME_FIELD = 'cn'
     GROUP_MEMBERS_FIELD = 'memberUid'
     GROUP_MEMBERS_USE_DN = False
+    GROUP_SUB_GROUPS_FIELD = None
+    GROUP_SUB_GROUPS_USE_DN = False
     START_TLS = False
     TLS_VERSION = None  # ssl.PROTOCOL_TLSv1_2
     CHECK_CERT = True
@@ -185,6 +188,32 @@ def get_user_info(username, connection=None):
     return results[0]['dn'], results[0]['attributes']
 
 
+# get_group_sub_groups function
+# ----------------------------------------------------------------------------
+def get_group_sub_groups(group_dn, group_attrs, level=1, connection=None):
+    sub_groups = list()
+    if lsettings.GROUP_SUB_GROUPS_FIELD and (lsettings.GROUP_SUB_GROUPS_USE_DN or lsettings.GROUP_NAME_FIELD) and hasattr(group_attrs, 'items') and group_attrs.get(lsettings.GROUP_SUB_GROUPS_FIELD):
+        for ref in group_attrs[lsettings.GROUP_SUB_GROUPS_FIELD]:
+            if not ref:
+                continue
+            if lsettings.GROUP_SUB_GROUPS_USE_DN:
+                if ref == group_dn:
+                    continue  # avoid infinite group loops
+                if '=' not in ref:
+                    continue  # value is not a valid dn
+                results = ldap_search(ref, lsettings.GROUP_LIST_FILTER, connection=connection)
+            else:
+                results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, '(%s=%s)' % (lsettings.GROUP_NAME_FIELD, escape_filter_chars(ref)), connection=connection)
+            for sub_group in results:
+                if sub_group['dn'] == group_dn:
+                    continue  # avoid infinite group loops
+                sub_groups.append(sub_group)
+                sub_group_attrs = sub_group['attributes'] if hasattr(sub_group['attributes'], 'items') else dict()
+                sub_group_attrs['_sub_group_level'] = [level]
+                sub_groups.extend(get_group_sub_groups(sub_group['dn'], sub_group_attrs, level=level + 1, connection=connection))
+    return sub_groups
+
+
 # get_user_groups function
 # ----------------------------------------------------------------------------
 def get_user_groups(user_dn, user_attrs, connection=None):
@@ -195,7 +224,7 @@ def get_user_groups(user_dn, user_attrs, connection=None):
     if lsettings.GROUP_MEMBERS_FIELD:
         if lsettings.GROUP_MEMBERS_USE_DN:
             search_filter = '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, escape_filter_chars(user_dn))
-        elif hasattr(user_attrs, 'items') and user_attrs.get(lsettings.USER_ID_FIELD):
+        elif lsettings.USER_ID_FIELD and hasattr(user_attrs, 'items') and user_attrs.get(lsettings.USER_ID_FIELD):
             search_filter = '(%s=%s)' % (lsettings.GROUP_MEMBERS_FIELD, escape_filter_chars(user_attrs[lsettings.USER_ID_FIELD][0]))
         else:
             search_filter = None
@@ -203,6 +232,8 @@ def get_user_groups(user_dn, user_attrs, connection=None):
             results = ldap_search(lsettings.GROUP_SEARCH_SCOPE, search_filter, connection=connection)
             for group in results:
                 groups[group['dn']] = group['attributes']
+                for sub_group in get_group_sub_groups(group['dn'], group['attributes'], connection=connection):
+                    groups[sub_group['dn']] = sub_group['attributes']
     # get groups referred by user object
     if lsettings.USER_GROUPS_FIELD and hasattr(user_attrs, 'items') and user_attrs.get(lsettings.USER_GROUPS_FIELD):
         for name in user_attrs[lsettings.USER_GROUPS_FIELD]:
@@ -213,6 +244,8 @@ def get_user_groups(user_dn, user_attrs, connection=None):
             for group in results:
                 if group['dn'] not in groups:
                     groups[group['dn']] = group['attributes']
+                    for sub_group in get_group_sub_groups(group['dn'], group['attributes'], connection=connection):
+                        groups[sub_group['dn']] = sub_group['attributes']
     return groups
 
 
