@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-29 14:16+0100\n"
+"POT-Creation-Date: 2020-06-19 14:18+0200\n"
 "PO-Revision-Date: 2020-01-29 14:16+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
@@ -227,7 +227,8 @@ msgstr "Le fichier a été envoyé et est disponible à l'adresse suivante :"
 
 #: views_action.py:97
 msgid "The files have been uploaded and are available at the locations:"
-msgstr "Les fichiers ont été envoyés et sont disponibles aux adresses suivantes :"
+msgstr ""
+"Les fichiers ont été envoyés et sont disponibles aux adresses suivantes :"
 
 #: views_action.py:126 views_action.py:164
 msgid "The name field is required."
@@ -316,12 +317,3 @@ msgstr "Pas de résultat pour \"%(search)s\"."
 #: views_action.py:289
 msgid "Invalid action requested."
 msgstr "L'action demandée est invalide."
-
-#~ msgid "KB"
-#~ msgstr "Ko"
-
-#~ msgid "Invalid request method."
-#~ msgstr "Méthode de requête invalide."
-
-#~ msgid "Unknown action."
-#~ msgstr "Action inconnue."

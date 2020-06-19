@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-29 14:15+0100\n"
-"PO-Revision-Date: 2020-01-29 14:17+0100\n"
+"POT-Creation-Date: 2020-06-19 14:18+0200\n"
+"PO-Revision-Date: 2020-06-19 14:18+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -29,7 +29,7 @@ msgstr "ko"
 msgid "MB"
 msgstr "Mo"
 
-#: additional_translations.py:15 sysinfo.py:141 sysinfo.py:142 sysinfo.py:143
+#: additional_translations.py:15 sysinfo.py:144 sysinfo.py:145 sysinfo.py:146
 msgid "GB"
 msgstr "Go"
 
@@ -69,95 +69,103 @@ msgstr "Version de Python"
 msgid "Django version"
 msgstr "Version de Django"
 
-#: sysinfo.py:52
+#: sysinfo.py:53
 msgid "Database engine"
 msgstr "Moteur de base de données"
 
-#: sysinfo.py:56
+#: sysinfo.py:54
+msgid "Django time zone"
+msgstr "Fuseau horaire de Django"
+
+#: sysinfo.py:58
 msgid "Software"
 msgstr "Logiciel"
 
-#: sysinfo.py:59
+#: sysinfo.py:61
+msgid "Time zone"
+msgstr "Fuseau horaire"
+
+#: sysinfo.py:62
 msgid "Uptime"
 msgstr "Durée de fonctionnement"
 
-#: sysinfo.py:60
+#: sysinfo.py:63
 msgid "Load"
 msgstr "Charge"
 
-#: sysinfo.py:61
+#: sysinfo.py:64
 msgid "Kernel"
 msgstr "Noyau"
 
-#: sysinfo.py:62
+#: sysinfo.py:65
 msgid "Hostname"
 msgstr "Nom d'hôte"
 
-#: sysinfo.py:63
+#: sysinfo.py:66
 msgid "Platform"
 msgstr "Plate-forme"
 
-#: sysinfo.py:71
+#: sysinfo.py:74
 msgid "OS"
 msgstr "OS"
 
-#: sysinfo.py:78
+#: sysinfo.py:81
 msgid "HDD"
 msgstr "HDD"
 
-#: sysinfo.py:106 sysinfo.py:120
+#: sysinfo.py:109 sysinfo.py:123
 msgid "Model"
 msgstr "Modèle"
 
-#: sysinfo.py:107
+#: sysinfo.py:110
 msgid "Cores"
 msgstr "Cœurs"
 
-#: sysinfo.py:108
+#: sysinfo.py:111
 msgid "Default frequency"
 msgstr "Fréquence nominale"
 
-#: sysinfo.py:109
+#: sysinfo.py:112
 msgid "Current frequency"
 msgstr "Fréquence courante"
 
-#: sysinfo.py:110
+#: sysinfo.py:113
 msgid "CPU"
 msgstr "CPU"
 
-#: sysinfo.py:127
+#: sysinfo.py:130
 msgid "Temperature"
 msgstr "Température"
 
-#: sysinfo.py:128
+#: sysinfo.py:131
 msgid "GPU"
 msgstr "GPU"
 
-#: sysinfo.py:141
+#: sysinfo.py:144
 msgid "Total"
 msgstr "Total"
 
-#: sysinfo.py:142
+#: sysinfo.py:145
 msgid "Free"
 msgstr "Libre"
 
-#: sysinfo.py:143
+#: sysinfo.py:146
 msgid "Cached"
 msgstr "En cache"
 
-#: sysinfo.py:145
+#: sysinfo.py:148
 msgid "Failed to get information"
 msgstr "Échec de l'obtention des informations"
 
-#: sysinfo.py:146
+#: sysinfo.py:149
 msgid "Memory"
 msgstr "Mémoire"
 
-#: sysinfo.py:153
+#: sysinfo.py:156
 msgid "Network"
 msgstr "Réseau"
 
-#: sysinfo.py:160
+#: sysinfo.py:163
 msgid "Sensors"
 msgstr "Capteurs"
 
@@ -452,12 +460,3 @@ msgstr "Sortie de la commande :"
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Éditer le fichier de configuration : %s"
-
-#~ msgid "KB"
-#~ msgstr "Ko"
-
-#~ msgid "Can not clear log file: %s"
-#~ msgstr "Impossible de vider le fichier de journalisation : %s"
-
-#~ msgid "Edit daemon configuration: %s"
-#~ msgstr "Modifier la configuration du démon : %s"
