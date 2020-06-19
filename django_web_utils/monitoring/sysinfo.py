@@ -46,16 +46,19 @@ def get_system_info(package=None, module=None, extra=None):
     try:
         from django.conf import settings
         db_engine = ', '.join([db['ENGINE'] for db in settings.DATABASES.values()])
+        time_zone = getattr(settings, 'TIME_ZONE', '?')
     except Exception:
         pass
     else:
         tplt_args['info_package'].append(dict(label=_('Database engine'), value=db_engine))
+        tplt_args['info_package'].append(dict(label=_('Django time zone'), value=time_zone))
     tplt_args['local_repo'] = local_repo
     tplt_args['version'] = version
     tplt_args['revision'] = revision
     tplt_args['info_sections'].append(dict(label=_('Software'), info=tplt_args['info_package']))
     # OS info
     tplt_args['info_os'] = []
+    tplt_args['info_os'].append(dict(label=_('Time zone'), value=_get_output(['cat', '/etc/timezone'])))
     tplt_args['info_os'].append(dict(label=_('Uptime'), value=_get_output(['uptime', '-p'])))
     tplt_args['info_os'].append(dict(label=_('Load'), value=_get_output(['cat', '/proc/loadavg'])))
     tplt_args['info_os'].append(dict(label=_('Kernel'), value=_get_output(['uname', '-r'])))
