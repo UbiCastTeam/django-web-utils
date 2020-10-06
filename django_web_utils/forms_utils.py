@@ -7,12 +7,14 @@ import os
 import logging
 # Django
 from django import forms as dj_forms
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+# Django web utils
+from django_web_utils.settings_utils import set_settings
 
 logger = logging.getLogger('djwutils.forms_utils')
 
 
-# FileInfo field
-# ----------------------------------------------------------------------------
 class FileInfo():
     def __init__(self, path):
         self.name = os.path.basename(path) if path else ''
@@ -22,8 +24,6 @@ class FileInfo():
         return self.name
 
 
-# NoLinkClearableFileInput field
-# ----------------------------------------------------------------------------
 class NoLinkClearableFileInput(dj_forms.ClearableFileInput):
 
     def render(self, name, value, *args, **kwargs):
@@ -31,8 +31,6 @@ class NoLinkClearableFileInput(dj_forms.ClearableFileInput):
         return super().render(name, obj_value, *args, **kwargs)
 
 
-# ProtectedFileField field
-# ----------------------------------------------------------------------------
 class ProtectedFileField(dj_forms.FileField):
     '''
     A field for a file which is not accessible for the user.
@@ -72,3 +70,66 @@ class ProtectedFileField(dj_forms.FileField):
             if os.path.exists(upload_to):
                 os.remove(upload_to)
             return False
+
+
+class BaseFileSettingsForm(object):
+    '''
+    Form designed to change settings file values and restart server then.
+    Settings that can be altered must be defined in Meta.SETTINGS_MAPPING.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        initial = kwargs.get('initial', dict())
+        for field, info in self.Meta.SETTINGS_MAPPING.items():
+            if field not in initial:
+                val = getattr(settings, info['setting'], info['default'])
+                if isinstance(val, str) and '\n' in val and '\r' not in val:
+                    # browsers injects \r in multi lines texts so do it before to have a correct changed_data value
+                    val = val.replace('\n', '\r\n')
+                initial[field] = val
+        kwargs['initial'] = initial
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        SETTINGS_MAPPING = {
+            # <field>: {'setting': <name>, 'default': <default>}
+        }
+
+        @classmethod
+        def get_default_values(cls, mapping):
+            default_values = dict()
+            for field, info in mapping.items():
+                if info['default'] is True:
+                    default_values[field] = _('Yes')
+                elif info['default'] is False:
+                    default_values[field] = _('No')
+                elif info['default']:
+                    default_values[field] = info['default']
+            return default_values
+
+    def save(self, commit=True):
+        '''
+        Returns: success (boolean), changed (list of fields names).
+        '''
+        if hasattr(super(), 'save'):
+            super().save(commit)
+        # Settings fields
+        changed = list()
+        for field, info in self.Meta.SETTINGS_MAPPING.items():
+            value = self.cleaned_data.get(field, info['default'])
+            if not value and info['default'] is None and getattr(settings, info['setting'], None) is None:
+                continue
+            if getattr(settings, info['setting'], info['default']) != value:
+                changed.append((info['setting'], value))
+        # Write settings file
+        if commit:
+            return set_settings(changed)
+        return True, changed
+
+
+class FileSettingsForm(BaseFileSettingsForm, dj_forms.Form):
+    pass
+
+
+class FileSettingsModelForm(BaseFileSettingsForm, dj_forms.ModelForm):
+    pass

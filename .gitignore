@@ -31,3 +31,6 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# EN translations
+django_web_utils/*/locale/en/

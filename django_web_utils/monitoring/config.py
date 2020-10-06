@@ -2,20 +2,11 @@
 # -*- coding: utf-8 -*-
 # Django
 from django.conf import settings
+# Django web utils
+from django_web_utils.module_utils import import_module_by_python_path
 
 
 # Take a look at the readme file for settings descriptions
-
-def _import(module):
-    if not isinstance(module, str):
-        return module
-    elif '.' in module:
-        element = module.split('.')[-1]
-        _tmp = __import__(module[:-len(element) - 1], fromlist=[element])
-        return getattr(_tmp, element)
-    else:
-        return __import__(module)
-
 
 class _Info(object):
     pass
@@ -37,7 +28,7 @@ def get_daemons_info():
         cleaned_info.GROUPS_NAMES = list()
         info_module = getattr(settings, 'MONITORING_DAEMONS_INFO', None)
         if info_module:
-            info_module = _import(info_module)
+            info_module = import_module_by_python_path(info_module)
             for group in getattr(info_module, 'GROUPS', list()):
                 group['members'] = list()
                 group['rowspan'] = 0
@@ -47,7 +38,7 @@ def get_daemons_info():
                 cleaned_info.DAEMONS_NAMES.append(daemon['name'])
                 cleaned_info.DAEMONS[daemon['name']] = daemon
                 if daemon.get('cls'):
-                    daemon['cls'] = _import(daemon['cls'])
+                    daemon['cls'] = import_module_by_python_path(daemon['cls'])
                     daemon['conf_path'] = daemon['cls'].get_conf_path()
                     daemon['log_path'] = daemon['cls'].get_log_path()
                 if not daemon.get('can_access'):
