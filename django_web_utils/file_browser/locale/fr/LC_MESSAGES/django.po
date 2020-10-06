@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-19 14:18+0200\n"
+"POT-Creation-Date: 2020-10-06 11:12+0200\n"
 "PO-Revision-Date: 2020-01-29 14:16+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
@@ -17,303 +17,304 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.1\n"
 
-#: additional_translations.py:12
-msgid "B"
-msgstr "o"
-
-#: additional_translations.py:13
-msgid "kB"
-msgstr "ko"
-
-#: additional_translations.py:14
-msgid "MB"
-msgstr "Mo"
-
-#: additional_translations.py:15
-msgid "GB"
-msgstr "Go"
-
-#: additional_translations.py:16
-msgid "TB"
-msgstr "To"
-
-#: templates/file_browser/base.html:6 templates/file_browser/base.html:10
-#: templates/file_browser/body.html:6
+#: file_browser/templates/file_browser/base.html:6
+#: file_browser/templates/file_browser/base.html:10
+#: file_browser/templates/file_browser/body.html:6
 msgid "File browser"
 msgstr "Navigateur"
 
-#: templates/file_browser/body.html:9
+#: file_browser/templates/file_browser/body.html:9
 msgid "Quit"
 msgstr "Quitter"
 
-#: templates/file_browser/body.html:10
+#: file_browser/templates/file_browser/body.html:10
 msgid "Root folder"
 msgstr "Dossier racine"
 
-#: templates/file_browser/body.html:17
+#: file_browser/templates/file_browser/body.html:17
 msgid "Add a folder"
 msgstr "Ajouter un dossier"
 
-#: templates/file_browser/body.html:18
+#: file_browser/templates/file_browser/body.html:18
 msgid "Add a file"
 msgstr "Ajouter un fichier"
 
-#: templates/file_browser/body.html:19 templates/file_browser/script.html:32
+#: file_browser/templates/file_browser/body.html:19
+#: file_browser/templates/file_browser/script.html:32
 msgid "Search"
 msgstr "Rechercher"
 
-#: templates/file_browser/body.html:27
+#: file_browser/templates/file_browser/body.html:27
 msgid "Show messages"
 msgstr "Voir les messages"
 
-#: templates/file_browser/body.html:28
+#: file_browser/templates/file_browser/body.html:28
 msgid "Hide messages"
 msgstr "Cacher les messages"
 
-#: templates/file_browser/body.html:39 templates/file_browser/script.html:16
+#: file_browser/templates/file_browser/body.html:39
+#: file_browser/templates/file_browser/script.html:16
 msgid "Loading"
 msgstr "Chargement"
 
-#: templates/file_browser/body.html:45
+#: file_browser/templates/file_browser/body.html:45
 msgid "Drop files here to add them"
 msgstr "Glissez vos fichiers ici pour les ajouter"
 
-#: templates/file_browser/body.html:47
+#: file_browser/templates/file_browser/body.html:47
 msgid "Upload in progress"
 msgstr "Envoi en cours"
 
-#: templates/file_browser/body.html:54
+#: file_browser/templates/file_browser/body.html:54
 msgid "Total size:"
 msgstr "Taille totale :"
 
-#: templates/file_browser/body.html:55
+#: file_browser/templates/file_browser/body.html:55
 msgid "Number of folders:"
 msgstr "Nombre de dossiers :"
 
-#: templates/file_browser/body.html:56
+#: file_browser/templates/file_browser/body.html:56
 msgid "Number of files:"
 msgstr "Nombre de fichiers :"
 
-#: templates/file_browser/body.html:57
+#: file_browser/templates/file_browser/body.html:57
 msgid "Order by:"
 msgstr "Trier par :"
 
-#: templates/file_browser/body.html:59 templates/file_browser/body.html:60
+#: file_browser/templates/file_browser/body.html:59
+#: file_browser/templates/file_browser/body.html:60
 msgid "name"
 msgstr "nom"
 
-#: templates/file_browser/body.html:61 templates/file_browser/body.html:62
+#: file_browser/templates/file_browser/body.html:61
+#: file_browser/templates/file_browser/body.html:62
 msgid "size"
 msgstr "taille"
 
-#: templates/file_browser/body.html:63 templates/file_browser/body.html:64
+#: file_browser/templates/file_browser/body.html:63
+#: file_browser/templates/file_browser/body.html:64
 msgid "modification date"
 msgstr "date de modification"
 
-#: templates/file_browser/body.html:67
+#: file_browser/templates/file_browser/body.html:67
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: templates/file_browser/script.html:12
+#: file_browser/templates/file_browser/script.html:12
 msgid "The folder is empty."
 msgstr "Le dossier est vide."
 
-#: templates/file_browser/script.html:13
+#: file_browser/templates/file_browser/script.html:13
 msgid "Size:"
 msgstr "Taille :"
 
-#: templates/file_browser/script.html:14
+#: file_browser/templates/file_browser/script.html:14
 msgid "Last modification:"
 msgstr "Dernière modification :"
 
-#: templates/file_browser/script.html:15
+#: file_browser/templates/file_browser/script.html:15
 msgid "root"
 msgstr "racine"
 
-#: templates/file_browser/script.html:17
+#: file_browser/templates/file_browser/script.html:17
 msgid "server unreachable"
 msgstr "le serveur ne peut pas être atteint"
 
-#: templates/file_browser/script.html:18
+#: file_browser/templates/file_browser/script.html:18
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/file_browser/script.html:19
+#: file_browser/templates/file_browser/script.html:19
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/file_browser/script.html:20
+#: file_browser/templates/file_browser/script.html:20
 msgid "Ok"
 msgstr "Ok"
 
-#: templates/file_browser/script.html:21
+#: file_browser/templates/file_browser/script.html:21
 msgid "Selected file(s):"
 msgstr "Fichier(s) sélectionné(s) :"
 
-#: templates/file_browser/script.html:22
+#: file_browser/templates/file_browser/script.html:22
 msgid "New folder name:"
 msgstr "Nom du nouveau dossier :"
 
-#: templates/file_browser/script.html:23
+#: file_browser/templates/file_browser/script.html:23
 msgid "Add a folder in"
 msgstr "Ajouter un dossier dans"
 
-#: templates/file_browser/script.html:24
+#: file_browser/templates/file_browser/script.html:24
 msgid "File to add:"
 msgstr "Fichier à ajouter :"
 
-#: templates/file_browser/script.html:25
+#: file_browser/templates/file_browser/script.html:25
 msgid "Add a file in"
 msgstr "Ajouter un fichier dans"
 
-#: templates/file_browser/script.html:26
+#: file_browser/templates/file_browser/script.html:26
 msgid "Rename"
 msgstr "Renommer"
 
-#: templates/file_browser/script.html:27
+#: file_browser/templates/file_browser/script.html:27
 msgid "files"
 msgstr "fichiers"
 
-#: templates/file_browser/script.html:28
+#: file_browser/templates/file_browser/script.html:28
 msgid "Move"
 msgstr "Déplacer"
 
-#: templates/file_browser/script.html:29
+#: file_browser/templates/file_browser/script.html:29
 msgid "Move to:"
 msgstr "Déplacer vers :"
 
-#: templates/file_browser/script.html:30
+#: file_browser/templates/file_browser/script.html:30
 msgid "Delete"
 msgstr "Supprimer"
 
-#: templates/file_browser/script.html:31
+#: file_browser/templates/file_browser/script.html:31
 msgid "Are you sure to delete the selected file(s) ?"
 msgstr "Êtes vous certain de vouloir supprimer les fichiers sélectionnés ?"
 
-#: templates/file_browser/script.html:33
+#: file_browser/templates/file_browser/script.html:33
 msgid "Search only in current dir"
 msgstr "Rechercher uniquement dans le dossier courant"
 
-#: views.py:58
+#: file_browser/views.py:58
 #, python-format
 msgid "Folder \"%s\" does not exist."
 msgstr "Le dossier \"%s\" n'existe pas."
 
-#: views.py:91
+#: file_browser/views.py:91
 #, python-format
 msgid "Folder \"%s\" does not exist"
 msgstr "Le dossier \"%s\" n'existe pas"
 
-#: views.py:164
+#: file_browser/views.py:164
 msgid "Parent folder"
 msgstr "Dossier parent"
 
-#: views_action.py:64 views_action.py:123 views_action.py:149
-#: views_action.py:235
+#: file_browser/views_action.py:64 file_browser/views_action.py:123
+#: file_browser/views_action.py:149 file_browser/views_action.py:235
 msgid "Invalid base path."
 msgstr "Chemin de base invalide."
 
-#: views_action.py:71
+#: file_browser/views_action.py:71
 msgid "No files in request."
 msgstr "Aucun fichier n'est présent dans la requête."
 
-#: views_action.py:87
+#: file_browser/views_action.py:87
 msgid "Failed to create folder:"
 msgstr "Échec de la création du dossier :"
 
-#: views_action.py:95
+#: file_browser/views_action.py:95
 msgid "The file has been uploaded and is available at the location:"
 msgstr "Le fichier a été envoyé et est disponible à l'adresse suivante :"
 
-#: views_action.py:97
+#: file_browser/views_action.py:97
 msgid "The files have been uploaded and are available at the locations:"
 msgstr ""
 "Les fichiers ont été envoyés et sont disponibles aux adresses suivantes :"
 
-#: views_action.py:126 views_action.py:164
+#: file_browser/views_action.py:126 file_browser/views_action.py:164
 msgid "The name field is required."
 msgstr "Le champ nom est requis."
 
-#: views_action.py:129 views_action.py:171
+#: file_browser/views_action.py:129 file_browser/views_action.py:171
 msgid "Invalid name."
 msgstr "Nom invalide."
 
-#: views_action.py:139
+#: file_browser/views_action.py:139
 msgid "Folder already exists."
 msgstr "Le dossier existe déjà."
 
-#: views_action.py:141
+#: file_browser/views_action.py:141
 msgid "Failed to create folder."
 msgstr "Échec de la création du dossier."
 
-#: views_action.py:142
+#: file_browser/views_action.py:142
 msgid "Folder created."
 msgstr "Le dossier a été créé."
 
-#: views_action.py:159
+#: file_browser/views_action.py:159
 msgid "No files selected."
 msgstr "Aucun fichier n'est sélectionné."
 
-#: views_action.py:184
+#: file_browser/views_action.py:184
 #, python-format
 msgid "The file \"%s\" already exists."
 msgstr "Le fichier \"%s\" existe déjà."
 
-#: views_action.py:187
+#: file_browser/views_action.py:187
 msgid "File renamed."
 msgstr "Fichier renommé."
 
-#: views_action.py:189
+#: file_browser/views_action.py:189
 msgid "Files renamed."
 msgstr "Fichiers renommés."
 
-#: views_action.py:194
+#: file_browser/views_action.py:194
 msgid "No path specfied to move files in."
 msgstr "Aucun chemin n'a été spécifié pour déplacer les fichiers."
 
-#: views_action.py:201
+#: file_browser/views_action.py:201
 msgid "Destination path does not exists."
 msgstr "Le chemin de destination n'existe pas."
 
-#: views_action.py:210
+#: file_browser/views_action.py:210
 #, python-format
 msgid "Unable to move file %s:"
 msgstr "Impossible de déplacer le fichier %s :"
 
-#: views_action.py:211
+#: file_browser/views_action.py:211
 #, python-format
 msgid "%s file(s) successfully moved."
 msgstr "%s fichier(s) déplacé(s) avec succès."
 
-#: views_action.py:225
+#: file_browser/views_action.py:225
 #, python-format
 msgid "Unable to delete file %s:"
 msgstr "Impossible de supprimer le fichier %s :"
 
-#: views_action.py:226
+#: file_browser/views_action.py:226
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
 msgstr "%(f)s fichier(s) et %(d)s dossier(s) supprimé(s) avec succès."
 
-#: views_action.py:241
+#: file_browser/views_action.py:241
 msgid "Requested path does not exist."
 msgstr "Le chemin demandé n'existe pas."
 
-#: views_action.py:281
+#: file_browser/views_action.py:281
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
 msgstr "%(count)s résultats pour \"%(search)s\" dans \"%(path)s\"."
 
-#: views_action.py:283
+#: file_browser/views_action.py:283
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
 msgstr "%(count)s résultats pour \"%(search)s\"."
 
-#: views_action.py:285
+#: file_browser/views_action.py:285
 #, python-format
 msgid "No results for \"%(search)s\"."
 msgstr "Pas de résultat pour \"%(search)s\"."
 
-#: views_action.py:289
+#: file_browser/views_action.py:289
 msgid "Invalid action requested."
 msgstr "L'action demandée est invalide."
+
+#~ msgid "B"
+#~ msgstr "o"
+
+#~ msgid "kB"
+#~ msgstr "ko"
+
+#~ msgid "MB"
+#~ msgstr "Mo"
+
+#~ msgid "GB"
+#~ msgstr "Go"
+
+#~ msgid "TB"
+#~ msgstr "To"

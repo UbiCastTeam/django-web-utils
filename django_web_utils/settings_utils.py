@@ -87,9 +87,9 @@ def set_settings(tuples, restart=True):
     except Exception as e:
         logger.error('Unable to write configuration file. %s' % e)
         return False, '%s %s' % (_('Unable to write configuration file:'), e)
-    msg = str(_('Your changes will be active after the server restart.'))
+    msg = str(_('Your changes will be active after the service restart.'))
     if restart:
-        success, restart_msg = restart_server()
+        success, restart_msg = restart_service()
         msg += '\n'
         if not success:
             msg += str(_('Warning:'))
@@ -130,8 +130,8 @@ def remove_settings(*names):
             except Exception as e:
                 logger.error('Unable to write configuration file. %s' % e)
                 return False, '%s %s' % (_('Unable to write configuration file:'), e)
-    msg = str(_('Your changes will be active after the server restart.'))
-    success, restart_msg = restart_server()
+    msg = str(_('Your changes will be active after the service restart.'))
+    success, restart_msg = restart_service()
     msg += '\n'
     if not success:
         msg += str(_('Warning:'))
@@ -139,23 +139,23 @@ def remove_settings(*names):
     return True, msg
 
 
-# restart_server function
+# restart_service function
 # ----------------------------------------------------------------------------
-def restart_server():
+def restart_service():
     '''
     This function triggers a restart of the site itself.
-    When this function is called, respond to user then wait 2 sec and restart server.
+    When this function is called, respond to user then wait 2 sec and restart service.
     '''
     if getattr(settings, 'DEBUG', False):
-        return True, _('No restart because server is in debug mode.')
+        return True, _('No restart because service is in debug mode.')
 
     # Get restart function
     restart_fct_path = getattr(settings, 'RESTART_FUNCTION', None)
     if not restart_fct_path:
-        return True, _('No restart function defined.')
+        return True, _('No function defined to restart the service.')
 
     try:
         restart_fct = import_module_by_python_path(restart_fct_path)
         return restart_fct()
     except Exception as e:
-        return False, '%s %s' % (_('Failed to restart server:'), e)
+        return False, '%s %s' % (_('Failed to restart the service:'), e)

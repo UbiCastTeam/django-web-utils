@@ -33,4 +33,5 @@ nosetests.xml
 .pydevproject
 
 # EN translations
+django_web_utils/locale/en/
 django_web_utils/*/locale/en/

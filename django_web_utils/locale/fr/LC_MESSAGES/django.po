@@ -1,0 +1,495 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Django web utils\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-06 11:12+0200\n"
+"PO-Revision-Date: 2020-10-06 11:13+0200\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: UbiCast <support@ubicast.eu>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
+
+#: admin_utils.py:14
+msgid "Export selected objects as CSV file"
+msgstr "Exporter les objets sélectionnés dans un fichier CSV"
+
+#: admin_utils.py:112
+msgid "CSV export"
+msgstr "Export CSV"
+
+#: files_utils.py:39
+msgid "B"
+msgstr "o"
+
+#: files_utils.py:42
+msgid "kB"
+msgstr "ko"
+
+#: files_utils.py:45
+msgid "MB"
+msgstr "Mo"
+
+#: files_utils.py:48
+msgid "GB"
+msgstr "Go"
+
+#: files_utils.py:51
+msgid "TB"
+msgstr "To"
+
+#: forms_utils.py:103
+msgid "Yes"
+msgstr "Oui"
+
+#: forms_utils.py:105
+msgid "No"
+msgstr "Non"
+
+#: json_utils.py:80
+msgid "Invalid request method"
+msgstr "Méthode de requête invalide"
+
+#: json_utils.py:88
+msgid "Authentication required"
+msgstr "Authentification requise"
+
+#: json_utils.py:91
+msgid "Access denied"
+msgstr "Accès refusé"
+
+#: json_utils.py:93
+msgid "Page not found"
+msgstr "Page introuvable"
+
+#: json_utils.py:97
+msgid "Internal server error"
+msgstr "Erreur interne au serveur"
+
+#: ldap_utils.py:76
+msgid "Error when initializing connection with LDAP server."
+msgstr "Erreur lors de l'initialisation de la connexion avec le serveur LDAP."
+
+#: ldap_utils.py:76 ldap_utils.py:104 ldap_utils.py:131 ldap_utils.py:282
+msgid "Error:"
+msgstr "Erreur :"
+
+#: ldap_utils.py:104
+msgid "Error when trying to authenticate on LDAP server."
+msgstr "Erreur lors de l'authentification sur le serveur LDAP."
+
+#: ldap_utils.py:130
+msgid "Search on LDAP server failed."
+msgstr "Recherche échouée sur le serveur LDAP."
+
+#: ldap_utils.py:133
+msgid "Arguments:"
+msgstr "Arguments :"
+
+#: ldap_utils.py:167
+msgid "User not found."
+msgstr "Utilisateur introuvable."
+
+#: ldap_utils.py:179
+msgid "Group not found."
+msgstr "Groupe introuvable."
+
+#: ldap_utils.py:282
+msgid "Error when trying to get user information."
+msgstr "Erreur lors de la récupération des informations de l'utilisateur."
+
+#: ldap_utils.py:291
+msgid "Login failed (however the user exists in LDAP)."
+msgstr "Échec de l'authentification (l'utilisateur existe bien dans LDAP)."
+
+#: ldap_utils.py:293
+msgid "Login succeeded."
+msgstr "Authentification réussie."
+
+#: ldap_utils.py:294
+#, python-format
+msgid "User \"%s\" data:"
+msgstr "Données de l'utilisateur \"%s\" :"
+
+#: ldap_utils.py:299
+msgid "User groups:"
+msgstr "Groupes de l'utilisateur :"
+
+#: ldap_utils.py:304
+msgid "Error when trying to get groups."
+msgstr "Erreur lors de la récupération des groupes de l'utilisateur."
+
+#: ldap_utils.py:315
+msgid "No groups found."
+msgstr "Aucun groupe n'a été trouvé."
+
+#: settings_utils.py:35
+msgid "Failed to backup settings:"
+msgstr "Échec de la création d'un point de sauvegarde des paramètres :"
+
+#: settings_utils.py:42
+msgid "No changes to save."
+msgstr "Aucune modification a sauvegarder."
+
+#: settings_utils.py:89 settings_utils.py:132
+msgid "Unable to write configuration file:"
+msgstr "Impossible d'écrire le fichier de configuration :"
+
+#: settings_utils.py:90 settings_utils.py:133
+msgid "Your changes will be active after the service restart."
+msgstr "Vos modifications seront actives après le redémarrage du service."
+
+#: settings_utils.py:95 settings_utils.py:137
+msgid "Warning:"
+msgstr "Attention :"
+
+#: settings_utils.py:150
+msgid "No restart because service is in debug mode."
+msgstr "Aucun redémarrage n'est effectué lorsque le service est en mode debug."
+
+#: settings_utils.py:155
+msgid "No function defined to restart the service."
+msgstr "Aucune fonction n'est définie pour redémarrer le service."
+
+#: settings_utils.py:161
+msgid "Failed to restart the service:"
+msgstr "Échec du redémarrage du service :"
+
+#: system_utils.py:99
+msgid "Password required."
+msgstr "Mot de passe requis."
+
+#: system_utils.py:108
+#, python-format
+msgid "Command exited with code %s."
+msgstr "La commande a retourné un code %s."
+
+#: system_utils.py:139 system_utils.py:141 system_utils.py:148
+#: system_utils.py:169
+msgid "Unable to write file."
+msgstr "Impossible d'écrire le fichier."
+
+#: system_utils.py:139
+msgid "Specified path is a directory."
+msgstr "Le chemin spécifié est un dossier."
+
+#: system_utils.py:141
+msgid "Invalid file path."
+msgstr "Chemin du fichier invalide."
+
+#: system_utils.py:154
+msgid "You need to send the main password to edit this file."
+msgstr "Vous devez entrer le mot de passe principal pour éditer ce fichier."
+
+#: system_utils.py:163
+#, python-format
+msgid "Unable to create temporary file \"%s\"."
+msgstr "Impossible de créer le fichier temporaire \"%s\"."
+
+#: system_utils.py:170
+msgid "File updated."
+msgstr "Fichier mis à jour."
+
+#~ msgid "No restart function defined."
+#~ msgstr "Aucune fonction n'est définie pour redémarrer le service."
+
+#~ msgid "Distributor ID"
+#~ msgstr "Identifiant du distributeur"
+
+#~ msgid "Description"
+#~ msgstr "Description"
+
+#~ msgid "Release"
+#~ msgstr "Jalon"
+
+#~ msgid "Codename"
+#~ msgstr "Nom de code"
+
+#~ msgid "Version"
+#~ msgstr "Version"
+
+#~ msgid "Revision"
+#~ msgstr "Révision"
+
+#~ msgid "Python version"
+#~ msgstr "Version de Python"
+
+#~ msgid "Django version"
+#~ msgstr "Version de Django"
+
+#~ msgid "Database engine"
+#~ msgstr "Moteur de base de données"
+
+#~ msgid "Django time zone"
+#~ msgstr "Fuseau horaire de Django"
+
+#~ msgid "Software"
+#~ msgstr "Logiciel"
+
+#~ msgid "Time zone"
+#~ msgstr "Fuseau horaire"
+
+#~ msgid "Uptime"
+#~ msgstr "Durée de fonctionnement"
+
+#~ msgid "Load"
+#~ msgstr "Charge"
+
+#~ msgid "Kernel"
+#~ msgstr "Noyau"
+
+#~ msgid "Hostname"
+#~ msgstr "Nom d'hôte"
+
+#~ msgid "Platform"
+#~ msgstr "Plate-forme"
+
+#~ msgid "OS"
+#~ msgstr "OS"
+
+#~ msgid "HDD"
+#~ msgstr "HDD"
+
+#~ msgid "Model"
+#~ msgstr "Modèle"
+
+#~ msgid "Cores"
+#~ msgstr "Cœurs"
+
+#~ msgid "Default frequency"
+#~ msgstr "Fréquence nominale"
+
+#~ msgid "Current frequency"
+#~ msgstr "Fréquence courante"
+
+#~ msgid "CPU"
+#~ msgstr "CPU"
+
+#~ msgid "Temperature"
+#~ msgstr "Température"
+
+#~ msgid "GPU"
+#~ msgstr "GPU"
+
+#~ msgid "Total"
+#~ msgstr "Total"
+
+#~ msgid "Free"
+#~ msgstr "Libre"
+
+#~ msgid "Cached"
+#~ msgstr "En cache"
+
+#~ msgid "Failed to get information"
+#~ msgstr "Échec de l'obtention des informations"
+
+#~ msgid "Memory"
+#~ msgstr "Mémoire"
+
+#~ msgid "Network"
+#~ msgstr "Réseau"
+
+#~ msgid "Sensors"
+#~ msgstr "Capteurs"
+
+#~ msgid "Daemons monitoring"
+#~ msgstr "Surveillance des démons"
+
+#~ msgid "Back"
+#~ msgstr "Retour"
+
+#~ msgid "Refresh"
+#~ msgstr "Rafraîchir"
+
+#~ msgid "See raw content"
+#~ msgstr "Voir le contenu brut"
+
+#~ msgid "Default configuration"
+#~ msgstr "Configuration par défaut"
+
+#~ msgid "Configuration override"
+#~ msgstr "Outrepassement de la configuration"
+
+#~ msgid "Configuration file size:"
+#~ msgstr "Taille du fichier de configuration :"
+
+#~ msgid "Last modification:"
+#~ msgstr "Dernière modification :"
+
+#~ msgid "Current configuration file path:"
+#~ msgstr "Chemin du fichier de configuration actuel :"
+
+#~ msgid "Reset file"
+#~ msgstr "Réinitialiser le fichier"
+
+#~ msgid "Apply modifications"
+#~ msgstr "Appliquer les modifications"
+
+#~ msgid "Clear"
+#~ msgstr "Nettoyer"
+
+#~ msgid "File size:"
+#~ msgstr "Taille du fichier :"
+
+#~ msgid "See complete file"
+#~ msgstr "Voir le fichier complet"
+
+#~ msgid "See only end"
+#~ msgstr "Voir seulement la fin"
+
+#~ msgid "Log file is empty."
+#~ msgstr "Le fichier de journalisation est vide."
+
+#~ msgid "Status"
+#~ msgstr "Statut"
+
+#~ msgid "Log file"
+#~ msgstr "Fichier de journalisation"
+
+#~ msgid "Commands"
+#~ msgstr "Commandes"
+
+#~ msgid "Start all"
+#~ msgstr "Tout démarrer"
+
+#~ msgid "Stop all"
+#~ msgstr "Tout arrêter"
+
+#~ msgid "Restart all"
+#~ msgstr "Tout redémarrer"
+
+#~ msgid "Last modification"
+#~ msgstr "Dernière modification"
+
+#~ msgid "File size"
+#~ msgstr "Taille du fichier"
+
+#~ msgid "Clear all logs"
+#~ msgstr "Nettoyer tous les journaux"
+
+#~ msgid "Actions"
+#~ msgstr "Actions"
+
+#~ msgid "log file"
+#~ msgstr "fichier de journalisation"
+
+#~ msgid "config file"
+#~ msgstr "fichier de configuration"
+
+#~ msgid "Loading"
+#~ msgstr "Chargement"
+
+#~ msgid "See"
+#~ msgstr "Voir"
+
+#~ msgid "See tail"
+#~ msgstr "Voir la fin"
+
+#~ msgid "Clear log"
+#~ msgstr "Nettoyer le journal"
+
+#~ msgid "Start"
+#~ msgstr "Démarrer"
+
+#~ msgid "Stop"
+#~ msgstr "Arrêter"
+
+#~ msgid "Restart"
+#~ msgstr "Redémarrer"
+
+#~ msgid "Edit configuration"
+#~ msgstr "Modifier la configuration"
+
+#~ msgid "Command result"
+#~ msgstr "Résultat de la commande"
+
+#~ msgid "No messages have been returned."
+#~ msgstr "Aucun message n'a été renvoyé."
+
+#~ msgid "Close"
+#~ msgstr "Fermer"
+
+#~ msgid "not running"
+#~ msgstr "arrêté"
+
+#~ msgid "need password"
+#~ msgstr "mot de passe requis"
+
+#~ msgid "Click to enter password"
+#~ msgstr "Cliquez pour entrer le mot de passe"
+
+#~ msgid "server unreachable"
+#~ msgstr "serveur inaccessible"
+
+#~ msgid "Log file cleared."
+#~ msgstr "Fichier de journalisation vidé."
+
+#~ msgid "Invalid command."
+#~ msgstr "Commande invalide."
+
+#~ msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
+#~ msgstr "La classe donnée n'est pas une sous classe de BaseDaemon de Django web utils."
+
+#~ msgid "No valid target for command."
+#~ msgstr "Aucune cible valide pour la commande."
+
+#~ msgid "The daemon script cannot be found."
+#~ msgstr "Le script du démon est introuvable."
+
+#~ msgid ""
+#~ "File too large: %s.\n"
+#~ "Only file tail and raw file are accessible.\n"
+#~ "Warning: getting the raw file can saturate system memory."
+#~ msgstr ""
+#~ "Fichier trop volumineux : %s.\n"
+#~ "Seul la fin du fichier et le fichier brut sont accessibles.\n"
+#~ "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
+
+#~ msgid "Unable to display log file."
+#~ msgstr "Impossible d'afficher le fichier de journalisation."
+
+#~ msgid "Unable to delete configuration file."
+#~ msgstr "Impossible de supprimer le fichier de configuration."
+
+#~ msgid "Configuration file deleted."
+#~ msgstr "Fichier de configuration supprimé."
+
+#~ msgid ""
+#~ "File too large: %s.\n"
+#~ "Only the raw file is accessible.\n"
+#~ "Warning: getting the raw file can saturate system memory."
+#~ msgstr ""
+#~ "Fichier trop volumineux : %s.\n"
+#~ "Seul le fichier brut est accessible.\n"
+#~ "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
+
+#~ msgid "Unable to display configuration file."
+#~ msgstr "Impossible d'afficher le fichier de configuration."
+
+#~ msgid "Unable to read default configuration file."
+#~ msgstr "Impossible de lire le fichier de configuration par défaut."
+
+#~ msgid "Please enter password."
+#~ msgstr "Veuillez entrer le mot de passe."
+
+#~ msgid "Invalid daemon name:"
+#~ msgstr "Nom de démon invalide :"
+
+#~ msgid "Command \"%(cmd)s\" on \"%(name)s\" successfully executed."
+#~ msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a été exécutée avec succès."
+
+#~ msgid "Command \"%(cmd)s\" on \"%(name)s\" failed."
+#~ msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
+
+#~ msgid "Command output:"
+#~ msgstr "Sortie de la commande :"
+
+#~ msgid "Edit configuration file: %s"
+#~ msgstr "Éditer le fichier de configuration : %s"
