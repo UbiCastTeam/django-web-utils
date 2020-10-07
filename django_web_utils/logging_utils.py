@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import logging
+
+logger = logging.getLogger('djwutils.logging_utils')
 
 
 def get_generic_logging_config(logs_dir, debug):
@@ -63,6 +66,41 @@ def get_generic_logging_config(logs_dir, debug):
         warnings.simplefilter('ignore', ResourceWarning)  # Hide unclosed files warnings
         os.environ['PYTHONWARNINGS'] = 'always'  # Also affect subprocesses
     else:
-        import logging
         logging.captureWarnings(False)
     return logging_config
+
+
+class IgnoreTimeoutErrors(logging.Filter):
+
+    def filter(self, record):
+        '''
+        Ignore WSGI connection errors (UnreadablePostError)
+        Like:
+            UnreadablePostError: error during read(---) on wsgi.input
+        '''
+        try:
+            error = record.exc_info[0].__name__
+        except Exception as e:
+            logger.error('Failed to parse error type: %s', e)
+            return True
+        else:
+            return error != 'UnreadablePostError'
+
+
+class IgnoreDatabaseErrors(logging.Filter):
+
+    def filter(self, record):
+        '''
+        Ignore database connection errors (OperationalError)
+        Like:
+            OperationalError: could not connect to server: Connection refused
+            OperationalError: server closed the connection unexpectedly
+            OperationalError: SSL SYSCALL error: EOF detected
+        '''
+        try:
+            error = record.exc_info[0].__name__
+        except Exception as e:
+            logger.error('Failed to parse error type: %s', e)
+            return True
+        else:
+            return error != 'OperationalError'
