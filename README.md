@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'django_web_utils',  # to get translations of utils files
     # 'django_web_utils.file_browser',
     # 'django_web_utils.monitoring',
+    # 'django_web_utils.restarter',
     # [...]
 ]
 ```
@@ -24,3 +25,4 @@ INSTALLED_APPS = [
 
 * [File browser](/django_web_utils/file_browser/README.md)
 * [Monitoring](/django_web_utils/monitoring/README.md)
+* [Restarter](/django_web_utils/restarter/README.md)

@@ -27,10 +27,10 @@ def _(text):
     return text
 
 
-# get_login function
+# get_unix_user function
 # ----------------------------------------------------------------------------
-def get_login():
-    return pwd.getpwuid(os.getuid())[0]
+def get_unix_user():
+    return pwd.getpwuid(os.getuid()).pw_name
 
 
 # run_as function
@@ -40,7 +40,7 @@ def run_as(username, umask=0o22, exit_on_error=True):
     Drop privileges to given user, and set up environment.
     Assumes the parent process has root privileges.
     """
-    if get_login() == username:
+    if get_unix_user() == username:
         return
 
     try:

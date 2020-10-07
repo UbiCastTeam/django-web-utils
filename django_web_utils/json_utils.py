@@ -87,10 +87,10 @@ def json_view(function=None, methods=None, login_required=False):
                 if login_required and not request.user.is_authenticated:
                     return failure_response(code=401, error='%s (401)' % _('Authentication required'))
                 return fct(request, *args, **kwargs)
-            except PermissionDenied:
-                return failure_response(code=403, error='%s (403)' % _('Access denied'))
-            except Http404:
-                return failure_response(code=404, error='%s (404)' % _('Page not found'))
+            except PermissionDenied as e:
+                return failure_response(code=403, error='%s (403)' % _('Access denied'), message=str(e))
+            except Http404 as e:
+                return failure_response(code=404, error='%s (404)' % _('Page not found'), message=str(e))
             except Exception:
                 logger = logging.getLogger('django.request')
                 logger.error('Internal server error: %s', request.get_full_path(), exc_info=traceback.extract_stack(), extra={'status_code': 500, 'request': request})

@@ -11,7 +11,7 @@ import os
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 # Django web utils
-from django_web_utils.module_utils import import_module_by_python_path
+from django_web_utils.restarter.restart import restart_service
 
 logger = logging.getLogger('djwutils.settings_utils')
 
@@ -92,7 +92,7 @@ def set_settings(tuples, restart=True):
         success, restart_msg = restart_service()
         msg += '\n'
         if not success:
-            msg += str(_('Warning:'))
+            msg += str(_('Warning:')) + ' '
         msg += str(restart_msg)
     return True, msg
 
@@ -134,28 +134,6 @@ def remove_settings(*names):
     success, restart_msg = restart_service()
     msg += '\n'
     if not success:
-        msg += str(_('Warning:'))
+        msg += str(_('Warning:')) + ' '
     msg += str(restart_msg)
     return True, msg
-
-
-# restart_service function
-# ----------------------------------------------------------------------------
-def restart_service():
-    '''
-    This function triggers a restart of the site itself.
-    When this function is called, respond to user then wait 2 sec and restart service.
-    '''
-    if getattr(settings, 'DEBUG', False):
-        return True, _('No restart because service is in debug mode.')
-
-    # Get restart function
-    restart_fct_path = getattr(settings, 'RESTART_FUNCTION', None)
-    if not restart_fct_path:
-        return True, _('No function defined to restart the service.')
-
-    try:
-        restart_fct = import_module_by_python_path(restart_fct_path)
-        return restart_fct()
-    except Exception as e:
-        return False, '%s %s' % (_('Failed to restart the service:'), e)

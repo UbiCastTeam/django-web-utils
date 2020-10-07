@@ -1,0 +1,46 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Django web utils\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-06 17:24+0200\n"
+"PO-Revision-Date: 2020-10-06 17:05+0200\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: UbiCast <support@ubicast.eu>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
+
+#: restart.py:21
+msgid "The service will not be restarted because debug mode is enabled."
+msgstr "Le service ne sera pas redémarré car le mode debug est actif."
+
+#: restart.py:25
+msgid ""
+"The service will not be restarted because no command is defined to restart "
+"it."
+msgstr ""
+"Le service ne sera pas redémarré car aucune commande de redémarrage n'est "
+"définie."
+
+#: restart.py:30
+msgid "Failed to get settings module path."
+msgstr "Échec de l'obtention du chemin du fichier de paramétrage."
+
+#: restart.py:34
+msgid "Failed to get Python path."
+msgstr "Échec de l'obtention du chemin de Python."
+
+#: restart.py:48
+msgid "Failed to restart service:"
+msgstr "Échec du redémarrage du service :"
+
+#: restart.py:50
+msgid "The service will be restarted in 2 seconds."
+msgstr "Le service sera redémarré dans 2 secondes."
