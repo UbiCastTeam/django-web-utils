@@ -20,6 +20,7 @@ import datetime
 import logging
 import os
 import socket
+import sys
 import traceback
 # Django
 from django.conf import settings
@@ -31,6 +32,7 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 # utils
 from django_web_utils import html_utils
+from django_web_utils.logging_utils import IgnoreTimeoutErrors, IgnoreDatabaseErrors
 
 logger = logging.getLogger('djwutils.emails_utils')
 
@@ -260,7 +262,7 @@ def send_emails(subject, content, recipients=None, request=None, content_subtype
 
 # send_error_report_emails (to send last traceback)
 # ----------------------------------------------------------------------------
-def send_error_report_emails(title=None, error=None, recipients=None, request=None):
+def send_error_report_emails(title=None, error=None, recipients=None, request=None, filter_error=True):
     if request:
         title = ' (%s)' % title if title else ''
         title = 'Error at %s%s' % (request.get_full_path(), title)
@@ -269,10 +271,23 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
     else:
         title = 'Error report'
 
+    no_sending_msg = None
     if settings.DEBUG:
-        print(title)
-        traceback.print_exc()
-        return True, 'Debug mode is enabled, no emails were sent.'
+        no_sending_msg = 'Error report will not be sent because the debug mode is enabled.'
+    elif filter_error:
+        # Check that last error is passing filters
+        class Record:
+            exc_info = sys.exc_info()
+        if Record.exc_info[0] is not None:
+            filters = (IgnoreTimeoutErrors(), IgnoreDatabaseErrors())
+            for ft in filters:
+                if not ft.filter(Record):
+                    no_sending_msg = 'Error report will not be sent because the error is matching an exclusion filter.'
+                    break
+
+    if no_sending_msg:
+        logger.info('%s\n%s\n%s', no_sending_msg, title, traceback.format_exc())
+        return True, no_sending_msg
 
     fieldset_style = 'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'
     content = '<div style="margin-bottom: 8px;">Message sent at: %s<br/>\nUnix user: %s<br/>\nSystem hostname: %s</div>' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), os.environ.get('USER'), socket.gethostname())
@@ -285,7 +300,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
     # Traceback information
     content += '<fieldset %s>\n' % fieldset_style
     content += '<legend><b> Traceback </b></legend>\n'
-    content += '<div style="color: #800;">%s</div>\n' % html_utils.get_html_traceback()
+    content += '<div>%s</div>\n' % html_utils.get_html_traceback()
     content += '</fieldset>\n\n'
     # Request info
     if request:
