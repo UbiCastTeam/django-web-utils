@@ -38,8 +38,23 @@ def execute_restart(debug):
             cmd_repr = cmd if shell else ' '.join(cmd)
             atp_log += 'Restart command:\n%s\n' % cmd_repr
 
+            # Clean command env
+            env = dict(os.environ)
+            if 'DJANGO_LOGGING' in env:
+                # Drop DJANGO_LOGGING from env to get logging config from settings
+                del env['DJANGO_LOGGING']
+                atp_log += 'Dropped DJANGO_LOGGING in command env.\n'
+            if 'UWSGI_ORIGINAL_PROC_NAME' in env:
+                # Drop UWSGI_ORIGINAL_PROC_NAME from env to get allow uwsgi usage
+                del env['UWSGI_ORIGINAL_PROC_NAME']
+                atp_log += 'Dropped UWSGI_ORIGINAL_PROC_NAME in command env.\n'
+            if 'UWSGI_RELOADS' in env:
+                # Drop UWSGI_RELOADS from env to get allow uwsgi usage
+                del env['UWSGI_RELOADS']
+                atp_log += 'Dropped UWSGI_RELOADS in command env.\n'
+
             # Execute restart command
-            p = subprocess.run(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8', shell=shell)
+            p = subprocess.run(cmd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8', shell=shell)
             if p.returncode == 0:
                 atp_log += 'Command done.\n'
             else:
