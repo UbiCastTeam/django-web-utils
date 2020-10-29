@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-06 11:12+0200\n"
-"PO-Revision-Date: 2020-10-06 11:13+0200\n"
+"POT-Creation-Date: 2020-10-29 17:46+0100\n"
+"PO-Revision-Date: 2020-10-29 17:47+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -130,37 +130,25 @@ msgstr "Erreur lors de la récupération des groupes de l'utilisateur."
 msgid "No groups found."
 msgstr "Aucun groupe n'a été trouvé."
 
-#: settings_utils.py:35
+#: settings_utils.py:33
 msgid "Failed to backup settings:"
 msgstr "Échec de la création d'un point de sauvegarde des paramètres :"
 
-#: settings_utils.py:42
+#: settings_utils.py:40
 msgid "No changes to save."
 msgstr "Aucune modification a sauvegarder."
 
-#: settings_utils.py:89 settings_utils.py:132
+#: settings_utils.py:87 settings_utils.py:128
 msgid "Unable to write configuration file:"
 msgstr "Impossible d'écrire le fichier de configuration :"
 
-#: settings_utils.py:90 settings_utils.py:133
+#: settings_utils.py:88 settings_utils.py:129
 msgid "Your changes will be active after the service restart."
 msgstr "Vos modifications seront actives après le redémarrage du service."
 
-#: settings_utils.py:95 settings_utils.py:137
-msgid "Warning:"
-msgstr "Attention :"
-
-#: settings_utils.py:150
-msgid "No restart because service is in debug mode."
-msgstr "Aucun redémarrage n'est effectué lorsque le service est en mode debug."
-
-#: settings_utils.py:155
-msgid "No function defined to restart the service."
-msgstr "Aucune fonction n'est définie pour redémarrer le service."
-
-#: settings_utils.py:161
-msgid "Failed to restart the service:"
-msgstr "Échec du redémarrage du service :"
+#: settings_utils.py:90 settings_utils.py:131
+msgid "The service will be restarted in 2 seconds."
+msgstr "Le service sera redémarré dans 2 secondes."
 
 #: system_utils.py:99
 msgid "Password required."

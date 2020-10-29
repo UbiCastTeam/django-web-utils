@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-06 11:12+0200\n"
+"POT-Creation-Date: 2020-10-29 17:46+0100\n"
 "PO-Revision-Date: 2020-06-19 14:18+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
@@ -459,15 +459,3 @@ msgstr "Sortie de la commande :"
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Éditer le fichier de configuration : %s"
-
-#~ msgid "B"
-#~ msgstr "o"
-
-#~ msgid "kB"
-#~ msgstr "ko"
-
-#~ msgid "MB"
-#~ msgstr "Mo"
-
-#~ msgid "TB"
-#~ msgstr "To"
