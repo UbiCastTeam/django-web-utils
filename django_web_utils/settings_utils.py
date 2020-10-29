@@ -9,9 +9,7 @@ import logging
 import os
 # Django
 from django.conf import settings
-from django.utils.translation import gettext_lazy as _
-# Django web utils
-from django_web_utils.restarter.restart import restart_service
+from django.utils.translation import gettext as _
 
 logger = logging.getLogger('djwutils.settings_utils')
 
@@ -87,19 +85,17 @@ def set_settings(tuples, restart=True):
     except Exception as e:
         logger.error('Unable to write configuration file. %s' % e)
         return False, '%s %s' % (_('Unable to write configuration file:'), e)
-    msg = str(_('Your changes will be active after the service restart.'))
+    msg = _('Your changes will be active after the service restart.')
     if restart:
-        success, restart_msg = restart_service()
-        msg += '\n'
-        if not success:
-            msg += str(_('Warning:')) + ' '
-        msg += str(restart_msg)
+        msg += '\n' + _('The service will be restarted in 2 seconds.')
+        # the service restart should be handled with the "touch-reload" uwsgi
+        # parameter (should be set with the settings override path).
     return True, msg
 
 
 # remove_settings function
 # ----------------------------------------------------------------------------
-def remove_settings(*names):
+def remove_settings(*names, restart=True):
     # WARNING: this function supports only variables in one line
     # TODO: remove this constraint
     if os.path.exists(settings.OVERRIDE_PATH) and names:
@@ -130,10 +126,9 @@ def remove_settings(*names):
             except Exception as e:
                 logger.error('Unable to write configuration file. %s' % e)
                 return False, '%s %s' % (_('Unable to write configuration file:'), e)
-    msg = str(_('Your changes will be active after the service restart.'))
-    success, restart_msg = restart_service()
-    msg += '\n'
-    if not success:
-        msg += str(_('Warning:')) + ' '
-    msg += str(restart_msg)
+    msg = _('Your changes will be active after the service restart.')
+    if restart:
+        msg += '\n' + _('The service will be restarted in 2 seconds.')
+        # the service restart should be handled with the "touch-reload" uwsgi
+        # parameter (should be set with the settings override path).
     return True, msg
