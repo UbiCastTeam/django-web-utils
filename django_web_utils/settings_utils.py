@@ -33,6 +33,37 @@ def backup_settings():
         raise Exception('%s %s' % (_('Failed to backup settings:'), e))
 
 
+def _get_value_str(value):
+    if value is None:
+        value_str = 'None'
+    elif value is True:
+        value_str = 'True'
+    elif value is False:
+        value_str = 'False'
+    elif isinstance(value, (int, float)):
+        value_str = str(value)
+    elif isinstance(value, list):
+        value_str = '['
+        for sub_val in value:
+            value_str += _get_value_str(sub_val) + ', '
+        value_str += ']'
+    elif isinstance(value, tuple):
+        value_str = '('
+        for sub_val in value:
+            value_str += _get_value_str(sub_val) + ', '
+        value_str += ')'
+    elif isinstance(value, dict):
+        value_str = '{'
+        for key, sub_val in value.items():
+            value_str += '\'' + str(key) + '\': ' + _get_value_str(sub_val) + ', '
+        value_str += '}'
+    else:
+        value_str = str(value)
+        value_str = value_str.replace('\'', '\\\'').replace('\n', '\\n').replace('\r', '')
+        value_str = '\'%s\'' % value_str
+    return value_str
+
+
 # set_settings function
 # ----------------------------------------------------------------------------
 def set_settings(tuples, restart=True):
@@ -47,18 +78,7 @@ def set_settings(tuples, restart=True):
         # change locally settings
         setattr(settings, name, value)
         # get content to write in var
-        if value is None:
-            value_str = 'None'
-        elif value is True:
-            value_str = 'True'
-        elif value is False:
-            value_str = 'False'
-        elif isinstance(value, (int, float)):
-            value_str = str(value)
-        else:
-            value_str = str(value)
-            value_str = value_str.replace('\'', '\\\'').replace('\n', '\\n').replace('\r', '')
-            value_str = '\'%s\'' % value_str
+        value_str = _get_value_str(value)
 
         lindex = content.find(name)
         if lindex < 0:
