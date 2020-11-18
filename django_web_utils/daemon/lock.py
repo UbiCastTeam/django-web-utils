@@ -9,6 +9,7 @@ import datetime
 import logging
 import os
 import socket
+import time
 
 logger = logging.getLogger('djwutils.daemon.lock')
 
@@ -18,13 +19,28 @@ def acquire_lock(path, timeout=None):
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
     hostname = socket.gethostname()
-    if os.path.exists(path):
-        if timeout and datetime.datetime.fromtimestamp(os.path.getmtime(path)) < datetime.datetime.now() - timeout:
+    try:
+        mtime = os.path.getmtime(path)
+    except FileNotFoundError:
+        pass
+    else:
+        if timeout and datetime.datetime.fromtimestamp(mtime) < datetime.datetime.now() - timeout:
             logger.info('Lock file "%s" has timed out.', path)
         else:
-            with open(path, 'r') as fo:
-                content = fo.read()
+            try:
+                with open(path, 'r') as fo:
+                    content = fo.read()
+            except Exception as e:
+                logger.debug('Failed to read lock file "%s", retrying in 2s. Error was: %s', path, e)
+                time.sleep(2)
+                try:
+                    with open(path, 'r') as fo:
+                        content = fo.read()
+                except Exception as e:
+                    logger.info('Failed to read lock file "%s", assuming another host is using it. Error was: %s', path, e)
+                    return False
             if content != hostname:
+                logger.info('Could not acquire lock file "%s" because it is currently attributed to host "%s".', path, content)
                 return False
             else:
                 logger.info('Lock file "%s" already exists and is attributed to current hostname.', path)
@@ -43,7 +59,7 @@ def release_lock(path):
             os.remove(path)
             logger.info('Lock file "%s" released.', path)
         else:
-            logger.info('Lock file "%s" is owned by another system: %s.', path, content)
+            logger.warning('Cannot release lock file "%s" because it is owned by host "%s".', path, content)
             return False
     return True
 
