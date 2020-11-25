@@ -70,8 +70,8 @@ def unescape(text):
 # get_meta_tag_text function
 # ----------------------------------------------------------------------------
 def get_meta_tag_text(text):
-    result = strip_html_tags(text)
-    result = unescape(result)
+    result = unescape(text)
+    result = strip_html_tags(result)
     result = result.strip().replace('"', '\'\'')
     return result
 
