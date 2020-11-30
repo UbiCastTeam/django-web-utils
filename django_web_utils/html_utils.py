@@ -23,7 +23,7 @@ ALLOWED_ATTRS = {
     'td': ['rowspan', 'colspan'],
     'th': ['rowspan', 'colspan'],
 }
-ALLOWED_STYLES = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow']
+ALLOWED_STYLES = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow', 'width', 'height']
 
 
 # clean_html_tags function
@@ -32,7 +32,7 @@ ALLOWED_STYLES = ['margin', 'padding', 'color', 'background', 'vertical-align', 
 def clean_html_tags(html, allow_iframes=False):
     if allow_iframes:
         def iframe_attrs_check(tag, name, value):
-            if name in ('name', 'height', 'width', 'allowfullscreen'):
+            if name in ('name', 'height', 'width', 'allowfullscreen', 'class', 'style'):
                 return True
             if name == 'src' and value.startswith('https://'):
                 return True
