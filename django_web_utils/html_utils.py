@@ -29,7 +29,20 @@ ALLOWED_STYLES = ['margin', 'padding', 'color', 'background', 'vertical-align', 
 # clean_html_tags function
 # remove all non basic tags in the given html code
 # ----------------------------------------------------------------------------
-def clean_html_tags(html):
+def clean_html_tags(html, allow_iframes=False):
+    if allow_iframes:
+        def iframe_attrs_check(tag, name, value):
+            if name in ('name', 'height', 'width', 'allowfullscreen'):
+                return True
+            if name == 'src' and value.startswith('https://'):
+                return True
+            return False
+
+        tags = list(ALLOWED_TAGS) + ['iframe']
+        attrs = dict(ALLOWED_ATTRS)
+        attrs['iframe'] = iframe_attrs_check
+        return bleach.clean(html, tags=tags, attributes=attrs, styles=ALLOWED_STYLES)
+
     return bleach.clean(html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS, styles=ALLOWED_STYLES)
 
 
