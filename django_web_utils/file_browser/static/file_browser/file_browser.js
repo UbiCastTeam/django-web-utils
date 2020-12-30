@@ -61,46 +61,46 @@ FileBrowser.prototype.init = function () {
     this.loadDirs();
     // bind events
     const obj = this;
-    document.getElementById('fm_btn_addFolder').click(function () {
+    document.getElementById('fm_btn_add_folder').addEventListener('click', function () {
         obj.addFolder();
     });
-    document.getElementById('fm_btn_addFile').click(function () {
+    document.getElementById('fm_btn_add_file').addEventListener('click', function () {
         obj.addFile();
     });
-    document.getElementById('fm_btn_search').click(function () {
+    document.getElementById('fm_btn_search').addEventListener('click', function () {
         obj.search();
     });
-    document.getElementById('fm_btn_refresh').click(function () {
+    document.getElementById('fm_btn_refresh').addEventListener('click', function () {
         obj.refresh();
     });
-    document.getElementById('fm_files_ordering').change(function () {
+    document.getElementById('fm_files_ordering').addEventListener('change', function () {
         obj.changeOrdering($(this).val());
     });
-    document.getElementById('fm_content_place').bind('dragenter', function (evt) {
+    document.getElementById('fm_content_place').addEventListener('dragenter', function (evt) {
         evt.preventDefault();
         if (obj.containsFiles(evt.originalEvent)) {
             obj.dragEntered = true;
-            obj.dropZoneElement.attr('class', 'hovered');
+            obj.dropZoneElement.setAttribute('class', 'hovered');
         }
     });
-    document.getElementById('fm_content_place').bind('dragover', function (evt) {
+    document.getElementById('fm_content_place').addEventListener('dragover', function (evt) {
         evt.preventDefault();
     });
-    document.getElementById('fm_content_place').bind('dragleave', function () {
+    document.getElementById('fm_content_place').addEventListener('dragleave', function () {
         if (!obj.dragEntered) {
-            obj.dropZoneElement.attr('class', '');
+            obj.dropZoneElement.setAttribute('class', '');
         }
         obj.dragEntered = false;
     });
-    $(document.body).bind('drop', function (evt) {
+    document.body.addEventListener('drop', function (evt) {
         evt.preventDefault();
         if (obj.containsFiles(evt.originalEvent)) {
-            obj.dropZoneElement.attr('class', 'uploading');
+            obj.dropZoneElement.setAttribute('class', 'uploading');
             obj.onFilesDrop(evt.originalEvent);
             return false;
         }
     });
-    $(window).bind('hashchange', function () {
+    window.addEventListener('hashchange', function () {
         obj.loadContent();
     });
 };
@@ -116,35 +116,72 @@ FileBrowser.prototype.containsFiles = function (evt) {
     return false;
 };
 
+FileBrowser.prototype.httpRequest = function (args) {
+    const params = args.params ? args.params : {};
+    if (args.cache === undefined || args.cache) {
+        params._ = (new Date()).getTime();
+    }
+    let url = args.url;
+    const urlParams = [];
+    let param;
+    for (param in params) {
+        urlParams.push(encodeURIComponent(param) + '=' + encodeURIComponent(params[param]));
+    }
+    if (urlParams.length > 0) {
+        url += '?' + urlParams.join('&');
+    }
+    // const data = args.data ? args.data : {};
+    const req = new XMLHttpRequest();
+    if (args.callback) {
+        req.onreadystatechange = function () {
+            if (this.readyState !== XMLHttpRequest.DONE) {
+                return;
+            }
+            let jsonResponse;
+            try {
+                jsonResponse = JSON.parse(this.responseText);
+            } catch (e) {
+                jsonResponse = {
+                    error: 'Failed to parse load dirs response (status: ' + this.status + '): ' + e
+                };
+            }
+            if (this.status === 200) {
+                // success
+                args.callback(jsonResponse);
+            } else {
+                // fail
+                args.callback({
+                    success: false,
+                    message: jsonResponse.error
+                });
+            }
+        };
+    }
+    req.open(args.method ? args.method : 'GET', url, true);
+    req.send();
+};
+
 FileBrowser.prototype.loadDirs = function () {
     const obj = this;
-    $.ajax({
-        type: 'GET',
+    this.httpRequest({
+        method: 'GET',
         url: this.dirsURL,
-        dataType: 'json',
-        cache: false,
-        success: function (response) {
+        callback: function (response) {
             obj.parseDirsResponse(response);
-        },
-        error: function (jqXHR, textStatus, thrownError) {
-            obj.parseDirsResponse({
-                success: false,
-                message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
-            });
         }
     });
 };
 FileBrowser.prototype.parseDirsResponse = function (response) {
     if (!response.success) {
-        this.placeElement.html('<div class="message-error">' + response.message + '</div>');
+        this.placeElement.innerHTML = '<div class="message-error">' + response.message + '</div>';
         return;
     }
 
     const flatTree = [];
     if (response.dirs) {
-        const $menu = $('<ul></ul>');
-        this.getTreeDirs(response.dirs, $menu, flatTree, '', 1);
-        this.menuTreeElement.html($menu);
+        const menuEle = document.createElement('ul');
+        this.getTreeDirs(response.dirs, menuEle, flatTree, '', 1);
+        this.menuTreeElement.appendChild(menuEle);
     }
     this.flatTree = flatTree; // used for move function
     // open trees
@@ -154,7 +191,7 @@ FileBrowser.prototype.parseDirsResponse = function (response) {
     }
     for (let i = 0; i < this.opened.length; i++) {
         if (this.menuElements[this.opened[i]]) {
-            this.menuElements[this.opened[i]].removeClass('closed');
+            this.menuElements[this.opened[i]].classList.remove('closed');
         }
     }
     // load dir content (only after init)
@@ -162,7 +199,7 @@ FileBrowser.prototype.parseDirsResponse = function (response) {
         this.loadContent();
         this.contentLoaded = true;
     } else if (this.path && this.menuElements[this.path]) {
-        this.menuElements[this.path].addClass('active');
+        this.menuElements[this.path].classList.add('active');
     }
     // open all sub menu
     const splitted = this.path.split('/');
@@ -174,29 +211,33 @@ FileBrowser.prototype.parseDirsResponse = function (response) {
         }
     }
 };
-FileBrowser.prototype.getTreeDirs = function (dirs, $container, flatTree, relativePath, level) {
+FileBrowser.prototype.getTreeDirs = function (dirs, menuEle, flatTree, relativePath, level) {
     for (let i = 0; i < dirs.length; i++) {
         const dirRelativePath = relativePath + dirs[i].dirName + '/';
         flatTree.push({ path: dirRelativePath, name: dirs[i].dirName, level: level });
-        const $li = $('<li class="closed"></li>');
-        let $btn;
+        const liEle = document.createElement('li');
+        liEle.setAttribute('class', 'closed');
+        let btnEle;
         if (dirs[i].sub_dirs.length > 0) {
-            $btn = $('<button type="button" class="list-entry"></button>');
-            $btn.click({ obj: this, dirName: dirs[i].dirName, relativePath: dirRelativePath }, function (evt) {
+            btnEle = document.createElement('button');
+            btnEle.setAttribute('type', 'button');
+            btnEle.setAttribute('class', 'list-entry');
+            btnEle.addEventListener('click', { obj: this, dirName: dirs[i].dirName, relativePath: dirRelativePath }, function (evt) {
                 evt.data.obj.toggle(evt.data.relativePath);
             });
         } else {
-            $btn = $('<button type="button" class="list-none"></button>');
+            btnEle = $('<button type="button" class="list-none"></button>');
         }
-        $li.append($btn);
-        $li.append('<a href="#' + dirRelativePath + '">' + dirs[i].dirName + '</a>');
+        liEle.appendChild(btnEle);
+        liEle.appendChild('<a href="#' + dirRelativePath + '">' + dirs[i].dirName + '</a>');
         if (dirs[i].sub_dirs.length > 0) {
-            const $subCont = $('<ul class="sub-menu"></ul>');
-            this.getTreeDirs(dirs[i].sub_dirs, $subCont, flatTree, dirRelativePath, level + 1);
-            $li.append($subCont);
+            const subEle = document.createElement('ul');
+            subEle.setAttribute('class', 'sub-menu');
+            this.getTreeDirs(dirs[i].sub_dirs, subEle, flatTree, dirRelativePath, level + 1);
+            liEle.appendChild(subEle);
         }
-        this.menuElements[dirRelativePath] = $li;
-        $container.append($li);
+        this.menuElements[dirRelativePath] = liEle;
+        menuEle.appendChild(liEle);
     }
 };
 
@@ -215,43 +256,38 @@ FileBrowser.prototype.loadContent = function () {
     }
     //console.log('New path: ' + path);
 
-    $('.active', this.menuTreeElement).removeClass('active');
+    const activeEle = this.menuTreeElement.querySelector('.active');
+    if (activeEle) {
+        activeEle.classList.remove('active');
+    }
     if (!path) {
-        this.menuRootElement.addClass('active');
+        this.menuRootElement.classList.add('active');
     } else if (this.menuElements[path]) {
-        this.menuElements[path].addClass('active');
+        this.menuElements[path].classList.add('active');
     }
 
     const obj = this;
-    $.ajax({
-        type: 'GET',
+    this.httpRequest({
+        method: 'GET',
         url: this.contentURL,
-        data: { path: path, order: this.ordering },
-        dataType: 'json',
-        cache: false,
-        success: function (response) {
+        params: { path: path, order: this.ordering },
+        callback: function (response) {
             obj.parseContentResponse(response);
-        },
-        error: function (jqXHR, textStatus, thrownError) {
-            obj.parseContentResponse({
-                success: false,
-                message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
-            });
         }
     });
 };
 FileBrowser.prototype.parseContentResponse = function (response) {
     if (!response.success) {
-        this.placeElement.html('<div class="message-error">' + response.message + '</div>');
+        this.placeElement.innerHTML = '<div class="message-error">' + response.message + '</div>';
         return;
     }
 
     if (response.files.length == 0) {
-        this.placeElement.html('<div class="message-info">' + jsu.translate('The folder is empty.') + '</div>');
+        this.placeElement.innerHTML = '<div class="message-info">' + jsu.translate('The folder is empty.') + '</div>';
     } else {
         // display files
         this.files = response.files;
-        this.placeElement.html('');
+        this.placeElement.innerHTML = '';
         const ovls = [];
         for (let i = 0; i < this.files.length; i++) {
             const file = this.files[i];
@@ -296,35 +332,35 @@ FileBrowser.prototype.parseContentResponse = function (response) {
             html += '</div>';
             const $entry = $(html);
             file.$entry = $entry;
-            $('.file-link', $entry).click({ obj: this, file: file }, function (evt) {
+            $('.file-link', $entry).addEventListener('click', { obj: this, file: file }, function (evt) {
                 return evt.data.obj.onFileClick(evt.data.file, evt);
             });
-            $('.file-delete', $entry).click({ obj: this, file: file }, function (evt) {
+            $('.file-delete', $entry).addEventListener('click', { obj: this, file: file }, function (evt) {
                 if (!evt.data.file.selected) {
                     evt.data.obj.onFileClick(evt.data.file, evt);
                 }
                 evt.data.obj.deleteFiles();
             });
-            $('.file-rename', $entry).click({ obj: this, file: file }, function (evt) {
+            $('.file-rename', $entry).addEventListener('click', { obj: this, file: file }, function (evt) {
                 if (!evt.data.file.selected) {
                     evt.data.obj.onFileClick(evt.data.file, evt);
                 }
                 evt.data.obj.renameFiles();
             });
-            $('.file-move', $entry).click({ obj: this, file: file }, function (evt) {
+            $('.file-move', $entry).addEventListener('click', { obj: this, file: file }, function (evt) {
                 if (!evt.data.file.selected) {
                     evt.data.obj.onFileClick(evt.data.file, evt);
                 }
                 evt.data.obj.moveFiles();
             });
-            this.placeElement.append($entry);
+            this.placeElement.appendChild($entry);
             if (this.imagesExtenstions.indexOf(file.ext) != -1) {
                 file.overlayIndex = ovls.length;
                 ovls.push(file.url);
             }
         }
         if (ovls.length > 0) {
-            this.overlay.change(ovls);
+            this.overlay.addEventListener('change', ovls);
         }
     }
     // create path tree
@@ -339,10 +375,10 @@ FileBrowser.prototype.parseContentResponse = function (response) {
             }
         }
     }
-    $('#path_bar').html(htmlPath);
-    this.sizeElement.html(response.total_size);
-    this.dirsCountElement.html(response.total_nb_dirs);
-    this.filesCountElement.html(response.total_nb_files);
+    document.getElementById('path_bar').innerHTML = htmlPath;
+    this.sizeElement.innerHTML = response.total_size;
+    this.dirsCountElement.innerHTML = response.total_nb_dirs;
+    this.filesCountElement.innerHTML = response.total_nb_files;
 };
 
 FileBrowser.prototype.refresh = function () {
@@ -399,25 +435,25 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
                     const f = this.files[i];
                     if (f != file && f.selected) {
                         f.selected = false;
-                        f.$entry.removeClass('selected');
+                        f.$entry.classList.remove('selected');
                     }
                 }
                 // select file
                 if (!file.selected) {
                     file.selected = true;
-                    file.$entry.addClass('selected');
+                    file.$entry.classList.add('selected');
                 } else {
                     file.selected = false;
-                    file.$entry.removeClass('selected');
+                    file.$entry.classList.remove('selected');
                 }
             } else {
                 // toggle selection
                 if (file.selected) {
                     file.selected = false;
-                    file.$entry.removeClass('selected');
+                    file.$entry.classList.remove('selected');
                 } else {
                     file.selected = true;
-                    file.$entry.addClass('selected');
+                    file.$entry.classList.add('selected');
                 }
             }
         }
@@ -491,7 +527,7 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
     for (let i = 0; i < files.length; i++) {
         formData.append('file_' + i, files[i]);
     }
-    $('progress', this.dropZoneElement).attr('value', 0).html('0 %');
+    $('progress', this.dropZoneElement).setAttribute('value', 0).innerHTML = '0 %';
     const obj = this;
     $.ajax({
         url: this.actionURL,
@@ -511,18 +547,18 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
                         if (evt.total) {
                             progress = parseInt(100 * evt.loaded / evt.total, 10);
                         }
-                        $('progress', obj.dropZoneElement).attr('value', progress).html(progress + ' %');
+                        $('progress', obj.dropZoneElement).setAttribute('value', progress).innerHTML = progress + ' %';
                     }
                 }, false); // for handling the progress of the upload
             }
             return myXhr;
         },
         success: function (response) {
-            obj.dropZoneElement.attr('class', '');
+            obj.dropZoneElement.setAttribute('class', '');
             obj.onActionExecuted(response);
         },
         error: function (jqXHR, textStatus, thrownError) {
-            obj.dropZoneElement.attr('class', '');
+            obj.dropZoneElement.setAttribute('class', '');
             obj.onActionExecuted({
                 success: false,
                 message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
@@ -543,7 +579,7 @@ FileBrowser.prototype.addFolder = function () {
             return false;
         });
     }
-    this.folderForm.attr('action', this.actionURL + '#' + this.path);
+    this.folderForm.setAttribute('action', this.actionURL + '#' + this.path);
 
     const obj = this;
     this.overlay.show({
@@ -557,14 +593,14 @@ FileBrowser.prototype.addFolder = function () {
         ]
     });
     setTimeout(function () {
-        $('#new_folder_name').focus();
+        document.getElementById('new_folder_name').focus();
     }, 20);
 };
 FileBrowser.prototype._addFolder = function () {
     const data = {
         action: 'addFolder',
         path: this.path,
-        name: $('#new_folder_name', this.folderForm).val()
+        name: document.getElementById('new_folder_name').val()
     };
     this.folderForm.detach();
     this.executeAction(data, 'post');
@@ -580,8 +616,8 @@ FileBrowser.prototype.addFile = function () {
         html += '</form>';
         this.uploadForm = $(html);
     }
-    this.uploadForm.attr('action', this.actionURL + '#' + this.path);
-    $('#file_to_add_path', this.uploadForm).val(this.path);
+    this.uploadForm.setAttribute('action', this.actionURL + '#' + this.path);
+    this.uploadForm.querySelector('#file_to_add_path').val(this.path);
 
     const obj = this;
     this.overlay.show({
@@ -595,7 +631,7 @@ FileBrowser.prototype.addFile = function () {
         ]
     });
     setTimeout(function () {
-        $('#file_to_add').focus();
+        obj.uploadForm.querySelector('#file_to_add').focus();
     }, 20);
 };
 FileBrowser.prototype.renameFiles = function () {
@@ -634,13 +670,13 @@ FileBrowser.prototype.renameFiles = function () {
     }
 
     const title = jsu.translate('Rename') + ' "' + selected[0].name + '"';
-    $('#rename_new_name', this.renameForm).val(selected[0].name);
+    this.renameForm.querySelector('#rename_new_name').val(selected[0].name);
 
     html = '';
     for (let i = 0; i < selected.length; i++) {
         html += '<li>' + selected[i].name + '</li>';
     }
-    $('ul', this.renameForm).html(html);
+    $('ul', this.renameForm).innerHTML = html;
 
     const obj = this;
     this.overlay.show({
@@ -654,7 +690,7 @@ FileBrowser.prototype.renameFiles = function () {
         ]
     });
     setTimeout(function () {
-        $('#rename_new_name').focus();
+        obj.renameForm.querySelector('#rename_new_name').focus();
     }, 20);
 };
 FileBrowser.prototype.moveFiles = function () {
@@ -717,7 +753,7 @@ FileBrowser.prototype.moveFiles = function () {
                 const data = {
                     action: 'move',
                     path: obj.path,
-                    newPath: $('#move_select', form).val()
+                    newPath: form.querySelector('#move_select').val()
                 };
                 for (let i = 0; i < selected.length; i++) {
                     data['name_' + i] = selected[i].name;
@@ -733,7 +769,7 @@ FileBrowser.prototype.moveFiles = function () {
         ]
     });
     setTimeout(function () {
-        $('#move_select').focus();
+        form.querySelector('#move_select').focus();
     }, 20);
 };
 FileBrowser.prototype.deleteFiles = function () {
@@ -817,8 +853,8 @@ FileBrowser.prototype.search = function () {
                     }
                     html += '</div>';
                 }
-                $('#search_results', obj.searchForm).html(html);
-                $('#search_results a.dir-link', obj.searchForm).click(function () {
+                $('#search_results', obj.searchForm).innerHTML = html;
+                $('#search_results a.dir-link', obj.searchForm).addEventListener('click', function () {
                     obj.overlay.hide();
                 });
                 obj.openSearchForm();
@@ -852,7 +888,7 @@ FileBrowser.prototype.toggle = function (path) {
         return;
     }
     const $sub = this.menuElements[path];
-    if ($sub.hasClass('closed')) {
+    if ($sub.classList.contains('closed')) {
         this.openTree(path);
     } else {
         this.closeTree(path);
@@ -864,10 +900,10 @@ FileBrowser.prototype.openTree = function (path) {
         return;
     }
     const $sub = this.menuElements[path];
-    if (!$sub.hasClass('closed')) {
+    if (!$sub.classList.contains('closed')) {
         return;
     }
-    $sub.removeClass('closed');
+    $sub.classList.remove('closed');
     this.opened.push(path);
     jsu.setCookie('browser-tree', this.opened.join('/'));
 };
@@ -877,10 +913,10 @@ FileBrowser.prototype.closeTree = function (path) {
         return;
     }
     const $sub = this.menuElements[path];
-    if ($sub.hasClass('closed')) {
+    if ($sub.classList.contains('closed')) {
         return;
     }
-    $sub.addClass('closed');
+    $sub.classList.add('closed');
     for (let i = 0; i < this.opened.length; i++) {
         if (this.opened[i] == path) {
             if (i == this.opened.length - 1) {
@@ -897,9 +933,9 @@ FileBrowser.prototype.closeTree = function (path) {
 
 FileBrowser.prototype.hideMessages = function () {
     $('.messages-list').fadeOut('fast');
-    $('.messages-container').addClass('hidden');
+    $('.messages-container').classList.add('hidden');
 };
 FileBrowser.prototype.showMessages = function () {
     $('.messages-list').fadeIn('fast');
-    $('.messages-container').removeClass('hidden');
+    $('.messages-container').classList.remove('hidden');
 };
