@@ -56,51 +56,50 @@ FileBrowser.prototype.init = function () {
     // load folder content
     this.ordering = jsu.getCookie('browser-ordering', this.ordering);
     if (this.ordering != 'name-asc') {
-        $('#fm_files_ordering').val(this.ordering);
+        document.getElementById('fm_files_ordering').val(this.ordering);
     }
     this.loadDirs();
     // bind events
-    $('#fm_btn_addFolder').click({ obj: this }, function (evt) {
-        evt.data.obj.addFolder();
+    const obj = this;
+    document.getElementById('fm_btn_addFolder').click(function () {
+        obj.addFolder();
     });
-    $('#fm_btn_addFile').click({ obj: this }, function (evt) {
-        evt.data.obj.addFile();
+    document.getElementById('fm_btn_addFile').click(function () {
+        obj.addFile();
     });
-    $('#fm_btn_search').click({ obj: this }, function (evt) {
-        evt.data.obj.search();
+    document.getElementById('fm_btn_search').click(function () {
+        obj.search();
     });
-    $('#fm_btn_refresh').click({ obj: this }, function (evt) {
-        evt.data.obj.refresh();
+    document.getElementById('fm_btn_refresh').click(function () {
+        obj.refresh();
     });
-    $('#fm_files_ordering').change({ obj: this }, function (evt) {
-        evt.data.obj.changeOrdering($(this).val());
+    document.getElementById('fm_files_ordering').change(function () {
+        obj.changeOrdering($(this).val());
     });
-    $('.content-place').bind('dragenter', { obj: this }, function (evt) {
+    document.getElementById('fm_content_place').bind('dragenter', function (evt) {
         evt.preventDefault();
-        if (evt.data.obj.containsFiles(evt.originalEvent)) {
-            evt.data.obj.dragEntered = true;
-            setTimeout(function () { evt.data.dragEntered = false; }, 0);
-            evt.data.obj.dropZoneElement.attr('class', 'hovered');
+        if (obj.containsFiles(evt.originalEvent)) {
+            obj.dragEntered = true;
+            obj.dropZoneElement.attr('class', 'hovered');
         }
     });
-    $('.content-place').bind('dragover', { obj: this }, function (evt) {
+    document.getElementById('fm_content_place').bind('dragover', function (evt) {
         evt.preventDefault();
     });
-    $('.content-place').bind('dragleave', { obj: this }, function (evt) {
-        if (!evt.data.obj.dragEntered) {
-            evt.data.obj.dropZoneElement.attr('class', '');
+    document.getElementById('fm_content_place').bind('dragleave', function () {
+        if (!obj.dragEntered) {
+            obj.dropZoneElement.attr('class', '');
         }
-        evt.data.obj.dragEntered = false;
+        obj.dragEntered = false;
     });
-    $(document.body).bind('drop', { obj: this }, function (evt) {
+    $(document.body).bind('drop', function (evt) {
         evt.preventDefault();
-        if (evt.data.obj.containsFiles(evt.originalEvent)) {
-            evt.data.obj.dropZoneElement.attr('class', 'uploading');
-            evt.data.obj.onFilesDrop(evt.originalEvent);
+        if (obj.containsFiles(evt.originalEvent)) {
+            obj.dropZoneElement.attr('class', 'uploading');
+            obj.onFilesDrop(evt.originalEvent);
             return false;
         }
     });
-    const obj = this;
     $(window).bind('hashchange', function () {
         obj.loadContent();
     });
@@ -130,79 +129,79 @@ FileBrowser.prototype.loadDirs = function () {
         error: function (jqXHR, textStatus, thrownError) {
             obj.parseDirsResponse({
                 success: false,
-                message: textStatus+' ('+(thrownError ? thrownError : jsu.translate('server unreachable'))+')'
+                message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
             });
         }
     });
 };
 FileBrowser.prototype.parseDirsResponse = function (response) {
     if (!response.success) {
-        this.placeElement.html('<div class="message-error">'+response.message+'</div>');
+        this.placeElement.html('<div class="message-error">' + response.message + '</div>');
         return;
     }
 
-    let flatTree = [];
+    const flatTree = [];
     if (response.dirs) {
-        let $menu = $('<ul></ul>');
+        const $menu = $('<ul></ul>');
         this.getTreeDirs(response.dirs, $menu, flatTree, '', 1);
         this.menuTreeElement.html($menu);
     }
     this.flatTree = flatTree; // used for move function
     // open trees
-    let stored = jsu.getCookie('browser-tree');
+    const stored = jsu.getCookie('browser-tree');
     if (stored) {
         this.opened = stored.split('/');
     }
-    for (let i=0; i < this.opened.length; i++) {
+    for (let i = 0; i < this.opened.length; i++) {
         if (this.menuElements[this.opened[i]]) {
             this.menuElements[this.opened[i]].removeClass('closed');
         }
     }
     // load dir content (only after init)
-    if (!this.content_loaded) {
+    if (!this.contentLoaded) {
         this.loadContent();
-        this.content_loaded = true;
+        this.contentLoaded = true;
     } else if (this.path && this.menuElements[this.path]) {
         this.menuElements[this.path].addClass('active');
     }
     // open all sub menu
-    let splitted = this.path.split('/');
+    const splitted = this.path.split('/');
     let p = '';
-    for (let i=0; i < splitted.length; i++) {
-        p += splitted[i]+'/';
+    for (let i = 0; i < splitted.length; i++) {
+        p += splitted[i] + '/';
         if (splitted[i] && p != this.path) {
             this.openTree(p);
         }
     }
 };
-FileBrowser.prototype.getTreeDirs = function (dirs, $container, flatTree, relative_path, level) {
-    for (let i=0; i < dirs.length; i++) {
-        let dir_relative_path = relative_path+dirs[i].dir_name+'/';
-        flatTree.push({ path: dir_relative_path, name: dirs[i].dir_name, level: level });
-        let $li = $('<li class="closed"></li>');
+FileBrowser.prototype.getTreeDirs = function (dirs, $container, flatTree, relativePath, level) {
+    for (let i = 0; i < dirs.length; i++) {
+        const dirRelativePath = relativePath + dirs[i].dirName + '/';
+        flatTree.push({ path: dirRelativePath, name: dirs[i].dirName, level: level });
+        const $li = $('<li class="closed"></li>');
         let $btn;
         if (dirs[i].sub_dirs.length > 0) {
             $btn = $('<button type="button" class="list-entry"></button>');
-            $btn.click({ obj: this, dir_name: dirs[i].dir_name, relative_path: dir_relative_path }, function (evt) {
-                evt.data.obj.toggle(evt.data.relative_path);
+            $btn.click({ obj: this, dirName: dirs[i].dirName, relativePath: dirRelativePath }, function (evt) {
+                evt.data.obj.toggle(evt.data.relativePath);
             });
         } else {
             $btn = $('<button type="button" class="list-none"></button>');
         }
         $li.append($btn);
-        $li.append('<a href="#'+dir_relative_path+'">'+dirs[i].dir_name+'</a>');
+        $li.append('<a href="#' + dirRelativePath + '">' + dirs[i].dirName + '</a>');
         if (dirs[i].sub_dirs.length > 0) {
-            let $sub_cont = $('<ul class="sub-menu"></ul>');
-            this.getTreeDirs(dirs[i].sub_dirs, $sub_cont, flatTree, dir_relative_path, level+1);
-            $li.append($sub_cont);
+            const $subCont = $('<ul class="sub-menu"></ul>');
+            this.getTreeDirs(dirs[i].sub_dirs, $subCont, flatTree, dirRelativePath, level + 1);
+            $li.append($subCont);
         }
-        this.menuElements[dir_relative_path] = $li;
+        this.menuElements[dirRelativePath] = $li;
         $container.append($li);
     }
 };
 
 FileBrowser.prototype.loadContent = function () {
-    let hash = window.location.hash.toString();
+    const hash = window.location.hash.toString();
     let path = hash;
     if (hash && hash[0] == '#') {
         path = hash.substring(1);
@@ -214,7 +213,7 @@ FileBrowser.prototype.loadContent = function () {
     if (path) {
         this.openTree(path);
     }
-    //console.log('New path: '+path);
+    //console.log('New path: ' + path);
 
     $('.active', this.menuTreeElement).removeClass('active');
     if (!path) {
@@ -236,26 +235,26 @@ FileBrowser.prototype.loadContent = function () {
         error: function (jqXHR, textStatus, thrownError) {
             obj.parseContentResponse({
                 success: false,
-                message: textStatus+' ('+(thrownError ? thrownError : jsu.translate('server unreachable'))+')'
+                message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
             });
         }
     });
 };
 FileBrowser.prototype.parseContentResponse = function (response) {
     if (!response.success) {
-        this.placeElement.html('<div class="message-error">'+response.message+'</div>');
+        this.placeElement.html('<div class="message-error">' + response.message + '</div>');
         return;
     }
 
     if (response.files.length == 0) {
-        this.placeElement.html('<div class="message-info">'+jsu.translate('The folder is empty.')+'</div>');
+        this.placeElement.html('<div class="message-info">' + jsu.translate('The folder is empty.') + '</div>');
     } else {
         // display files
         this.files = response.files;
         this.placeElement.html('');
-        let ovls = [];
-        for (let i=0; i < this.files.length; i++) {
-            let file = this.files[i];
+        const ovls = [];
+        for (let i = 0; i < this.files.length; i++) {
+            const file = this.files[i];
             let fclass;
             let target = '';
             if (file.isprevious) {
@@ -263,61 +262,64 @@ FileBrowser.prototype.parseContentResponse = function (response) {
                 file.url = '#';
             } else if (file.isdir) {
                 fclass = 'folder';
-                file.url = '#'+this.path+file.name+'/';
+                file.url = '#' + this.path + file.name + '/';
             } else {
-                fclass = 'file-'+file.ext;
-                file.url = this.baseURL+this.path+file.name;
+                fclass = 'file-' + file.ext;
+                file.url = this.baseURL + this.path + file.name;
                 target = 'target="_blank"';
             }
-            let html = '<div class="file-block '+fclass+'">';
-            html += '<a class="file-link" '+target+' href="'+file.url+'">';
+            let html = '<div class="file-block ' + fclass + '">';
+            html += '<a class="file-link" ' + target + ' href="' + file.url + '">';
             html +=     '<span class="file-icon"';
             if (file.preview) {
-                html +=     ' style="background-image: url(\''+this.previewURL+'?path='+this.path+file.name+'\');"';
+                html +=     ' style="background-image: url(\'' + this.previewURL + '?path=' + this.path + file.name + '\');"';
             }
             html +=     '></span>';
-            html +=     '<span class="file-name">'+file.name+'</span>';
+            html +=     '<span class="file-name">' + file.name + '</span>';
             if (!file.isprevious) {
                 html += '<span class="file-info">';
-                html +=     '<span class="file-size">'+jsu.translate('Size:')+' '+file.sizeh+'</span>';
+                html +=     '<span class="file-size">' + jsu.translate('Size:') + ' ' + file.sizeh + '</span>';
                 if (!file.isdir) {
-                    html += '<span class="file-mdate">'+jsu.translate('Last modification:')+'<br/>'+(file.mdate ? file.mdate : '?')+'</span>';
+                    html += '<span class="file-mdate">' + jsu.translate('Last modification:') + '<br/>' + (file.mdate ? file.mdate : '?') + '</span>';
                 } else {
-                    html += '<span class="file-nb-files">'+jsu.translate('Files:')+' '+file.nb_files+'</span>';
-                    html += '<span class="file-nb-dirs">'+jsu.translate('Folders:')+' '+file.nb_dirs+'</span>';
+                    html += '<span class="file-nb-files">' + jsu.translate('Files:') + ' ' + file.nb_files + '</span>';
+                    html += '<span class="file-nb-dirs">' + jsu.translate('Folders:') + ' ' + file.nb_dirs + '</span>';
                 }
                 html += '</span>';
             }
             html += '</a>';
             if (!file.isprevious) {
-                html += '<button type="button" class="file-delete" title="'+jsu.translate('Delete')+'"></button>';
-                html += '<button type="button" class="file-rename" title="'+jsu.translate('Rename')+'"></button>';
-                html += '<button type="button" class="file-move" title="'+jsu.translate('Move')+'"></button>';
+                html += '<button type="button" class="file-delete" title="' + jsu.translate('Delete') + '"></button>';
+                html += '<button type="button" class="file-rename" title="' + jsu.translate('Rename') + '"></button>';
+                html += '<button type="button" class="file-move" title="' + jsu.translate('Move') + '"></button>';
             }
             html += '</div>';
-            let $entry = $(html);
+            const $entry = $(html);
             file.$entry = $entry;
             $('.file-link', $entry).click({ obj: this, file: file }, function (evt) {
                 return evt.data.obj.onFileClick(evt.data.file, evt);
             });
             $('.file-delete', $entry).click({ obj: this, file: file }, function (evt) {
-                if (!evt.data.file.selected)
+                if (!evt.data.file.selected) {
                     evt.data.obj.onFileClick(evt.data.file, evt);
+                }
                 evt.data.obj.deleteFiles();
             });
             $('.file-rename', $entry).click({ obj: this, file: file }, function (evt) {
-                if (!evt.data.file.selected)
+                if (!evt.data.file.selected) {
                     evt.data.obj.onFileClick(evt.data.file, evt);
+                }
                 evt.data.obj.renameFiles();
             });
             $('.file-move', $entry).click({ obj: this, file: file }, function (evt) {
-                if (!evt.data.file.selected)
+                if (!evt.data.file.selected) {
                     evt.data.obj.onFileClick(evt.data.file, evt);
+                }
                 evt.data.obj.moveFiles();
             });
             this.placeElement.append($entry);
             if (this.imagesExtenstions.indexOf(file.ext) != -1) {
-                file.overlay_index = ovls.length;
+                file.overlayIndex = ovls.length;
                 ovls.push(file.url);
             }
         }
@@ -326,18 +328,18 @@ FileBrowser.prototype.parseContentResponse = function (response) {
         }
     }
     // create path tree
-    let full_path = '#';
-    let html_path = '<a href="'+full_path+'">'+jsu.translate('root')+'</a> <span>/</span> ';
+    let fullPath = '#';
+    let htmlPath = '<a href="' + fullPath + '">' + jsu.translate('root') + '</a> <span>/</span> ';
     if (response.path) {
-        let splitted = response.path.split('/');
-        for (let i=0; i < splitted.length; i++) {
+        const splitted = response.path.split('/');
+        for (let i = 0; i < splitted.length; i++) {
             if (splitted[i]) {
-                full_path += splitted[i]+'/';
-                html_path += '<a href="'+full_path+'">'+splitted[i]+'</a> <span>/</span> ';
+                fullPath += splitted[i] + '/';
+                htmlPath += '<a href="' + fullPath + '">' + splitted[i] + '</a> <span>/</span> ';
             }
         }
     }
-    $('#path_bar').html(html_path);
+    $('#path_bar').html(htmlPath);
     this.sizeElement.html(response.total_size);
     this.dirsCountElement.html(response.total_nb_dirs);
     this.filesCountElement.html(response.total_nb_files);
@@ -359,21 +361,21 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
             if (!this.path) {
                 return false;
             }
-            let splitted = this.path.split('/');
+            const splitted = this.path.split('/');
             if (splitted[splitted.length - 1] == '') {
                 splitted.pop();
             }
-            let new_path = '';
+            let newPath = '';
             if (splitted.length > 1) {
                 splitted.pop();
-                new_path = splitted.join('/')+'/';
+                newPath = splitted.join('/') + '/';
             }
-            window.location.hash = '#'+new_path;
+            window.location.hash = '#' + newPath;
         } else if (file.isdir) {
             return true; // use url in link
         } else {
-            if (!isNaN(file.overlay_index)) {
-                this.overlay.go_to_index(file.overlay_index);
+            if (!isNaN(file.overlayIndex)) {
+                this.overlay.go_to_index(file.overlayIndex);
                 this.overlay.show();
             } else {
                 return true; // use url in link
@@ -382,19 +384,19 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
     } else {
         // mark as clicked
         file.clicked = true;
-        if (file.timeout_id) {
-            clearTimeout(file.timeout_id);
+        if (file.timeoutId) {
+            clearTimeout(file.timeoutId);
         }
-        file.timeout_id = setTimeout(function () {
+        file.timeoutId = setTimeout(function () {
             file.clicked = false;
-            delete file.timeout_id;
+            delete file.timeoutId;
         }, 500);
         // select
         if (!file.isprevious) { 
             if (!evt.ctrlKey) {
                 // deselect all other files when Ctrl is not pressed
-                for (let i=0; i < this.files.length; i++) {
-                    let f = this.files[i];
+                for (let i = 0; i < this.files.length; i++) {
+                    const f = this.files[i];
                     if (f != file && f.selected) {
                         f.selected = false;
                         f.$entry.removeClass('selected');
@@ -428,7 +430,7 @@ FileBrowser.prototype.executeAction = function (data, method, cb) {
     // show loading overlay
     this.overlay.show({
         title: ' ',
-        html: '<div class="file-browser-overlay message-loading">'+jsu.translate('Loading')+'...</div>'
+        html: '<div class="file-browser-overlay message-loading">' + jsu.translate('Loading') + '...</div>'
     });
     // execute request
     if (method == 'post') {
@@ -452,7 +454,7 @@ FileBrowser.prototype.executeAction = function (data, method, cb) {
         error: function (jqXHR, textStatus, thrownError) {
             obj.onActionExecuted({
                 success: false,
-                message: textStatus+' ('+(thrownError ? thrownError : jsu.translate('server unreachable'))+')'
+                message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
             });
         }
     });
@@ -460,7 +462,7 @@ FileBrowser.prototype.executeAction = function (data, method, cb) {
 FileBrowser.prototype.onActionExecuted = function (response) {
     this.overlay.show({
         title: ' ',
-        html: '<div class="file-browser-overlay message-'+(response.success ? 'success' : 'error')+'">'+response.message+'</div>',
+        html: '<div class="file-browser-overlay message-' + (response.success ? 'success' : 'error') + '">' + response.message + '</div>',
         buttons: [
             { label: jsu.translate('Ok'), close: true }
         ]
@@ -471,8 +473,8 @@ FileBrowser.prototype.onActionExecuted = function (response) {
 };
 
 FileBrowser.prototype.getSelectedFiles = function () {
-    let selected = [];
-    for (let i=0; i < this.files.length; i++) {
+    const selected = [];
+    for (let i = 0; i < this.files.length; i++) {
         if (this.files[i].selected) {
             selected.push(this.files[i]);
         }
@@ -481,26 +483,27 @@ FileBrowser.prototype.getSelectedFiles = function () {
 };
 
 FileBrowser.prototype.onFilesDrop = function (evt) {
-    let files = evt.dataTransfer.files;
-    let form_data = new FormData();
-    form_data.append('action', 'upload');
-    form_data.append('path', this.path);
-    form_data.append('csrfmiddlewaretoken', this.csrfToken);
-    for (let i=0; i < files.length; i++) {
-        form_data.append('file_'+i, files[i]);
+    const files = evt.dataTransfer.files;
+    const formData = new FormData();
+    formData.append('action', 'upload');
+    formData.append('path', this.path);
+    formData.append('csrfmiddlewaretoken', this.csrfToken);
+    for (let i = 0; i < files.length; i++) {
+        formData.append('file_' + i, files[i]);
     }
     $('progress', this.dropZoneElement).attr('value', 0).html('0 %');
     const obj = this;
     $.ajax({
         url: this.actionURL,
         type: 'POST',
-        data: form_data,
+        data: formData,
         // options to tell JQuery not to process data or worry about content-type
         cache: false,
         contentType: false,
         processData: false,
-        xhr: function () {  // custom xhr
-            let myXhr = $.ajaxSettings.xhr();
+        xhr: function () {
+            // custom xhr
+            const myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload) { // check if upload property exists
                 myXhr.upload.addEventListener('progress', function (evt) {
                     if (evt.lengthComputable) {
@@ -508,7 +511,7 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
                         if (evt.total) {
                             progress = parseInt(100 * evt.loaded / evt.total, 10);
                         }
-                        $('progress', obj.dropZoneElement).attr('value', progress).html(progress+' %');
+                        $('progress', obj.dropZoneElement).attr('value', progress).html(progress + ' %');
                     }
                 }, false); // for handling the progress of the upload
             }
@@ -522,7 +525,7 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
             obj.dropZoneElement.attr('class', '');
             obj.onActionExecuted({
                 success: false,
-                message: textStatus+' ('+(thrownError ? thrownError : jsu.translate('server unreachable'))+')'
+                message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
             });
         }
     });
@@ -530,18 +533,21 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
 FileBrowser.prototype.addFolder = function () {
     if (!this.folderForm) {
         let html = '<form class="file-browser-overlay" action="." method="post" enctype="multipart/form-data">';
-        html += '<input type="hidden" name="csrfmiddlewaretoken" value="'+this.csrfToken+'"/>';
-        html += '<label for="new_folder_name">'+jsu.translate('New folder name:')+'</label>';
+        html += '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>';
+        html += '<label for="new_folder_name">' + jsu.translate('New folder name:') + '</label>';
         html += ' <input id="new_folder_name" type="text" value=""/>';
         html += '</form>';
         this.folderForm = $(html);
-        this.folderForm.submit({obj: this}, function (evt) { evt.data.obj._addFolder(); return false; });
+        this.folderForm.submit({obj: this}, function (evt) {
+            evt.data.obj._addFolder();
+            return false;
+        });
     }
-    this.folderForm.attr('action', this.actionURL+'#'+this.path);
+    this.folderForm.attr('action', this.actionURL + '#' + this.path);
 
     const obj = this;
     this.overlay.show({
-        title: jsu.translate('Add a folder in')+' "'+jsu.translate('root')+'/'+this.path+'"',
+        title: jsu.translate('Add a folder in') + ' "' + jsu.translate('root') + '/' + this.path + '"',
         html: this.folderForm,
         buttons: [
             { label: jsu.translate('Add'), callback: function () {
@@ -566,20 +572,20 @@ FileBrowser.prototype._addFolder = function () {
 FileBrowser.prototype.addFile = function () {
     if (!this.uploadForm) {
         let html = '<form class="file-browser-overlay" action="." method="post" enctype="multipart/form-data">';
-        html += '<input type="hidden" name="csrfmiddlewaretoken" value="'+this.csrfToken+'"/>';
+        html += '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>';
         html += '<input type="hidden" name="action" value="upload-old"/>';
         html += '<input id="file_to_add_path" type="hidden" name="path" value=""/>';
-        html += '<label for="file_to_add">'+jsu.translate('File to add:')+'</label>';
+        html += '<label for="file_to_add">' + jsu.translate('File to add:') + '</label>';
         html += ' <input id="file_to_add" type="file" name="file"/>';
         html += '</form>';
         this.uploadForm = $(html);
     }
-    this.uploadForm.attr('action', this.actionURL+'#'+this.path);
+    this.uploadForm.attr('action', this.actionURL + '#' + this.path);
     $('#file_to_add_path', this.uploadForm).val(this.path);
 
     const obj = this;
     this.overlay.show({
-        title: jsu.translate('Add a file in')+' "'+jsu.translate('root')+'/'+this.path+'"',
+        title: jsu.translate('Add a file in') + ' "' + jsu.translate('root') + '/' + this.path + '"',
         html: this.uploadForm,
         buttons: [
             { label: jsu.translate('Add'), callback: function () {
@@ -594,55 +600,55 @@ FileBrowser.prototype.addFile = function () {
 };
 FileBrowser.prototype.renameFiles = function () {
     let html;
-    if (!this.rename_form) {
-        html = '<form class="file-browser-overlay" action="'+this.actionURL+'" method="post">';
-        html += '<input type="hidden" name="csrfmiddlewaretoken" value="'+this.csrfToken+'"/>';
+    if (!this.renameForm) {
+        html = '<form class="file-browser-overlay" action="' + this.actionURL + '" method="post">';
+        html += '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>';
         html += '<div>';
-        html += '<label for="rename_new_name">'+jsu.translate('New name:')+'</label>';
+        html += '<label for="rename_new_name">' + jsu.translate('New name:') + '</label>';
         html += ' <input id="rename_new_name" type="text" value=""/>';
         html += '</div>';
-        html += '<p>'+jsu.translate('Selected file(s):')+'</p>';
+        html += '<p>' + jsu.translate('Selected file(s):') + '</p>';
         html += '<ul></ul>';
         html += '</form>';
-        this.rename_form = $(html);
-        this.rename_form.submit({ obj: this }, function (evt) {
-            const obj = evt.data.obj;
-            let data = {
+        this.renameForm = $(html);
+        const obj = this;
+        this.renameForm.submit(function () {
+            const data = {
                 action: 'rename',
                 path: obj.path,
-                new_name: $('#rename_new_name', obj.rename_form).val()
+                new_name: $('#rename_new_name', obj.renameForm).val()
             };
-            let selected = evt.data.obj.getSelectedFiles();
-            for (let i=0; i < selected.length; i++) {
-                data['name_'+i] = selected[i].name;
+            const selected = obj.getSelectedFiles();
+            for (let i = 0; i < selected.length; i++) {
+                data['name_' + i] = selected[i].name;
             }
-            obj.rename_form.detach();
+            obj.renameForm.detach();
             obj.executeAction(data, 'post');
             return false;
         });
     }
 
-    let selected = this.getSelectedFiles();
+    const selected = this.getSelectedFiles();
     if (selected.length < 1) {
         return;
     }
 
-    let title = jsu.translate('Rename')+' "'+selected[0].name+'"';
-    $('#rename_new_name', this.rename_form).val(selected[0].name);
+    const title = jsu.translate('Rename') + ' "' + selected[0].name + '"';
+    $('#rename_new_name', this.renameForm).val(selected[0].name);
 
     html = '';
-    for (let i=0; i < selected.length; i++) {
-        html += '<li>'+selected[i].name+'</li>';
+    for (let i = 0; i < selected.length; i++) {
+        html += '<li>' + selected[i].name + '</li>';
     }
-    $('ul', this.rename_form).html(html);
+    $('ul', this.renameForm).html(html);
 
     const obj = this;
     this.overlay.show({
         title: title,
-        html: this.rename_form,
+        html: this.renameForm,
         buttons: [
             { label: jsu.translate('Rename'), callback: function () {
-                obj.rename_form.submit();
+                obj.renameForm.submit();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -652,30 +658,30 @@ FileBrowser.prototype.renameFiles = function () {
     }, 20);
 };
 FileBrowser.prototype.moveFiles = function () {
-    let selected = this.getSelectedFiles();
+    const selected = this.getSelectedFiles();
     if (selected.length < 1) {
         return;
     }
 
     let title = jsu.translate('Move');
     if (selected.length == 1) {
-        title += ' "'+selected[0].name+'"';
+        title += ' "' + selected[0].name + '"';
     } else {
-        title += ' '+selected.length+' '+jsu.translate('files');
+        title += ' ' + selected.length + ' ' + jsu.translate('files');
     }
 
-    let banned = [];
-    for (let i=0; i < selected.length; i++) {
-        let s = selected[i];
+    const banned = [];
+    for (let i = 0; i < selected.length; i++) {
+        const s = selected[i];
         if (s.isdir) {
-            banned.push(this.path+s.name+'/');
+            banned.push(this.path + s.name + '/');
         }
     }
 
     let html = '<div class="file-browser-overlay">';
-    html +=     '<label for="move_select">'+jsu.translate('Move to:')+'</label>';
+    html +=     '<label for="move_select">' + jsu.translate('Move to:') + '</label>';
     html +=     ' <select id="move_select">';
-    html +=         '<option value="#" '+(this.path ? '' : 'disabled="disabled"')+'>'+jsu.translate('root')+'</option>';
+    html +=         '<option value="#" ' + (this.path ? '' : 'disabled="disabled"') + '>' + jsu.translate('root') + '</option>';
     for (let i=0; i < this.flatTree.length; i++) {
         let t = this.flatTree[i];
         let disabled = '';
@@ -683,24 +689,24 @@ FileBrowser.prototype.moveFiles = function () {
             disabled = 'disabled="disabled"';
         } else {
             // disallow a dir to be move in himself
-            for (let j=0; j < banned.length; j++) {
+            for (let j = 0; j < banned.length; j++) {
                 if (t.path.indexOf(banned[j]) == 0) {
                     disabled = 'disabled="disabled"';
                     break;
                 }
             }
         }
-        html +=     '<option value="'+t.path+'" style="padding-left: '+(t.level * 10)+'px;" '+disabled+'>'+t.name+'</option>';
+        html +=     '<option value="' + t.path + '" style="padding-left: ' + (t.level * 10) + 'px;" ' + disabled + '>' + t.name + '</option>';
     }
     html +=     '</select>';
-    html +=     '<p>'+jsu.translate('Selected file(s):')+'</p>';
+    html +=     '<p>' + jsu.translate('Selected file(s):') + '</p>';
     html +=     '<ul>';
     for (let i=0; i < selected.length; i++) {
-        html +=     '<li>'+selected[i].name+'</li>';
+        html +=     '<li>' + selected[i].name + '</li>';
     }
     html +=     '</ul>';
     html += '</div>';
-    let form = $(html);
+    const form = $(html);
 
     const obj = this;
     this.overlay.show({
@@ -708,18 +714,19 @@ FileBrowser.prototype.moveFiles = function () {
         html: form,
         buttons: [
             { label: jsu.translate('Move'), callback: function () {
-                let data = {
+                const data = {
                     action: 'move',
                     path: obj.path,
-                    new_path: $('#move_select', form).val()
+                    newPath: $('#move_select', form).val()
                 };
-                for (let i=0; i < selected.length; i++) {
-                    data['name_'+i] = selected[i].name;
+                for (let i = 0; i < selected.length; i++) {
+                    data['name_' + i] = selected[i].name;
                 }
                 obj.executeAction(data, 'post', function () {
                     // refresh dirs tree if a dir has been moved
-                    if (banned.length > 0)
+                    if (banned.length > 0) {
                         obj.loadDirs();
+                    }
                 });
             } },
             { label: jsu.translate('Cancel'), close: true }
@@ -730,24 +737,24 @@ FileBrowser.prototype.moveFiles = function () {
     }, 20);
 };
 FileBrowser.prototype.deleteFiles = function () {
-    let selected = this.getSelectedFiles();
+    const selected = this.getSelectedFiles();
     if (selected.length < 1) {
         return;
     }
 
     let title = jsu.translate('Delete');
     if (selected.length == 1) {
-        title = ' '+jsu.translate('one file');
+        title = ' ' + jsu.translate('one file');
     } else {
-        title += ' '+selected.length+' '+jsu.translate('files');
+        title += ' ' + selected.length + ' ' + jsu.translate('files');
     }
 
     let html = '<div class="file-browser-overlay">';
-    html +=     '<div><b>'+jsu.translate('Are you sure to delete the selected file(s) ?')+'</b></div>';
-    html +=     '<p>'+jsu.translate('Selected file(s):')+'</p>';
+    html +=     '<div><b>' + jsu.translate('Are you sure to delete the selected file(s) ?') + '</b></div>';
+    html +=     '<p>' + jsu.translate('Selected file(s):') + '</p>';
     html +=     '<ul>';
     for (let i=0; i < selected.length; i++) {
-        html +=     '<li>'+selected[i].name+'</li>';
+        html +=     '<li>' + selected[i].name + '</li>';
     }
     html +=     '</ul>';
     html += '</div>';
@@ -758,12 +765,12 @@ FileBrowser.prototype.deleteFiles = function () {
         html: html,
         buttons: [
             { label: jsu.translate('Delete'), callback: function () {
-                let data = {
+                const data = {
                     action: 'delete',
                     path: obj.path
                 };
-                for (let i=0; i < selected.length; i++) {
-                    data['name_'+i] = selected[i].name;
+                for (let i = 0; i < selected.length; i++) {
+                    data['name_' + i] = selected[i].name;
                 }
                 obj.executeAction(data, 'post');
             } },
@@ -772,47 +779,47 @@ FileBrowser.prototype.deleteFiles = function () {
     });
 };
 FileBrowser.prototype.search = function () {
-    if (!this.search_form) {
+    if (!this.searchForm) {
         // prepare search form
-        let html = '<form class="file-browser-overlay" action="'+this.actionURL+'" method="post">';
-        html += '<input type="hidden" name="csrfmiddlewaretoken" value="'+this.csrfToken+'"/>';
+        let html = '<form class="file-browser-overlay" action="' + this.actionURL + '" method="post">';
+        html += '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>';
         html += '<div>';
         html += '<input id="search" type="text" value=""/>';
-        html += ' <label for="search_in_current">'+jsu.translate('Search only in current dir')+'</label>';
+        html += ' <label for="search_in_current">' + jsu.translate('Search only in current dir') + '</label>';
         html += ' <input id="search_in_current" type="checkbox"/>';
         html += '</div>';
         html += '<div id="search_results"></div>';
         html += '</form>';
-        this.search_form = $(html);
-        this.search_form.submit({ obj: this }, function (evt) {
-            const obj = evt.data.obj;
-            let data = {
+        this.searchForm = $(html);
+        const obj = this;
+        this.searchForm.submit(function () {
+            const data = {
                 action: 'search',
-                search: $('#search', obj.search_form).val()
+                search: $('#search', obj.searchForm).val()
             };
-            if ($('#search_in_current', obj.search_form).is(':checked')) {
+            if ($('#search_in_current', obj.searchForm).is(':checked')) {
                 data.path = obj.path;
             }
-            obj.search_form.detach();
+            obj.searchForm.detach();
             obj.executeAction(data, 'get', function (response) {
                 // display search results
-                let html = '<p><b>'+response.msg+'</b></p>';
+                let html = '<p><b>' + response.msg + '</b></p>';
                 if (response.dirs && response.dirs.length > 0) {
                     html += '<div class="search-results">';
-                    for (let i=0; i < response.dirs.length; i++) {
-                        let dir = response.dirs[i];
-                        html += '<p><a class="dir-link" href="#'+dir.url+'">'+jsu.translate('root')+'/'+dir.url+'</a></p>';
+                    for (let i = 0; i < response.dirs.length; i++) {
+                        const dir = response.dirs[i];
+                        html += '<p><a class="dir-link" href="#' + dir.url + '">' + jsu.translate('root') + '/' + dir.url + '</a></p>';
                         html += '<ul>';
-                        for (let j=0; j < dir.files.length; j++) {
-                            html += '<li><a href="'+obj.baseURL+dir.url+dir.files[j]+'">'+dir.url+dir.files[j]+'</a></li>';
+                        for (let j = 0; j < dir.files.length; j++) {
+                            html += '<li><a href="' + obj.baseURL + dir.url + dir.files[j] + '">' + dir.url + dir.files[j] + '</a></li>';
                         }
                         html += '</ul>';
                     }
                     html += '</div>';
                 }
-                $('#search_results', obj.search_form).html(html);
-                $('#search_results a.dir-link', obj.search_form).click({ obj: obj }, function(evt) {
-                    evt.data.obj.overlay.hide();
+                $('#search_results', obj.searchForm).html(html);
+                $('#search_results a.dir-link', obj.searchForm).click(function () {
+                    obj.overlay.hide();
                 });
                 obj.openSearchForm();
             });
@@ -825,10 +832,10 @@ FileBrowser.prototype.openSearchForm = function () {
     const obj = this;
     this.overlay.show({
         title: jsu.translate('Search'),
-        html: this.search_form,
+        html: this.searchForm,
         buttons: [
             { label: jsu.translate('Search'), callback: function () {
-                obj.search_form.submit();
+                obj.searchForm.submit();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -841,10 +848,10 @@ FileBrowser.prototype.openSearchForm = function () {
 /* tree */
 FileBrowser.prototype.toggle = function (path) {
     if (!this.menuElements[path]) {
-        console.log('Error: no menu element for path: '+path);
+        console.log('Error: no menu element for path: ' + path);
         return;
     }
-    let $sub = this.menuElements[path];
+    const $sub = this.menuElements[path];
     if ($sub.hasClass('closed')) {
         this.openTree(path);
     } else {
@@ -853,10 +860,10 @@ FileBrowser.prototype.toggle = function (path) {
 };
 FileBrowser.prototype.openTree = function (path) {
     if (!this.menuElements[path]) {
-        console.log('Error: no menu element for path: '+path);
+        console.log('Error: no menu element for path: ' + path);
         return;
     }
-    let $sub = this.menuElements[path];
+    const $sub = this.menuElements[path];
     if (!$sub.hasClass('closed')) {
         return;
     }
@@ -866,20 +873,20 @@ FileBrowser.prototype.openTree = function (path) {
 };
 FileBrowser.prototype.closeTree = function (path) {
     if (!this.menuElements[path]) {
-        console.log('Error: no menu element for path: '+path);
+        console.log('Error: no menu element for path: ' + path);
         return;
     }
-    let $sub = this.menuElements[path];
+    const $sub = this.menuElements[path];
     if ($sub.hasClass('closed')) {
         return;
     }
     $sub.addClass('closed');
-    for (let i=0; i < this.opened.length; i++) {
+    for (let i = 0; i < this.opened.length; i++) {
         if (this.opened[i] == path) {
             if (i == this.opened.length - 1) {
                 this.opened.pop();
             } else {
-                let tmp = this.opened.pop();
+                const tmp = this.opened.pop();
                 this.opened[i] = tmp;
             }
             jsu.setCookie('browser-tree', this.opened.join('/'));
