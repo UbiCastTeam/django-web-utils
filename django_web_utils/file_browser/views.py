@@ -85,7 +85,7 @@ def storage_content(request, namespace=None):
     base_path = config.get_base_path(namespace)
     path = request.GET.get('path')
     folder_path = base_path if not path else os.path.join(base_path, path)
-    folder_path = folder_path
+    print('----------', path)
 
     if not os.path.exists(folder_path):
         return json_utils.failure_response(message=str(_('Folder "%s" does not exist') % path))
