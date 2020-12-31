@@ -123,14 +123,24 @@ FileBrowser.prototype.httpRequest = function (args) {
     }
     let url = args.url;
     const urlParams = [];
-    let param;
-    for (param in params) {
-        urlParams.push(encodeURIComponent(param) + '=' + encodeURIComponent(params[param]));
+    let field;
+    for (field in params) {
+        urlParams.push(encodeURIComponent(field) + '=' + encodeURIComponent(params[field]));
     }
     if (urlParams.length > 0) {
         url += '?' + urlParams.join('&');
     }
-    // const data = args.data ? args.data : {};
+    let formData;
+    if (args.data instanceof FormData) {
+        formData = args.data;
+    } else if (args.data) {
+        formData = new FormData();
+        for (field in args.data) {
+            formData.append(field, args.data[field]);
+        }
+    } else {
+        formData = null;
+    }
     const req = new XMLHttpRequest();
     if (args.callback) {
         req.onreadystatechange = function () {
@@ -158,7 +168,8 @@ FileBrowser.prototype.httpRequest = function (args) {
         };
     }
     req.open(args.method ? args.method : 'GET', url, true);
-    req.send();
+    req.send(formData);
+    return req;
 };
 
 FileBrowser.prototype.loadDirs = function () {
@@ -213,8 +224,8 @@ FileBrowser.prototype.parseDirsResponse = function (response) {
 };
 FileBrowser.prototype.getTreeDirs = function (dirs, menuEle, flatTree, relativePath, level) {
     for (let i = 0; i < dirs.length; i++) {
-        const dirRelativePath = relativePath + dirs[i].dirName + '/';
-        flatTree.push({ path: dirRelativePath, name: dirs[i].dirName, level: level });
+        const dirRelativePath = relativePath + dirs[i].dir_name + '/';
+        flatTree.push({ path: dirRelativePath, name: dirs[i].dir_name, level: level });
         const liEle = document.createElement('li');
         liEle.setAttribute('class', 'closed');
         let btnEle;
@@ -222,14 +233,17 @@ FileBrowser.prototype.getTreeDirs = function (dirs, menuEle, flatTree, relativeP
             btnEle = document.createElement('button');
             btnEle.setAttribute('type', 'button');
             btnEle.setAttribute('class', 'list-entry');
-            btnEle.addEventListener('click', { obj: this, dirName: dirs[i].dirName, relativePath: dirRelativePath }, function (evt) {
-                evt.data.obj.toggle(evt.data.relativePath);
-            });
+            btnEle.addEventListener('click', this.toggle.bind(this, dirRelativePath));
         } else {
-            btnEle = $('<button type="button" class="list-none"></button>');
+            btnEle = document.createElement('button');
+            btnEle.setAttribute('type', 'button');
+            btnEle.setAttribute('class', 'list-none');
         }
         liEle.appendChild(btnEle);
-        liEle.appendChild('<a href="#' + dirRelativePath + '">' + dirs[i].dirName + '</a>');
+        const linkEle = document.createElement('a');
+        linkEle.setAttribute('href', '#' + dirRelativePath);
+        linkEle.innerHTML = jsu.escapeHTML(dirs[i].dir_name);
+        liEle.appendChild(linkEle);
         if (dirs[i].sub_dirs.length > 0) {
             const subEle = document.createElement('ul');
             subEle.setAttribute('class', 'sub-menu');
@@ -296,7 +310,7 @@ FileBrowser.prototype.parseContentResponse = function (response) {
             if (file.isprevious) {
                 fclass = 'previous';
                 file.url = '#';
-            } else if (file.isdir) {
+            } else if (file.is_dir) {
                 fclass = 'folder';
                 file.url = '#' + this.path + file.name + '/';
             } else {
@@ -304,18 +318,19 @@ FileBrowser.prototype.parseContentResponse = function (response) {
                 file.url = this.baseURL + this.path + file.name;
                 target = 'target="_blank"';
             }
-            let html = '<div class="file-block ' + fclass + '">';
-            html += '<a class="file-link" ' + target + ' href="' + file.url + '">';
-            html +=     '<span class="file-icon"';
+            const entryEle = document.createElement('div');
+            entryEle.setAttribute('class', 'file-block ' + fclass);
+            let html = '<a class="file-link" ' + target + ' href="' + file.url + '">';
+            html += '<span class="file-icon"';
             if (file.preview) {
-                html +=     ' style="background-image: url(\'' + this.previewURL + '?path=' + this.path + file.name + '\');"';
+                html += ' style="background-image: url(\'' + this.previewURL + '?path=' + this.path + file.name + '\');"';
             }
-            html +=     '></span>';
-            html +=     '<span class="file-name">' + file.name + '</span>';
+            html += '></span>';
+            html += '<span class="file-name">' + file.name + '</span>';
             if (!file.isprevious) {
                 html += '<span class="file-info">';
-                html +=     '<span class="file-size">' + jsu.translate('Size:') + ' ' + file.sizeh + '</span>';
-                if (!file.isdir) {
+                html += '<span class="file-size">' + jsu.translate('Size:') + ' ' + file.size_h + '</span>';
+                if (!file.is_dir) {
                     html += '<span class="file-mdate">' + jsu.translate('Last modification:') + '<br/>' + (file.mdate ? file.mdate : '?') + '</span>';
                 } else {
                     html += '<span class="file-nb-files">' + jsu.translate('Files:') + ' ' + file.nb_files + '</span>';
@@ -329,31 +344,13 @@ FileBrowser.prototype.parseContentResponse = function (response) {
                 html += '<button type="button" class="file-rename" title="' + jsu.translate('Rename') + '"></button>';
                 html += '<button type="button" class="file-move" title="' + jsu.translate('Move') + '"></button>';
             }
-            html += '</div>';
-            const $entry = $(html);
-            file.$entry = $entry;
-            $('.file-link', $entry).addEventListener('click', { obj: this, file: file }, function (evt) {
-                return evt.data.obj.onFileClick(evt.data.file, evt);
-            });
-            $('.file-delete', $entry).addEventListener('click', { obj: this, file: file }, function (evt) {
-                if (!evt.data.file.selected) {
-                    evt.data.obj.onFileClick(evt.data.file, evt);
-                }
-                evt.data.obj.deleteFiles();
-            });
-            $('.file-rename', $entry).addEventListener('click', { obj: this, file: file }, function (evt) {
-                if (!evt.data.file.selected) {
-                    evt.data.obj.onFileClick(evt.data.file, evt);
-                }
-                evt.data.obj.renameFiles();
-            });
-            $('.file-move', $entry).addEventListener('click', { obj: this, file: file }, function (evt) {
-                if (!evt.data.file.selected) {
-                    evt.data.obj.onFileClick(evt.data.file, evt);
-                }
-                evt.data.obj.moveFiles();
-            });
-            this.placeElement.appendChild($entry);
+            entryEle.innerHTML = html;
+            file.entryEle = entryEle;
+            entryEle.querySelector('.file-link').addEventListener('click', this.onFileClick.bind(this, file));
+            entryEle.querySelector('.file-delete').addEventListener('click', this.deleteFiles.bind(this, file));
+            entryEle.querySelector('.file-rename').addEventListener('click', this.renameFiles.bind(this, file));
+            entryEle.querySelector('.file-move').addEventListener('click', this.moveFiles.bind(this, file));
+            this.placeElement.appendChild(entryEle);
             if (this.imagesExtenstions.indexOf(file.ext) != -1) {
                 file.overlayIndex = ovls.length;
                 ovls.push(file.url);
@@ -407,7 +404,7 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
                 newPath = splitted.join('/') + '/';
             }
             window.location.hash = '#' + newPath;
-        } else if (file.isdir) {
+        } else if (file.is_dir) {
             return true; // use url in link
         } else {
             if (!isNaN(file.overlayIndex)) {
@@ -428,32 +425,32 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
             delete file.timeoutId;
         }, 500);
         // select
-        if (!file.isprevious) { 
+        if (!file.isprevious) {
             if (!evt.ctrlKey) {
                 // deselect all other files when Ctrl is not pressed
                 for (let i = 0; i < this.files.length; i++) {
                     const f = this.files[i];
                     if (f != file && f.selected) {
                         f.selected = false;
-                        f.$entry.classList.remove('selected');
+                        f.entryEle.classList.remove('selected');
                     }
                 }
                 // select file
                 if (!file.selected) {
                     file.selected = true;
-                    file.$entry.classList.add('selected');
+                    file.entryEle.classList.add('selected');
                 } else {
                     file.selected = false;
-                    file.$entry.classList.remove('selected');
+                    file.entryEle.classList.remove('selected');
                 }
             } else {
                 // toggle selection
                 if (file.selected) {
                     file.selected = false;
-                    file.$entry.classList.remove('selected');
+                    file.entryEle.classList.remove('selected');
                 } else {
                     file.selected = true;
-                    file.$entry.classList.add('selected');
+                    file.entryEle.classList.add('selected');
                 }
             }
         }
@@ -462,36 +459,24 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
 };
 
 /* actions */
-FileBrowser.prototype.executeAction = function (data, method, cb) {
+FileBrowser.prototype.executeAction = function (method, params, data, cb) {
     // show loading overlay
     this.overlay.show({
         title: ' ',
         html: '<div class="file-browser-overlay message-loading">' + jsu.translate('Loading') + '...</div>'
     });
     // execute request
-    if (method == 'post') {
-        data.csrfmiddlewaretoken = this.csrfToken;
-    }
     const obj = this;
-    $.ajax({
-        type: method,
+    this.httpRequest({
+        method: method,
         url: this.actionURL,
+        params: params,
         data: data,
-        dataType: 'json',
-        cache: false,
-        success: function (response) {
-            if (!response.success || response.message) {
-                obj.onActionExecuted(response);
-            }
+        callback: function (response) {
+            obj.onActionExecuted(response);
             if (cb) {
                 cb(response);
             }
-        },
-        error: function (jqXHR, textStatus, thrownError) {
-            obj.onActionExecuted({
-                success: false,
-                message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
-            });
         }
     });
 };
@@ -521,61 +506,52 @@ FileBrowser.prototype.getSelectedFiles = function () {
 FileBrowser.prototype.onFilesDrop = function (evt) {
     const files = evt.dataTransfer.files;
     const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', this.csrfToken);
     formData.append('action', 'upload');
     formData.append('path', this.path);
-    formData.append('csrfmiddlewaretoken', this.csrfToken);
     for (let i = 0; i < files.length; i++) {
         formData.append('file_' + i, files[i]);
     }
     $('progress', this.dropZoneElement).setAttribute('value', 0).innerHTML = '0 %';
     const obj = this;
-    $.ajax({
+    const req = this.httpRequest({
+        method: 'POST',
         url: this.actionURL,
-        type: 'POST',
         data: formData,
-        // options to tell JQuery not to process data or worry about content-type
-        cache: false,
-        contentType: false,
-        processData: false,
-        xhr: function () {
-            // custom xhr
-            const myXhr = $.ajaxSettings.xhr();
-            if (myXhr.upload) { // check if upload property exists
-                myXhr.upload.addEventListener('progress', function (evt) {
-                    if (evt.lengthComputable) {
-                        let progress = 0;
-                        if (evt.total) {
-                            progress = parseInt(100 * evt.loaded / evt.total, 10);
-                        }
-                        $('progress', obj.dropZoneElement).setAttribute('value', progress).innerHTML = progress + ' %';
-                    }
-                }, false); // for handling the progress of the upload
-            }
-            return myXhr;
-        },
-        success: function (response) {
+        callback: function (response) {
             obj.dropZoneElement.setAttribute('class', '');
             obj.onActionExecuted(response);
-        },
-        error: function (jqXHR, textStatus, thrownError) {
-            obj.dropZoneElement.setAttribute('class', '');
-            obj.onActionExecuted({
-                success: false,
-                message: textStatus + ' (' + (thrownError ? thrownError : jsu.translate('server unreachable')) + ')'
-            });
         }
     });
+    if (req.upload) { // check if upload property exists
+        req.upload.addEventListener('progress', function (evt) {
+            if (evt.lengthComputable) {
+                let progress = 0;
+                if (evt.total) {
+                    progress = parseInt(100 * evt.loaded / evt.total, 10);
+                }
+                $('progress', obj.dropZoneElement).setAttribute('value', progress).innerHTML = progress + ' %';
+            }
+        }, false); // for handling the progress of the upload
+    }
 };
 FileBrowser.prototype.addFolder = function () {
     if (!this.folderForm) {
-        let html = '<form class="file-browser-overlay" action="." method="post" enctype="multipart/form-data">';
-        html += '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>';
-        html += '<label for="new_folder_name">' + jsu.translate('New folder name:') + '</label>';
-        html += ' <input id="new_folder_name" type="text" value=""/>';
-        html += '</form>';
-        this.folderForm = $(html);
-        this.folderForm.submit({obj: this}, function (evt) {
-            evt.data.obj._addFolder();
+        this.folderForm = document.createElement('form');
+        this.folderForm.setAttribute('class', 'file-browser-overlay');
+        this.folderForm.setAttribute('action', '.');
+        this.folderForm.setAttribute('method', 'post');
+        this.folderForm.setAttribute('enctype', 'multipart/form-data');
+        this.folderForm.innerHTML = '<form class="file-browser-overlay" action="." method="post" enctype="multipart/form-data">' +
+            '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+            '<label for="new_folder_name">' + jsu.translate('New folder name:') + '</label> ' +
+            '<input id="new_folder_name" type="text" value=""/>';
+        const obj = this;
+        this.folderForm.addEventListener('submit', function (evt) {
+            evt.preventDefault();
+            const formData = new FormData(this);
+            obj.folderForm.parentElement.removeChild(obj.folderForm);
+            obj.executeAction('POST', null, formData);
             return false;
         });
     }
@@ -587,7 +563,7 @@ FileBrowser.prototype.addFolder = function () {
         html: this.folderForm,
         buttons: [
             { label: jsu.translate('Add'), callback: function () {
-                obj._addFolder();
+                obj.folderForm.submit();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -596,25 +572,18 @@ FileBrowser.prototype.addFolder = function () {
         document.getElementById('new_folder_name').focus();
     }, 20);
 };
-FileBrowser.prototype._addFolder = function () {
-    const data = {
-        action: 'addFolder',
-        path: this.path,
-        name: document.getElementById('new_folder_name').val()
-    };
-    this.folderForm.detach();
-    this.executeAction(data, 'post');
-};
 FileBrowser.prototype.addFile = function () {
     if (!this.uploadForm) {
-        let html = '<form class="file-browser-overlay" action="." method="post" enctype="multipart/form-data">';
-        html += '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>';
-        html += '<input type="hidden" name="action" value="upload-old"/>';
-        html += '<input id="file_to_add_path" type="hidden" name="path" value=""/>';
-        html += '<label for="file_to_add">' + jsu.translate('File to add:') + '</label>';
-        html += ' <input id="file_to_add" type="file" name="file"/>';
-        html += '</form>';
-        this.uploadForm = $(html);
+        this.uploadForm = document.createElement('form');
+        this.uploadForm.setAttribute('class', 'file-browser-overlay');
+        this.uploadForm.setAttribute('action', '.');
+        this.uploadForm.setAttribute('method', 'post');
+        this.uploadForm.setAttribute('enctype', 'multipart/form-data');
+        this.uploadForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+            '<input type="hidden" name="action" value="upload-old"/>' +
+            '<input id="file_to_add_path" type="hidden" name="path" value=""/>' +
+            '<label for="file_to_add">' + jsu.translate('File to add:') + '</label> ' +
+            '<input id="file_to_add" type="file" name="file"/>';
     }
     this.uploadForm.setAttribute('action', this.actionURL + '#' + this.path);
     this.uploadForm.querySelector('#file_to_add_path').val(this.path);
@@ -634,32 +603,35 @@ FileBrowser.prototype.addFile = function () {
         obj.uploadForm.querySelector('#file_to_add').focus();
     }, 20);
 };
-FileBrowser.prototype.renameFiles = function () {
+FileBrowser.prototype.renameFiles = function (file, evt) {
+    if (file && !file.selected) {
+        this.onFileClick(file, evt);
+    }
+
     let html;
     if (!this.renameForm) {
-        html = '<form class="file-browser-overlay" action="' + this.actionURL + '" method="post">';
-        html += '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>';
-        html += '<div>';
-        html += '<label for="rename_new_name">' + jsu.translate('New name:') + '</label>';
-        html += ' <input id="rename_new_name" type="text" value=""/>';
-        html += '</div>';
-        html += '<p>' + jsu.translate('Selected file(s):') + '</p>';
-        html += '<ul></ul>';
-        html += '</form>';
-        this.renameForm = $(html);
+        this.renameForm = document.createElement('form');
+        this.renameForm.setAttribute('class', 'file-browser-overlay');
+        this.renameForm.setAttribute('action', this.actionURL);
+        this.renameForm.setAttribute('method', 'post');
+        this.renameForm.setAttribute('enctype', 'multipart/form-data');
+        this.renameForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+            '<div>' +
+            '<label for="rename_new_name">' + jsu.translate('New name:') + '</label>' +
+            ' <input id="rename_new_name" type="text" value=""/>' +
+            '</div>' +
+            '<p>' + jsu.translate('Selected file(s):') + '</p>' +
+            '<ul></ul>';
         const obj = this;
-        this.renameForm.submit(function () {
-            const data = {
-                action: 'rename',
-                path: obj.path,
-                new_name: $('#rename_new_name', obj.renameForm).val()
-            };
+        this.renameForm.addEventListener('submit', function (evt) {
+            evt.preventDefault();
+            const formData = new FormData(this);
             const selected = obj.getSelectedFiles();
             for (let i = 0; i < selected.length; i++) {
-                data['name_' + i] = selected[i].name;
+                formData.append('name_' + i, selected[i].name);
             }
-            obj.renameForm.detach();
-            obj.executeAction(data, 'post');
+            obj.renameForm.parentElement.removeChild(obj.renameForm);
+            obj.executeAction('POST', null, formData);
             return false;
         });
     }
@@ -670,13 +642,13 @@ FileBrowser.prototype.renameFiles = function () {
     }
 
     const title = jsu.translate('Rename') + ' "' + selected[0].name + '"';
-    this.renameForm.querySelector('#rename_new_name').val(selected[0].name);
+    this.renameForm.querySelector('#rename_new_name').value = selected[0].name;
 
     html = '';
     for (let i = 0; i < selected.length; i++) {
         html += '<li>' + selected[i].name + '</li>';
     }
-    $('ul', this.renameForm).innerHTML = html;
+    this.renameForm.querySelector('ul').innerHTML = html;
 
     const obj = this;
     this.overlay.show({
@@ -693,7 +665,11 @@ FileBrowser.prototype.renameFiles = function () {
         obj.renameForm.querySelector('#rename_new_name').focus();
     }, 20);
 };
-FileBrowser.prototype.moveFiles = function () {
+FileBrowser.prototype.moveFiles = function (file, evt) {
+    if (file && !file.selected) {
+        this.onFileClick(file, evt);
+    }
+
     const selected = this.getSelectedFiles();
     if (selected.length < 1) {
         return;
@@ -709,17 +685,17 @@ FileBrowser.prototype.moveFiles = function () {
     const banned = [];
     for (let i = 0; i < selected.length; i++) {
         const s = selected[i];
-        if (s.isdir) {
+        if (s.is_dir) {
             banned.push(this.path + s.name + '/');
         }
     }
 
     let html = '<div class="file-browser-overlay">';
-    html +=     '<label for="move_select">' + jsu.translate('Move to:') + '</label>';
-    html +=     ' <select id="move_select">';
-    html +=         '<option value="#" ' + (this.path ? '' : 'disabled="disabled"') + '>' + jsu.translate('root') + '</option>';
-    for (let i=0; i < this.flatTree.length; i++) {
-        let t = this.flatTree[i];
+    html += '<label for="move_select">' + jsu.translate('Move to:') + '</label>';
+    html += ' <select id="move_select">';
+    html += '<option value="#" ' + (this.path ? '' : 'disabled="disabled"') + '>' + jsu.translate('root') + '</option>';
+    for (let i = 0; i < this.flatTree.length; i++) {
+        const t = this.flatTree[i];
         let disabled = '';
         if (this.path == t.path) {
             disabled = 'disabled="disabled"';
@@ -732,15 +708,15 @@ FileBrowser.prototype.moveFiles = function () {
                 }
             }
         }
-        html +=     '<option value="' + t.path + '" style="padding-left: ' + (t.level * 10) + 'px;" ' + disabled + '>' + t.name + '</option>';
+        html += '<option value="' + t.path + '" style="padding-left: ' + (t.level * 10) + 'px;" ' + disabled + '>' + t.name + '</option>';
     }
-    html +=     '</select>';
-    html +=     '<p>' + jsu.translate('Selected file(s):') + '</p>';
-    html +=     '<ul>';
-    for (let i=0; i < selected.length; i++) {
-        html +=     '<li>' + selected[i].name + '</li>';
+    html += '</select>';
+    html += '<p>' + jsu.translate('Selected file(s):') + '</p>';
+    html += '<ul>';
+    for (let i = 0; i < selected.length; i++) {
+        html += '<li>' + selected[i].name + '</li>';
     }
-    html +=     '</ul>';
+    html += '</ul>';
     html += '</div>';
     const form = $(html);
 
@@ -758,9 +734,9 @@ FileBrowser.prototype.moveFiles = function () {
                 for (let i = 0; i < selected.length; i++) {
                     data['name_' + i] = selected[i].name;
                 }
-                obj.executeAction(data, 'post', function () {
+                obj.executeAction('POST', null, data, function (response) {
                     // refresh dirs tree if a dir has been moved
-                    if (banned.length > 0) {
+                    if (response.success && banned.length > 0) {
                         obj.loadDirs();
                     }
                 });
@@ -772,7 +748,11 @@ FileBrowser.prototype.moveFiles = function () {
         form.querySelector('#move_select').focus();
     }, 20);
 };
-FileBrowser.prototype.deleteFiles = function () {
+FileBrowser.prototype.deleteFiles = function (file, evt) {
+    if (file && !file.selected) {
+        this.onFileClick(file, evt);
+    }
+
     const selected = this.getSelectedFiles();
     if (selected.length < 1) {
         return;
@@ -786,13 +766,13 @@ FileBrowser.prototype.deleteFiles = function () {
     }
 
     let html = '<div class="file-browser-overlay">';
-    html +=     '<div><b>' + jsu.translate('Are you sure to delete the selected file(s) ?') + '</b></div>';
-    html +=     '<p>' + jsu.translate('Selected file(s):') + '</p>';
-    html +=     '<ul>';
-    for (let i=0; i < selected.length; i++) {
-        html +=     '<li>' + selected[i].name + '</li>';
+    html += '<div><b>' + jsu.translate('Are you sure to delete the selected file(s) ?') + '</b></div>';
+    html += '<p>' + jsu.translate('Selected file(s):') + '</p>';
+    html += '<ul>';
+    for (let i = 0; i < selected.length; i++) {
+        html += '<li>' + selected[i].name + '</li>';
     }
-    html +=     '</ul>';
+    html += '</ul>';
     html += '</div>';
 
     const obj = this;
@@ -808,7 +788,7 @@ FileBrowser.prototype.deleteFiles = function () {
                 for (let i = 0; i < selected.length; i++) {
                     data['name_' + i] = selected[i].name;
                 }
-                obj.executeAction(data, 'post');
+                obj.executeAction('POST', null, data);
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -817,27 +797,31 @@ FileBrowser.prototype.deleteFiles = function () {
 FileBrowser.prototype.search = function () {
     if (!this.searchForm) {
         // prepare search form
-        let html = '<form class="file-browser-overlay" action="' + this.actionURL + '" method="post">';
-        html += '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>';
-        html += '<div>';
-        html += '<input id="search" type="text" value=""/>';
-        html += ' <label for="search_in_current">' + jsu.translate('Search only in current dir') + '</label>';
-        html += ' <input id="search_in_current" type="checkbox"/>';
-        html += '</div>';
-        html += '<div id="search_results"></div>';
-        html += '</form>';
-        this.searchForm = $(html);
+        this.searchForm = document.createElement('form');
+        this.searchForm.setAttribute('class', 'file-browser-overlay');
+        this.searchForm.setAttribute('action', this.actionURL);
+        this.searchForm.setAttribute('method', 'get');
+        this.searchForm.innerHTML = '<div>' +
+            '<input id="search" type="text" value=""/>' +
+            ' <label for="search_in_current">' + jsu.translate('Search only in current dir') + '</label>' +
+            ' <input id="search_in_current" type="checkbox"/>' +
+            '</div>' +
+            '<div id="search_results"></div>';
         const obj = this;
-        this.searchForm.submit(function () {
-            const data = {
+        this.searchForm.addEventListener('submit', function (evt) {
+            evt.preventDefault();
+            const params = {
                 action: 'search',
                 search: $('#search', obj.searchForm).val()
             };
             if ($('#search_in_current', obj.searchForm).is(':checked')) {
-                data.path = obj.path;
+                params.path = obj.path;
             }
             obj.searchForm.detach();
-            obj.executeAction(data, 'get', function (response) {
+            obj.executeAction('GET', params, null, function (response) {
+                if (!response.success) {
+                    return;
+                }
                 // display search results
                 let html = '<p><b>' + response.msg + '</b></p>';
                 if (response.dirs && response.dirs.length > 0) {
@@ -854,9 +838,7 @@ FileBrowser.prototype.search = function () {
                     html += '</div>';
                 }
                 $('#search_results', obj.searchForm).innerHTML = html;
-                $('#search_results a.dir-link', obj.searchForm).addEventListener('click', function () {
-                    obj.overlay.hide();
-                });
+                $('#search_results a.dir-link', obj.searchForm).addEventListener('click', obj.overlay.hide);
                 obj.openSearchForm();
             });
             return false;
@@ -877,7 +859,7 @@ FileBrowser.prototype.openSearchForm = function () {
         ]
     });
     setTimeout(function () {
-        $('#search').focus();
+        obj.searchForm.querySelector('#search').focus();
     }, 20);
 };
 
@@ -887,8 +869,8 @@ FileBrowser.prototype.toggle = function (path) {
         console.log('Error: no menu element for path: ' + path);
         return;
     }
-    const $sub = this.menuElements[path];
-    if ($sub.classList.contains('closed')) {
+    const subEle = this.menuElements[path];
+    if (subEle.classList.contains('closed')) {
         this.openTree(path);
     } else {
         this.closeTree(path);
@@ -899,11 +881,11 @@ FileBrowser.prototype.openTree = function (path) {
         console.log('Error: no menu element for path: ' + path);
         return;
     }
-    const $sub = this.menuElements[path];
-    if (!$sub.classList.contains('closed')) {
+    const subEle = this.menuElements[path];
+    if (!subEle.classList.contains('closed')) {
         return;
     }
-    $sub.classList.remove('closed');
+    subEle.classList.remove('closed');
     this.opened.push(path);
     jsu.setCookie('browser-tree', this.opened.join('/'));
 };
@@ -912,11 +894,11 @@ FileBrowser.prototype.closeTree = function (path) {
         console.log('Error: no menu element for path: ' + path);
         return;
     }
-    const $sub = this.menuElements[path];
-    if ($sub.classList.contains('closed')) {
+    const subEle = this.menuElements[path];
+    if (subEle.classList.contains('closed')) {
         return;
     }
-    $sub.classList.add('closed');
+    subEle.classList.add('closed');
     for (let i = 0; i < this.opened.length; i++) {
         if (this.opened[i] == path) {
             if (i == this.opened.length - 1) {

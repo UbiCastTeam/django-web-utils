@@ -113,14 +113,14 @@ def storage_content(request, namespace=None):
         file_properties = {
             'name': file_name,
             'size': size,
-            'sizeh': '%s %s' % get_unit(size),
-            'isdir': False,
+            'size_h': '%s %s' % get_unit(size),
+            'is_dir': False,
             'nb_files': nb_files,
             'nb_dirs': nb_dirs,
         }
         if os.path.isdir(current_path):
             total_nb_dirs += 1
-            file_properties['isdir'] = True
+            file_properties['is_dir'] = True
             files.insert(folder_index, file_properties)
             folder_index += 1
         elif os.path.isfile(current_path):
@@ -141,28 +141,28 @@ def storage_content(request, namespace=None):
     order = request.GET.get('order', 'name-asc')
     if order.startswith('size'):
         if order.endswith('asc'):
-            files.sort(key=lambda f: (not f['isdir'], f['size']))
+            files.sort(key=lambda f: (not f['is_dir'], f['size']))
         else:
-            files.sort(key=lambda f: (f['isdir'], f['size']))
+            files.sort(key=lambda f: (f['is_dir'], f['size']))
             files.reverse()
     elif order.startswith('mdate'):
         if order.endswith('asc'):
-            files.sort(key=lambda f: (not f['isdir'], f.get('mdate')))
+            files.sort(key=lambda f: (not f['is_dir'], f.get('mdate')))
         else:
-            files.sort(key=lambda f: (f['isdir'], f.get('mdate')))
+            files.sort(key=lambda f: (f['is_dir'], f.get('mdate')))
             files.reverse()
     else:
         if order.endswith('asc'):
-            files.sort(key=lambda f: (not f['isdir'], f['name'].lower()))
+            files.sort(key=lambda f: (not f['is_dir'], f['name'].lower()))
         else:
-            files.sort(key=lambda f: (f['isdir'], f['name'].lower()))
+            files.sort(key=lambda f: (f['is_dir'], f['name'].lower()))
             files.reverse()
 
     if path:
         files.insert(0, {
             'name': 'parent',
             'formated_name': '← %s' % _('Parent folder'),
-            'isdir': True,
+            'is_dir': True,
             'isprevious': True,
         })
 
