@@ -161,7 +161,7 @@ def storage_action(request, namespace=None):
             if action == 'rename':
                 new_name = request.POST.get('new_name')
                 if not new_name:
-                    return json_utils.failure_response(message=str(_('The name field is required.')))
+                    return json_utils.failure_response(message=str(_('The "new_name" field is required.')))
                 new_name = clean_file_name(new_name)
                 new_name_ext = ''
                 if '.' in new_name and not (new_name.startswith('.') and new_name.count('.') == 1):

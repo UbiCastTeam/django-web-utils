@@ -382,6 +382,7 @@ FileBrowser.prototype.parseContentResponse = function (response) {
 };
 
 FileBrowser.prototype.refresh = function () {
+    this.loadDirs();
     this.loadContent();
 };
 FileBrowser.prototype.changeOrdering = function (order) {
@@ -464,25 +465,19 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
 };
 
 /* actions */
-FileBrowser.prototype.executeAction = function (method, params, data, cb) {
+FileBrowser.prototype.executeAction = function (method, params, data) {
     // show loading overlay
     this.overlay.show({
         title: ' ',
         html: '<div class="file-browser-overlay message-loading">' + jsu.translate('Loading') + '...</div>'
     });
     // execute request
-    const obj = this;
     this.httpRequest({
         method: method,
         url: this.actionURL,
         params: params,
         data: data,
-        callback: function (response) {
-            obj.onActionExecuted(response);
-            if (cb) {
-                cb(response);
-            }
-        }
+        callback: this.onActionExecuted.bind(this)
     });
 };
 FileBrowser.prototype.onActionExecuted = function (response) {
@@ -550,7 +545,8 @@ FileBrowser.prototype.addFolder = function () {
         this.folderForm.innerHTML = '<form class="file-browser-overlay" action="." method="post" enctype="multipart/form-data">' +
             '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
             '<label for="new_folder_name">' + jsu.translate('New folder name:') + '</label> ' +
-            '<input id="new_folder_name" type="text" value=""/>';
+            '<input id="new_folder_name" type="text" value=""/>' +
+            '<button type="submit" style="display: none;"></button>';
         const obj = this;
         this.folderForm.addEventListener('submit', function (evt) {
             evt.preventDefault();
@@ -568,7 +564,7 @@ FileBrowser.prototype.addFolder = function () {
         html: this.folderForm,
         buttons: [
             { label: jsu.translate('Add'), callback: function () {
-                obj.folderForm.submit();
+                obj.folderForm.querySelector('button').click();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -588,7 +584,8 @@ FileBrowser.prototype.addFile = function () {
             '<input type="hidden" name="action" value="upload-old"/>' +
             '<input id="file_to_add_path" type="hidden" name="path" value=""/>' +
             '<label for="file_to_add">' + jsu.translate('File to add:') + '</label>' +
-            ' <input id="file_to_add" type="file" name="file"/>';
+            ' <input id="file_to_add" type="file" name="file"/>' +
+            '<button type="submit" style="display: none;"></button>';
     }
     this.uploadForm.setAttribute('action', this.actionURL + '#' + this.path);
     this.uploadForm.querySelector('#file_to_add_path').value = this.path;
@@ -599,7 +596,7 @@ FileBrowser.prototype.addFile = function () {
         html: this.uploadForm,
         buttons: [
             { label: jsu.translate('Add'), callback: function () {
-                obj.uploadForm.submit();
+                obj.uploadForm.querySelector('button').click();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -627,15 +624,15 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
             '<input type="hidden" name="action" value="rename"/>' +
             '<div>' +
             '<label for="rename_new_name">' + jsu.translate('New name:') + '</label>' +
-            ' <input id="rename_new_name" type="text" value=""/>' +
+            ' <input id="rename_new_name" type="text" name="new_name" value=""/>' +
             '</div>' +
             '<p>' + jsu.translate('Selected file(s):') + '</p>' +
-            '<ul></ul>';
+            '<ul></ul>' +
+            '<button type="submit" style="display: none;"></button>';
         const obj = this;
         this.renameForm.addEventListener('submit', function (evt) {
             evt.preventDefault();
             const formData = new FormData(this);
-            obj.renameForm.parentElement.removeChild(obj.renameForm);
             obj.executeAction('POST', null, formData);
             return false;
         });
@@ -658,7 +655,7 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
         html: this.renameForm,
         buttons: [
             { label: jsu.translate('Rename'), callback: function () {
-                obj.renameForm.submit();
+                obj.renameForm.querySelector('button').click();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -688,18 +685,14 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
             '<label for="id_new_path">' + jsu.translate('Move to:') + '</label>' +
             ' <select id="id_new_path" name="new_path"></select>' +
             '<p>' + jsu.translate('Selected file(s):') + '</p>' +
-            '<ul></ul>';
+            '<ul></ul>' +
+            '<button type="submit" style="display: none;"></button>';
         const obj = this;
         this.moveForm.addEventListener('submit', function (evt) {
             evt.preventDefault();
             const formData = new FormData(this);
             obj.moveForm.parentElement.removeChild(obj.moveForm);
-            obj.executeAction('POST', null, formData, function (response) {
-                // refresh dirs tree if a dir has been moved
-                if (response.success) {
-                    obj.loadDirs();
-                }
-            });
+            obj.executeAction('POST', null, formData);
             return false;
         });
     }
@@ -753,7 +746,7 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
         html: this.moveForm,
         buttons: [
             { label: jsu.translate('Move'), callback: function () {
-                obj.moveForm.submit();
+                obj.moveForm.querySelector('button').click();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -781,7 +774,8 @@ FileBrowser.prototype.deleteFiles = function (file, evt) {
             '<input type="hidden" name="action" value="delete"/>' +
             '<input type="hidden" id="id_path" name="path" value=""/>' +
             '<div><b>' + jsu.translate('Are you sure to delete the selected file(s) ?') + '</b></div>' +
-            '<ul></ul>';
+            '<ul></ul>' +
+            '<button type="submit" style="display: none;"></button>';
         const obj = this;
         this.deleteForm.addEventListener('submit', function (evt) {
             evt.preventDefault();
@@ -814,7 +808,7 @@ FileBrowser.prototype.deleteFiles = function (file, evt) {
         html: this.deleteForm,
         buttons: [
             { label: jsu.translate('Delete'), callback: function () {
-                obj.deleteForm.submit();
+                obj.deleteForm.querySelector('button').click();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
@@ -832,10 +826,12 @@ FileBrowser.prototype.search = function () {
             ' <label for="search_in_current">' + jsu.translate('Search only in current dir') + '</label>' +
             ' <input id="search_in_current" type="checkbox"/>' +
             '</div>' +
-            '<div id="search_results"></div>';
+            '<div id="search_results"></div>' +
+            '<button type="submit" style="display: none;"></button>';
         const obj = this;
         this.searchForm.addEventListener('submit', function (evt) {
             evt.preventDefault();
+            obj.searchForm.querySelector('#search_results').innerHTML = '<p class="message-loading">' + jsu.translate('Loading') + '...</p>';
             const params = {
                 action: 'search',
                 search: obj.searchForm.querySelector('#search').value
@@ -843,34 +839,39 @@ FileBrowser.prototype.search = function () {
             if (obj.searchForm.querySelector('#search_in_current').checked) {
                 params.path = obj.path;
             }
-            obj.executeAction('GET', params, null, function (response) {
-                if (!response.success) {
-                    return;
-                }
-                // display search results
-                let dirsFound = false;
-                let html = '<p><b>' + response.msg + '</b></p>';
-                if (response.dirs && response.dirs.length > 0) {
-                    html += '<div class="search-results">';
-                    for (let i = 0; i < response.dirs.length; i++) {
-                        dirsFound = true;
-                        const dir = response.dirs[i];
-                        html += '<p><a class="dir-link" href="#' + dir.url + '">' + jsu.translate('root') + '/' + dir.url + '</a></p>';
-                        html += '<ul>';
-                        for (let j = 0; j < dir.files.length; j++) {
-                            html += '<li><a href="' + obj.baseURL + dir.url + dir.files[j] + '">' + dir.url + dir.files[j] + '</a></li>';
-                        }
-                        html += '</ul>';
+            obj.httpRequest({
+                method: 'GET',
+                url: obj.actionURL,
+                params: params,
+                callback: function (response) {
+                    if (!response.success) {
+                        return;
                     }
-                    html += '</div>';
-                }
-                obj.searchForm.querySelector('#search_results').innerHTML = html;
-                if (dirsFound) {
-                    obj.searchForm.querySelector('#search_results a.dir-link').addEventListener('click', obj.overlay.hide);
+                    // display search results
+                    let dirsFound = false;
+                    let html = '<p><b>' + response.msg + '</b></p>';
+                    if (response.dirs && response.dirs.length > 0) {
+                        html += '<div class="search-results">';
+                        for (let i = 0; i < response.dirs.length; i++) {
+                            dirsFound = true;
+                            const dir = response.dirs[i];
+                            html += '<p><a class="dir-link" href="#' + dir.url + '">' + jsu.translate('root') + '/' + dir.url + '</a></p>';
+                            html += '<ul>';
+                            for (let j = 0; j < dir.files.length; j++) {
+                                html += '<li><a href="' + obj.baseURL + dir.url + dir.files[j] + '">' + dir.url + dir.files[j] + '</a></li>';
+                            }
+                            html += '</ul>';
+                        }
+                        html += '</div>';
+                    }
+                    obj.searchForm.querySelector('#search_results').innerHTML = html;
+                    if (dirsFound) {
+                        obj.searchForm.querySelector('#search_results a.dir-link').addEventListener('click', obj.overlay.hide);
+                    }
                 }
             });
             return false;
-        });
+        }, true);
     }
 
     // open overlay
@@ -880,7 +881,7 @@ FileBrowser.prototype.search = function () {
         html: this.searchForm,
         buttons: [
             { label: jsu.translate('Search'), callback: function () {
-                obj.searchForm.submit();
+                obj.searchForm.querySelector('button').click();
             } },
             { label: jsu.translate('Cancel'), close: true }
         ]
