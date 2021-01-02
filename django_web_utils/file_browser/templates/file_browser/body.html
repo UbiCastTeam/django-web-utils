@@ -7,16 +7,15 @@
     </div>
     <div class="content-container">
         <p><a href="{% if back_url %}{{ back_url }}{% else %}/{% endif %}">← {% trans "Quit" %}</a></p>
-        <p id="fm_root"><a href="#">{% trans "Root folder" %}</a></p>
-        <div id="fm_dirs_tree"></div>
+        <ul id="fm_dirs_tree"></ul>
     </div>
 </div>
 <div class="content-place" id="fm_content_place">
     <div class="title-bar">
         <span class="buttons-bar">
-            <button type="button" class="file-browser-btn btn-add-folder" id="fm_btn_add_folder">{% trans "Add a folder" %}</button>
-            <button type="button" class="file-browser-btn btn-add-file" id="fm_btn_add_file">{% trans "Add a file" %}</button>
-            <button type="button" class="file-browser-btn btn-search" id="fm_btn_search">{% trans "Search" %}</button>
+            <button type="button" class="file-browser-btn btn-add-folder" id="fm_btn_add_folder"><i class="fa fa-folder"></i> {% trans "Add a folder" %}</button>
+            <button type="button" class="file-browser-btn btn-add-file" id="fm_btn_add_file"><i class="fa fa-file"></i> {% trans "Add a file" %}</button>
+            <button type="button" class="file-browser-btn btn-search" id="fm_btn_search"><i class="fa fa-search"></i> {% trans "Search" %}</button>
         </span>
         <h2 id="path_bar"></h2>
     </div>
@@ -64,7 +63,7 @@
                 <option value="mdate-desc">{% trans "modification date" %} ↓</option>
             </select>
         </span>
-        <span><button type="button" id="fm_btn_refresh">{% trans "Refresh" %}</button></span>
+        <span><button type="button" id="fm_btn_refresh"><i class="fa fa-refresh"></i> {% trans "Refresh" %}</button></span>
     </div>
 </div>
 

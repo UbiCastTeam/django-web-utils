@@ -47,7 +47,6 @@ FileBrowser.prototype.init = function () {
     this.csrfToken = jsu.getCookie('csrftoken');
     // get elements
     this.menuTreeElement = document.getElementById('fm_dirs_tree');
-    this.menuRootElement = document.getElementById('fm_root');
     this.placeElement = document.getElementById('fm_files_list');
     this.sizeElement = document.getElementById('fm_total_size');
     this.dirsCountElement = document.getElementById('fm_total_nb_dirs');
@@ -184,25 +183,25 @@ FileBrowser.prototype.loadDirs = function () {
 };
 FileBrowser.prototype.parseDirsResponse = function (response) {
     if (!response.success) {
-        this.placeElement.innerHTML = '<div class="message-error">' + response.message + '</div>';
+        this.menuTreeElement.innerHTML = '<li class="message-error">' + response.message + '</li>';
         return;
+    } else {
+        this.menuTreeElement.innerHTML = '';
     }
 
     const flatTree = [];
     if (response.dirs) {
-        const menuEle = document.createElement('ul');
-        this.getTreeDirs(response.dirs, menuEle, flatTree, '', 1);
-        this.menuTreeElement.appendChild(menuEle);
+        this.getTreeDirs(response.dirs, this.menuTreeElement, flatTree, '', 1);
     }
     this.flatTree = flatTree; // used for move function
     // open trees
     const stored = jsu.getCookie('browser-tree');
     if (stored) {
-        this.opened = stored.split('/');
+        this.opened = stored.split('→');
     }
     for (let i = 0; i < this.opened.length; i++) {
-        if (this.menuElements[this.opened[i]]) {
-            this.menuElements[this.opened[i]].classList.remove('closed');
+        if (this.opened[i] in this.menuElements) {
+            this.menuElements[this.opened[i]].classList.add('opened');
         }
     }
     // load dir content (only after init)
@@ -222,24 +221,24 @@ FileBrowser.prototype.parseDirsResponse = function (response) {
         }
     }
 };
-FileBrowser.prototype.getTreeDirs = function (dirs, menuEle, flatTree, relativePath, level) {
+FileBrowser.prototype.getTreeDirs = function (dirs, parentEle, flatTree, relativePath, level) {
     for (let i = 0; i < dirs.length; i++) {
-        const dirRelativePath = relativePath + dirs[i].dir_name + '/';
+        let dirRelativePath;
+        if (level == 1) {
+            dirRelativePath = '/';
+        } else {
+            dirRelativePath = relativePath + dirs[i].dir_name + '/';
+        }
         flatTree.push({ path: dirRelativePath, name: dirs[i].dir_name, level: level });
         const liEle = document.createElement('li');
-        liEle.setAttribute('class', 'closed');
-        let btnEle;
         if (dirs[i].sub_dirs.length > 0) {
-            btnEle = document.createElement('button');
+            const btnEle = document.createElement('button');
             btnEle.setAttribute('type', 'button');
             btnEle.setAttribute('class', 'list-entry');
+            btnEle.innerHTML = '<i class="fa fa-fw fa-chevron-right"></i>';
             btnEle.addEventListener('click', this.toggle.bind(this, dirRelativePath));
-        } else {
-            btnEle = document.createElement('button');
-            btnEle.setAttribute('type', 'button');
-            btnEle.setAttribute('class', 'list-none');
+            liEle.appendChild(btnEle);
         }
-        liEle.appendChild(btnEle);
         const linkEle = document.createElement('a');
         linkEle.setAttribute('href', '#' + dirRelativePath);
         linkEle.innerHTML = jsu.escapeHTML(dirs[i].dir_name);
@@ -251,7 +250,7 @@ FileBrowser.prototype.getTreeDirs = function (dirs, menuEle, flatTree, relativeP
             liEle.appendChild(subEle);
         }
         this.menuElements[dirRelativePath] = liEle;
-        menuEle.appendChild(liEle);
+        parentEle.appendChild(liEle);
     }
 };
 
@@ -261,7 +260,7 @@ FileBrowser.prototype.loadContent = function () {
     if (hash && hash[0] == '#') {
         path = hash.substring(1);
     }
-    if (path && path[path.length - 1] != '/') {
+    if (!path || path[path.length - 1] != '/') {
         path += '/';
     }
     path = decodeURIComponent(path);
@@ -275,9 +274,7 @@ FileBrowser.prototype.loadContent = function () {
     if (activeEle) {
         activeEle.classList.remove('active');
     }
-    if (!path) {
-        this.menuRootElement.classList.add('active');
-    } else if (this.menuElements[path]) {
+    if (path in this.menuElements) {
         this.menuElements[path].classList.add('active');
     }
 
@@ -341,9 +338,9 @@ FileBrowser.prototype.parseContentResponse = function (response) {
             }
             html += '</a>';
             if (!file.isprevious) {
-                html += '<button type="button" class="file-delete" title="' + jsu.translate('Delete') + '"></button>';
-                html += '<button type="button" class="file-rename" title="' + jsu.translate('Rename') + '"></button>';
-                html += '<button type="button" class="file-move" title="' + jsu.translate('Move') + '"></button>';
+                html += '<button type="button" class="file-delete" title="' + jsu.translate('Delete') + '"><i class="fa fa-fw fa-trash"></i></button>';
+                html += '<button type="button" class="file-rename" title="' + jsu.translate('Rename') + '"><i class="fa fa-fw fa-pencil"></i></button>';
+                html += '<button type="button" class="file-move" title="' + jsu.translate('Move') + '"><i class="fa fa-fw fa-arrow-right"></i></button>';
             }
             entryEle.innerHTML = html;
             file.entryEle = entryEle;
@@ -356,11 +353,9 @@ FileBrowser.prototype.parseContentResponse = function (response) {
             this.placeElement.appendChild(entryEle);
             if (this.imagesExtenstions.indexOf(file.ext) != -1) {
                 file.overlayIndex = ovls.length;
+                file.overlayList = ovls;
                 ovls.push(file.url);
             }
-        }
-        if (ovls.length > 0) {
-            this.overlay.change(ovls);
         }
     }
     // create path tree
@@ -413,6 +408,7 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
             return true; // use url in link
         } else {
             if (!isNaN(file.overlayIndex)) {
+                this.overlay.change(file.overlayList);
                 this.overlay.goToIndex(file.overlayIndex);
                 this.overlay.show();
             } else {
@@ -542,10 +538,11 @@ FileBrowser.prototype.addFolder = function () {
         this.folderForm.setAttribute('action', '.');
         this.folderForm.setAttribute('method', 'post');
         this.folderForm.setAttribute('enctype', 'multipart/form-data');
-        this.folderForm.innerHTML = '<form class="file-browser-overlay" action="." method="post" enctype="multipart/form-data">' +
-            '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
-            '<label for="new_folder_name">' + jsu.translate('New folder name:') + '</label> ' +
-            '<input id="new_folder_name" type="text" value=""/>' +
+        this.folderForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+            '<input type="hidden" name="action" value="add_folder"/>' +
+            '<input type="hidden" id="new_folder_path" name="path" value=""/>' +
+            '<label for="id_folder_name">' + jsu.translate('New folder name:') + '</label> ' +
+            '<input type="text" id="id_folder_name" name="name" value=""/>' +
             '<button type="submit" style="display: none;"></button>';
         const obj = this;
         this.folderForm.addEventListener('submit', function (evt) {
@@ -557,6 +554,7 @@ FileBrowser.prototype.addFolder = function () {
         });
     }
     this.folderForm.setAttribute('action', this.actionURL + '#' + this.path);
+    this.folderForm.querySelector('#new_folder_path').value = this.path;
 
     const obj = this;
     this.overlay.show({
@@ -570,7 +568,7 @@ FileBrowser.prototype.addFolder = function () {
         ]
     });
     setTimeout(function () {
-        document.getElementById('new_folder_name').focus();
+        document.getElementById('id_folder_name').focus();
     }, 20);
 };
 FileBrowser.prototype.addFile = function () {
@@ -581,14 +579,14 @@ FileBrowser.prototype.addFile = function () {
         this.uploadForm.setAttribute('method', 'post');
         this.uploadForm.setAttribute('enctype', 'multipart/form-data');
         this.uploadForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
-            '<input type="hidden" name="action" value="upload-old"/>' +
-            '<input id="file_to_add_path" type="hidden" name="path" value=""/>' +
-            '<label for="file_to_add">' + jsu.translate('File to add:') + '</label>' +
-            ' <input id="file_to_add" type="file" name="file"/>' +
+            '<input type="hidden" name="action" value="upload_single"/>' +
+            '<input type="hidden" id="new_file_path" name="path" value=""/>' +
+            '<label for="id_file_to_add">' + jsu.translate('File to add:') + '</label>' +
+            ' <input type="file" id="id_file_to_add" name="file"/>' +
             '<button type="submit" style="display: none;"></button>';
     }
     this.uploadForm.setAttribute('action', this.actionURL + '#' + this.path);
-    this.uploadForm.querySelector('#file_to_add_path').value = this.path;
+    this.uploadForm.querySelector('#new_file_path').value = this.path;
 
     const obj = this;
     this.overlay.show({
@@ -602,7 +600,7 @@ FileBrowser.prototype.addFile = function () {
         ]
     });
     setTimeout(function () {
-        obj.uploadForm.querySelector('#file_to_add').focus();
+        obj.uploadForm.querySelector('#id_file_to_add').focus();
     }, 20);
 };
 FileBrowser.prototype.renameFiles = function (file, evt) {
@@ -623,8 +621,8 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
         this.renameForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
             '<input type="hidden" name="action" value="rename"/>' +
             '<div>' +
-            '<label for="rename_new_name">' + jsu.translate('New name:') + '</label>' +
-            ' <input id="rename_new_name" type="text" name="new_name" value=""/>' +
+            '<label for="id_rename_new_name">' + jsu.translate('New name:') + '</label>' +
+            ' <input type="text" id="id_rename_new_name" name="new_name" value=""/>' +
             '</div>' +
             '<p>' + jsu.translate('Selected file(s):') + '</p>' +
             '<ul></ul>' +
@@ -639,7 +637,7 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
     }
 
     // prepare form data
-    this.renameForm.querySelector('#rename_new_name').value = selected[0].name;
+    this.renameForm.querySelector('#id_rename_new_name').value = selected[0].name;
 
     let html = '';
     for (let i = 0; i < selected.length; i++) {
@@ -681,7 +679,7 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
         this.moveForm.setAttribute('enctype', 'multipart/form-data');
         this.moveForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
             '<input type="hidden" name="action" value="move"/>' +
-            '<input type="hidden" id="id_path" name="path" value=""/>' +
+            '<input type="hidden" id="id_move_path" name="path" value=""/>' +
             '<label for="id_new_path">' + jsu.translate('Move to:') + '</label>' +
             ' <select id="id_new_path" name="new_path"></select>' +
             '<p>' + jsu.translate('Selected file(s):') + '</p>' +
@@ -706,7 +704,7 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
         }
     }
 
-    this.moveForm.querySelector('#id_path').value = this.path;
+    this.moveForm.querySelector('#id_move_path').value = this.path;
 
     let html = '<option value="#" ' + (this.path ? '' : 'disabled="disabled"') + '>' + jsu.translate('root') + '</option>';
     for (let i = 0; i < this.flatTree.length; i++) {
@@ -772,7 +770,7 @@ FileBrowser.prototype.deleteFiles = function (file, evt) {
         this.deleteForm.setAttribute('enctype', 'multipart/form-data');
         this.deleteForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
             '<input type="hidden" name="action" value="delete"/>' +
-            '<input type="hidden" id="id_path" name="path" value=""/>' +
+            '<input type="hidden" id="id_delete_path" name="path" value=""/>' +
             '<div><b>' + jsu.translate('Are you sure to delete the selected file(s) ?') + '</b></div>' +
             '<ul></ul>' +
             '<button type="submit" style="display: none;"></button>';
@@ -787,7 +785,7 @@ FileBrowser.prototype.deleteFiles = function (file, evt) {
     }
 
     // prepare form data
-    this.deleteForm.querySelector('#id_path').value = this.path;
+    this.deleteForm.querySelector('#id_delete_path').value = this.path;
 
     let html = '';
     for (let i = 0; i < selected.length; i++) {
@@ -822,9 +820,9 @@ FileBrowser.prototype.search = function () {
         this.searchForm.setAttribute('action', this.actionURL);
         this.searchForm.setAttribute('method', 'get');
         this.searchForm.innerHTML = '<div>' +
-            '<input id="search" type="text" value=""/>' +
+            '<input type="text" id="search" name="search" value=""/>' +
             ' <label for="search_in_current">' + jsu.translate('Search only in current dir') + '</label>' +
-            ' <input id="search_in_current" type="checkbox"/>' +
+            ' <input type="checkbox" id="search_in_current"/>' +
             '</div>' +
             '<div id="search_results"></div>' +
             '<button type="submit" style="display: none;"></button>';
@@ -898,24 +896,28 @@ FileBrowser.prototype.toggle = function (path) {
         return;
     }
     const subEle = this.menuElements[path];
-    if (subEle.classList.contains('closed')) {
-        this.openTree(path);
-    } else {
+    if (subEle.classList.contains('opened')) {
         this.closeTree(path);
+    } else {
+        this.openTree(path);
     }
 };
 FileBrowser.prototype.openTree = function (path) {
-    if (!this.menuElements[path]) {
-        console.log('Error: no menu element for path: ' + path);
-        return;
+    const toOpen = path.split('/');
+    toOpen.pop();
+    let current = '';
+    for (let i = 0; i < toOpen.length; i++) {
+        current += toOpen[i] + '/';
+        if (current in this.menuElements) {
+            if (!this.menuElements[current].classList.contains('opened')) {
+                this.menuElements[current].classList.add('opened');
+                this.opened.push(current);
+                jsu.setCookie('browser-tree', this.opened.join('→'));
+            }
+        } else {
+            console.log('Error: no menu element for path: ' + current);
+        }
     }
-    const subEle = this.menuElements[path];
-    if (!subEle.classList.contains('closed')) {
-        return;
-    }
-    subEle.classList.remove('closed');
-    this.opened.push(path);
-    jsu.setCookie('browser-tree', this.opened.join('/'));
 };
 FileBrowser.prototype.closeTree = function (path) {
     if (!this.menuElements[path]) {
@@ -923,10 +925,10 @@ FileBrowser.prototype.closeTree = function (path) {
         return;
     }
     const subEle = this.menuElements[path];
-    if (subEle.classList.contains('closed')) {
+    if (!subEle.classList.contains('opened')) {
         return;
     }
-    subEle.classList.add('closed');
+    subEle.classList.remove('opened');
     for (let i = 0; i < this.opened.length; i++) {
         if (this.opened[i] == path) {
             if (i == this.opened.length - 1) {
@@ -935,7 +937,7 @@ FileBrowser.prototype.closeTree = function (path) {
                 const tmp = this.opened.pop();
                 this.opened[i] = tmp;
             }
-            jsu.setCookie('browser-tree', this.opened.join('/'));
+            jsu.setCookie('browser-tree', this.opened.join('→'));
             break;
         }
     }

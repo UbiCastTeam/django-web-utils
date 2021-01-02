@@ -8,7 +8,7 @@ import os
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.templatetags.static import static
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 # Django web utils
 from django_web_utils import json_utils
 from django_web_utils.files_utils import get_unit
@@ -55,9 +55,10 @@ def storage_dirs(request, namespace=None):
     base_path = config.get_base_path(namespace)
 
     if not os.path.exists(base_path):
-        return json_utils.failure_response(message=str(_('Folder "%s" does not exist.') % base_path))
+        return json_utils.failure_response(message=_('Folder "%s" does not exist.') % base_path)
 
-    return json_utils.success_response(dirs=recursive_dirs(base_path))
+    dirs = [dict(dir_name=_('Root folder'), sub_dirs=recursive_dirs(base_path))]
+    return json_utils.success_response(dirs=dirs)
 
 
 # storage_content
@@ -83,11 +84,11 @@ def get_info(path):
 @config.view_decorator
 def storage_content(request, namespace=None):
     base_path = config.get_base_path(namespace)
-    path = request.GET.get('path')
+    path = request.GET.get('path', '').strip('/')
     folder_path = base_path if not path else os.path.join(base_path, path)
 
     if not os.path.exists(folder_path):
-        return json_utils.failure_response(message=str(_('Folder "%s" does not exist') % path))
+        return json_utils.failure_response(message=_('Folder "%s" does not exist') % path)
 
     try:
         files_names = os.listdir(folder_path)
