@@ -706,7 +706,7 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
 
     this.moveForm.querySelector('#id_move_path').value = this.path;
 
-    let html = '<option value="#" ' + (this.path ? '' : 'disabled="disabled"') + '>' + jsu.translate('root') + '</option>';
+    let html = '';
     for (let i = 0; i < this.flatTree.length; i++) {
         const tEntry = this.flatTree[i];
         let disabled = '';
@@ -721,7 +721,11 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
                 }
             }
         }
-        html += '<option value="' + tEntry.path + '" style="padding-left: ' + (tEntry.level * 10) + 'px;" ' + disabled + '>' + tEntry.name + '</option>';
+        let spacing = '';
+        for (let j = 1; j < tEntry.level; j++) {
+            spacing += '&nbsp;&nbsp;';
+        }
+        html += '<option value="' + tEntry.path + '" ' + disabled + '>' + spacing + tEntry.name + '</option>';
     }
     this.moveForm.querySelector('select').innerHTML = html;
 
