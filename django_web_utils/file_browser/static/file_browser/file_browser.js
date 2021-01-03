@@ -310,7 +310,13 @@ FileBrowser.prototype.parseContentResponse = function (response) {
             let target = '';
             if (file.isprevious) {
                 fclass = 'previous';
-                file.url = '#';
+                const splitted = this.path.split('/');
+                if (splitted[splitted.length - 1] == '') {
+                    splitted.pop();
+                }
+                splitted.pop();
+                const prevPath = splitted.join('/') + '/';
+                file.url = '#' + prevPath;
             } else if (file.is_dir) {
                 fclass = 'folder';
                 file.url = '#' + this.path + file.name + '/';
@@ -392,22 +398,7 @@ FileBrowser.prototype.onFileClick = function (file, evt) {
     // file or dir
     if (file.clicked) {
         // open
-        if (file.isprevious) {
-            if (!this.path) {
-                evt.preventDefault();
-                return false;
-            }
-            const splitted = this.path.split('/');
-            if (splitted[splitted.length - 1] == '') {
-                splitted.pop();
-            }
-            let newPath = '';
-            if (splitted.length > 1) {
-                splitted.pop();
-                newPath = splitted.join('/') + '/';
-            }
-            window.location.hash = '#' + newPath;
-        } else if (file.is_dir) {
+        if (file.isprevious || file.is_dir) {
             return true; // use url in link
         } else {
             if (!isNaN(file.overlayIndex)) {
