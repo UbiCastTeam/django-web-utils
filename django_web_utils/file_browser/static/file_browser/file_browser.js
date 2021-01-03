@@ -77,7 +77,7 @@ FileBrowser.prototype.init = function () {
     });
     document.getElementById('fm_content_place').addEventListener('dragenter', function (evt) {
         evt.preventDefault();
-        if (obj.containsFiles(evt.originalEvent)) {
+        if (obj.containsFiles(evt)) {
             obj.dragEntered = true;
             obj.dropZoneElement.setAttribute('class', 'hovered');
         }
@@ -93,9 +93,9 @@ FileBrowser.prototype.init = function () {
     });
     document.body.addEventListener('drop', function (evt) {
         evt.preventDefault();
-        if (obj.containsFiles(evt.originalEvent)) {
+        if (obj.containsFiles(evt)) {
             obj.dropZoneElement.setAttribute('class', 'uploading');
-            obj.onFilesDrop(evt.originalEvent);
+            obj.onFilesDrop(evt);
             return false;
         }
     });
@@ -141,6 +141,9 @@ FileBrowser.prototype.httpRequest = function (args) {
         formData = null;
     }
     const req = new XMLHttpRequest();
+    if (args.progress && req.upload) {
+        req.upload.addEventListener('progress', args.progress, false);
+    }
     if (args.callback) {
         req.onreadystatechange = function () {
             if (this.readyState !== XMLHttpRequest.DONE) {
@@ -508,28 +511,29 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
     for (let i = 0; i < files.length; i++) {
         formData.append('file_' + i, files[i]);
     }
-    $('progress', this.dropZoneElement).setAttribute('value', 0).innerHTML = '0 %';
+    const progressEle = this.dropZoneElement.querySelector('progress');
+    progressEle.setAttribute('value', 0);
+    progressEle.innerHTML = '0 %';
     const obj = this;
-    const req = this.httpRequest({
+    this.httpRequest({
         method: 'POST',
         url: this.actionURL,
         data: formData,
-        callback: function (response) {
-            obj.dropZoneElement.setAttribute('class', '');
-            obj.onActionExecuted(response);
-        }
-    });
-    if (req.upload) { // check if upload property exists
-        req.upload.addEventListener('progress', function (evt) {
+        progress: function (evt) {
             if (evt.lengthComputable) {
                 let progress = 0;
                 if (evt.total) {
                     progress = parseInt(100 * evt.loaded / evt.total, 10);
                 }
-                $('progress', obj.dropZoneElement).setAttribute('value', progress).innerHTML = progress + ' %';
+                progressEle.setAttribute('value', progress);
+                progressEle.innerHTML = progress + ' %';
             }
-        }, false); // for handling the progress of the upload
-    }
+        },
+        callback: function (response) {
+            obj.dropZoneElement.setAttribute('class', '');
+            obj.onActionExecuted(response);
+        }
+    });
 };
 FileBrowser.prototype.addFolder = function () {
     if (!this.folderForm) {

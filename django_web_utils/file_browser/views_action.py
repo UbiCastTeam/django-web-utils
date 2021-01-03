@@ -105,7 +105,7 @@ def storage_action(request, namespace=None):
                         fo.write(chunk)
                 # get url
                 if path:
-                    url = base_url + path + file_name
+                    url = base_url + path + '/' + file_name
                 else:
                     url = base_url + file_name
                 msg += ' <br/><a href="%s">%s://%s%s</a>' % (url, 'https' if request.is_secure() else 'http', request.get_host(), url)

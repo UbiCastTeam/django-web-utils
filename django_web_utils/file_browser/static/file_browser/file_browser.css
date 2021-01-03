@@ -465,9 +465,9 @@ html.file-browser-default {
     margin-bottom: 10px;
 }
 .file-browser-overlay .search-results p {
-    margin: 5px -10px;
+    margin: 5px 0;
     padding: 4px 10px;
-    background: rgba(128, 128, 128, 0.25);
+    background: rgba(127, 127, 127, 0.25);
 }
 .file-browser-overlay .search-results ul {
     margin: 5px 10px 10px 20px;
