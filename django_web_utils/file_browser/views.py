@@ -5,14 +5,14 @@ import datetime
 import logging
 import os
 # Django
-from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.templatetags.static import static
 from django.utils.translation import gettext as _
 # Django web utils
 from django_web_utils import json_utils
-from django_web_utils.files_utils import get_unit
 from django_web_utils.file_browser import config
+from django_web_utils.files_utils import get_unit
 
 logger = logging.getLogger('djwutils.file_browser.views')
 
@@ -168,7 +168,7 @@ def storage_content(request, namespace=None):
 
     return json_utils.success_response(
         files=files,
-        path=path,
+        path='/' + path,
         total_size=total_size,
         total_nb_dirs=total_nb_dirs,
         total_nb_files=total_nb_files,
@@ -180,21 +180,19 @@ def storage_content(request, namespace=None):
 @config.view_decorator
 def storage_img_preview(request, namespace=None):
     base_path = config.get_base_path(namespace)
-    path = request.GET.get('path')
-    if path.startswith('/'):
-        path = path[1:]
+    path = request.GET.get('path', '').strip('/')
     if not path:
-        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
+        return HttpResponseRedirect(static('file_browser/img/img.png'))
     file_path = os.path.join(base_path, path)
     if not os.path.exists(file_path):
-        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
+        return HttpResponseRedirect(static('file_browser/img/img.png'))
 
     try:
         image = Image.open(file_path)
         image.load()
         image.thumbnail((200, 64), Image.ANTIALIAS)
     except Exception:
-        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
+        return HttpResponseRedirect(static('file_browser/img/img.png'))
 
     if file_path.lower().endswith('jpg') or file_path.lower().endswith('jpeg'):
         response = HttpResponse(content_type='image/jpeg')

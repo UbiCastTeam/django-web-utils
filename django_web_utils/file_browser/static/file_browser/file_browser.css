@@ -199,14 +199,14 @@ html.file-browser-default {
 .file-browser .messages-container {
     margin: 8px 4px;
     overflow: hidden;
-    background: #eee;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(127, 127, 127, 0.4);
     border-radius: 6px;
 }
 .file-browser .messages-container .show-messages-btn { display: none; }
 .file-browser .messages-container.hidden .show-messages-btn { display: block; }
 .file-browser .messages-container .hide-messages-btn { display: block; }
 .file-browser .messages-container.hidden .hide-messages-btn { display: none; }
+.file-browser .messages-container.hidden .messages-list { display: none; }
 
 .file-browser .message-info,
 .file-browser .message-success,
@@ -310,24 +310,24 @@ html.file-browser-default {
 .file-browser .file-block .file-icon {
     text-align: center;
     height: 64px;
-    background: transparent url("img/types/file.png") 50% 50% no-repeat;
+    background: transparent url("img/file.png") 50% 50% no-repeat;
 }
 .file-browser .file-block .file-name {
     margin-top: 4px;
     word-wrap: break-word;
 }
-.file-browser .file-block.previous .file-icon { background-image: url("img/types/previous.png"); }
-.file-browser .file-block.folder .file-icon { background-image: url("img/types/folder.png"); }
+.file-browser .file-block.previous .file-icon { background-image: url("img/previous.png"); }
+.file-browser .file-block.folder .file-icon { background-image: url("img/folder.png"); }
 .file-browser .file-block.file-png .file-icon,
 .file-browser .file-block.file-bmp .file-icon,
 .file-browser .file-block.file-jpeg .file-icon,
 .file-browser .file-block.file-gif .file-icon,
 .file-browser .file-block.file-tiff .file-icon,
 .file-browser .file-block.file-jpg .file-icon,
-.file-browser .file-block.file-png .file-icon { background-image: url("img/types/img.png"); }
+.file-browser .file-block.file-png .file-icon { background-image: url("img/img.png"); }
 .file-browser .file-block.file-mp3 .file-icon,
 .file-browser .file-block.file-wav .file-icon,
-.file-browser .file-block.file-oga .file-icon { background-image: url("img/types/audio.png"); }
+.file-browser .file-block.file-oga .file-icon { background-image: url("img/audio.png"); }
 .file-browser .file-block.file-mp4 .file-icon,
 .file-browser .file-block.file-mpg .file-icon,
 .file-browser .file-block.file-mov .file-icon,
@@ -339,34 +339,34 @@ html.file-browser-default {
 .file-browser .file-block.file-ts .file-icon,
 .file-browser .file-block.file-mkv .file-icon,
 .file-browser .file-block.file-m4v .file-icon,
-.file-browser .file-block.file-avi .file-icon { background-image: url("img/types/video.png"); }
+.file-browser .file-block.file-avi .file-icon { background-image: url("img/video.png"); }
 .file-browser .file-block.file-7z .file-icon,
 .file-browser .file-block.file-bz2 .file-icon,
 .file-browser .file-block.file-deb .file-icon,
 .file-browser .file-block.file-gz .file-icon,
 .file-browser .file-block.file-xz .file-icon,
-.file-browser .file-block.file-zip .file-icon { background-image: url("img/types/zip.png"); }
-.file-browser .file-block.file-exe .file-icon { background-image: url("img/types/exe.png"); }
+.file-browser .file-block.file-zip .file-icon { background-image: url("img/zip.png"); }
+.file-browser .file-block.file-exe .file-icon { background-image: url("img/exe.png"); }
 .file-browser .file-block.file-doc .file-icon,
-.file-browser .file-block.file-docx .file-icon { background-image: url("img/types/doc.png"); }
+.file-browser .file-block.file-docx .file-icon { background-image: url("img/doc.png"); }
 .file-browser .file-block.file-ppt .file-icon,
-.file-browser .file-block.file-pptx .file-icon { background-image: url("img/types/ppt.png"); }
+.file-browser .file-block.file-pptx .file-icon { background-image: url("img/ppt.png"); }
 .file-browser .file-block.file-csv .file-icon,
 .file-browser .file-block.file-tsv .file-icon,
 .file-browser .file-block.file-xls .file-icon,
-.file-browser .file-block.file-xlsx .file-icon { background-image: url("img/types/xls.png"); }
-.file-browser .file-block.file-pdf .file-icon { background-image: url("img/types/pdf.png"); }
-.file-browser .file-block.file-js .file-icon { background-image: url("img/types/js.png"); }
-.file-browser .file-block.file-html .file-icon { background-image: url("img/types/html.png"); }
-.file-browser .file-block.file-xml .file-icon { background-image: url("img/types/xml.png"); }
-.file-browser .file-block.file-py .file-icon { background-image: url("img/types/py.png"); }
+.file-browser .file-block.file-xlsx .file-icon { background-image: url("img/xls.png"); }
+.file-browser .file-block.file-pdf .file-icon { background-image: url("img/pdf.png"); }
+.file-browser .file-block.file-js .file-icon { background-image: url("img/js.png"); }
+.file-browser .file-block.file-html .file-icon { background-image: url("img/html.png"); }
+.file-browser .file-block.file-xml .file-icon { background-image: url("img/xml.png"); }
+.file-browser .file-block.file-py .file-icon { background-image: url("img/py.png"); }
 .file-browser .file-block.file-cnf .file-icon,
 .file-browser .file-block.file-conf .file-icon,
 .file-browser .file-block.file-ini .file-icon,
 .file-browser .file-block.file-log .file-icon,
-.file-browser .file-block.file-txt .file-icon { background-image: url("img/types/txt.png"); }
+.file-browser .file-block.file-txt .file-icon { background-image: url("img/txt.png"); }
 .file-browser .file-block.file-sql .file-icon,
-.file-browser .file-block.file-db .file-icon { background-image: url("img/types/db.png"); }
+.file-browser .file-block.file-db .file-icon { background-image: url("img/db.png"); }
 
 .file-browser .file-block .file-delete,
 .file-browser .file-block .file-rename,

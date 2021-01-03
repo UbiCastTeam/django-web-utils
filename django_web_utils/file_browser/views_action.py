@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 import errno
+import os
+import re
 import shutil
 import unicodedata
-import re
 # Django
-from django.urls import reverse
-from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils.translation import gettext as _
 # Django web utils
 from django_web_utils import json_utils
@@ -59,19 +59,19 @@ def storage_action(request, namespace=None):
                 else:
                     red_url = reverse('file_browser_base')
             # check data
-            path = request.POST.get('path', '')
+            path = request.POST.get('path', '').strip('/')
             if '..' in path:
                 msg = _('Invalid base path.')
                 if action == 'upload_single':
                     messages.error(request, msg)
-                    return HttpResponseRedirect('%s#%s' % (red_url, path))
+                    return HttpResponseRedirect('%s#/%s' % (red_url, path))
                 else:
                     return json_utils.failure_response(message=msg)
             if not list(request.FILES.keys()):
                 msg = _('No files in request.')
                 if action == 'upload_single':
                     messages.error(request, msg)
-                    return HttpResponseRedirect('%s#%s' % (red_url, path))
+                    return HttpResponseRedirect('%s#/%s' % (red_url, path))
                 else:
                     return json_utils.failure_response(message=msg)
             if path:
@@ -87,7 +87,7 @@ def storage_action(request, namespace=None):
                     msg = '%s %s' % (_('Failed to create folder:'), e)
                     if action == 'upload_single':
                         messages.error(request, msg)
-                        return HttpResponseRedirect('%s#%s' % (red_url, path))
+                        return HttpResponseRedirect('%s#/%s' % (red_url, path))
                     else:
                         return json_utils.failure_response(message=msg)
             # execute action
@@ -100,9 +100,9 @@ def storage_action(request, namespace=None):
                 if file_name == '.htaccess':
                     file_name += '_'
                 # write uploaded file
-                with open(os.path.join(dir_path, file_name), 'wb+') as fd:
+                with open(os.path.join(dir_path, file_name), 'wb+') as fo:
                     for chunk in uploaded_file.chunks():
-                        fd.write(chunk)
+                        fo.write(chunk)
                 # get url
                 if path:
                     url = base_url + path + file_name
@@ -111,14 +111,14 @@ def storage_action(request, namespace=None):
                 msg += ' <br/><a href="%s">%s://%s%s</a>' % (url, 'https' if request.is_secure() else 'http', request.get_host(), url)
             if action == 'upload_single':
                 messages.success(request, msg)
-                return HttpResponseRedirect('%s#%s' % (red_url, path))
+                return HttpResponseRedirect('%s#/%s' % (red_url, path))
             else:
                 return json_utils.success_response(message=msg)
 
         # folder form
         elif action == 'add_folder':
             # check data
-            path = request.POST.get('path', '')
+            path = request.POST.get('path', '').strip('/')
             if '..' in path:
                 return json_utils.failure_response(message=_('Invalid base path.'))
             name = request.POST.get('name')
@@ -144,7 +144,7 @@ def storage_action(request, namespace=None):
         # actions on several files form
         elif action in ('rename', 'move', 'delete'):
             # check data
-            path = request.POST.get('path', '')
+            path = request.POST.get('path', '').strip('/')
             if '..' in path:
                 return json_utils.failure_response(message=_('Invalid base path.'))
             if path:
@@ -189,7 +189,7 @@ def storage_action(request, namespace=None):
                     return json_utils.success_response(message=_('Files renamed.'))
 
             elif action == 'move':
-                new_path = request.POST.get('new_path', '')
+                new_path = request.POST.get('new_path', '').strip('/')
                 if not new_path:
                     return json_utils.failure_response(message=_('No path specfied to move files in.'))
                 if new_path == '#':
@@ -230,7 +230,7 @@ def storage_action(request, namespace=None):
         # search form
         if action == 'search':
             # get path
-            path = request.GET.get('path', '')
+            path = request.GET.get('path', '').strip('/')
             if '..' in path:
                 return json_utils.failure_response(message=_('Invalid base path.'))
             if path:

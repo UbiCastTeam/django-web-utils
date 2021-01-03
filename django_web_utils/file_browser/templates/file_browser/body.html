@@ -23,8 +23,8 @@
         {% csrf_token %}
         {% if messages %}
             <div class="messages-container">
-                <button type="button" class="file-browser-btn show-messages-btn" onclick="javascript: fbrowser.show_messages();">{% trans "Show messages" %}</button>
-                <button type="button" class="file-browser-btn hide-messages-btn" onclick="javascript: fbrowser.hide_messages();">{% trans "Hide messages" %}</button>
+                <button type="button" class="file-browser-btn show-messages-btn" onclick="javascript: fbrowser.showMessages();">{% trans "Show messages" %}</button>
+                <button type="button" class="file-browser-btn hide-messages-btn" onclick="javascript: fbrowser.hideMessages();">{% trans "Hide messages" %}</button>
                 <div class="messages-list">
                     <!-- django message block -->
                     {% for message in messages %}

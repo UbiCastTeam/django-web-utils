@@ -359,7 +359,7 @@ FileBrowser.prototype.parseContentResponse = function (response) {
         }
     }
     // create path tree
-    let fullPath = '#';
+    let fullPath = '#/';
     let htmlPath = '<a href="' + fullPath + '">' + jsu.translate('root') + '</a> <span>/</span> ';
     if (response.path) {
         const splitted = response.path.split('/');
@@ -944,10 +944,8 @@ FileBrowser.prototype.closeTree = function (path) {
 };
 
 FileBrowser.prototype.hideMessages = function () {
-    $('.messages-list').fadeOut('fast');
-    $('.messages-container').classList.add('hidden');
+    document.getElementById('fm_content_place').querySelector('.messages-container').classList.add('hidden');
 };
 FileBrowser.prototype.showMessages = function () {
-    $('.messages-list').fadeIn('fast');
-    $('.messages-container').classList.remove('hidden');
+    document.getElementById('fm_content_place').querySelector('.messages-container').classList.remove('hidden');
 };
