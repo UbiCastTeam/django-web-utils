@@ -4,15 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="DC.Format" content="text/html"/>
     <meta name="DC.Title" content="{% trans "File browser" %}"/>
-    <meta name="DC.Creator" content="Stephane Diemer"/>
-    <meta name="copyright" content="Stephane Diemer 2015"/>
 
     <title>{% trans "File browser" %}</title>
     
     <link rel="stylesheet" type="text/css" href="{% static 'file_browser/odm/odm.css' %}?_=1"/>
-    <script type="text/javascript" src="{% static 'file_browser/jquery.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'file_browser/utils.js' %}"></script>
-    <script type="text/javascript" src="{% static 'file_browser/odm/odm.js' %}"></script>
+    <script type="text/javascript" src="{% static 'file_browser/jsu.js' %}?_=1"></script>
+    <script type="text/javascript" src="{% static 'file_browser/odm/odm.js' %}?_=1"></script>
     {% include "file_browser/script.html" %}
 </head>
 
