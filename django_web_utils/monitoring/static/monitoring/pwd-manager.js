@@ -30,8 +30,10 @@ PwdManager.prototype.build = function () {
     this.formEle.setAttribute('method', 'get');
     this.formEle.setAttribute('action', this.url);
     this.formEle.innerHTML = '<div class="messages" style="display: none; margin-bottom: 16px;"></div>' +
+        '<input type="hidden" name="csrfmiddlewaretoken" value="' + jsu.getCookie('csrftoken') + '"/>' +
         '<label for="id_data">' + jsu.translate('Password:') + '</label> ' +
-        '<input type="password" id="id_data" name="data" value="" style="width: 250px;"/>';
+        '<input type="password" id="id_data" name="data" value="" style="width: 250px;"/> ' +
+        '<button type="submit">' + jsu.translate('Send') + '</button>';
     this.msgEle = this.formEle.querySelector('.messages');
 
     // events
@@ -81,29 +83,26 @@ PwdManager.prototype.sendRequest = function (post) {
     jsu.httpRequest({
         method: post ? 'POST' : 'GET',
         url: this.url,
-        data: post ? { data: this.formEle.querySelector('input').value } : null,
+        data: post ? new FormData(this.formEle) : null,
         json: true,
         callback: function (req, response) {
             if (!req.status) {
                 obj.displayMessage('error', 'Network error');
-            } if (req.status == 200) {
-                obj.pwdOk = true;
-                if (obj.cb) {
-                    obj.cb(true, obj.cbData);
-                }
-                if (post) {
-                    obj.msgEle.style.setProperty('display', '');
-                    obj.success = true;
-                    obj.overlay.hide();
-                }
+            } if (req.status != 200) {
+                obj.displayMessage('error', response.error);
             } else {
-                if (post) {
-                    obj.displayMessage('error', response.error);
-                } else {
-                    if (response.code && response.code == 'wpwd') {
-                        obj.displayMessage('error', response.error);
-                    }
+                if (!response.pwd_ok) {
                     obj.openPasswordForm();
+                } else {
+                    obj.pwdOk = true;
+                    if (obj.cb) {
+                        obj.cb(true, obj.cbData);
+                    }
+                    if (post) {
+                        obj.msgEle.style.setProperty('display', '');
+                        obj.success = true;
+                        obj.overlay.hide();
+                    }
                 }
             }
             obj.inProgress = false;
@@ -118,11 +117,11 @@ PwdManager.prototype.displayMessage = function (type, text) {
         this.msgTimeout = null;
     }
     this.msgEle.innerHTML = html;
-    this.msgEle.setProperty('display', '');
+    this.msgEle.style.setProperty('display', '');
     if (type != 'loading') {
         const obj = this;
         this.msgTimeout = setTimeout(function () {
-            obj.msgEle.setProperty('display', 'none');
+            obj.msgEle.style.setProperty('display', 'none');
             obj.msgTimeout = null;
         }, 8000);
     }
@@ -137,19 +136,6 @@ PwdManager.prototype.openPasswordForm = function () {
     this.overlay.show({
         html: this.formEle,
         title: jsu.translate('Enter password for commands'),
-        buttons: [
-            {
-                label: jsu.translate('Cancel'),
-                close: true
-            },
-            {
-                klass: 'main',
-                label: jsu.translate('Send password'),
-                callback: function () {
-                    obj.formEle.submit();
-                }
-            }
-        ],
         onHide: function () {
             if (!obj.success && obj.cb) {
                 obj.cb(false, obj.cbData); // user cancelled or closed menu

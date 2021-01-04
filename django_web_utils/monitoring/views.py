@@ -30,14 +30,12 @@ def check_password(request):
         success, output = system_utils.execute_command('echo \'test\'', user='root', pwd=pwd)
         if success:
             request.session['pwd'] = pwd
-            return JsonResponse(dict())
+            return JsonResponse(dict(pwd_ok=True))
         else:
             return JsonResponse(dict(error=_('Invalid password.'), code='wpwd'), status=400)
     else:
         pwd = request.session.get('pwd')
-        if not pwd:
-            return JsonResponse(dict(error=_('Please enter password.'), code='nopwd'), status=400)
-        return JsonResponse(dict())
+        return JsonResponse(dict(pwd_ok=bool(pwd)))
 
 
 @login_required
