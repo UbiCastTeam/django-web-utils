@@ -63,7 +63,7 @@ DaemonsManager.prototype.sendDaemonCommand = function (daemon, cmd) {
         return console.log('Invalid daemon given to sendDaemonCommand function.');
     }
     if (daemon.isRoot) {
-        this.pwdMan.check_password(function (success, data) {
+        this.pwdMan.checkPassword(function (success, data) {
             if (success) {
                 data.obj._sendDaemonCommand(data.daemon, data.cmd);
             }
@@ -80,19 +80,26 @@ DaemonsManager.prototype._sendDaemonCommand = function (daemon, cmd) {
         data: { daemon: daemon.name, cmd: cmd, csrfmiddlewaretoken: jsu.getCookie('csrftoken') },
         json: true,
         callback: function (req, response) {
-            let msg;
-            if (response.message) {
-                msg = response.message;
-            } else if (response.error) {
-                msg = response.error;
-            }
-            if (!msg) {
-                msg = jsu.translate('No messages have been returned.');
-            }
-            const level = req.status == 200 ? 'success' : 'error';
             const msgEle = document.createElement('div');
-            msgEle.setAttribute('class', 'message ' + level);
-            msgEle.innerHTML = msg;
+            if (req.status != 200) {
+                msgEle.setAttribute('class', 'message error');
+                msgEle.innerHTML = response.error;
+            } else if (!response.messages) {
+                msgEle.setAttribute('class', 'message warning');
+                msgEle.innerHTML = jsu.translate('No messages have been returned.');
+            } else {
+                for (let i = 0; i < response.messages.length; i++) {
+                    const msg = response.messages[i];
+                    const entryEle = document.createElement('div');
+                    entryEle.setAttribute('class', 'message ' + msg.level);
+                    entryEle.innerHTML = jsu.escapeHTML(msg.text);
+                    if (msg.out) {
+                        entryEle.innerHTML += '\n<div>' + jsu.translate('Command output:') + '<br/>\n';
+                        entryEle.innerHTML += '<pre>' + jsu.escapeHTML(msg.out) + '</pre></div>';
+                    }
+                    msgEle.appendChild(entryEle);
+                }
+            }
             obj.overlay.show({
                 title: jsu.translate('Command result'),
                 html: msgEle,
@@ -136,7 +143,7 @@ DaemonsManager.prototype.refreshDaemonStatus = function () {
                         btnEle.setAttribute('title', jsu.translate('Click to enter password'));
                         btnEle.innerHTML = jsu.translate('need password');
                         btnEle.addEventListener('click', function () {
-                            obj.pwdMan.check_password();
+                            obj.pwdMan.checkPassword();
                         });
                         statusEle.appendChild(btnEle);
                     }
