@@ -7,11 +7,10 @@ import shutil
 import unicodedata
 # Django
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 # Django web utils
-from django_web_utils import json_utils
 from django_web_utils.file_browser import config
 
 
@@ -66,14 +65,14 @@ def storage_action(request, namespace=None):
                     messages.error(request, msg)
                     return HttpResponseRedirect('%s#/%s' % (red_url, path))
                 else:
-                    return json_utils.failure_response(message=msg)
+                    return JsonResponse(dict(error=msg), status=400)
             if not list(request.FILES.keys()):
                 msg = _('No files in request.')
                 if action == 'upload_single':
                     messages.error(request, msg)
                     return HttpResponseRedirect('%s#/%s' % (red_url, path))
                 else:
-                    return json_utils.failure_response(message=msg)
+                    return JsonResponse(dict(error=msg), status=400)
             if path:
                 dir_path = os.path.join(base_path, path)
             else:
@@ -89,7 +88,7 @@ def storage_action(request, namespace=None):
                         messages.error(request, msg)
                         return HttpResponseRedirect('%s#/%s' % (red_url, path))
                     else:
-                        return json_utils.failure_response(message=msg)
+                        return JsonResponse(dict(error=msg), status=400)
             # execute action
             if len(list(request.FILES.keys())) == 1:
                 msg = _('The file has been uploaded and is available at the location:')
@@ -113,20 +112,20 @@ def storage_action(request, namespace=None):
                 messages.success(request, msg)
                 return HttpResponseRedirect('%s#/%s' % (red_url, path))
             else:
-                return json_utils.success_response(message=msg)
+                return JsonResponse(dict(message=msg))
 
         # folder form
         elif action == 'add_folder':
             # check data
             path = request.POST.get('path', '').strip('/')
             if '..' in path:
-                return json_utils.failure_response(message=_('Invalid base path.'))
+                return JsonResponse(dict(error=_('Invalid base path.')), status=400)
             name = request.POST.get('name')
             if not name:
-                return json_utils.failure_response(message=_('The "%s" field is required.') % 'name')
+                return JsonResponse(dict(error=_('The "%s" field is required.') % 'name'), status=400)
             name = clean_file_name(name)
             if not name:
-                return json_utils.failure_response(message=_('Invalid name.'))
+                return JsonResponse(dict(error=_('Invalid name.')), status=400)
             # execute action
             if path:
                 target = os.path.join(base_path, path, name)
@@ -136,17 +135,17 @@ def storage_action(request, namespace=None):
                 os.makedirs(target)
             except OSError as e:
                 if e.errno == errno.EEXIST:
-                    return json_utils.success_response(message=_('Folder already exists.'))
+                    return JsonResponse(dict(message=_('Folder already exists.')))
                 else:
-                    return json_utils.failure_response(message='%s %s' % (_('Failed to create folder.'), e))
-            return json_utils.success_response(message=_('Folder created.'))
+                    return JsonResponse(dict(error='%s %s' % (_('Failed to create folder.'), e)), status=400)
+            return JsonResponse(dict(message=_('Folder created.')))
 
         # actions on several files form
         elif action in ('rename', 'move', 'delete'):
             # check data
             path = request.POST.get('path', '').strip('/')
             if '..' in path:
-                return json_utils.failure_response(message=_('Invalid base path.'))
+                return JsonResponse(dict(error=_('Invalid base path.')), status=400)
             if path:
                 dir_path = os.path.join(base_path, path)
             else:
@@ -156,23 +155,25 @@ def storage_action(request, namespace=None):
                 if key.startswith('name_') and request.POST[key]:
                     names.append(request.POST[key])
             if not names:
-                return json_utils.failure_response(message=_('No files selected.'))
+                return JsonResponse(dict(error=_('No files selected.')), status=400)
 
             if action == 'rename':
                 new_name = request.POST.get('new_name')
                 if not new_name:
-                    return json_utils.failure_response(message=_('The "%s" field is required.') % 'new_name')
+                    return JsonResponse(dict(error=_('The "%s" field is required.') % 'new_name'), status=400)
                 new_name = clean_file_name(new_name)
                 new_name_ext = ''
                 if '.' in new_name and not (new_name.startswith('.') and new_name.count('.') == 1):
                     new_name_ext = '.' + new_name.split('.')[-1].lower()
                     new_name = new_name[:-len(new_name_ext)]
                 if not new_name or new_name == '.htaccess':
-                    return json_utils.failure_response(message=_('Invalid name.'))
+                    return JsonResponse(dict(error=_('Invalid name.')), status=400)
                 # execute action
                 index = 0
                 for name in names:
                     src = os.path.join(dir_path, name)
+                    if not os.path.exists(src):
+                        return JsonResponse(dict(error=_('The file "%s" does not exist.') % src), status=400)
                     if len(names) == 1:
                         new = '%s%s' % (new_name, new_name_ext)
                     else:
@@ -181,24 +182,24 @@ def storage_action(request, namespace=None):
                     dest = os.path.join(dir_path, new)
                     if src != dest:
                         if os.path.exists(dest):
-                            return json_utils.failure_response(message=_('The file "%s" already exists.') % new)
+                            return JsonResponse(dict(error=_('The file "%s" already exists.') % new), status=400)
                         os.rename(src, dest)
                 if len(names) == 1:
-                    return json_utils.success_response(message=_('File renamed.'))
+                    return JsonResponse(dict(message=_('File renamed.')))
                 else:
-                    return json_utils.success_response(message=_('Files renamed.'))
+                    return JsonResponse(dict(message=_('Files renamed.')))
 
             elif action == 'move':
                 new_path = request.POST.get('new_path', '').strip('/')
                 if not new_path:
-                    return json_utils.failure_response(message=_('No path specfied to move files in.'))
+                    return JsonResponse(dict(error=_('No path specfied to move files in.')), status=400)
                 if new_path == '#':
                     new_path = base_path
                 else:
                     new_path = os.path.join(base_path, new_path)
                 new_path = new_path
                 if not os.path.exists(new_path):
-                    return json_utils.failure_response(message=_('Destination path does not exists.'))
+                    return JsonResponse(dict(error=_('Destination path does not exists.')), status=400)
                 moved = 0
                 for name in names:
                     src = os.path.join(dir_path, name)
@@ -207,8 +208,8 @@ def storage_action(request, namespace=None):
                             shutil.move(src, new_path)
                             moved += 1
                         except Exception as e:
-                            return json_utils.failure_response(message='%s %s' % (_('Unable to move file %s:') % name, e))
-                return json_utils.success_response(message=_('%s file(s) successfully moved.') % moved)
+                            return JsonResponse(dict(error='%s %s' % (_('Unable to move file %s:') % name, e)), status=400)
+                return JsonResponse(dict(message=_('%s file(s) successfully moved.') % moved))
 
             elif action == 'delete':
                 files_deleted = 0
@@ -222,8 +223,8 @@ def storage_action(request, namespace=None):
                         files_deleted += fd
                         dir_deleted += dd
                     except Exception as e:
-                        return json_utils.failure_response(message='%s %s' % (_('Unable to delete file %s:') % name, e))
-                return json_utils.success_response(message=_('%(f)s file(s) and %(d)s directory(ies) successfully deleted.') % dict(f=files_deleted, d=dir_deleted))
+                        return JsonResponse(dict(error='%s %s' % (_('Unable to delete file %s:') % name, e)), status=400)
+                return JsonResponse(dict(message=_('%(f)s file(s) and %(d)s directory(ies) successfully deleted.') % dict(f=files_deleted, d=dir_deleted)))
     else:
         # actions using get method
         action = request.GET.get('action')
@@ -232,13 +233,13 @@ def storage_action(request, namespace=None):
             # get path
             path = request.GET.get('path', '').strip('/')
             if '..' in path:
-                return json_utils.failure_response(message=_('Invalid base path.'))
+                return JsonResponse(dict(error=_('Invalid base path.')), status=400)
             if path:
                 dir_path = os.path.join(base_path, path)
             else:
                 dir_path = base_path
             if not os.path.exists(dir_path):
-                return json_utils.failure_response(message=_('Requested path does not exist.'))
+                return JsonResponse(dict(error=_('Requested path does not exist.')), status=400)
             # get search command
             search = request.GET.get('search', '')
             search = search.replace('\'', '"').lower()
@@ -284,6 +285,6 @@ def storage_action(request, namespace=None):
             else:
                 msg = _('No results for "%(search)s".') % dict(search=search)
 
-            return json_utils.success_response(search_in=path, msg=msg, results=results, dirs=dirs)
+            return JsonResponse(dict(search_in=path, msg=msg, results=results, dirs=dirs))
 
-    return json_utils.failure_response(message=_('Invalid action requested.'))
+    return JsonResponse(dict(error=_('Invalid action requested.')), status=400)

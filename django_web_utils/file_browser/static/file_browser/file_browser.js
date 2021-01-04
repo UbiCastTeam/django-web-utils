@@ -115,77 +115,19 @@ FileBrowser.prototype.containsFiles = function (evt) {
     return false;
 };
 
-FileBrowser.prototype.httpRequest = function (args) {
-    const params = args.params ? args.params : {};
-    if (args.cache === undefined || args.cache) {
-        params._ = (new Date()).getTime();
-    }
-    let url = args.url;
-    const urlParams = [];
-    let field;
-    for (field in params) {
-        urlParams.push(encodeURIComponent(field) + '=' + encodeURIComponent(params[field]));
-    }
-    if (urlParams.length > 0) {
-        url += '?' + urlParams.join('&');
-    }
-    let formData;
-    if (args.data instanceof FormData) {
-        formData = args.data;
-    } else if (args.data) {
-        formData = new FormData();
-        for (field in args.data) {
-            formData.append(field, args.data[field]);
-        }
-    } else {
-        formData = null;
-    }
-    const req = new XMLHttpRequest();
-    if (args.progress && req.upload) {
-        req.upload.addEventListener('progress', args.progress, false);
-    }
-    if (args.callback) {
-        req.onreadystatechange = function () {
-            if (this.readyState !== XMLHttpRequest.DONE) {
-                return;
-            }
-            let jsonResponse;
-            try {
-                jsonResponse = JSON.parse(this.responseText);
-            } catch (e) {
-                jsonResponse = {
-                    error: 'Failed to parse load dirs response (status: ' + this.status + '): ' + e
-                };
-            }
-            if (this.status === 200) {
-                // success
-                args.callback(jsonResponse);
-            } else {
-                // fail
-                args.callback({
-                    success: false,
-                    message: jsonResponse.error
-                });
-            }
-        };
-    }
-    req.open(args.method ? args.method : 'GET', url, true);
-    req.send(formData);
-    return req;
-};
-
 FileBrowser.prototype.loadDirs = function () {
     const obj = this;
-    this.httpRequest({
+    jsu.httpRequest({
         method: 'GET',
         url: this.dirsURL,
-        callback: function (response) {
-            obj.parseDirsResponse(response);
+        json: true,
+        callback: function (req, response) {
+            obj.parseDirsResponse(req, response);
         }
     });
 };
-FileBrowser.prototype.parseDirsResponse = function (response) {
-    if (!response.success) {
+FileBrowser.prototype.parseDirsResponse = function (req, response) {
+    if (req.status != 200) {
         this.menuTreeElement.innerHTML = '<li class="message-error">' + response.message + '</li>';
         return;
     } else {
@@ -281,18 +223,16 @@ FileBrowser.prototype.loadContent = function () {
         this.menuElements[path].classList.add('active');
     }
 
-    const obj = this;
-    this.httpRequest({
+    jsu.httpRequest({
         method: 'GET',
         url: this.contentURL,
         params: { path: path, order: this.ordering },
-        callback: function (response) {
-            obj.parseContentResponse(response);
-        }
+        json: true,
+        callback: this.parseContentResponse.bind(this)
     });
 };
-FileBrowser.prototype.parseContentResponse = function (response) {
-    if (!response.success) {
+FileBrowser.prototype.parseContentResponse = function (req, response) {
+    if (req.status != 200) {
         this.placeElement.innerHTML = '<div class="message-error">' + response.message + '</div>';
         return;
     }
@@ -462,23 +402,24 @@ FileBrowser.prototype.executeAction = function (method, params, data) {
         html: '<div class="file-browser-overlay message-loading">' + jsu.translate('Loading') + '...</div>'
     });
     // execute request
-    this.httpRequest({
+    jsu.httpRequest({
         method: method,
         url: this.actionURL,
         params: params,
         data: data,
+        json: true,
         callback: this.onActionExecuted.bind(this)
     });
 };
-FileBrowser.prototype.onActionExecuted = function (response) {
+FileBrowser.prototype.onActionExecuted = function (req, response) {
     this.overlay.show({
         title: ' ',
-        html: '<div class="file-browser-overlay message-' + (response.success ? 'success' : 'error') + '">' + response.message + '</div>',
+        html: '<div class="file-browser-overlay message-' + (req.status == 200 ? 'success' : 'error') + '">' + (response.message ? response.message : response.error) + '</div>',
         buttons: [
             { label: jsu.translate('Ok'), close: true }
         ]
     });
-    if (response.success) {
+    if (req.status == 200) {
         this.refresh();
     }
 };
@@ -506,10 +447,11 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
     progressEle.setAttribute('value', 0);
     progressEle.innerHTML = '0 %';
     const obj = this;
-    this.httpRequest({
+    jsu.httpRequest({
         method: 'POST',
         url: this.actionURL,
         data: formData,
+        json: true,
         progress: function (evt) {
             if (evt.lengthComputable) {
                 let progress = 0;
@@ -520,9 +462,9 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
                 progressEle.innerHTML = progress + ' %';
             }
         },
-        callback: function (response) {
+        callback: function (req, response) {
             obj.dropZoneElement.setAttribute('class', '');
-            obj.onActionExecuted(response);
+            obj.onActionExecuted(req, response);
         }
     });
 };
@@ -535,7 +477,7 @@ FileBrowser.prototype.addFolder = function () {
         this.folderForm.setAttribute('enctype', 'multipart/form-data');
         this.folderForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
             '<input type="hidden" name="action" value="add_folder"/>' +
-            '<input type="hidden" id="new_folder_path" name="path" value=""/>' +
+            '<input type="hidden" id="id_new_folder_path" name="path" value=""/>' +
             '<label for="id_folder_name">' + jsu.translate('New folder name:') + '</label> ' +
             '<input type="text" id="id_folder_name" name="name" value=""/>' +
             '<button type="submit" style="display: none;"></button>';
@@ -549,7 +491,7 @@ FileBrowser.prototype.addFolder = function () {
         });
     }
     this.folderForm.setAttribute('action', this.actionURL + '#' + this.path);
-    this.folderForm.querySelector('#new_folder_path').value = this.path;
+    this.folderForm.querySelector('#id_new_folder_path').value = this.path;
 
     const obj = this;
     this.overlay.show({
@@ -570,18 +512,18 @@ FileBrowser.prototype.addFile = function () {
     if (!this.uploadForm) {
         this.uploadForm = document.createElement('form');
         this.uploadForm.setAttribute('class', 'file-browser-overlay');
-        this.uploadForm.setAttribute('action', '.');
+        this.uploadForm.setAttribute('action', this.actionURL);
         this.uploadForm.setAttribute('method', 'post');
         this.uploadForm.setAttribute('enctype', 'multipart/form-data');
         this.uploadForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
             '<input type="hidden" name="action" value="upload_single"/>' +
-            '<input type="hidden" id="new_file_path" name="path" value=""/>' +
+            '<input type="hidden" id="id_new_file_path" name="path" value=""/>' +
             '<label for="id_file_to_add">' + jsu.translate('File to add:') + '</label>' +
             ' <input type="file" id="id_file_to_add" name="file"/>' +
             '<button type="submit" style="display: none;"></button>';
     }
     this.uploadForm.setAttribute('action', this.actionURL + '#' + this.path);
-    this.uploadForm.querySelector('#new_file_path').value = this.path;
+    this.uploadForm.querySelector('#id_new_file_path').value = this.path;
 
     const obj = this;
     this.overlay.show({
@@ -615,6 +557,7 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
         this.renameForm.setAttribute('enctype', 'multipart/form-data');
         this.renameForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
             '<input type="hidden" name="action" value="rename"/>' +
+            '<input type="hidden" id="id_rename_file_path" name="path" value=""/>' +
             '<div>' +
             '<label for="id_rename_new_name">' + jsu.translate('New name:') + '</label>' +
             ' <input type="text" id="id_rename_new_name" name="new_name" value=""/>' +
@@ -632,6 +575,9 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
     }
 
     // prepare form data
+    this.renameForm.setAttribute('action', this.actionURL + '#' + this.path);
+    this.renameForm.querySelector('#id_rename_file_path').value = this.path;
+
     this.renameForm.querySelector('#id_rename_new_name').value = selected[0].name;
 
     let html = '';
@@ -654,7 +600,7 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
         ]
     });
     setTimeout(function () {
-        obj.renameForm.querySelector('#rename_new_name').focus();
+        obj.renameForm.querySelector('#id_rename_new_name').focus();
     }, 20);
 };
 FileBrowser.prototype.moveFiles = function (file, evt) {
@@ -699,6 +645,7 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
         }
     }
 
+    this.moveForm.setAttribute('action', this.actionURL + '#' + this.path);
     this.moveForm.querySelector('#id_move_path').value = this.path;
 
     let html = '';
@@ -836,30 +783,33 @@ FileBrowser.prototype.search = function () {
             if (obj.searchForm.querySelector('#search_in_current').checked) {
                 params.path = obj.path;
             }
-            obj.httpRequest({
+            jsu.httpRequest({
                 method: 'GET',
                 url: obj.actionURL,
                 params: params,
-                callback: function (response) {
-                    if (!response.success) {
-                        return;
-                    }
-                    // display search results
+                json: true,
+                callback: function (req, response) {
+                    let html;
                     let dirsFound = false;
-                    let html = '<p><b>' + response.msg + '</b></p>';
-                    if (response.dirs && response.dirs.length > 0) {
-                        html += '<div class="search-results">';
-                        for (let i = 0; i < response.dirs.length; i++) {
-                            dirsFound = true;
-                            const dir = response.dirs[i];
-                            html += '<p><a class="dir-link" href="#' + dir.url + '">' + jsu.translate('root') + '/' + dir.url + '</a></p>';
-                            html += '<ul>';
-                            for (let j = 0; j < dir.files.length; j++) {
-                                html += '<li><a href="' + obj.baseURL + dir.url + dir.files[j] + '">' + dir.url + dir.files[j] + '</a></li>';
+                    if (req.status != 200) {
+                        html = '<p><b>' + response.error + '</b></p>';
+                    } else {
+                        // display search results
+                        html = '<p><b>' + response.msg + '</b></p>';
+                        if (response.dirs && response.dirs.length > 0) {
+                            html += '<div class="search-results">';
+                            for (let i = 0; i < response.dirs.length; i++) {
+                                dirsFound = true;
+                                const dir = response.dirs[i];
+                                html += '<p><a class="dir-link" href="#' + dir.url + '">' + jsu.translate('root') + '/' + dir.url + '</a></p>';
+                                html += '<ul>';
+                                for (let j = 0; j < dir.files.length; j++) {
+                                    html += '<li><a href="' + obj.baseURL + dir.url + dir.files[j] + '">' + dir.url + dir.files[j] + '</a></li>';
+                                }
+                                html += '</ul>';
                             }
-                            html += '</ul>';
+                            html += '</div>';
                         }
-                        html += '</div>';
                     }
                     obj.searchForm.querySelector('#search_results').innerHTML = html;
                     if (dirsFound) {
