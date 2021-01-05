@@ -1,13 +1,13 @@
 {% load i18n %}{% load static %}{% load namespace_url %}
-<link rel="stylesheet" type="text/css" href="{% static 'file_browser/file_browser.css' %}?_=5"/>
-<script type="text/javascript" src="{% static 'file_browser/file_browser.js' %}?_=5"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'file_browser/file-browser.css' %}?_=6"/>
+<script type="text/javascript" src="{% static 'file_browser/file-browser.js' %}?_=6"></script>
 <script type="text/javascript">
     var fbrowser = new FileBrowser({
-        base_url: "{{ base_url }}",
-        dirs_url: "{% namespace_url namespace 'file_browser_dirs' %}",
-        content_url: "{% namespace_url namespace 'file_browser_content' %}",
-        preview_url: "{% namespace_url namespace 'file_browser_img_preview' %}",
-        action_url: "{% namespace_url namespace 'file_browser_action' %}",
+        baseURL: "{{ base_url }}",
+        dirsURL: "{% namespace_url namespace 'file_browser_dirs' %}",
+        contentURL: "{% namespace_url namespace 'file_browser_content' %}",
+        previewURL: "{% namespace_url namespace 'file_browser_img_preview' %}",
+        actionURL: "{% namespace_url namespace 'file_browser_action' %}",
         translations: {
             "The folder is empty.": "{% trans "The folder is empty." %}",
             "Size:": "{% trans "Size:" %}",

@@ -1,0 +1,38 @@
+{
+    "extends": "eslint:recommended",
+    "ignorePatterns": ["vendor*"],
+    "rules": {
+        "indent": ["error", 4, {"SwitchCase": 1, "ArrayExpression": "first", "ObjectExpression": "first"}],
+        "no-trailing-spaces": "error",
+        "no-unneeded-ternary": "error",
+        "no-whitespace-before-property": "error",
+        "no-multi-spaces": "error",
+        "curly": "error",
+        "brace-style": "error",
+        "semi-spacing": "error",
+        "space-before-blocks": "error",
+        "switch-colon-spacing": "error",
+        "no-var": "warn",
+        "prefer-const": "warn",
+        "key-spacing": "error",
+        "func-call-spacing": "error",
+        "keyword-spacing": "error",
+        "space-infix-ops": "error",
+        "no-use-before-define": "error",
+        "space-unary-ops": ["error", {"words": true, "nonwords": false}],
+        "space-in-parens": ["error", "never"],
+        "quotes": ["error", "single"],
+        "space-before-function-paren": ["error", {"anonymous": "always"}],
+        "camelcase": ["error", {"properties": "always", "ignoreImports": true, "ignoreGlobals": true, "ignoreDestructuring": true}],
+        "semi": ["error", "always"]
+    },
+    "env": {
+        "browser": true,
+        "jquery": true,
+        "es6": true
+    },
+    "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 8
+    }
+}

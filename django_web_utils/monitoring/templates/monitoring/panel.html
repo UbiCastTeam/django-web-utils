@@ -69,30 +69,31 @@
     {% endfor %}
 </table>
 
-<script type="text/javascript" src="{% static 'monitoring/pwd_manager.js' %}?_=1"></script>
-<script type="text/javascript" src="{% static 'monitoring/daemons_manager.js' %}?_=3"></script>
+<script type="text/javascript" src="{% static 'monitoring/pwd-manager.js' %}?_=3"></script>
+<script type="text/javascript" src="{% static 'monitoring/daemons-manager.js' %}?_=4"></script>
 <script type="text/javascript">
     var dman = new DaemonsManager({
         daemons: [
         {% for group in daemons_groups %}
             {% for daemon in group.members %}
-            { name: "{{ daemon.name }}"{% if daemon.is_root %}, is_root: true{% endif %} },
+            { name: "{{ daemon.name }}"{% if daemon.is_root %}, isRoot: true{% endif %} },
             {% endfor %}
         {% endfor %}
             { name: "all" }
         ],
-        commands_url: "{% url 'monitoring-command' %}",
-        status_url: "{% url 'monitoring-status' %}",
-        pwd_url: "{% url 'monitoring-check_password' %}",
+        commandsURL: "{% url 'monitoring-command' %}",
+        statusURL: "{% url 'monitoring-status' %}",
+        pwdURL: "{% url 'monitoring-check_password' %}",
         translations: {
             "Command result": "{% trans "Command result" %}",
+            "Command output:": "{% trans "Command output:" %}",
             "No messages have been returned.": "{% trans "No messages have been returned." %}",
+            "Send": "{% trans "Send" %}",
             "Close": "{% trans "Close" %}",
             "running": "{% trans "running" %}",
             "not running": "{% trans "not running" %}",
             "need password": "{% trans "need password" %}",
-            "Click to enter password": "{% trans "Click to enter password" %}",
-            "server unreachable": "{% trans "server unreachable" %}"
+            "Click to enter password": "{% trans "Click to enter password" %}"
         }
     });
 </script>

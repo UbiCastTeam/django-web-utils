@@ -54,7 +54,7 @@ html.file-browser-default {
     left: 0;
     position: absolute;
     width: 250px;
-    background: #eee;
+    background: rgba(127, 127, 127, 0.3);
     border-right: 1px solid #1c73bf;
 }
 .file-browser .content-place {
@@ -63,7 +63,6 @@ html.file-browser-default {
     left: 251px;
     right: 0;
     position: absolute;
-    border-left: 1px solid #29427a;
 }
 .file-browser .content-container {
     padding: 0 8px;
@@ -95,7 +94,6 @@ html.file-browser-default {
 
 /* buttons and buttons bar */
 .file-browser .buttons-bar {
-    margin-top: -1px;
     margin-right: -8px;
     float: right;
 }
@@ -115,7 +113,7 @@ html.file-browser-default {
     cursor: pointer;
     box-sizing: border-box;
     transition-property: background-color, color, border-color;
-    transition-duration: 0.5s;
+    transition-duration: 0.3s;
 }
 .file-browser button:hover,
 .file-browser select:hover {
@@ -135,131 +133,131 @@ html.file-browser-default {
 }
 .file-browser .file-browser-btn {
     margin-right: 8px;
-    padding-left: 24px;
-    float: left;
 }
 
 
 /* menu list */
+.file-browser .menu-place p {
+    margin: 8px 0;
+}
 .file-browser .menu-place a {
     display: block;
 }
 .file-browser .menu-place ul {
-    padding: 5px 0;
+    margin: 0;
     word-wrap: break-word;
 }
 .file-browser .menu-place ul ul {
     margin-left: 20px;
     padding: 0;
 }
-.file-browser .menu-place .closed ul {
+.file-browser .menu-place li ul {
     display: none;
 }
-.file-browser .menu-place .closed ul ul {
+.file-browser .menu-place li.opened > ul {
     display: block;
 }
-.file-browser .menu-place .active > a {
-    color: #000;
-    font-weight: bold;
-}
-.file-browser .menu-place .invisible > a,
-.file-browser .menu-place .disabled > a {
-    padding-left: 20px;
-    opacity: 0.8;
-    background: transparent url("img/list/invisible.png") 0 50% no-repeat; 
-}
-.file-browser .menu-place .disabled > a {
-    opacity: 0.5;
-    background-image: url("img/list/disabled.png"); 
-}
 .file-browser .menu-place li {
+    margin: 5px 0;
     list-style: none;
     line-height: 20px;
     overflow: hidden;
+    position: relative;
 }
-.file-browser .menu-place li button {
+.file-browser .menu-place li > button {
     margin: 0;
     padding: 0;
-    width: 20px;
-    height: 20px;
-    float: left;
+    top: 0;
+    left: 0;
+    position: absolute;
     display: block;
+    width: 18px;
+    height: 18px;
     background: transparent none 50% 50% no-repeat; 
+    text-align: center;
     border: 0;
     border-radius: 0;
-}
-.file-browser .menu-place li button.list-none {
-    background-image: url("img/list/list_none.png"); 
-}
-.file-browser .menu-place li button.list-entry {
+    color: inherit;
     cursor: pointer;
-    background-image: url("img/list/list_down.png");
+    transition: all .3s;
 }
-.file-browser .menu-place li.closed button.list-entry {
-    background-image: url("img/list/list_right.png");
+.file-browser .menu-place li.opened > button {
+    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
+    -webkit-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
 }
 .file-browser .menu-place li a {
     margin-left: 21px;
 }
-.file-browser .menu-place .content-container p {
-    margin: 0;
-    padding-top: 8px;
+.file-browser .menu-place li.active > a {
+    color: inherit;
+    font-weight: bold;
 }
 
 /* messages */
 .file-browser .messages-container {
     margin: 8px 4px;
     overflow: hidden;
-    background: #eee;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(127, 127, 127, 0.4);
     border-radius: 6px;
 }
 .file-browser .messages-container .show-messages-btn { display: none; }
 .file-browser .messages-container.hidden .show-messages-btn { display: block; }
 .file-browser .messages-container .hide-messages-btn { display: block; }
 .file-browser .messages-container.hidden .hide-messages-btn { display: none; }
+.file-browser .messages-container.hidden .messages-list { display: none; }
 
 .file-browser .message-info,
 .file-browser .message-success,
 .file-browser .message-warning,
-.file-browser .message-error,
-.file-browser .message-loading {
-    margin: 4px;
-    padding: 6px;
-    padding-left: 36px;
-    min-height: 24px;
-    line-height: 24px;
-    font-size: 15px;
-    border: 1px solid transparent;
-    overflow: hidden;
-    border-radius: 6px;
+.file-browser .message-error {
+    margin: 10px;
+    padding: 10px;
+    padding-left: 40px;
+    position: relative;
+}
+.file-browser .message-info:before,
+.file-browser .message-success:before,
+.file-browser .message-warning:before,
+.file-browser .message-error:before {
+    top: 50%;
+    left: 0;
+    margin-top: -10px;
+    line-height: 20px;
+    width: 40px;
+    position: absolute;
+    text-align: center;
+    font: normal normal normal 20px/1 FontAwesome;
 }
 .file-browser .message-info {
-    color: #143447;
-    border-color: #388fc4;
-    background: #ebfaff url("img/messages/icon_24_info.png") 6px 50% no-repeat;
+    color: rgb(50, 50, 255);
+    background: rgba(50, 50, 255, 0.2);
+}
+.file-browser .message-info:before {
+    content: "\f05a"; /* fa-info-circle */
 }
 .file-browser .message-success {
-    color: #223205;
-    border-color: #76ae12;
-    background: #f2ffdb url("img/messages/icon_24_tick.png") 6px 50% no-repeat;
+    color: rgb(50, 255, 50);
+    background: rgba(50, 255, 50, 0.2);
+}
+.file-browser .message-success:before {
+    content: "\f058"; /* fa-check-circle */
 }
 .file-browser .message-warning {
-    color: #150c03;
-    border-color: #e47f25;
-    background: #ffeddc url("img/messages/icon_24_warning.png") 6px 50% no-repeat;
+    color: rgb(255, 150, 50);
+    background: rgba(255, 150, 50, 0.2);
+}
+.file-browser .message-warning:before {
+    content: "\f071"; /* fa-warning */
 }
 .file-browser .message-error {
-    color: #390a0a;
-    border-color: #e42626;
-    background: #ffefef url("img/messages/icon_24_error.png") 6px 50% no-repeat;
+    color: rgb(255, 50, 50);
+    background: rgba(255, 50, 50, 0.2);
 }
-.file-browser .message-loading {
-    color: #808080;
-    border-color: #808080;
-    background: #e0e0e0 url("img/messages/icon_32_loading.gif") 2px 50% no-repeat;
+.file-browser .message-error:before {
+    content: "\f057"; /* fa-times-circle */
 }
-
 
 
 .file-browser select option:disabled {
@@ -312,24 +310,24 @@ html.file-browser-default {
 .file-browser .file-block .file-icon {
     text-align: center;
     height: 64px;
-    background: transparent url("img/types/file.png") 50% 50% no-repeat;
+    background: transparent url("img/file.png") 50% 50% no-repeat;
 }
 .file-browser .file-block .file-name {
     margin-top: 4px;
     word-wrap: break-word;
 }
-.file-browser .file-block.previous .file-icon { background-image: url("img/types/previous.png"); }
-.file-browser .file-block.folder .file-icon { background-image: url("img/types/folder.png"); }
+.file-browser .file-block.previous .file-icon { background-image: url("img/previous.png"); }
+.file-browser .file-block.folder .file-icon { background-image: url("img/folder.png"); }
 .file-browser .file-block.file-png .file-icon,
 .file-browser .file-block.file-bmp .file-icon,
 .file-browser .file-block.file-jpeg .file-icon,
 .file-browser .file-block.file-gif .file-icon,
 .file-browser .file-block.file-tiff .file-icon,
 .file-browser .file-block.file-jpg .file-icon,
-.file-browser .file-block.file-png .file-icon { background-image: url("img/types/img.png"); }
+.file-browser .file-block.file-png .file-icon { background-image: url("img/img.png"); }
 .file-browser .file-block.file-mp3 .file-icon,
 .file-browser .file-block.file-wav .file-icon,
-.file-browser .file-block.file-oga .file-icon { background-image: url("img/types/audio.png"); }
+.file-browser .file-block.file-oga .file-icon { background-image: url("img/audio.png"); }
 .file-browser .file-block.file-mp4 .file-icon,
 .file-browser .file-block.file-mpg .file-icon,
 .file-browser .file-block.file-mov .file-icon,
@@ -341,43 +339,46 @@ html.file-browser-default {
 .file-browser .file-block.file-ts .file-icon,
 .file-browser .file-block.file-mkv .file-icon,
 .file-browser .file-block.file-m4v .file-icon,
-.file-browser .file-block.file-avi .file-icon { background-image: url("img/types/video.png"); }
+.file-browser .file-block.file-avi .file-icon { background-image: url("img/video.png"); }
 .file-browser .file-block.file-7z .file-icon,
 .file-browser .file-block.file-bz2 .file-icon,
 .file-browser .file-block.file-deb .file-icon,
 .file-browser .file-block.file-gz .file-icon,
 .file-browser .file-block.file-xz .file-icon,
-.file-browser .file-block.file-zip .file-icon { background-image: url("img/types/zip.png"); }
-.file-browser .file-block.file-exe .file-icon { background-image: url("img/types/exe.png"); }
+.file-browser .file-block.file-zip .file-icon { background-image: url("img/zip.png"); }
+.file-browser .file-block.file-exe .file-icon { background-image: url("img/exe.png"); }
 .file-browser .file-block.file-doc .file-icon,
-.file-browser .file-block.file-docx .file-icon { background-image: url("img/types/doc.png"); }
+.file-browser .file-block.file-docx .file-icon { background-image: url("img/doc.png"); }
 .file-browser .file-block.file-ppt .file-icon,
-.file-browser .file-block.file-pptx .file-icon { background-image: url("img/types/ppt.png"); }
+.file-browser .file-block.file-pptx .file-icon { background-image: url("img/ppt.png"); }
 .file-browser .file-block.file-csv .file-icon,
 .file-browser .file-block.file-tsv .file-icon,
 .file-browser .file-block.file-xls .file-icon,
-.file-browser .file-block.file-xlsx .file-icon { background-image: url("img/types/xls.png"); }
-.file-browser .file-block.file-pdf .file-icon { background-image: url("img/types/pdf.png"); }
-.file-browser .file-block.file-js .file-icon { background-image: url("img/types/js.png"); }
-.file-browser .file-block.file-html .file-icon { background-image: url("img/types/html.png"); }
-.file-browser .file-block.file-xml .file-icon { background-image: url("img/types/xml.png"); }
-.file-browser .file-block.file-py .file-icon { background-image: url("img/types/py.png"); }
+.file-browser .file-block.file-xlsx .file-icon { background-image: url("img/xls.png"); }
+.file-browser .file-block.file-pdf .file-icon { background-image: url("img/pdf.png"); }
+.file-browser .file-block.file-js .file-icon { background-image: url("img/js.png"); }
+.file-browser .file-block.file-html .file-icon { background-image: url("img/html.png"); }
+.file-browser .file-block.file-xml .file-icon { background-image: url("img/xml.png"); }
+.file-browser .file-block.file-py .file-icon { background-image: url("img/py.png"); }
 .file-browser .file-block.file-cnf .file-icon,
 .file-browser .file-block.file-conf .file-icon,
 .file-browser .file-block.file-ini .file-icon,
 .file-browser .file-block.file-log .file-icon,
-.file-browser .file-block.file-txt .file-icon { background-image: url("img/types/txt.png"); }
+.file-browser .file-block.file-txt .file-icon { background-image: url("img/txt.png"); }
 .file-browser .file-block.file-sql .file-icon,
-.file-browser .file-block.file-db .file-icon { background-image: url("img/types/db.png"); }
+.file-browser .file-block.file-db .file-icon { background-image: url("img/db.png"); }
 
 .file-browser .file-block .file-delete,
 .file-browser .file-block .file-rename,
 .file-browser .file-block .file-move {
+    padding: 0;
     top: 4px;
     right: 4px;
     width: 24px;
     height: 24px;
+    line-height: 22px;
     position: absolute;
+    text-align: center;
     display: none;
 }
 .file-browser .file-block:hover .file-delete,
@@ -385,16 +386,11 @@ html.file-browser-default {
 .file-browser .file-block:hover .file-move {
     display: block;
 }
-.file-browser .file-block .file-delete {
-    background-image: url("img/icons/delete.png");
-}
 .file-browser .file-block .file-rename {
     top: 32px;
-    background-image: url("img/icons/edit.png");
 }
 .file-browser .file-block .file-move {
     right: 32px;
-    background-image: url("img/icons/move.png");
 }
 
 .file-browser .file-block .file-info {
@@ -416,11 +412,6 @@ html.file-browser-default {
 .file-browser .file-block:hover .file-info:hover {
     display: none;
 }
-
-
-.file-browser .buttons-bar .btn-add-folder,
-.file-browser .buttons-bar .btn-add-file { background-image: url("img/icons/add.png"); }
-.file-browser .buttons-bar .btn-search { background-image: url("img/icons/search.png"); }
 
 #fm_drop_zone {
     top: 36px;
@@ -474,9 +465,9 @@ html.file-browser-default {
     margin-bottom: 10px;
 }
 .file-browser-overlay .search-results p {
-    margin: 5px -10px;
+    margin: 5px 0;
     padding: 4px 10px;
-    background: rgba(128, 128, 128, 0.25);
+    background: rgba(127, 127, 127, 0.25);
 }
 .file-browser-overlay .search-results ul {
     margin: 5px 10px 10px 20px;

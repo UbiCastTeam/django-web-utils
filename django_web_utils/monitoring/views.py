@@ -6,9 +6,8 @@ import os
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
-from django.http import Http404
+from django.http import JsonResponse, Http404
 from django.shortcuts import render
-from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
 # Django web utils
 from django_web_utils import json_utils
@@ -22,23 +21,21 @@ logger = logging.getLogger('djwutils.monitoring.views')
 @login_required
 def check_password(request):
     if not request.user.is_superuser:
-        return json_utils.response_403(message=str(_('You don\'t have the permission to access this url.')), error='perm')
+        return JsonResponse(error=_('You don\'t have the permission to access this url.'), code='perm', status=403)
     if request.method == 'POST':
         # check that password is OK
         pwd = request.POST.get('data')
         if not pwd:
-            return json_utils.failure_response(message=str(_('Please enter password.')), error='nopwd')
+            return JsonResponse(dict(error=_('Please enter password.'), code='nopwd'), status=400)
         success, output = system_utils.execute_command('echo \'test\'', user='root', pwd=pwd)
         if success:
             request.session['pwd'] = pwd
-            return json_utils.success_response()
+            return JsonResponse(dict(pwd_ok=True))
         else:
-            return json_utils.failure_response(message=str(_('Invalid password.')), error='wpwd')
+            return JsonResponse(dict(error=_('Invalid password.'), code='wpwd'), status=400)
     else:
         pwd = request.session.get('pwd')
-        if not pwd:
-            return json_utils.failure_response(message=str(_('Please enter password.')), error='nopwd')
-        return json_utils.success_response()
+        return JsonResponse(dict(pwd_ok=bool(pwd)))
 
 
 @login_required
@@ -84,7 +81,7 @@ def monitoring_status(request):
         if not config.can_access_daemon(daemon, request):
             raise PermissionDenied()
         data[name] = utils.get_daemon_status(request, daemon, date_adjust_fct=date_adjust_fct)
-    return json_utils.success_response(**data)
+    return JsonResponse(data)
 
 
 @json_utils.json_view(methods='POST')
@@ -103,7 +100,7 @@ def monitoring_command(request):
         all_daemons = False
         names = [name]
 
-    message = ''
+    msgs = list()
     for name in names:
         daemon = info.DAEMONS.get(name)
         if not config.can_control_daemon(daemon, request):
@@ -112,21 +109,23 @@ def monitoring_command(request):
             if all_daemons:
                 continue
             success = False
-            msg = '%s %s' % (_('Invalid daemon name:'), name)
+            out = '%s %s' % (_('Invalid daemon name:'), name)
         else:
             if command in ('start', 'restart') and daemon.get('only_stop'):
                 continue
             else:
-                success, msg = utils.execute_daemon_command(request, daemon, command)
+                success, out = utils.execute_daemon_command(request, daemon, command)
         if success:
             text = _('Command "%(cmd)s" on "%(name)s" successfully executed.')
         else:
             text = _('Command "%(cmd)s" on "%(name)s" failed.')
-        message += '<div class="messages"><div class="message %s">%s</div></div>' % ('success' if success else 'error', escape(str(text % dict(cmd=command, name=name))))
-        if msg:
-            message += '<div><b>%s</b><br/>\n' % _('Command output:')
-            message += '<pre>%s</pre></div>' % escape(msg)
-    return json_utils.success_response(message=message)
+        msgs.append(dict(
+            name=name,
+            level='success' if success else 'error',
+            text=text % dict(cmd=command, name=name),
+            out=out,
+        ))
+    return JsonResponse(dict(messages=msgs))
 
 
 @login_required

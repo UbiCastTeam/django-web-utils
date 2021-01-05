@@ -5,14 +5,13 @@ import datetime
 import logging
 import os
 # Django
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
 from django.templatetags.static import static
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 # Django web utils
-from django_web_utils import json_utils
-from django_web_utils.files_utils import get_unit
 from django_web_utils.file_browser import config
+from django_web_utils.files_utils import get_unit
 
 logger = logging.getLogger('djwutils.file_browser.views')
 
@@ -55,9 +54,10 @@ def storage_dirs(request, namespace=None):
     base_path = config.get_base_path(namespace)
 
     if not os.path.exists(base_path):
-        return json_utils.failure_response(message=str(_('Folder "%s" does not exist.') % base_path))
+        return JsonResponse(dict(error=_('Folder "%s" does not exist.') % base_path), status=400)
 
-    return json_utils.success_response(dirs=recursive_dirs(base_path))
+    dirs = [dict(dir_name=_('Root folder'), sub_dirs=recursive_dirs(base_path))]
+    return JsonResponse(dict(dirs=dirs))
 
 
 # storage_content
@@ -83,18 +83,17 @@ def get_info(path):
 @config.view_decorator
 def storage_content(request, namespace=None):
     base_path = config.get_base_path(namespace)
-    path = request.GET.get('path')
+    path = request.GET.get('path', '').strip('/')
     folder_path = base_path if not path else os.path.join(base_path, path)
-    folder_path = folder_path
 
     if not os.path.exists(folder_path):
-        return json_utils.failure_response(message=str(_('Folder "%s" does not exist') % path))
+        return JsonResponse(dict(error=_('Folder "%s" does not exist') % path), status=400)
 
     try:
         files_names = os.listdir(folder_path)
     except OSError as e:
         logger.error(e)
-        return json_utils.failure_response(message=str(e))
+        return JsonResponse(dict(error=str(e)), status=400)
     if '.htaccess' in files_names:
         files_names.remove('.htaccess')
 
@@ -113,14 +112,14 @@ def storage_content(request, namespace=None):
         file_properties = {
             'name': file_name,
             'size': size,
-            'sizeh': '%s %s' % get_unit(size),
-            'isdir': False,
+            'size_h': '%s %s' % get_unit(size),
+            'is_dir': False,
             'nb_files': nb_files,
             'nb_dirs': nb_dirs,
         }
         if os.path.isdir(current_path):
             total_nb_dirs += 1
-            file_properties['isdir'] = True
+            file_properties['is_dir'] = True
             files.insert(folder_index, file_properties)
             folder_index += 1
         elif os.path.isfile(current_path):
@@ -141,38 +140,38 @@ def storage_content(request, namespace=None):
     order = request.GET.get('order', 'name-asc')
     if order.startswith('size'):
         if order.endswith('asc'):
-            files.sort(key=lambda f: (not f['isdir'], f['size']))
+            files.sort(key=lambda f: (not f['is_dir'], f['size']))
         else:
-            files.sort(key=lambda f: (f['isdir'], f['size']))
+            files.sort(key=lambda f: (f['is_dir'], f['size']))
             files.reverse()
     elif order.startswith('mdate'):
         if order.endswith('asc'):
-            files.sort(key=lambda f: (not f['isdir'], f.get('mdate')))
+            files.sort(key=lambda f: (not f['is_dir'], f.get('mdate')))
         else:
-            files.sort(key=lambda f: (f['isdir'], f.get('mdate')))
+            files.sort(key=lambda f: (f['is_dir'], f.get('mdate')))
             files.reverse()
     else:
         if order.endswith('asc'):
-            files.sort(key=lambda f: (not f['isdir'], f['name'].lower()))
+            files.sort(key=lambda f: (not f['is_dir'], f['name'].lower()))
         else:
-            files.sort(key=lambda f: (f['isdir'], f['name'].lower()))
+            files.sort(key=lambda f: (f['is_dir'], f['name'].lower()))
             files.reverse()
 
     if path:
         files.insert(0, {
             'name': 'parent',
             'formated_name': '← %s' % _('Parent folder'),
-            'isdir': True,
+            'is_dir': True,
             'isprevious': True,
         })
 
-    return json_utils.success_response(
+    return JsonResponse(dict(
         files=files,
-        path=path,
+        path='/' + path,
         total_size=total_size,
         total_nb_dirs=total_nb_dirs,
         total_nb_files=total_nb_files,
-    )
+    ))
 
 
 # storage_img_preview
@@ -180,21 +179,19 @@ def storage_content(request, namespace=None):
 @config.view_decorator
 def storage_img_preview(request, namespace=None):
     base_path = config.get_base_path(namespace)
-    path = request.GET.get('path')
-    if path.startswith('/'):
-        path = path[1:]
+    path = request.GET.get('path', '').strip('/')
     if not path:
-        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
+        return HttpResponseRedirect(static('file_browser/img/img.png'))
     file_path = os.path.join(base_path, path)
     if not os.path.exists(file_path):
-        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
+        return HttpResponseRedirect(static('file_browser/img/img.png'))
 
     try:
         image = Image.open(file_path)
         image.load()
         image.thumbnail((200, 64), Image.ANTIALIAS)
     except Exception:
-        return HttpResponseRedirect(static('file_browser/img/types/img.png'))
+        return HttpResponseRedirect(static('file_browser/img/img.png'))
 
     if file_path.lower().endswith('jpg') or file_path.lower().endswith('jpeg'):
         response = HttpResponse(content_type='image/jpeg')
