@@ -495,7 +495,7 @@ FileBrowser.prototype.addFolder = function () {
 
     const obj = this;
     this.overlay.show({
-        title: jsu.translate('Add a folder in') + ' "' + jsu.translate('root') + '/' + this.path + '"',
+        title: jsu.translate('Add a folder in') + ' "' + jsu.translate('root') + this.path + '"',
         html: this.folderForm,
         buttons: [
             { label: jsu.translate('Add'), callback: function () {
@@ -527,7 +527,7 @@ FileBrowser.prototype.addFile = function () {
 
     const obj = this;
     this.overlay.show({
-        title: jsu.translate('Add a file in') + ' "' + jsu.translate('root') + '/' + this.path + '"',
+        title: jsu.translate('Add a file in') + ' "' + jsu.translate('root') + this.path + '"',
         html: this.uploadForm,
         buttons: [
             { label: jsu.translate('Add'), callback: function () {
