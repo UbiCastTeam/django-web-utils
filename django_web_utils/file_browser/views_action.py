@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import errno
 import os
 import re
 import shutil
@@ -79,16 +78,15 @@ def storage_action(request, namespace=None):
                 dir_path = base_path
             dir_path = dir_path
             # create upload folder
-            if not os.path.exists(dir_path):
-                try:
-                    os.makedirs(dir_path)
-                except Exception as e:
-                    msg = '%s %s' % (_('Failed to create folder:'), e)
-                    if action == 'upload_single':
-                        messages.error(request, msg)
-                        return HttpResponseRedirect('%s#/%s' % (red_url, path))
-                    else:
-                        return JsonResponse(dict(error=msg), status=400)
+            try:
+                os.makedirs(dir_path, exist_ok=True)
+            except Exception as e:
+                msg = '%s %s' % (_('Failed to create folder:'), e)
+                if action == 'upload_single':
+                    messages.error(request, msg)
+                    return HttpResponseRedirect('%s#/%s' % (red_url, path))
+                else:
+                    return JsonResponse(dict(error=msg), status=400)
             # execute action
             if len(list(request.FILES.keys())) == 1:
                 msg = _('The file has been uploaded and is available at the location:')
@@ -132,12 +130,9 @@ def storage_action(request, namespace=None):
             else:
                 target = os.path.join(base_path, name)
             try:
-                os.makedirs(target)
-            except OSError as e:
-                if e.errno == errno.EEXIST:
-                    return JsonResponse(dict(message=_('Folder already exists.')))
-                else:
-                    return JsonResponse(dict(error='%s %s' % (_('Failed to create folder.'), e)), status=400)
+                os.makedirs(target, exist_ok=True)
+            except Exception as e:
+                return JsonResponse(dict(error='%s %s' % (_('Failed to create folder:'), e)), status=400)
             return JsonResponse(dict(message=_('Folder created.')))
 
         # actions on several files form

@@ -45,7 +45,7 @@ class ProtectedFileField(dj_forms.FileField):
             return None
         if ufile:
             if not os.path.exists(os.path.dirname(upload_to)):
-                os.makedirs(os.path.dirname(upload_to))
+                os.makedirs(os.path.dirname(upload_to), exist_ok=True)
                 tmp_path = upload_to + '.tmp'
             else:
                 number = 0

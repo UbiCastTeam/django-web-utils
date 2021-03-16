@@ -20,8 +20,7 @@ def _add_to_zip(zip_file, path, ignored=None, path_in_zip=None):
 
 
 def add_to_zip(path, zip_path, ignored=None, prefix=None, append=True):
-    if not os.path.exists(os.path.dirname(zip_path)):
-        os.makedirs(os.path.dirname(zip_path))
+    os.makedirs(os.path.dirname(zip_path), exist_ok=True)
 
     if append and os.path.exists(zip_path):
         zip_file = zipfile.ZipFile(zip_path, 'a')
@@ -59,11 +58,10 @@ def unzip(path, zip_path=None, zip_file=None):
         if zip_test:
             return False, 'CRC error on zip file. Error detected on: %s' % zip_test
         # create destination path
-        if not os.path.exists(os.path.dirname(path)):
-            try:
-                os.makedirs(os.path.dirname(path))
-            except Exception as e:
-                return False, 'Cannot create folder "%s". Error is: %s' % (path, e)
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+        except Exception as e:
+            return False, 'Cannot create folder "%s". Error is: %s' % (path, e)
         # extract files
         used_zip_file.extractall(path)
         return True, ''

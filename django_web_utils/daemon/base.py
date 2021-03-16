@@ -132,8 +132,7 @@ class BaseDaemon(object):
             if value != self.DEFAULTS.get(key):
                 content += key + ' = ' + self.config[key] + '\n'
         try:
-            if not os.path.exists(os.path.dirname(self.get_conf_path())):
-                os.makedirs(os.path.dirname(self.get_conf_path()))
+            os.makedirs(os.path.dirname(self.get_conf_path()), exist_ok=True)
             with open(self.get_conf_path(), 'w+') as fo:
                 fo.write(content)
         except Exception:
@@ -205,13 +204,10 @@ class BaseDaemon(object):
         self._django_setup_done = True
 
     def _setup_logging(self):
-        if not os.path.exists(self.LOG_DIR):
-            try:
-                os.makedirs(self.LOG_DIR)
-            except Exception:
-                pass
-        if not os.path.isdir(self.LOG_DIR):
-            print('Cannot create log directory %s' % self.LOG_DIR, file=sys.stderr)
+        try:
+            os.makedirs(self.LOG_DIR, exist_ok=True)
+        except Exception as e:
+            print('Cannot create log directory %s: %s' % (self.LOG_DIR, e), file=sys.stderr)
             self.exit(131)
 
         loggers = logging.Logger.manager.loggerDict
@@ -284,8 +280,7 @@ class BaseDaemon(object):
         '''write pid into pidfile'''
         pid_dir = os.path.dirname(self.get_pid_path())
         try:
-            if not os.path.exists(pid_dir):
-                os.makedirs(pid_dir)
+            os.makedirs(pid_dir, exist_ok=True)
             with open(self.get_pid_path(), 'w+') as fo:
                 fo.write(str(os.getpid()))
         except Exception as e:

@@ -16,8 +16,7 @@ logger = logging.getLogger('djwutils.daemon.lock')
 
 def acquire_lock(path, timeout=None):
     # timeout can be None or a timedelta object
-    if not os.path.exists(os.path.dirname(path)):
-        os.makedirs(os.path.dirname(path))
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     hostname = socket.gethostname()
     try:
         mtime = os.path.getmtime(path)

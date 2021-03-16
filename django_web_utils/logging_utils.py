@@ -7,8 +7,7 @@ logger = logging.getLogger('djwutils.logging_utils')
 
 
 def get_generic_logging_config(logs_dir, debug):
-    if not os.path.exists(logs_dir):
-        os.makedirs(logs_dir)
+    os.makedirs(logs_dir, exist_ok=True)
 
     if os.environ.get('DJANGO_LOGGING') == 'none':
         return {}
