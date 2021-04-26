@@ -44,7 +44,11 @@ def clean_file_name(name):
 @config.view_decorator
 def storage_action(request, namespace=None):
     base_path = config.get_base_path(namespace)
+    if not base_path:
+        return JsonResponse(dict(error=_('No base path defined in configuration.')), status=400)
     base_url = config.get_base_url(namespace)
+    if not base_url:
+        return JsonResponse(dict(error=_('No base url defined in configuration.')), status=400)
     if request.method == 'POST':
         # actions using post method
         action = request.POST.get('action')
@@ -102,10 +106,10 @@ def storage_action(request, namespace=None):
                         fo.write(chunk)
                 # get url
                 if path:
-                    url = base_url + path + '/' + file_name
+                    url = base_url + '/' + path + '/' + file_name
                 else:
-                    url = base_url + file_name
-                msg += ' <br/><a href="%s">%s://%s%s</a>' % (url, 'https' if request.is_secure() else 'http', request.get_host(), url)
+                    url = base_url + '/' + file_name
+                msg += ' <br/><a target="_blank" rel="noopener noreferrer" href="%s">%s://%s%s</a>' % (url, 'https' if request.is_secure() else 'http', request.get_host(), url)
             if action == 'upload_single':
                 messages.success(request, msg)
                 return HttpResponseRedirect('%s#/%s' % (red_url, path))

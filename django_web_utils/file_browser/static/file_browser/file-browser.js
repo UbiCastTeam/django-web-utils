@@ -263,7 +263,7 @@ FileBrowser.prototype.parseContentResponse = function (req, response) {
             } else {
                 fclass = 'file-' + file.ext;
                 file.url = this.baseURL + this.path + file.name;
-                target = 'target="_blank"';
+                target = 'target="_blank" rel="noopener noreferrer"';
             }
             const entryEle = document.createElement('div');
             entryEle.setAttribute('class', 'file-block ' + fclass);
@@ -801,10 +801,10 @@ FileBrowser.prototype.search = function () {
                             for (let i = 0; i < response.dirs.length; i++) {
                                 dirsFound = true;
                                 const dir = response.dirs[i];
-                                html += '<p><a class="dir-link" href="#' + dir.url + '">' + jsu.translate('root') + '/' + dir.url + '</a></p>';
+                                html += '<p><a class="dir-link" href="#/' + dir.url + '">' + jsu.translate('root') + '/' + dir.url + '</a></p>';
                                 html += '<ul>';
                                 for (let j = 0; j < dir.files.length; j++) {
-                                    html += '<li><a href="' + obj.baseURL + dir.url + dir.files[j] + '">' + dir.url + dir.files[j] + '</a></li>';
+                                    html += '<li><a target="_blank" rel="noopener noreferrer" href="' + obj.baseURL + '/' + dir.url + dir.files[j] + '">' + dir.url + dir.files[j] + '</a></li>';
                                 }
                                 html += '</ul>';
                             }
@@ -813,7 +813,12 @@ FileBrowser.prototype.search = function () {
                     }
                     obj.searchForm.querySelector('#search_results').innerHTML = html;
                     if (dirsFound) {
-                        obj.searchForm.querySelector('#search_results a.dir-link').addEventListener('click', obj.overlay.hide);
+                        const links = obj.searchForm.querySelectorAll('#search_results a.dir-link');
+                        for (let i = 0; i < links.length; i++) {
+                            links[i].addEventListener('click', function () {
+                                obj.overlay.hide();
+                            });
+                        }
                     }
                 }
             });

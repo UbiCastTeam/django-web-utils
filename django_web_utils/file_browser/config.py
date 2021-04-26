@@ -32,6 +32,6 @@ def get_base_url(namespace=None):
         url = getattr(settings, 'FILE_BROWSER_DIRS')[namespace][1]
     else:
         url = getattr(settings, 'FILE_BROWSER_BASE_URL')
-    if not url.endswith('/'):
-        url += '/'
+    if url.endswith('/'):
+        url = url.rstrip('/')
     return url

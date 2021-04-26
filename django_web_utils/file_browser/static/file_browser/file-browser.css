@@ -366,7 +366,9 @@ html.file-browser-default {
 .file-browser .file-block.file-log .file-icon,
 .file-browser .file-block.file-txt .file-icon { background-image: url("img/txt.png"); }
 .file-browser .file-block.file-sql .file-icon,
-.file-browser .file-block.file-db .file-icon { background-image: url("img/db.png"); }
+.file-browser .file-block.file-db .file-icon,
+.file-browser .file-block.file-kdb .file-icon,
+.file-browser .file-block.file-kdbx .file-icon { background-image: url("img/db.png"); }
 
 .file-browser .file-block .file-delete,
 .file-browser .file-block .file-rename,
