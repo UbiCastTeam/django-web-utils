@@ -33,7 +33,7 @@ def _export_as_csv_action(description=_('Export selected objects as CSV file'), 
             excludeset = set(exclude)
             field_names = field_names - excludeset
 
-        response = HttpResponse(content_type='text/csv')
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
         response['Content-Disposition'] = 'attachment; filename=export.csv'
 
         writer = csv.writer(response)

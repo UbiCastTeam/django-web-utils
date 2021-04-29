@@ -10,5 +10,5 @@ class AllowEmptyContentTypePost(object):
 
     def process_request(self, request):
         if request.method == 'POST' and ('CONTENT_TYPE' not in request.META or request.META['CONTENT_TYPE'] == 'text/plain'):
-            request.META['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
+            request.META['CONTENT_TYPE'] = 'application/x-www-form-urlencoded; charset=utf-8'
         return None

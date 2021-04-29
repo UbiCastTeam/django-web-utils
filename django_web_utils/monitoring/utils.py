@@ -126,7 +126,7 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
             if 'raw' in request.GET:
                 # Get raw content
                 statobj = os.stat(path)
-                response = FileResponse(open(path, 'rb'), content_type='text/plain')
+                response = FileResponse(open(path, 'rb'), content_type='text/plain; charset=utf-8')
                 response['Last-Modified'] = http_date(statobj.st_mtime)
                 if stat.S_ISREG(statobj.st_mode):
                     response['Content-Length'] = statobj.st_size
@@ -208,7 +208,7 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
             if 'raw' in request.GET:
                 # Get raw content
                 statobj = os.stat(path)
-                response = FileResponse(open(path, 'rb'), content_type='text/plain')
+                response = FileResponse(open(path, 'rb'), content_type='text/plain; charset=utf-8')
                 response['Last-Modified'] = http_date(statobj.st_mtime)
                 if stat.S_ISREG(statobj.st_mode):
                     response['Content-Length'] = statobj.st_size

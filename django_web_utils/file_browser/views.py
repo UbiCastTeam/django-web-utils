@@ -194,9 +194,9 @@ def storage_img_preview(request, namespace=None):
         return HttpResponseRedirect(static('file_browser/img/img.png'))
 
     if file_path.lower().endswith('jpg') or file_path.lower().endswith('jpeg'):
-        response = HttpResponse(content_type='image/jpeg')
+        response = HttpResponse(content_type='image/jpeg; charset=utf-8')
         image.save(response, 'JPEG', quality=85)
     else:
-        response = HttpResponse(content_type='image/png')
+        response = HttpResponse(content_type='image/png; charset=utf-8')
         image.save(response, 'PNG')
     return response

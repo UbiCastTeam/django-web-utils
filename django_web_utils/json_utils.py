@@ -34,9 +34,9 @@ def response(*args, **kwargs):
     code = kwargs.pop('code', 200)
     if args:
         if len(args) == 1:
-            return HttpResponse(json.dumps(args[0]), content_type='application/json', status=code)
-        return HttpResponse(json.dumps(args), content_type='application/json', status=code)
-    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=code)
+            return HttpResponse(json.dumps(args[0]), content_type='application/json; charset=utf-8', status=code)
+        return HttpResponse(json.dumps(args), content_type='application/json; charset=utf-8', status=code)
+    return HttpResponse(json.dumps(kwargs), content_type='application/json; charset=utf-8', status=code)
 
 
 # success_response function
@@ -49,7 +49,7 @@ def success_response(*args, **kwargs):
             kwargs['data'] = args[0]
         else:
             kwargs['data'] = args
-    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=code)
+    return HttpResponse(json.dumps(kwargs), content_type='application/json; charset=utf-8', status=code)
 
 
 # failure_response function
@@ -62,7 +62,7 @@ def failure_response(*args, **kwargs):
             kwargs['data'] = args[0]
         else:
             kwargs['data'] = args
-    return HttpResponse(json.dumps(kwargs), content_type='application/json', status=code)
+    return HttpResponse(json.dumps(kwargs), content_type='application/json; charset=utf-8', status=code)
 
 
 # json_view decorator
@@ -78,7 +78,7 @@ def json_view(function=None, methods=None, login_required=False):
             # Check request method
             if methods and request.method not in methods:
                 data = dict(error='%s (405)' % _('Invalid request method'))
-                response = HttpResponse(json.dumps(data), content_type='application/json', status=405)
+                response = HttpResponse(json.dumps(data), content_type='application/json; charset=utf-8', status=405)
                 response['Allow'] = methods
                 return response
             # Process view
