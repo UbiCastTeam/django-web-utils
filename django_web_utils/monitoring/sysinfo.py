@@ -4,6 +4,7 @@
 System information
 '''
 import os
+import re
 import subprocess
 import sys
 # Django
@@ -22,16 +23,18 @@ def _additional_translations():
 
 
 def _get_output(cmd):
+    env = dict(os.environ)
+    env['LANG'] = 'C.UTF-8'
+    env['LC_ALL'] = 'C.UTF-8'
     try:
-        p = subprocess.run(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=not isinstance(cmd, list))
+        p = subprocess.run(cmd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
     except Exception as e:
         return str(e).strip()
-    return p.stdout.decode('utf-8').strip()
+    return p.stdout.strip()
 
 
 def get_system_info(package=None, module=None, extra=None):
     # This function returns data for the sysinfo.html template
-    os.environ['LANG'] = 'C'
     tplt_args = dict(info_sections=list())
     # Project version
     version, revision, local_repo = get_version(package, module)
@@ -113,21 +116,18 @@ def get_system_info(package=None, module=None, extra=None):
     tplt_args['info_sections'].append(dict(label=_('CPU'), info=tplt_args['info_cpu']))
     # GPU
     tplt_args['info_gpu'] = []
-    gpu_model = _get_output('lspci | grep VGA').split(':')[-1].strip()
-    if len(gpu_model) > 60 and '\n' not in gpu_model:
-        # add line return
-        min_ind = int(len(gpu_model) / 2) - 10
-        index = gpu_model[min_ind:].find(' ')
-        if index >= 0:
-            gpu_model = gpu_model[:min_ind + index] + '\n' + gpu_model[min_ind + index + 1:]
+    gpu_model = None
+    lspci = _get_output(['lspci'])
+    if 'VGA' in lspci:
+        vga_re = re.search(r'.+VGA.+:(.+)', lspci)
+        gpu_model = vga_re.groups()[0].strip()
+        if len(gpu_model) > 60 and '\n' not in gpu_model:
+            # add line return
+            min_ind = int(len(gpu_model) / 2) - 10
+            index = gpu_model[min_ind:].find(' ')
+            if index >= 0:
+                gpu_model = gpu_model[:min_ind + index] + '\n' + gpu_model[min_ind + index + 1:]
     tplt_args['info_gpu'].append(dict(label=_('Model'), value=gpu_model or '?'))
-    gpu_temp = _get_output('nvidia-settings -q GPUCoreTemp | grep Attribute').split(':')[-1].strip(' .')
-    try:
-        int(gpu_temp)
-        gpu_temp += ' °C'
-    except ValueError:
-        pass
-    tplt_args['info_gpu'].append(dict(label=_('Temperature'), value=gpu_temp or '?'))
     tplt_args['info_sections'].append(dict(label=_('GPU'), info=tplt_args['info_gpu']))
     # Memory
     meminfo_file = _get_output(['cat', '/proc/meminfo'])
