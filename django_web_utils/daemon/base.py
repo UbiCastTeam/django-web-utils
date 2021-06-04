@@ -49,9 +49,9 @@ class BaseDaemon(object):
             # Set env
             # get daemon script path before changing dir
             self.daemon_path = os.path.join(os.getcwd(), sys.argv[0])
-            os.environ['LANG'] = 'C'
+            os.environ['LANG'] = 'C.UTF-8'
+            os.environ['LC_ALL'] = 'C.UTF-8'
             os.chdir('/')  # to avoid wrong imports
-            self._django_setup_done = False
             # Get config
             self.config = dict()
             self.load_config()
@@ -125,20 +125,6 @@ class BaseDaemon(object):
                 self.config[key] = cfg.__dict__[key]
         return True
 
-    def save_config(self):
-        # get modified keys
-        content = ''
-        for key, value in self.config.items():
-            if value != self.DEFAULTS.get(key):
-                content += key + ' = ' + self.config[key] + '\n'
-        try:
-            os.makedirs(os.path.dirname(self.get_conf_path()), exist_ok=True)
-            with open(self.get_conf_path(), 'w+') as fo:
-                fo.write(content)
-        except Exception:
-            return False
-        return True
-
     def _run_command(self):
         if self._command in ('restart', 'stop'):
             # check if daemon is already launched
@@ -177,6 +163,7 @@ class BaseDaemon(object):
                     daemonize(redirect_to=self.get_log_path() if self._log_in_file else None)
                 if not self._simultaneous:
                     self._write_pid()
+                self._setup_sys_path()
                 if self.NEED_DJANGO and self.SETTINGS_MODULE:
                     self._setup_django()
                 self._setup_logging()
@@ -185,23 +172,25 @@ class BaseDaemon(object):
         else:
             self.exit(0)
 
+    def _setup_sys_path(self):
+        if self.SERVER_DIR and os.path.isdir(self.SERVER_DIR):
+            # Remove current file directory from sys.path to avoid incorrect imports
+            if '.' in sys.path:
+                sys.path.remove('.')
+            if '' in sys.path:
+                sys.path.remove('')
+            if self.SERVER_DIR not in sys.path:
+                sys.path.append(self.SERVER_DIR)
+
     def _setup_django(self):
-        if self._django_setup_done:
-            return
         # set django settings, so that django modules can be imported
-        if self.SERVER_DIR and os.path.isdir(self.SERVER_DIR) and self.SERVER_DIR not in sys.path:
-            sys.path.append(self.SERVER_DIR)
-        if not os.environ.get('DJANGO_SETTINGS_MODULE') or os.environ.get('DJANGO_SETTINGS_MODULE') != self.SETTINGS_MODULE:
+        if os.environ.get('DJANGO_SETTINGS_MODULE') != self.SETTINGS_MODULE:
             # if the DJANGO_SETTINGS_MODULE is already set,
             # the logging will not be changed to avoid possible
             # impact on the server which called this script.
             os.environ['DJANGO_SETTINGS_MODULE'] = self.SETTINGS_MODULE
         import django
-        try:
-            django.setup()
-        except Exception as e:
-            logger.warning('Django setup failed: %s', e)
-        self._django_setup_done = True
+        django.setup()
 
     def _setup_logging(self):
         try:
@@ -332,10 +321,12 @@ class BaseDaemon(object):
             logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.', e)
 
         # execute restart command (if the daemon was not daemonized it will become so)
-        cmd = 'python3 %s restart %s' % (self.daemon_path, ' '.join(argv))
-        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        out = p.stdout.decode('utf-8').strip()
-        err = p.stderr.decode('utf-8').strip()
+        cmd = ['python3', self.daemon_path, 'restart']
+        if argv:
+            cmd.extend(argv)
+        p = subprocess.run(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+        out = p.stdout.strip()
+        err = p.stderr.strip()
         logger.debug('Restarting daemon.\n    Command: %s\n    Stdout: %s\n    Stderr: %s', cmd, out, err)
         if p.returncode != 0:
             logger.error('Error when restarting daemon:\n    %s', err)
