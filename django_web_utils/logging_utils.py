@@ -78,9 +78,9 @@ class IgnoreTimeoutErrors(logging.Filter):
             UnreadablePostError: error during read(---) on wsgi.input
         '''
         try:
-            err_class = record.exc_info[0].__name__
+            err_class = record.exc_info[0].__name__ if record.exc_info is not None else 'None'
         except Exception as e:
-            logger.error('Failed to parse error type: %s', e)
+            logger.error('IgnoreTimeoutErrors: Failed to parse error type: %s (record: %s).', e, record)
             return True
         else:
             return err_class != 'UnreadablePostError'
@@ -97,9 +97,9 @@ class IgnoreDatabaseErrors(logging.Filter):
             OperationalError: SSL SYSCALL error: EOF detected
         '''
         try:
-            err_class = record.exc_info[0].__name__
+            err_class = record.exc_info[0].__name__ if record.exc_info is not None else 'None'
         except Exception as e:
-            logger.error('Failed to parse error type: %s', e)
+            logger.error('IgnoreDatabaseErrors: Failed to parse error type: %s (record: %s).', e, record)
             return True
         else:
             return err_class != 'OperationalError'
@@ -114,12 +114,12 @@ class IgnoreNoSpaceLeftErrors(logging.Filter):
             OSError [Errno 28] No space left on device: ...
         '''
         try:
-            err_class = record.exc_info[0].__name__
+            err_class = record.exc_info[0].__name__ if record.exc_info is not None else 'None'
             if err_class == 'OSError':
                 import errno
                 error = record.exc_info[1]
                 return error.errno != errno.ENOSPC
             return True
         except Exception as e:
-            logger.error('Failed to parse error type: %s', e)
+            logger.error('IgnoreNoSpaceLeftErrors: Failed to parse error type: %s (record: %s).', e, record)
             return True
