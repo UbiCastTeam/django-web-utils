@@ -6,9 +6,23 @@ The daemons can be built from the BaseDaemon class or not.
 
 ## Optional settings
 
+`MONITORING_NAMESPACE`:
+The namespace to use to build links.
+Default is `monitoring`.
+
+To include urls, add this line to your `urls.py`:
+
+``` python
+from django.conf.urls import include
+from django.urls import re_path
+
+# ...
+re_path(r'^monitoring/', include(('django_web_utils.monitoring.urls', 'monitoring'), namespace='monitoring')),
+```
+
 `MONITORING_BASE_TEMPLATE`:
 The template to use for the browser base page.
-This template must import jquery.js, utils.js, odm.css and odm.js.
+This template must import jquery.js, jsu.js, odm.css and odm.js.
 It must contain this include tag:
 
 ```

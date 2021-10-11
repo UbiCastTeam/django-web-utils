@@ -45,8 +45,8 @@
                 <td><span class="daemon-log-size"></span></td>
                 <td class="nowrap">
                     {% if not daemon.only_conf %}
-                        <a href="{% url 'monitoring-log' daemon.name %}"><button type="button">{% trans "See" %}</button></a>
-                        <a href="{% url 'monitoring-log' daemon.name %}?tail"><button type="button">{% trans "See tail" %}</button></a>
+                        <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}"><button type="button">{% trans "See" %}</button></a>
+                        <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}?tail"><button type="button">{% trans "See tail" %}</button></a>
                         <button type="button" class="daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
                     {% endif %}
                 </td>
@@ -61,7 +61,7 @@
                         {% endif %}
                     {% endif %}
                     {% if daemon.conf_path %}
-                        <a href="{% url 'monitoring-config' daemon.name %}" title="{% trans 'Edit configuration' %}"><button type="button">⚙</button></a>
+                        <a href="{% url monitoring_namespace|add:':monitoring-config' daemon.name %}" title="{% trans 'Edit configuration' %}"><button type="button">⚙</button></a>
                     {% endif %}
                 </td>
             </tr>
@@ -81,9 +81,9 @@
         {% endfor %}
             { name: "all" }
         ],
-        commandsURL: "{% url 'monitoring-command' %}",
-        statusURL: "{% url 'monitoring-status' %}",
-        pwdURL: "{% url 'monitoring-check_password' %}",
+        commandsURL: "{% url monitoring_namespace|add:':monitoring-command' %}",
+        statusURL: "{% url monitoring_namespace|add:':monitoring-status' %}",
+        pwdURL: "{% url monitoring_namespace|add:':monitoring-check_password' %}",
         translations: {
             "Command result": "{% trans "Command result" %}",
             "Command output:": "{% trans "Command output:" %}",

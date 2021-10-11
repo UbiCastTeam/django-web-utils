@@ -21,17 +21,16 @@ else:
 BASE_TEMPLATE = getattr(settings, 'FILE_BROWSER_BASE_TEMPLATE', None)
 
 
-def get_base_path(namespace=None):
-    if namespace:
-        return getattr(settings, 'FILE_BROWSER_DIRS')[namespace][0]
-    return getattr(settings, 'FILE_BROWSER_BASE_PATH')
+def clean_namespace(namespace):
+    return namespace or 'file_browser'
 
 
-def get_base_url(namespace=None):
-    if namespace:
-        url = getattr(settings, 'FILE_BROWSER_DIRS')[namespace][1]
-    else:
-        url = getattr(settings, 'FILE_BROWSER_BASE_URL')
-    if url.endswith('/'):
-        url = url.rstrip('/')
+def get_base_path(namespace):
+    nsp = clean_namespace(namespace)
+    return getattr(settings, 'FILE_BROWSER_DIRS')[nsp][0]
+
+
+def get_base_url(namespace):
+    nsp = clean_namespace(namespace)
+    url = getattr(settings, 'FILE_BROWSER_DIRS')[nsp][1].rstrip('/')
     return url

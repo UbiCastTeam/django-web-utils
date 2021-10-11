@@ -26,7 +26,7 @@ def storage_manager(request, namespace=None):
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'file_browser/base.html'
     return render(request, tplt, {
         'base_url': base_url,
-        'namespace': namespace,
+        'namespace': config.clean_namespace(namespace),
     })
 
 

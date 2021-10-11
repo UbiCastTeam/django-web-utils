@@ -59,6 +59,7 @@ def monitoring_panel(request):
     tplt_data.update(dict(
         monitoring_page='panel',
         monitoring_body='monitoring/panel.html',
+        monitoring_namespace=config.NAMESPACE,
         daemons_names=daemons_names,
         daemons_groups=groups,
     ))
@@ -156,8 +157,9 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
     tplt_data.update(dict(
         monitoring_page='log',
         monitoring_body='monitoring/log.html',
+        monitoring_namespace=config.NAMESPACE,
         title='%s - %s' % (label, _('log file')),
-        back_url=back_url or reverse('monitoring-panel'),
+        back_url=back_url or reverse(config.NAMESPACE + ':monitoring-panel'),
         **result
     ))
     return render(request, tplt, tplt_data)
@@ -198,8 +200,9 @@ def monitoring_config(request, name=None, path=None, owner='self', back_url=None
     tplt_data.update(dict(
         monitoring_page='config',
         monitoring_body='monitoring/config.html',
+        monitoring_namespace=config.NAMESPACE,
         title=_('Edit configuration file: %s') % name,
-        back_url=back_url or reverse('monitoring-panel'),
+        back_url=back_url or reverse(config.NAMESPACE + ':monitoring-panel'),
         **result
     ))
     return render(request, tplt, tplt_data)

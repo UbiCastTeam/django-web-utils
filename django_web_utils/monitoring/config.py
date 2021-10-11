@@ -12,6 +12,8 @@ class _Info(object):
     pass
 
 
+NAMESPACE = getattr(settings, 'MONITORING_NAMESPACE', 'monitoring')
+
 BASE_TEMPLATE = getattr(settings, 'MONITORING_BASE_TEMPLATE', None)
 
 TEMPLATE_DATA = getattr(settings, 'MONITORING_TEMPLATE_DATA', None)
