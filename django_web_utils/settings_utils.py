@@ -17,17 +17,17 @@ logger = logging.getLogger('djwutils.settings_utils')
 # backup_settings function
 # ----------------------------------------------------------------------------
 def backup_settings():
-    path = settings.OVERRIDE_PATH
-    if not os.path.exists(path):
+    override_path = getattr(settings, 'OVERRIDE_PATH', None)
+    if not override_path or not os.path.exists(override_path):
         return
     # get settings mtime
-    mtime = os.path.getmtime(path)
+    mtime = os.path.getmtime(override_path)
     mtime = datetime.datetime.fromtimestamp(mtime)
     # copy settings file
     try:
-        with open(path, 'rb') as fo:
+        with open(override_path, 'rb') as fo:
             current = fo.read()
-        with open('%s.backup_%s.py' % (path, mtime.strftime('%Y-%m-%d_%H-%M-%S')), 'wb') as fo:
+        with open('%s.backup_%s.py' % (override_path, mtime.strftime('%Y-%m-%d_%H-%M-%S')), 'wb') as fo:
             fo.write(current)
     except Exception as e:
         raise Exception('%s %s' % (_('Failed to backup settings:'), e))
@@ -69,47 +69,57 @@ def _get_value_str(value):
 def set_settings(tuples, restart=True):
     if not tuples:
         return True, _('No changes to save.')
-    content = ''
-    if os.path.exists(settings.OVERRIDE_PATH):
-        with open(settings.OVERRIDE_PATH, 'r') as fd:
-            content = fd.read()
 
-    for name, value in tuples:
-        # change locally settings
-        setattr(settings, name, value)
-        # get content to write in var
-        value_str = _get_value_str(value)
+    override_path = getattr(settings, 'OVERRIDE_PATH', None)
+    if not override_path:
+        # Test mode usual use case
+        for name, value in tuples:
+            # change locally settings
+            setattr(settings, name, value)
+            logger.info('Unable to write configuration file, no value is set for "OVERRIDE_PATH" in settings. Ignore this message if running tests.')
+        msg = _('Your changes were not saved but were applied to the running software.')
+    else:
+        content = ''
+        if os.path.exists(override_path):
+            with open(override_path, 'r') as fd:
+                content = fd.read()
 
-        lindex = content.find(name)
-        if lindex < 0:
-            # add var to settings
-            content += '\n%s = %s' % (name, value_str)
-        else:
-            # change current var
-            lindex += len(name)
-            sub = content[lindex:]
-            rindex = sub.find('\n')
-            if rindex < 0:
-                content = '%s = %s' % (content[:lindex], value_str)
+        for name, value in tuples:
+            # change locally settings
+            setattr(settings, name, value)
+            # get content to write in var
+            value_str = _get_value_str(value)
+
+            lindex = content.find(name)
+            if lindex < 0:
+                # add var to settings
+                content += '\n%s = %s' % (name, value_str)
             else:
-                rindex += lindex
-                content = '%s = %s%s' % (content[:lindex], value_str, content[rindex:])
+                # change current var
+                lindex += len(name)
+                sub = content[lindex:]
+                rindex = sub.find('\n')
+                if rindex < 0:
+                    content = '%s = %s' % (content[:lindex], value_str)
+                else:
+                    rindex += lindex
+                    content = '%s = %s%s' % (content[:lindex], value_str, content[rindex:])
 
-    try:
-        if content:
-            # backup settings before writing
-            backup_settings()
-            # write settings
-            with open(settings.OVERRIDE_PATH, 'w') as fd:
-                fd.write(content)
-    except Exception as e:
-        logger.error('Unable to write configuration file. %s' % e)
-        return False, '%s %s' % (_('Unable to write configuration file:'), e)
-    msg = _('Your changes will be active after the service restart.')
-    if restart:
-        msg += '\n' + _('The service will be restarted in 2 seconds.')
-        # the service restart should be handled with the "touch-reload" uwsgi
-        # parameter (should be set with the settings override path).
+        try:
+            if content:
+                # backup settings before writing
+                backup_settings()
+                # write settings
+                with open(override_path, 'w') as fd:
+                    fd.write(content)
+        except Exception as e:
+            logger.error('Unable to write configuration file. %s', e)
+            return False, '%s %s' % (_('Unable to write configuration file:'), e)
+        msg = _('Your changes will be active after the service restart.')
+        if restart:
+            msg += '\n' + _('The service will be restarted in 2 seconds.')
+            # the service restart should be handled with the "touch-reload" uwsgi
+            # parameter (should be set with the settings override path).
     return True, msg
 
 
@@ -118,37 +128,48 @@ def set_settings(tuples, restart=True):
 def remove_settings(*names, restart=True):
     # WARNING: this function supports only variables in one line
     # TODO: remove this constraint
-    if os.path.exists(settings.OVERRIDE_PATH) and names:
-        content = ''
-        with open(settings.OVERRIDE_PATH, 'r') as fd:
-            content = fd.read()
 
-        lines = content.split('\n')
-        removed_lines = 0
-        new_lines = list()
-        for line in lines:
-            removed = False
-            for name in names:
-                if line.startswith(name):
-                    removed_lines += 1
-                    removed = True
-                    break
-            if not removed:
-                new_lines.append(line)
+    # Change locally settings
+    for name in names:
+        delattr(settings, name)
 
-        if removed_lines > 0:
-            try:
-                # backup settings before writing
-                backup_settings()
-                # write settings
-                with open(settings.OVERRIDE_PATH, 'w') as fd:
-                    fd.write('\n'.join(new_lines))
-            except Exception as e:
-                logger.error('Unable to write configuration file. %s' % e)
-                return False, '%s %s' % (_('Unable to write configuration file:'), e)
-    msg = _('Your changes will be active after the service restart.')
-    if restart:
-        msg += '\n' + _('The service will be restarted in 2 seconds.')
-        # the service restart should be handled with the "touch-reload" uwsgi
-        # parameter (should be set with the settings override path).
+    override_path = getattr(settings, 'OVERRIDE_PATH', None)
+    if not override_path:
+        # Test mode usual use case
+        logger.info('Unable to write configuration file, no value is set for "OVERRIDE_PATH" in settings. Ignore this message if running tests.')
+        msg = _('Your changes were not saved but were applied to the running software.')
+    else:
+        if os.path.exists(override_path) and names:
+            content = ''
+            with open(override_path, 'r') as fd:
+                content = fd.read()
+
+            lines = content.split('\n')
+            removed_lines = 0
+            new_lines = list()
+            for line in lines:
+                removed = False
+                for name in names:
+                    if line.startswith(name):
+                        removed_lines += 1
+                        removed = True
+                        break
+                if not removed:
+                    new_lines.append(line)
+
+            if removed_lines > 0:
+                try:
+                    # backup settings before writing
+                    backup_settings()
+                    # write settings
+                    with open(override_path, 'w') as fd:
+                        fd.write('\n'.join(new_lines))
+                except Exception as e:
+                    logger.error('Unable to write configuration file. %s' % e)
+                    return False, '%s %s' % (_('Unable to write configuration file:'), e)
+        msg = _('Your changes will be active after the service restart.')
+        if restart:
+            msg += '\n' + _('The service will be restarted in 2 seconds.')
+            # the service restart should be handled with the "touch-reload" uwsgi
+            # parameter (should be set with the settings override path).
     return True, msg
