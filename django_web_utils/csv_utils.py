@@ -30,8 +30,12 @@ class CSVFile():
     def write_line_break(self, lines=1):
         self.csv_file.write('\r\n' * lines)
 
-    def get_response(self, file_name=None):
+    def get_text(self):
         csv_content = self.csv_file.getvalue().encode(self.charset, 'replace')
+        return csv_content
+
+    def get_response(self, file_name=None):
+        csv_content = self.get_text()
         response = HttpResponse(csv_content, content_type='text/csv; charset=' + self.charset)
         if file_name:
             response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
