@@ -132,6 +132,7 @@ def monitoring_command(request):
 @login_required
 def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
     label = None
+    can_control = True
     if not path:
         info = config.get_daemons_info()
         if name not in info.DAEMONS:
@@ -139,7 +140,8 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
         daemon = info.DAEMONS[name]
         if not config.can_access_daemon(daemon, request):
             raise PermissionDenied()
-        if request.method == 'POST' and not config.can_control_daemon(daemon, request):
+        can_control = config.can_control_daemon(daemon, request)
+        if request.method == 'POST' and not can_control:
             raise PermissionDenied()
         path = daemon['log_path'] if daemon.get('log_path') else os.path.join(daemon['cls'].LOG_DIR, '%s.log' % name)
         label = daemon.get('label')
@@ -160,6 +162,7 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
         monitoring_namespace=config.NAMESPACE,
         title='%s - %s' % (label, _('log file')),
         back_url=back_url or reverse(config.NAMESPACE + ':monitoring-panel'),
+        can_control=can_control,
         **result
     ))
     return render(request, tplt, tplt_data)

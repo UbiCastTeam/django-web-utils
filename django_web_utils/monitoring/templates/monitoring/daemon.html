@@ -5,14 +5,14 @@ Intended to be used directly in other projects.
 Required arguments:
     daemon: The daemon name.
     namespace: The monitoring app namespace.
-    show_actions: Boolean to indicate if controls should be displayed.
+    show_controls: Boolean to indicate if controls should be displayed.
 {% endcomment %}
 <table class="even-odd daemon-{{ daemon }}">
     <tr class="daemon-all">
         <th>{% trans "Status" %}</th>
         <td style="width: 170px;"><span class="daemon-status">{% trans "Loading" %}...</span></td>
     </tr>
-    {% if show_actions %}
+    {% if show_controls %}
     <tr>
         <th>{% trans "Commands" %}</th>
         <td class="nowrap">
@@ -32,16 +32,16 @@ Required arguments:
         <th>{% trans "File size" %}</th>
         <td><span class="daemon-log-size mono"></span></td>
     </tr>
-    {% if show_actions %}
     <tr>
         <th>{% trans "Actions" %}</th>
         <td class="nowrap">
             <a href="{% url namespace|add:':monitoring-log' daemon %}">{% trans "See" %}</a>
             <a class="marged" href="{% url namespace|add:':monitoring-log' daemon %}?tail">{% trans "See tail" %}</a>
-            <button type="button" class="marged daemon-log-clear" title="{% trans 'Clear log' %}"><i class="fa fa-trash"></i></button>
+            {% if show_controls %}
+                <button type="button" class="marged daemon-log-clear" title="{% trans 'Clear log' %}"><i class="fa fa-trash"></i></button>
+            {% endif %}
         </td>
     </tr>
-    {% endif %}
 </table>
 <script type="text/javascript" src="{% static 'monitoring/pwd-manager.js' %}?_=3"></script>
 <script type="text/javascript" src="{% static 'monitoring/daemons-manager.js' %}?_=4"></script>
