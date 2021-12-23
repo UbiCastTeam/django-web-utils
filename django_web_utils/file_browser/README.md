@@ -35,7 +35,7 @@ Something like "a.module.decorator".
 
 `FILE_BROWSER_BASE_TEMPLATE`:
 The template to use for the browser base page.
-This template must import jsu.js, odm.css and odm.js.
+This template must import jsu.min.js, odm.css and odm.js.
 It must contain two include tags:
 
 ```
