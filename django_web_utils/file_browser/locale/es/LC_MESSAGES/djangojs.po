@@ -5,85 +5,85 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Django web utils\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:25+0100\n"
-"PO-Revision-Date: 2021-12-23 17:02+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: UbiCast <support@ubicast.eu>\n"
-"Language: fr_FR\n"
+"POT-Creation-Date: 2021-12-24 14:26+0100\n"
+"PO-Revision-Date: 2021-12-24 14:31+0100\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: \n"
 "X-Generator: Poedit 2.2.1\n"
 
 #: static/file_browser/file-browser.js:242
 msgid "The folder is empty."
-msgstr "Le dossier est vide."
+msgstr ""
 
 #: static/file_browser/file-browser.js:280
 msgid "Size:"
-msgstr "Taille :"
+msgstr "Tamaño:"
 
 #: static/file_browser/file-browser.js:282
 msgid "Last modification:"
-msgstr "Dernière modification :"
+msgstr "Última modificación:"
 
 #: static/file_browser/file-browser.js:284
 msgid "Files:"
-msgstr "Fichiers :"
+msgstr ""
 
 #: static/file_browser/file-browser.js:285
 msgid "Folders:"
-msgstr "Dossiers :"
+msgstr ""
 
 #: static/file_browser/file-browser.js:291
 #: static/file_browser/file-browser.js:743
 #: static/file_browser/file-browser.js:754
 msgid "Delete"
-msgstr "Supprimer"
+msgstr "Eliminar"
 
 #: static/file_browser/file-browser.js:292
 #: static/file_browser/file-browser.js:593
 #: static/file_browser/file-browser.js:596
 msgid "Rename"
-msgstr "Renommer"
+msgstr ""
 
 #: static/file_browser/file-browser.js:293
 #: static/file_browser/file-browser.js:681
 #: static/file_browser/file-browser.js:692
 msgid "Move"
-msgstr "Déplacer"
+msgstr "Mover"
 
 #: static/file_browser/file-browser.js:313
 #: static/file_browser/file-browser.js:499
 #: static/file_browser/file-browser.js:531
 #: static/file_browser/file-browser.js:804
 msgid "root"
-msgstr "racine"
+msgstr ""
 
 #: static/file_browser/file-browser.js:403
 #: static/file_browser/file-browser.js:778
 msgid "Loading"
-msgstr "Chargement"
+msgstr "Cargando"
 
 #: static/file_browser/file-browser.js:420
 msgid "Ok"
-msgstr "Ok"
+msgstr "Aceptar"
 
 #: static/file_browser/file-browser.js:482
 msgid "New folder name:"
-msgstr "Nom du nouveau dossier :"
+msgstr ""
 
 #: static/file_browser/file-browser.js:499
 msgid "Add a folder in"
-msgstr "Ajouter un dossier dans"
+msgstr ""
 
 #: static/file_browser/file-browser.js:502
 #: static/file_browser/file-browser.js:534
 msgid "Add"
-msgstr "Ajouter"
+msgstr "Añadir"
 
 #: static/file_browser/file-browser.js:505
 #: static/file_browser/file-browser.js:537
@@ -92,47 +92,47 @@ msgstr "Ajouter"
 #: static/file_browser/file-browser.js:757
 #: static/file_browser/file-browser.js:838
 msgid "Cancel"
-msgstr "Annuler"
+msgstr "Cancelar"
 
 #: static/file_browser/file-browser.js:522
 msgid "File to add:"
-msgstr "Fichier à ajouter :"
+msgstr ""
 
 #: static/file_browser/file-browser.js:531
 msgid "Add a file in"
-msgstr "Ajouter un fichier dans"
+msgstr ""
 
 #: static/file_browser/file-browser.js:563
 msgid "New name:"
-msgstr "Nouveau nom :"
+msgstr ""
 
 #: static/file_browser/file-browser.js:566
 #: static/file_browser/file-browser.js:626
 msgid "Selected file(s):"
-msgstr "Fichier(s) sélectionné(s) :"
+msgstr ""
 
 #: static/file_browser/file-browser.js:624
 msgid "Move to:"
-msgstr "Déplacer vers :"
+msgstr ""
 
 #: static/file_browser/file-browser.js:685
 #: static/file_browser/file-browser.js:747
 msgid "files"
-msgstr "fichiers"
+msgstr ""
 
 #: static/file_browser/file-browser.js:720
 msgid "Are you sure to delete the selected file(s) ?"
-msgstr "Êtes vous certain de vouloir supprimer les fichiers sélectionnés ?"
+msgstr ""
 
 #: static/file_browser/file-browser.js:745
 msgid "one file"
-msgstr "un fichier"
+msgstr ""
 
 #: static/file_browser/file-browser.js:770
 msgid "Search only in current dir"
-msgstr "Rechercher uniquement dans le dossier courant"
+msgstr ""
 
 #: static/file_browser/file-browser.js:832
 #: static/file_browser/file-browser.js:835
 msgid "Search"
-msgstr "Rechercher"
+msgstr ""

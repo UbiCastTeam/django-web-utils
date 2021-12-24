@@ -25,10 +25,28 @@ class FileInfo():
 
 
 class NoLinkClearableFileInput(dj_forms.ClearableFileInput):
+    '''
+    Widget for a file upload without link to the file.
+    '''
 
     def render(self, name, value, *args, **kwargs):
         obj_value = FileInfo(value) if isinstance(value, str) else value
         return super().render(name, obj_value, *args, **kwargs)
+
+
+class PasswordToggleInput(dj_forms.TextInput):
+    '''
+    Widget to allow user to toggle a password input between text or password type.
+    '''
+    template_name = 'forms_utils/password_toggle_input.html'
+    orig_template_name = dj_forms.TextInput.template_name
+
+    def get_context(self, name, value, attrs):
+        data = super().get_context(name, value, attrs)
+        data['widget']['orig_template_name'] = self.orig_template_name
+        data['widget']['type'] = 'hidden'
+        data['widget']['hidden_value'] = '●' * len(value)
+        return data
 
 
 class ProtectedFileField(dj_forms.FileField):

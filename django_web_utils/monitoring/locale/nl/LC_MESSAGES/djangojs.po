@@ -5,63 +5,63 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Django web utils\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:25+0100\n"
-"PO-Revision-Date: 2021-12-23 16:55+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: UbiCast <support@ubicast.eu>\n"
-"Language: fr_FR\n"
+"POT-Creation-Date: 2021-12-24 14:26+0100\n"
+"PO-Revision-Date: 2021-12-24 14:34+0100\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: \n"
 "X-Generator: Poedit 2.2.1\n"
 
 #: static/monitoring/daemons-manager.js:90
 msgid "No messages have been returned."
-msgstr "Aucun message n'a été renvoyé."
+msgstr ""
 
 #: static/monitoring/daemons-manager.js:98
 msgid "Command output:"
-msgstr "Sortie de la commande :"
+msgstr ""
 
 #: static/monitoring/daemons-manager.js:105
 msgid "Command result"
-msgstr "Résultat de la commande"
+msgstr ""
 
 #: static/monitoring/daemons-manager.js:108
 msgid "Close"
-msgstr "Fermer"
+msgstr "Afsluiten"
 
 #: static/monitoring/daemons-manager.js:137
 msgid "running"
-msgstr "en cours"
+msgstr ""
 
 #: static/monitoring/daemons-manager.js:139
 msgid "not running"
-msgstr "arrêté"
+msgstr ""
 
 #: static/monitoring/daemons-manager.js:144
 msgid "Click to enter password"
-msgstr "Cliquez pour entrer le mot de passe"
+msgstr ""
 
 #: static/monitoring/daemons-manager.js:145
 msgid "need password"
-msgstr "mot de passe requis"
+msgstr ""
 
 #: static/monitoring/pwd-manager.js:35
 msgid "Password:"
-msgstr "Mot de passe :"
+msgstr "Wachtwoord:"
 
 #: static/monitoring/pwd-manager.js:37
 msgid "Send"
-msgstr "Envoyer"
+msgstr "Verzenden"
 
 #: static/monitoring/pwd-manager.js:44
 msgid "Authenticating"
-msgstr "Authentification"
+msgstr ""
 
 #: static/monitoring/pwd-manager.js:139
 msgid "Enter password"
-msgstr "Entrer le mot de passe"
+msgstr ""

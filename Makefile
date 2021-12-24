@@ -6,14 +6,18 @@ deadcode:
 	--exclude docker/,submodules/ --min-confidence 90 .
 
 po:
+	cd django_web_utils \
+	&& django-admin makemessages --all --no-wrap
 	cd django_web_utils/file_browser \
-	&& django-admin makemessages -l "fr" --no-wrap \
-	&& django-admin makemessages -d djangojs -l "fr" --no-wrap
+	&& django-admin makemessages --all --no-wrap \
+	&& django-admin makemessages -d djangojs --all --no-wrap
 	cd django_web_utils/monitoring \
-	&& django-admin makemessages -l "fr" --no-wrap \
-	&& django-admin makemessages -d djangojs -l "fr" --no-wrap
+	&& django-admin makemessages --all --no-wrap \
+	&& django-admin makemessages -d djangojs --all --no-wrap
 
 mo:
+	cd django_web_utils \
+	&& django-admin compilemessages
 	cd django_web_utils/file_browser \
 	&& django-admin compilemessages
 	cd django_web_utils/monitoring \

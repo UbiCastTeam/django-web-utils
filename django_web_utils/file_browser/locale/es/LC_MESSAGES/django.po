@@ -5,220 +5,221 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Django web utils\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:25+0100\n"
-"PO-Revision-Date: 2021-12-23 16:51+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: UbiCast <support@ubicast.eu>\n"
-"Language: fr_FR\n"
+"POT-Creation-Date: 2021-12-24 14:26+0100\n"
+"PO-Revision-Date: 2021-12-24 14:31+0100\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: \n"
 "X-Generator: Poedit 2.2.1\n"
 
 #: templates/file_browser/base.html:6 templates/file_browser/base.html:8
 #: templates/file_browser/body.html:6
 msgid "File browser"
-msgstr "Navigateur"
+msgstr ""
 
 #: templates/file_browser/body.html:9
 msgid "Quit"
-msgstr "Quitter"
+msgstr ""
 
 #: templates/file_browser/body.html:16
 msgid "Add a folder"
-msgstr "Ajouter un dossier"
+msgstr ""
 
 #: templates/file_browser/body.html:17
 msgid "Add a file"
-msgstr "Ajouter un fichier"
+msgstr "Añadir un archivo"
 
 #: templates/file_browser/body.html:18
 msgid "Search"
-msgstr "Rechercher"
+msgstr ""
 
 #: templates/file_browser/body.html:26
 msgid "Show messages"
-msgstr "Voir les messages"
+msgstr ""
 
 #: templates/file_browser/body.html:27
 msgid "Hide messages"
-msgstr "Cacher les messages"
+msgstr ""
 
 #: templates/file_browser/body.html:38
 msgid "Loading"
-msgstr "Chargement"
+msgstr "Cargando"
 
 #: templates/file_browser/body.html:44
 msgid "Drop files here to add them"
-msgstr "Glissez vos fichiers ici pour les ajouter"
+msgstr "Arrastrar aquí los archivos para añadirlos"
 
 #: templates/file_browser/body.html:46
 msgid "Upload in progress"
-msgstr "Envoi en cours"
+msgstr "Subida en progreso"
 
 #: templates/file_browser/body.html:53
 msgid "Total size:"
-msgstr "Taille totale :"
+msgstr "Tamaño total:"
 
 #: templates/file_browser/body.html:54
 msgid "Number of folders:"
-msgstr "Nombre de dossiers :"
+msgstr ""
 
 #: templates/file_browser/body.html:55
 msgid "Number of files:"
-msgstr "Nombre de fichiers :"
+msgstr ""
 
 #: templates/file_browser/body.html:56
 msgid "Order by:"
-msgstr "Trier par :"
+msgstr ""
 
 #: templates/file_browser/body.html:58 templates/file_browser/body.html:59
 msgid "name"
-msgstr "nom"
+msgstr "nombre"
 
 #: templates/file_browser/body.html:60 templates/file_browser/body.html:61
 msgid "size"
-msgstr "taille"
+msgstr ""
 
 #: templates/file_browser/body.html:62 templates/file_browser/body.html:63
 msgid "modification date"
-msgstr "date de modification"
+msgstr ""
 
 #: templates/file_browser/body.html:66
 msgid "Refresh"
-msgstr "Rafraîchir"
+msgstr "Actualizar"
 
 #: views.py:57
 #, python-format
 msgid "Folder \"%s\" does not exist."
-msgstr "Le dossier \"%s\" n'existe pas."
+msgstr ""
 
 #: views.py:59
 msgid "Root folder"
-msgstr "Dossier racine"
+msgstr ""
 
 #: views.py:90
 #, python-format
 msgid "Folder \"%s\" does not exist"
-msgstr "Le dossier \"%s\" n'existe pas"
+msgstr ""
 
 #: views.py:163
 msgid "Parent folder"
-msgstr "Dossier parent"
+msgstr ""
 
 #: views_action.py:48
 msgid "No base path defined in configuration."
-msgstr "Aucun chemin de base n'est défini dans la configuration."
+msgstr ""
 
 #: views_action.py:51
 msgid "No base url defined in configuration."
-msgstr "Aucune URL de base n'est définie dans la configuration."
+msgstr ""
 
 #: views_action.py:66 views_action.py:124 views_action.py:147
 #: views_action.py:235
 msgid "Invalid base path."
-msgstr "Chemin de base invalide."
+msgstr ""
 
 #: views_action.py:73
 msgid "No files in request."
-msgstr "Aucun fichier n'est présent dans la requête."
+msgstr ""
 
 #: views_action.py:88 views_action.py:139
 msgid "Failed to create folder:"
-msgstr "Échec de la création du dossier :"
+msgstr ""
 
 #: views_action.py:96
 msgid "The file has been uploaded and is available at the location:"
-msgstr "Le fichier a été envoyé et est disponible à l'adresse suivante :"
+msgstr ""
 
 #: views_action.py:98
 msgid "The files have been uploaded and are available at the locations:"
-msgstr "Les fichiers ont été envoyés et sont disponibles aux adresses suivantes :"
+msgstr ""
 
 #: views_action.py:127 views_action.py:162
 #, python-format
 msgid "The \"%s\" field is required."
-msgstr "Le champ \"%s\" est requis."
+msgstr ""
 
 #: views_action.py:130 views_action.py:169
 msgid "Invalid name."
-msgstr "Nom invalide."
+msgstr ""
 
 #: views_action.py:140
 msgid "Folder created."
-msgstr "Le dossier a été créé."
+msgstr ""
 
 #: views_action.py:157
 msgid "No files selected."
-msgstr "Aucun fichier n'est sélectionné."
+msgstr ""
 
 #: views_action.py:175
 #, python-format
 msgid "The file \"%s\" does not exist."
-msgstr "Le fichier \"%s\" n'existe pas."
+msgstr ""
 
 #: views_action.py:184
 #, python-format
 msgid "The file \"%s\" already exists."
-msgstr "Le fichier \"%s\" existe déjà."
+msgstr ""
 
 #: views_action.py:187
 msgid "File renamed."
-msgstr "Fichier renommé."
+msgstr ""
 
 #: views_action.py:189
 msgid "Files renamed."
-msgstr "Fichiers renommés."
+msgstr ""
 
 #: views_action.py:194
 msgid "No path specfied to move files in."
-msgstr "Aucun chemin n'a été spécifié pour déplacer les fichiers."
+msgstr ""
 
 #: views_action.py:201
 msgid "Destination path does not exists."
-msgstr "Le chemin de destination n'existe pas."
+msgstr ""
 
 #: views_action.py:210
 #, python-format
 msgid "Unable to move file %s:"
-msgstr "Impossible de déplacer le fichier %s :"
+msgstr ""
 
 #: views_action.py:211
 #, python-format
 msgid "%s file(s) successfully moved."
-msgstr "%s fichier(s) déplacé(s) avec succès."
+msgstr ""
 
 #: views_action.py:225
 #, python-format
 msgid "Unable to delete file %s:"
-msgstr "Impossible de supprimer le fichier %s :"
+msgstr ""
 
 #: views_action.py:226
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
-msgstr "%(f)s fichier(s) et %(d)s dossier(s) supprimé(s) avec succès."
+msgstr ""
 
 #: views_action.py:241
 msgid "Requested path does not exist."
-msgstr "Le chemin demandé n'existe pas."
+msgstr ""
 
 #: views_action.py:281
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
-msgstr "%(count)s résultats pour \"%(search)s\" dans \"%(path)s\"."
+msgstr ""
 
 #: views_action.py:283
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
-msgstr "%(count)s résultats pour \"%(search)s\"."
+msgstr ""
 
 #: views_action.py:285
 #, python-format
 msgid "No results for \"%(search)s\"."
-msgstr "Pas de résultat pour \"%(search)s\"."
+msgstr ""
 
 #: views_action.py:289
 msgid "Invalid action requested."
-msgstr "L'action demandée est invalide."
+msgstr "Se ha solicitado una acción no válida."

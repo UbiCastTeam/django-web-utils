@@ -41,7 +41,7 @@ def login_required_basicauth(function):
                         else:
                             msg = _('Your account is disabled.')
                     else:
-                        msg = _('Your username and password are incorrect.')
+                        msg = _('Your username and password do not match.')
         if msg is None:
             msg = _('Authentication required.')
 
@@ -82,9 +82,9 @@ class CharactersTypesValidator:
             letter_types += 1
         if letter_types < 3:
             raise ValidationError(
-                _('This password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters).'),
+                _('The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters).'),
                 code='password_characters_types',
             )
 
     def get_help_text(self):
-        return _('Your password should contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters).')
+        return _('The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters).')

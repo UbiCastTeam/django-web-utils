@@ -5,215 +5,216 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Django web utils\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:25+0100\n"
-"PO-Revision-Date: 2021-12-24 12:25+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: UbiCast <support@ubicast.eu>\n"
-"Language: fr_FR\n"
+"POT-Creation-Date: 2021-12-24 14:26+0100\n"
+"PO-Revision-Date: 2021-12-24 14:33+0100\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: \n"
 "X-Generator: Poedit 2.2.1\n"
 
 #: admin_utils.py:14
 msgid "Export selected objects as CSV file"
-msgstr "Exporter les objets sélectionnés dans un fichier CSV"
+msgstr ""
 
 #: admin_utils.py:112
 msgid "CSV export"
-msgstr "Export CSV"
+msgstr "CSV-export"
 
 #: auth_utils.py:42
 msgid "Your account is disabled."
-msgstr "Votre compte est désactivé."
+msgstr "Dit account is gedeactiveerd."
 
 #: auth_utils.py:44
 msgid "Your username and password do not match."
-msgstr "Votre nom d'utilisateur et votre mot de passe ne correspondent pas."
+msgstr ""
 
 #: auth_utils.py:46
 msgid "Authentication required."
-msgstr "Authentification requise."
+msgstr ""
 
 #: auth_utils.py:49
 msgid "Access authentication"
-msgstr "Authentification d'accès"
+msgstr ""
 
 #: auth_utils.py:85 auth_utils.py:90
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
-msgstr "Le mot de passe doit contenir au minimum 3 types de caractères (les types sont : lettres minuscules, lettres majuscules, chiffres et caractères spéciaux)."
+msgstr ""
 
 #: files_utils.py:40
 msgid "B"
-msgstr "o"
+msgstr "B"
 
 #: files_utils.py:44
 msgid "kB"
-msgstr "ko"
+msgstr "kB"
 
 #: files_utils.py:48
 msgid "MB"
-msgstr "Mo"
+msgstr "MB"
 
 #: files_utils.py:52
 msgid "GB"
-msgstr "Go"
+msgstr "GB"
 
 #: files_utils.py:55
 msgid "TB"
-msgstr "To"
+msgstr "TB"
 
 #: forms_utils.py:121
 msgid "Yes"
-msgstr "Oui"
+msgstr "Ja"
 
 #: forms_utils.py:123
 msgid "No"
-msgstr "Non"
+msgstr ""
 
 #: json_utils.py:80
 msgid "Invalid request method"
-msgstr "Méthode de requête invalide"
+msgstr ""
 
 #: json_utils.py:88
 msgid "Authentication required"
-msgstr "Authentification requise"
+msgstr "Authenticatie is vereist"
 
 #: json_utils.py:91
 msgid "Access denied"
-msgstr "Accès refusé"
+msgstr "Toegang geweigerd"
 
 #: json_utils.py:93
 msgid "Page not found"
-msgstr "Page introuvable"
+msgstr ""
 
 #: json_utils.py:97
 msgid "Internal server error"
-msgstr "Erreur interne au serveur"
+msgstr ""
 
 #: ldap_utils.py:76
 msgid "Error when initializing connection with LDAP server."
-msgstr "Erreur lors de l'initialisation de la connexion avec le serveur LDAP."
+msgstr ""
 
 #: ldap_utils.py:76 ldap_utils.py:104 ldap_utils.py:131 ldap_utils.py:282
 msgid "Error:"
-msgstr "Erreur :"
+msgstr "Fout:"
 
 #: ldap_utils.py:104
 msgid "Error when trying to authenticate on LDAP server."
-msgstr "Erreur lors de l'authentification sur le serveur LDAP."
+msgstr ""
 
 #: ldap_utils.py:130
 msgid "Search on LDAP server failed."
-msgstr "Recherche échouée sur le serveur LDAP."
+msgstr ""
 
 #: ldap_utils.py:133
 msgid "Arguments:"
-msgstr "Arguments :"
+msgstr ""
 
 #: ldap_utils.py:167
 msgid "User not found."
-msgstr "Utilisateur introuvable."
+msgstr "Gebruiker niet gevonden."
 
 #: ldap_utils.py:179
 msgid "Group not found."
-msgstr "Groupe introuvable."
+msgstr ""
 
 #: ldap_utils.py:282
 msgid "Error when trying to get user information."
-msgstr "Erreur lors de la récupération des informations de l'utilisateur."
+msgstr ""
 
 #: ldap_utils.py:291
 msgid "Login failed (however the user exists in LDAP)."
-msgstr "Échec de l'authentification (l'utilisateur existe bien dans LDAP)."
+msgstr ""
 
 #: ldap_utils.py:293
 msgid "Login succeeded."
-msgstr "Authentification réussie."
+msgstr ""
 
 #: ldap_utils.py:294
 #, python-format
 msgid "User \"%s\" data:"
-msgstr "Données de l'utilisateur \"%s\" :"
+msgstr ""
 
 #: ldap_utils.py:299
 msgid "User groups:"
-msgstr "Groupes de l'utilisateur :"
+msgstr ""
 
 #: ldap_utils.py:304
 msgid "Error when trying to get groups."
-msgstr "Erreur lors de la récupération des groupes de l'utilisateur."
+msgstr ""
 
 #: ldap_utils.py:315
 msgid "No groups found."
-msgstr "Aucun groupe n'a été trouvé."
+msgstr ""
 
 #: settings_utils.py:33
 msgid "Failed to backup settings:"
-msgstr "Échec de la création d'un point de sauvegarde des paramètres :"
+msgstr ""
 
 #: settings_utils.py:71
 msgid "No changes to save."
-msgstr "Aucune modification a sauvegarder."
+msgstr "Geen wijzigingen om op te slaan."
 
 #: settings_utils.py:80 settings_utils.py:140
 msgid "Your changes were not saved but were applied to the running software."
-msgstr "Vos modifications n'ont pas été sauvegardées mais ont été appliquées à l'application en cours."
+msgstr ""
 
 #: settings_utils.py:117 settings_utils.py:169
 msgid "Unable to write configuration file:"
-msgstr "Impossible d'écrire le fichier de configuration :"
+msgstr ""
 
 #: settings_utils.py:118 settings_utils.py:170
 msgid "Your changes will be active after the service restart."
-msgstr "Vos modifications seront actives après le redémarrage du service."
+msgstr ""
 
 #: settings_utils.py:120 settings_utils.py:172
 msgid "The service will be restarted in 2 seconds."
-msgstr "Le service sera redémarré dans 2 secondes."
+msgstr ""
 
 #: system_utils.py:99
 msgid "Password required."
-msgstr "Mot de passe requis."
+msgstr ""
 
 #: system_utils.py:108
 #, python-format
 msgid "Command exited with code %s."
-msgstr "La commande a retourné un code %s."
+msgstr ""
 
 #: system_utils.py:139 system_utils.py:141 system_utils.py:148
 #: system_utils.py:169
 msgid "Unable to write file."
-msgstr "Impossible d'écrire le fichier."
+msgstr ""
 
 #: system_utils.py:139
 msgid "Specified path is a directory."
-msgstr "Le chemin spécifié est un dossier."
+msgstr ""
 
 #: system_utils.py:141
 msgid "Invalid file path."
-msgstr "Chemin du fichier invalide."
+msgstr ""
 
 #: system_utils.py:154
 msgid "You need to send the main password to edit this file."
-msgstr "Vous devez entrer le mot de passe principal pour éditer ce fichier."
+msgstr ""
 
 #: system_utils.py:163
 #, python-format
 msgid "Unable to create temporary file \"%s\"."
-msgstr "Impossible de créer le fichier temporaire \"%s\"."
+msgstr ""
 
 #: system_utils.py:170
 msgid "File updated."
-msgstr "Fichier mis à jour."
+msgstr ""
 
 #: templates/forms_utils/password_toggle_input.html:5
 msgid "Hide value"
-msgstr "Cacher la valeur"
+msgstr "Waarde verbergen"
 
 #: templates/forms_utils/password_toggle_input.html:5
 #: templates/forms_utils/password_toggle_input.html:7
 msgid "Edit value"
-msgstr "Éditer la valeur"
+msgstr "Waarde bewerken"
