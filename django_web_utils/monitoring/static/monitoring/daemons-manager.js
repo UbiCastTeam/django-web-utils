@@ -2,6 +2,7 @@
 * Daemons manager                          *
 * Author: Stephane Diemer                  *
 *******************************************/
+/* global gettext */
 /* global jsu */
 /* global OverlayDisplayManager */
 /* global PwdManager */
@@ -86,7 +87,7 @@ DaemonsManager.prototype._sendDaemonCommand = function (daemon, cmd) {
                 msgEle.innerHTML = response.error;
             } else if (!response.messages) {
                 msgEle.setAttribute('class', 'message warning');
-                msgEle.innerHTML = jsu.translate('No messages have been returned.');
+                msgEle.innerHTML = jsu.escapeHTML(gettext('No messages have been returned.'));
             } else {
                 for (let i = 0; i < response.messages.length; i++) {
                     const msg = response.messages[i];
@@ -94,17 +95,17 @@ DaemonsManager.prototype._sendDaemonCommand = function (daemon, cmd) {
                     entryEle.setAttribute('class', 'message ' + msg.level);
                     entryEle.innerHTML = jsu.escapeHTML(msg.text);
                     if (msg.out) {
-                        entryEle.innerHTML += '\n<div>' + jsu.translate('Command output:') + '<br/>\n';
+                        entryEle.innerHTML += '\n<div>' + jsu.escapeHTML(gettext('Command output:')) + '<br/>\n';
                         entryEle.innerHTML += '<pre>' + jsu.escapeHTML(msg.out) + '</pre></div>';
                     }
                     msgEle.appendChild(entryEle);
                 }
             }
             obj.overlay.show({
-                title: jsu.translate('Command result'),
+                title: gettext('Command result'),
                 html: msgEle,
                 buttons: [
-                    { label: jsu.translate('Close'), close: true }
+                    { label: gettext('Close'), close: true }
                 ]
             });
         }
@@ -133,15 +134,15 @@ DaemonsManager.prototype.refreshDaemonStatus = function () {
                     stored.running = running;
                     const statusEle = document.querySelector('.daemon-' + daemonName + ' .daemon-status');
                     if (running === true) {
-                        statusEle.innerHTML = '<span class=\'green\'>' + jsu.translate('running') + '</span>';
+                        statusEle.innerHTML = '<span class="green">' + jsu.escapeHTML(gettext('running')) + '</span>';
                     } else if (running === false) {
-                        statusEle.innerHTML = '<span class=\'red\'>' + jsu.translate('not running') + '</span>';
+                        statusEle.innerHTML = '<span class="red">' + jsu.escapeHTML(gettext('not running')) + '</span>';
                     } else {
-                        statusEle.innerHTML = '<span class=\'yellow\'>? </span>';
+                        statusEle.innerHTML = '<span class="yellow"> ? </span>';
                         const btnEle = document.createElement('button');
                         btnEle.setAttribute('type', 'button');
-                        btnEle.setAttribute('title', jsu.translate('Click to enter password'));
-                        btnEle.innerHTML = jsu.translate('need password');
+                        btnEle.setAttribute('title', gettext('Click to enter password'));
+                        btnEle.innerHTML = jsu.escapeHTML(gettext('need password'));
                         btnEle.addEventListener('click', function () {
                             obj.pwdMan.checkPassword();
                         });

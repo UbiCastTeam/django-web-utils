@@ -27,7 +27,10 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install flake8
+        python3 -m pip install flake8 vulture
     - name: Lint code with Python ${{ matrix.python-version }}
       run: |
         flake8 .
+    - name: Check for deadcode Python ${{ matrix.python-version }}
+      run: |
+        vulture --exclude docker/,submodules/ --min-confidence 90 .

@@ -69,6 +69,7 @@
     {% endfor %}
 </table>
 
+<script type="text/javascript" src="{% url monitoring_namespace|add:':monitoring-jsi18n' %}"></script>
 <script type="text/javascript" src="{% static 'monitoring/pwd-manager.js' %}?_=3"></script>
 <script type="text/javascript" src="{% static 'monitoring/daemons-manager.js' %}?_=4"></script>
 <script type="text/javascript">
@@ -83,17 +84,6 @@
         ],
         commandsURL: "{% url monitoring_namespace|add:':monitoring-command' %}",
         statusURL: "{% url monitoring_namespace|add:':monitoring-status' %}",
-        pwdURL: "{% url monitoring_namespace|add:':monitoring-check_password' %}",
-        translations: {
-            "Command result": "{% trans "Command result" %}",
-            "Command output:": "{% trans "Command output:" %}",
-            "No messages have been returned.": "{% trans "No messages have been returned." %}",
-            "Send": "{% trans "Send" %}",
-            "Close": "{% trans "Close" %}",
-            "running": "{% trans "running" %}",
-            "not running": "{% trans "not running" %}",
-            "need password": "{% trans "need password" %}",
-            "Click to enter password": "{% trans "Click to enter password" %}"
-        }
+        pwdURL: "{% url monitoring_namespace|add:':monitoring-check_password' %}"
     });
 </script>

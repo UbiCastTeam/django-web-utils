@@ -48,6 +48,7 @@
 </form>
 
 {% if owner != "self" %}
+    <script type="text/javascript" src="{% url monitoring_namespace|add:':monitoring-jsi18n' %}"></script>
     <script type="text/javascript" src="{% static 'monitoring/pwd-manager.js' %}?_=3"></script>
     <script type="text/javascript">
         var pwdMan = new PwdManager({
