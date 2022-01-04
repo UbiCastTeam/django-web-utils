@@ -37,9 +37,7 @@ from django_web_utils.logging_utils import IgnoreTimeoutErrors, IgnoreDatabaseEr
 logger = logging.getLogger('djwutils.emails_utils')
 
 
-# get context
-# ----------------------------------------------------------------------------
-def _get_context(request=None):
+def _get_context():
     if '_context_processor' not in globals():
         # Get context fct
         ctx_processor = None
@@ -63,7 +61,7 @@ def _get_context(request=None):
     if not ctx_processor:
         ctx = None
     else:
-        ctx = ctx_processor(request)
+        ctx = ctx_processor()
         if ctx and not isinstance(ctx, dict):
             logger.error('Emails context processor returned an invalid object for context (must be a dict): %s', ctx)
             ctx = None
@@ -74,18 +72,12 @@ def _get_context(request=None):
     return ctx
 
 
-# get recipients list
-# ----------------------------------------------------------------------------
-def _get_recipients_list(recipients, context=None):
-    # Search for recipients
+def _get_recipients_list(recipients):
     if not recipients:
-        recipients = context.get('recipients')
-        if not recipients:
-            recipients = context.get('recipient')
-            if not recipients:
-                # Send emails to managers if no email is given
-                recipients = [a[1] for a in settings.MANAGERS]
-    if isinstance(recipients, dict):
+        # Send emails to managers if no email is given
+        recipients = [a[1] for a in settings.MANAGERS]
+    elif isinstance(recipients, dict):
+        # Convert dict to list
         as_list = list()
         for key, value in recipients.items():
             if isinstance(value, dict):
@@ -112,22 +104,22 @@ def _get_recipients_list(recipients, context=None):
     return cleaned_rcpts
 
 
-# send_template_emails (to send emails with a template)
-# ----------------------------------------------------------------------------
-def send_template_emails(template, context=None, recipients=None, request=None, content_subtype='html'):
+def send_template_emails(template, context=None, recipients=None, content_subtype='html', attachments=None):
     '''
     Function to send emails with a template.
     Arguments:
+        template: template path.
         context: can be a dict or None.
         recipients: can be a dict, a list, a str or None.
             dict format: {'test@test.com': {'lang': 'en'}}
             list format: [{'email': 'test@test.com', 'lang': 'en'}]
             str format: test@test.com
             (user objects can be given as recipient)
-        request: is given to context processor.
+        content_subtype: email content type.
+        attachments: list of attachments.
     '''
     # Get common context
-    common_ctx = _get_context(request)
+    common_ctx = _get_context()
     if common_ctx:
         base_ctx = dict(common_ctx)
     else:
@@ -137,10 +129,10 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
     # Get sender
     sender = base_ctx['sender'] if base_ctx.get('sender') else '"Default sender name" <sender@address.com>'
     # Clean recipients list (get a list of User model or dict with at least email in keys)
-    cleaned_rcpts = _get_recipients_list(recipients, context)
+    cleaned_rcpts = _get_recipients_list(recipients)
     if not cleaned_rcpts:
         msg = 'No emails have been sent: no valid recipients given.'
-        logger.error('%s\nEmail context: %s', msg, base_ctx)
+        logger.error('%s Recipients: %s.', msg, recipients)
         return False, msg
     # Get template
     engine = Engine.get_default()
@@ -161,13 +153,13 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         if isinstance(recipient, dict):
             address = recipient.get('email', '')
             name = recipient.get('name', '')
-            lang = recipient.get('lang', 'en')
+            lang = recipient.get('lang')
         else:
             # User object
             address = getattr(recipient, 'email')
             name = recipient.get_full_name()
             lang = getattr(recipient, 'emails_lang', None)
-        if '@' not in address:
+        if address.count('@') != 1:
             logger.error('Recipient ignored because his email address is invalid: %s', address)
             error = 'invalid address'
             continue
@@ -195,8 +187,8 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
         # Prepare email
         address_with_name = address if not name else '"%s" <%s>' % (name, address)
         msg = mail.EmailMessage(subject, content, sender, [address_with_name])
-        if ctx.get('attachments'):
-            for attachment in ctx['attachments']:
+        if attachments:
+            for attachment in attachments:
                 msg.attach_file(attachment)
         msg.content_subtype = content_subtype  # by default, set email content type to html
         # Send email
@@ -217,29 +209,53 @@ def send_template_emails(template, context=None, recipients=None, request=None, 
     return True, sent
 
 
-# send_emails (to send emails without template)
-# ----------------------------------------------------------------------------
-def send_emails(subject, content, recipients=None, request=None, content_subtype='html', attachments=None):
+def send_emails(subject, content, recipients=None, content_subtype='html', attachments=None):
+    '''
+    Function to send emails without template.
+    Arguments:
+        subject: email subject.
+        content: email content.
+        recipients: can be a dict, a list, a str or None.
+            dict format: {'test@test.com': {'lang': 'en'}}
+            list format: [{'email': 'test@test.com', 'lang': 'en'}]
+            str format: test@test.com
+            (user objects can be given as recipient)
+        content_subtype: email content type.
+        attachments: list of attachments.
+    '''
     # Get common context
-    ctx = _get_context(request)
+    ctx = _get_context()
     # Get sender
     sender = ctx['sender'] if ctx.get('sender') else '"Default sender name" <sender@address.com>'
-    # Get recipients
-    if not recipients:
-        # Send emails to managers if no email is given
-        recipients = [a[1] for a in settings.MANAGERS]
-    elif isinstance(recipients, dict):
-        recipients = list(recipients.keys())
-    elif not isinstance(recipients, (tuple, list)):
-        recipients = [recipients]
+    # Clean recipients list (get a list of User model or dict with at least email in keys)
+    cleaned_rcpts = _get_recipients_list(recipients)
+    if not cleaned_rcpts:
+        msg = 'No emails have been sent: no valid recipients given.'
+        logger.error('%s Recipients: %s.', msg, recipients)
+        return False, msg
     # Prepare emails messages
     subject = subject.replace('\r', '').replace('\n', ' ').strip()
     connection = None
     sent = list()
     error = 'no recipient'
-    for recipient in recipients:
+    for recipient in cleaned_rcpts:
+        # Get recipient address and lang
+        if isinstance(recipient, dict):
+            address = recipient.get('email', '')
+            name = recipient.get('name', '')
+        else:
+            # User object
+            address = getattr(recipient, 'email')
+            name = recipient.get_full_name()
+        if address.count('@') != 1:
+            logger.error('Recipient ignored because his email address is invalid: %s', address)
+            error = 'invalid address'
+            continue
+        if name:
+            name = name.replace('"', '”').replace('\'', '’')
         # Prepare email
-        msg = mail.EmailMessage(subject, content, sender, [recipient])
+        address_with_name = address if not name else '"%s" <%s>' % (name, address)
+        msg = mail.EmailMessage(subject, content, sender, [address_with_name])
         if attachments:
             for attachment in attachments:
                 msg.attach_file(attachment)
@@ -251,22 +267,29 @@ def send_emails(subject, content, recipients=None, request=None, content_subtype
             connection.send_messages([msg])
         except Exception as e:
             error = e
-            logger.error('Error when trying to send email to: %s.\n%s' % (recipient, traceback.format_exc()))
+            logger.error('Error when trying to send email to: %s.\n%s' % (address, traceback.format_exc()))
         else:
-            sent.append(recipient[recipient.index('<') + 1:].rstrip('> ') if '<' in recipient else recipient)
-            logger.info('Email with subject "%s" sent to "%s".', subject, recipient)
+            sent.append(address)
+            logger.info('Email with subject "%s" sent to "%s".', subject, address)
     if not sent:
         return False, 'No emails have been sent. Last error when trying to send email: %s' % error
     return True, sent
 
 
-# send_error_report_emails (to send last traceback)
-# ----------------------------------------------------------------------------
-def send_error_report_emails(title=None, error=None, recipients=None, request=None, filter_error=True):
-    if request:
-        title = ' (%s)' % title if title else ''
-        title = 'Error at %s%s' % (request.get_full_path(), title)
-    elif title:
+def send_error_report_emails(title=None, error=None, recipients=None, filter_error=True):
+    '''
+    Function to send last error traceback.
+    Arguments:
+        title: label to add to subject.
+        error: can be a dict or None.
+        recipients: can be a dict, a list, a str or None.
+            dict format: {'test@test.com': {'lang': 'en'}}
+            list format: [{'email': 'test@test.com', 'lang': 'en'}]
+            str format: test@test.com
+            (user objects can be given as recipient)
+        filter_error: filter error type with default filters.
+    '''
+    if title:
         title = 'Error report - %s' % title
     else:
         title = 'Error report'
@@ -290,7 +313,9 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
         return True, no_sending_msg
 
     fieldset_style = 'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'
-    content = '<div style="margin-bottom: 8px;">Message sent at: %s<br/>\nUnix user: %s<br/>\nSystem hostname: %s</div>' % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), os.environ.get('USER'), socket.gethostname())
+    content = '<div style="margin-bottom: 8px;">Message sent at: %s<br/>\nUnix user: %s<br/>\nSystem hostname: %s</div>' % (
+        datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), conditional_escape(os.environ.get('USER')), conditional_escape(socket.gethostname())
+    )
     # Error information
     if error:
         content += '<fieldset %s>\n' % fieldset_style
@@ -302,40 +327,14 @@ def send_error_report_emails(title=None, error=None, recipients=None, request=No
     content += '<legend><b> Traceback </b></legend>\n'
     content += '<div>%s</div>\n' % html_utils.get_html_traceback()
     content += '</fieldset>\n\n'
-    # Request info
-    if request:
-        left_col_style = 'vertical-align: top; color: #666; padding-right: 8px; text-align: right;'
-        right_col_style = 'vertical-align: top;'
-        # Main request info
-        content += '<fieldset %s>\n' % fieldset_style
-        content += '<legend><b> Main request info </b></legend>\n'
-        content += '<table>\n'
-        content += '<tr> <td style="%s"><b>HTTP_USER_AGENT</b></td>\n' % left_col_style
-        content += '     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, conditional_escape(request.META.get('HTTP_USER_AGENT', 'unknown')))
-        content += '<tr> <td style="%s"><b>REMOTE_ADDR</b></td>\n' % left_col_style
-        content += '     <td style="%s"><b>%s</b></td> </tr>\n' % (right_col_style, conditional_escape(request.META.get('REMOTE_ADDR', 'unknown')))
-        content += '</table>\n'
-        content += '</fieldset>\n\n'
-        # Other request info
-        content += '<fieldset %s>\n' % fieldset_style
-        content += '<legend><b> Other request info </b></legend>\n'
-        content += '<table>\n'
-        keys = list(request.META.keys())
-        keys.sort()
-        for key in keys:
-            if key not in ('HTTP_USER_AGENT', 'REMOTE_ADDR'):
-                content += '<tr> <td style="%s">%s</td>\n' % (left_col_style, conditional_escape(key))
-                content += '     <td style="%s">%s</td> </tr>\n' % (right_col_style, conditional_escape(request.META[key]))
-        content += '</table>\n'
-        content += '</fieldset>\n'
-    content = mark_safe(content)
     # Send emails
+    content = mark_safe(content)
     tplt = getattr(settings, 'EMAIL_ERROR_TEMPLATE', None)
     if tplt:
         return send_template_emails(tplt, dict(
             title=title,
             error=error,
             content=content,
-        ), recipients=recipients, request=request)
+        ), recipients=recipients)
     else:
-        return send_emails(title, content, recipients, request)
+        return send_emails(title, content, recipients)

@@ -27,10 +27,13 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install flake8 vulture
+        python3 -m pip install flake8 vulture django pillow bleach
     - name: Lint code with Python ${{ matrix.python-version }}
       run: |
         flake8 .
-    - name: Check for deadcode Python ${{ matrix.python-version }}
+    - name: Check for deadcode with Python ${{ matrix.python-version }}
       run: |
         vulture --exclude docker/,submodules/ --min-confidence 90 .
+    - name: Run test with Python ${{ matrix.python-version }}
+      run: |
+        python3 tests/manage.py test django_web_utils testapp
