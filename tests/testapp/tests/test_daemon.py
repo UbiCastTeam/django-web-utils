@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 '''
 Django web utils daemon tests.
 '''
@@ -10,7 +8,7 @@ import unittest
 from django_web_utils.daemon.base import BaseDaemon
 
 
-class TestDaemon(unittest.TestCase):
+class DaemonTests(unittest.TestCase):
 
     def setUp(self):
         print('\n\033[96m----- %s.%s -----\033[0m' % (self.__class__.__name__, self._testMethodName))
