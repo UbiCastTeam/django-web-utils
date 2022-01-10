@@ -7,8 +7,11 @@ The OVERRIDE_PATH setting must be set to the local settings override path.
 import datetime
 import logging
 import os
+import sys
+from typing import Iterable
 # Django
-from django.conf import settings
+from django.conf import settings, ENVIRONMENT_VARIABLE
+from django.utils.functional import empty
 from django.utils.translation import gettext as _
 
 logger = logging.getLogger('djwutils.settings_utils')
@@ -173,3 +176,22 @@ def remove_settings(*names, restart=True):
             # the service restart should be handled with the "touch-reload" uwsgi
             # parameter (should be set with the settings override path).
     return True, msg
+
+
+# reload_settings function
+# ----------------------------------------------------------------------------
+def reload_settings(modules: Iterable[str] = ()):
+    """
+    Reload django's settings by forcing the module it depends on
+    (DJANGO_SETTINGS_MODULE) to be re-imported. The global django settings
+    instance (`from django.conf import settings`) will be refreshed in place
+    (i.e. any change in the settings will be visible globally).
+
+    ! NOT THREAD-SAFE !
+
+    :param modules: any other module paths that need to be re-imported.
+    """
+    for module_path in (*modules, ENVIRONMENT_VARIABLE):
+        sys.modules.pop(os.environ.get(module_path))
+
+    settings._wrapped = empty

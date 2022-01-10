@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 '''
 
 import os
+import time
 import warnings
 
 
@@ -154,3 +155,6 @@ AUTHENTICATION_USERS = {'admin': {'password': 'test', 'is_active': True, 'is_sta
 MONITORING_DAEMONS_INFO = 'testapp.daemons'
 
 FILE_BROWSER_DIRS = {'storage': (os.path.join(BASE_DIR, 'tests', 'storage'), '/storage')}
+
+# For reload_settings tests
+TIME_NOW = time.perf_counter_ns()
