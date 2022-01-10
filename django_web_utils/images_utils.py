@@ -66,6 +66,8 @@ def rotate_image(path, clockwise=True, rename=True):
 def encode_as_jpeg(path, quality=85):
     img = Image.open(path)
     img.load()
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
     dest = get_new_path(path, new_extension='jpg')
     img.save(dest, 'JPEG', quality=quality)
     return dest
