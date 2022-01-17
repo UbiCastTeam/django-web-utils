@@ -22,7 +22,7 @@ re_path(r'^monitoring/', include(('django_web_utils.monitoring.urls', 'monitorin
 
 `MONITORING_BASE_TEMPLATE`:
 The template to use for the browser base page.
-This template must import jquery.js, jsu.min.js, odm.css and odm.js.
+This template must import jquery.js, jsu.min.js, odm.min.css and odm.min.js.
 It must contain this include tag:
 
 ```
