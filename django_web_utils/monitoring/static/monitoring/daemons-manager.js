@@ -84,10 +84,10 @@ DaemonsManager.prototype._sendDaemonCommand = function (daemon, cmd) {
             const msgEle = document.createElement('div');
             if (req.status != 200) {
                 msgEle.setAttribute('class', 'message error');
-                msgEle.innerHTML = response.error;
+                msgEle.textContent = response.error || response;
             } else if (!response.messages) {
                 msgEle.setAttribute('class', 'message warning');
-                msgEle.innerHTML = jsu.escapeHTML(gettext('No messages have been returned.'));
+                msgEle.textContent = gettext('No messages have been returned.');
             } else {
                 for (let i = 0; i < response.messages.length; i++) {
                     const msg = response.messages[i];
@@ -153,13 +153,13 @@ DaemonsManager.prototype.refreshDaemonStatus = function () {
                 if (logMTime !== stored.logMTime) {
                     stored.logMTime = logMTime;
                     const mTimeEle = document.querySelector('.daemon-' + daemonName + ' .daemon-log-mtime');
-                    mTimeEle.innerHTML = logMTime ? logMTime : '-';
+                    mTimeEle.textContent = logMTime ? logMTime : '-';
                 }
                 const logSize = response[daemonName].log_size;
                 if (logSize !== stored.logSize) {
                     stored.logSize = logSize;
                     const sizeEle = document.querySelector('.daemon-' + daemonName + ' .daemon-log-size');
-                    sizeEle.innerHTML = logSize ? logSize : '-';
+                    sizeEle.textContent = logSize ? logSize : '-';
                 }
             }
         }
