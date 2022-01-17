@@ -117,19 +117,16 @@ FileBrowser.prototype.containsFiles = function (evt) {
 };
 
 FileBrowser.prototype.loadDirs = function () {
-    const obj = this;
     jsu.httpRequest({
         method: 'GET',
         url: this.dirsURL,
         json: true,
-        callback: function (req, response) {
-            obj.parseDirsResponse(req, response);
-        }
+        callback: this.parseDirsResponse.bind(this)
     });
 };
-FileBrowser.prototype.parseDirsResponse = function (req, response) {
-    if (req.status != 200) {
-        this.menuTreeElement.innerHTML = '<li class="message-error">' + response.message + '</li>';
+FileBrowser.prototype.parseDirsResponse = function (xhr, response) {
+    if (xhr.status != 200) {
+        this.menuTreeElement.innerHTML = '<li class="message-error">' + jsu.escapeHTML(response.error || response) + '</li>';
         return;
     } else {
         this.menuTreeElement.innerHTML = '';
@@ -232,9 +229,9 @@ FileBrowser.prototype.loadContent = function () {
         callback: this.parseContentResponse.bind(this)
     });
 };
-FileBrowser.prototype.parseContentResponse = function (req, response) {
-    if (req.status != 200) {
-        this.placeElement.innerHTML = '<div class="message-error">' + response.message + '</div>';
+FileBrowser.prototype.parseContentResponse = function (xhr, response) {
+    if (xhr.status != 200) {
+        this.placeElement.innerHTML = '<div class="message-error">' + jsu.escapeHTML(response.error || response) + '</div>';
         return;
     }
 
@@ -268,21 +265,21 @@ FileBrowser.prototype.parseContentResponse = function (req, response) {
             }
             const entryEle = document.createElement('div');
             entryEle.setAttribute('class', 'file-block ' + fclass);
-            let html = '<a class="file-link" ' + target + ' href="' + file.url + '">';
+            let html = '<a class="file-link" ' + target + ' href="' + jsu.escapeAttribute(file.url) + '">';
             html += '<span class="file-icon"';
             if (file.preview) {
-                html += ' style="background-image: url(\'' + this.previewURL + '?path=' + this.path + file.name + '\');"';
+                html += ' style="background-image: url(\'' + this.previewURL + '?path=' + jsu.escapeAttribute(this.path + file.name) + '\');"';
             }
             html += '></span>';
-            html += '<span class="file-name">' + file.name + '</span>';
+            html += '<span class="file-name">' + jsu.escapeHTML(file.name) + '</span>';
             if (!file.isprevious) {
                 html += '<span class="file-info">';
-                html += '<span class="file-size">' + jsu.escapeHTML(gettext('Size:')) + ' ' + file.size_h + '</span>';
+                html += '<span class="file-size">' + jsu.escapeHTML(gettext('Size:') + ' ' + file.size_h) + '</span>';
                 if (!file.is_dir) {
-                    html += '<span class="file-mdate">' + jsu.escapeHTML(gettext('Last modification:')) + '<br/>' + (file.mdate ? file.mdate : '?') + '</span>';
+                    html += '<span class="file-mdate">' + jsu.escapeHTML(gettext('Last modification:') + '\n' + (file.mdate ? file.mdate : '?')) + '</span>';
                 } else {
-                    html += '<span class="file-nb-files">' + jsu.escapeHTML(gettext('Files:')) + ' ' + file.nb_files + '</span>';
-                    html += '<span class="file-nb-dirs">' + jsu.escapeHTML(gettext('Folders:')) + ' ' + file.nb_dirs + '</span>';
+                    html += '<span class="file-nb-files">' + jsu.escapeHTML(gettext('Files:') + ' ' + file.nb_files) + '</span>';
+                    html += '<span class="file-nb-dirs">' + jsu.escapeHTML(gettext('Folders:') + ' ' + file.nb_dirs) + '</span>';
                 }
                 html += '</span>';
             }
@@ -316,14 +313,14 @@ FileBrowser.prototype.parseContentResponse = function (req, response) {
         for (let i = 0; i < splitted.length; i++) {
             if (splitted[i]) {
                 fullPath += splitted[i] + '/';
-                htmlPath += '<a href="' + fullPath + '">' + splitted[i] + '</a> <span>/</span> ';
+                htmlPath += '<a href="' + jsu.escapeAttribute(fullPath) + '">' + jsu.escapeHTML(splitted[i]) + '</a> <span>/</span> ';
             }
         }
     }
     document.getElementById('path_bar').innerHTML = htmlPath;
-    this.sizeElement.innerHTML = response.total_size;
-    this.dirsCountElement.innerHTML = response.total_nb_dirs;
-    this.filesCountElement.innerHTML = response.total_nb_files;
+    this.sizeElement.textContent = response.total_size;
+    this.dirsCountElement.textContent = response.total_nb_dirs;
+    this.filesCountElement.textContent = response.total_nb_files;
 };
 
 FileBrowser.prototype.refresh = function () {
@@ -412,15 +409,29 @@ FileBrowser.prototype.executeAction = function (method, params, data) {
         callback: this.onActionExecuted.bind(this)
     });
 };
-FileBrowser.prototype.onActionExecuted = function (req, response) {
+FileBrowser.prototype.onActionExecuted = function (xhr, response) {
+    let msg;
+    if (xhr.status != 200) {
+        msg = '<div class="file-browser-overlay message-error">' + jsu.escapeHTML(response.error || response) + '</div>';
+    } else {
+        msg = '<div class="file-browser-overlay message-success">' + jsu.escapeHTML(response.message);
+        if (response.urls) {
+            msg += '<ul>';
+            for (const url of response.urls) {
+                msg += '<li><a href="' + jsu.escapeAttribute(url) + '">' + jsu.escapeHTML(url) + '</a></li>';
+            }
+            msg += '</ul>';
+        }
+        msg += '</div>';
+    }
     this.overlay.show({
         title: ' ',
-        html: '<div class="file-browser-overlay message-' + (req.status == 200 ? 'success' : 'error') + '">' + (response.message ? response.message : response.error) + '</div>',
+        html: msg,
         buttons: [
             { label: gettext('Ok'), close: true }
         ]
     });
-    if (req.status == 200) {
+    if (xhr.status == 200) {
         this.refresh();
     }
 };
@@ -446,7 +457,7 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
     }
     const progressEle = this.dropZoneElement.querySelector('progress');
     progressEle.setAttribute('value', 0);
-    progressEle.innerHTML = '0 %';
+    progressEle.textContent = '0 %';
     const obj = this;
     jsu.httpRequest({
         method: 'POST',
@@ -460,7 +471,7 @@ FileBrowser.prototype.onFilesDrop = function (evt) {
                     progress = parseInt(100 * evt.loaded / evt.total, 10);
                 }
                 progressEle.setAttribute('value', progress);
-                progressEle.innerHTML = progress + ' %';
+                progressEle.textContent = progress + ' %';
             }
         },
         callback: function (req, response) {
@@ -476,7 +487,7 @@ FileBrowser.prototype.addFolder = function () {
         this.folderForm.setAttribute('action', '.');
         this.folderForm.setAttribute('method', 'post');
         this.folderForm.setAttribute('enctype', 'multipart/form-data');
-        this.folderForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+        this.folderForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + jsu.escapeAttribute(this.csrfToken) + '"/>' +
             '<input type="hidden" name="action" value="add_folder"/>' +
             '<input type="hidden" id="id_new_folder_path" name="path" value=""/>' +
             '<label for="id_folder_name">' + jsu.escapeHTML(gettext('New folder name:')) + '</label> ' +
@@ -516,10 +527,10 @@ FileBrowser.prototype.addFile = function () {
         this.uploadForm.setAttribute('action', this.actionURL);
         this.uploadForm.setAttribute('method', 'post');
         this.uploadForm.setAttribute('enctype', 'multipart/form-data');
-        this.uploadForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+        this.uploadForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + jsu.escapeAttribute(this.csrfToken) + '"/>' +
             '<input type="hidden" name="action" value="upload_single"/>' +
             '<input type="hidden" id="id_new_file_path" name="path" value=""/>' +
-            '<label for="id_file_to_add">' + gettext('File to add:') + '</label>' +
+            '<label for="id_file_to_add">' + jsu.escapeHTML(gettext('File to add:')) + '</label>' +
             ' <input type="file" id="id_file_to_add" name="file"/>' +
             '<button type="submit" style="display: none;"></button>';
     }
@@ -556,7 +567,7 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
         this.renameForm.setAttribute('action', this.actionURL);
         this.renameForm.setAttribute('method', 'post');
         this.renameForm.setAttribute('enctype', 'multipart/form-data');
-        this.renameForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+        this.renameForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + jsu.escapeAttribute(this.csrfToken) + '"/>' +
             '<input type="hidden" name="action" value="rename"/>' +
             '<input type="hidden" id="id_rename_file_path" name="path" value=""/>' +
             '<div>' +
@@ -583,7 +594,7 @@ FileBrowser.prototype.renameFiles = function (file, evt) {
 
     let html = '';
     for (let i = 0; i < selected.length; i++) {
-        html += '<li>' + selected[i].name + '<input type="hidden" name="name_' + i + '" value="' + selected[i].name + '"/></li>';
+        html += '<li>' + jsu.escapeHTML(selected[i].name) + '<input type="hidden" name="name_' + i + '" value="' + jsu.escapeAttribute(selected[i].name) + '"/></li>';
     }
     this.renameForm.querySelector('ul').innerHTML = html;
 
@@ -618,7 +629,7 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
         this.moveForm.setAttribute('action', this.actionURL);
         this.moveForm.setAttribute('method', 'post');
         this.moveForm.setAttribute('enctype', 'multipart/form-data');
-        this.moveForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+        this.moveForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + jsu.escapeAttribute(this.csrfToken) + '"/>' +
             '<input type="hidden" name="action" value="move"/>' +
             '<input type="hidden" id="id_move_path" name="path" value=""/>' +
             '<label for="id_new_path">' + jsu.escapeHTML(gettext('Move to:')) + '</label>' +
@@ -667,13 +678,13 @@ FileBrowser.prototype.moveFiles = function (file, evt) {
         for (let j = 1; j < tEntry.level; j++) {
             spacing += '&nbsp;&nbsp;';
         }
-        html += '<option value="' + tEntry.path + '" ' + disabled + '>' + spacing + tEntry.name + '</option>';
+        html += '<option value="' + jsu.escapeAttribute(tEntry.path) + '" ' + disabled + '>' + spacing + jsu.escapeHTML(tEntry.name) + '</option>';
     }
     this.moveForm.querySelector('select').innerHTML = html;
 
     html = '';
     for (let i = 0; i < selected.length; i++) {
-        html += '<li>' + selected[i].name + '<input type="hidden" name="name_' + i + '" value="' + selected[i].name + '"/></li>';
+        html += '<li>' + jsu.escapeHTML(selected[i].name) + '<input type="hidden" name="name_' + i + '" value="' + jsu.escapeAttribute(selected[i].name) + '"/></li>';
     }
     this.moveForm.querySelector('ul').innerHTML = html;
 
@@ -714,7 +725,7 @@ FileBrowser.prototype.deleteFiles = function (file, evt) {
         this.deleteForm.setAttribute('action', this.actionURL);
         this.deleteForm.setAttribute('method', 'post');
         this.deleteForm.setAttribute('enctype', 'multipart/form-data');
-        this.deleteForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + this.csrfToken + '"/>' +
+        this.deleteForm.innerHTML = '<input type="hidden" name="csrfmiddlewaretoken" value="' + jsu.escapeAttribute(this.csrfToken) + '"/>' +
             '<input type="hidden" name="action" value="delete"/>' +
             '<input type="hidden" id="id_delete_path" name="path" value=""/>' +
             '<div><b>' + jsu.escapeHTML(gettext('Are you sure to delete the selected file(s) ?')) + '</b></div>' +
@@ -735,7 +746,7 @@ FileBrowser.prototype.deleteFiles = function (file, evt) {
 
     let html = '';
     for (let i = 0; i < selected.length; i++) {
-        html += '<li>' + selected[i].name + '<input type="hidden" name="name_' + i + '" value="' + selected[i].name + '"/></li>';
+        html += '<li>' + jsu.escapeHTML(selected[i].name) + '<input type="hidden" name="name_' + i + '" value="' + jsu.escapeAttribute(selected[i].name) + '"/></li>';
     }
     this.deleteForm.querySelector('ul').innerHTML = html;
 
@@ -792,19 +803,19 @@ FileBrowser.prototype.search = function () {
                     let html;
                     let dirsFound = false;
                     if (req.status != 200) {
-                        html = '<p><b>' + response.error + '</b></p>';
+                        html = '<p><b>' + jsu.escapeHTML(response.error || response) + '</b></p>';
                     } else {
                         // display search results
-                        html = '<p><b>' + response.msg + '</b></p>';
+                        html = '<p><b>' + jsu.escapeHTML(response.msg) + '</b></p>';
                         if (response.dirs && response.dirs.length > 0) {
                             html += '<div class="search-results">';
                             for (let i = 0; i < response.dirs.length; i++) {
                                 dirsFound = true;
                                 const dir = response.dirs[i];
-                                html += '<p><a class="dir-link" href="#/' + dir.url + '">' + jsu.escapeHTML(gettext('root')) + '/' + dir.url + '</a></p>';
+                                html += '<p><a class="dir-link" href="#/' + jsu.escapeAttribute(dir.url) + '">' + jsu.escapeHTML(gettext('root') + '/' + dir.url) + '</a></p>';
                                 html += '<ul>';
                                 for (let j = 0; j < dir.files.length; j++) {
-                                    html += '<li><a target="_blank" rel="noopener noreferrer" href="' + obj.baseURL + '/' + dir.url + dir.files[j] + '">' + dir.url + dir.files[j] + '</a></li>';
+                                    html += '<li><a target="_blank" rel="noopener noreferrer" href="' + obj.baseURL + '/' + jsu.escapeAttribute(dir.url + dir.files[j]) + '">' + jsu.escapeHTML(dir.url + dir.files[j]) + '</a></li>';
                                 }
                                 html += '</ul>';
                             }

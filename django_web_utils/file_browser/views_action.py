@@ -96,6 +96,7 @@ def storage_action(request, namespace=None):
                 msg = _('The file has been uploaded and is available at the location:')
             else:
                 msg = _('The files have been uploaded and are available at the locations:')
+            urls = list()
             for uploaded_file in list(request.FILES.values()):
                 file_name = clean_file_name(uploaded_file.name)
                 if file_name == '.htaccess':
@@ -109,12 +110,14 @@ def storage_action(request, namespace=None):
                     url = base_url + '/' + path + '/' + file_name
                 else:
                     url = base_url + '/' + file_name
-                msg += ' <br/><a target="_blank" rel="noopener noreferrer" href="%s">%s://%s%s</a>' % (url, 'https' if request.is_secure() else 'http', request.get_host(), url)
+                urls.append(url)
             if action == 'upload_single':
+                for url in urls:
+                    msg += '\n' + url
                 messages.success(request, msg)
                 return HttpResponseRedirect('%s#/%s' % (red_url, path))
             else:
-                return JsonResponse(dict(message=msg))
+                return JsonResponse(dict(message=msg, urls=urls))
 
         # folder form
         elif action == 'add_folder':
