@@ -2,26 +2,23 @@
 Django web utils daemon tests.
 '''
 import logging
-import sys
 import unittest
 
 from django_web_utils.daemon.base import BaseDaemon
+
+logger = logging.getLogger('djwutils.tests.testapp.tests.test_daemon')
 
 
 class DaemonTests(unittest.TestCase):
 
     def setUp(self):
         print('\n\033[96m----- %s.%s -----\033[0m' % (self.__class__.__name__, self._testMethodName))
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s %(name)s %(levelname)s %(message)s',
-            stream=sys.stdout
-        )
 
     def test_daemons_attrs(self):
         self.assertEqual(BaseDaemon.get_name(), 'base')
 
     def test_daemon_start(self):
+        logger.info('////!\\\\\\\\ A traceback will be displayed after this line, this is intended so you can ignore it.')
 
         class TestDaemon(BaseDaemon):
             NEED_DJANGO = False
@@ -32,6 +29,7 @@ class DaemonTests(unittest.TestCase):
                     raise Exception('Unexpected error code (expected 140, got %s).' % code)
                 raise RuntimeError('Canceled exit with expected code (%s).' % code)
 
+        # Logging will be displayed twice because of logging init in the daemon class
         daemon = TestDaemon(argv=['notused', 'start', '-n'])
         with self.assertRaises(RuntimeError):
             daemon.start()
