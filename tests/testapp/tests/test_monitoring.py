@@ -6,6 +6,9 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 
+from django_web_utils.monitoring.sysinfo import get_system_info
+import django_web_utils
+
 
 class MonitoringTests(TestCase):
     databases = []
@@ -83,3 +86,20 @@ class MonitoringTests(TestCase):
         self.assertEqual(response['Content-Type'], 'application/json')
         content = json.loads(response.content.decode('utf-8'))
         self.assertEqual(content, {'messages': [{'level': 'success', 'name': 'fake', 'out': 'Log file cleared.', 'text': 'Command "clear_log" on "fake" successfully executed.'}]})
+
+    def test_sysinfo(self):
+        info = get_system_info(module=django_web_utils)
+        self.assertIn('info_sections', info)
+        keys = list(info.keys())
+        self.assertListEqual(keys[:-1], [
+            'info_sections',
+            'local_repo',
+            'version',
+            'revision',
+            'info_package',
+            'info_os',
+            'info_hdd',
+            'info_cpu',
+            'info_gpu',
+            'info_memory',
+            'info_network'])
