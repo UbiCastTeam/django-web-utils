@@ -24,7 +24,16 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install antivirus
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clamav-daemon
+        sudo systemctl start clamav-freshclam
+        sleep 60
+        sudo systemctl start clamav-daemon
+        sleep 60
+        sudo systemctl status clamav-daemon
+    - name: Install Python dependencies
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install flake8 vulture django pillow bleach
