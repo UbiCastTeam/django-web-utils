@@ -6,14 +6,20 @@ import shutil
 import unicodedata
 # Django
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 # Django web utils
+from django_web_utils.antivirus_utils import antivirus_path_validator
 from django_web_utils.file_browser import config
 
 
 def recursive_remove(path):
+    '''
+    Function to remove a dir and all its file.
+    Returns the number of deleted files and dirs.
+    '''
     files_deleted = 0
     dir_deleted = 0
     if not os.path.exists(path):
@@ -32,17 +38,21 @@ def recursive_remove(path):
 
 
 def clean_file_name(name):
-    # This function is like the slugify function of Django, but it allows points and uppercase letters
+    '''
+    This function is like the slugify function of Django,
+    but it allows points and uppercase letters.
+    '''
     name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
     name = re.sub(r'[^\.\w\s-]', '', name).strip()
     name = re.sub(r'[-\s]+', '-', name)
     return name
 
 
-# storage_action
-# ----------------------------------------------------------------------------
 @config.view_decorator
 def storage_action(request, namespace=None):
+    '''
+    Storage action view.
+    '''
     base_path = config.get_base_path(namespace)
     if not base_path:
         return JsonResponse(dict(error=_('No base path defined in configuration.')), status=400)
@@ -50,9 +60,9 @@ def storage_action(request, namespace=None):
     if not base_url:
         return JsonResponse(dict(error=_('No base url defined in configuration.')), status=400)
     if request.method == 'POST':
-        # actions using post method
+        # Actions using post method
         action = request.POST.get('action')
-        # upload form
+        # Upload form
         if action == 'upload' or action == 'upload_single':
             red_url = None
             if action == 'upload_single':
@@ -60,7 +70,7 @@ def storage_action(request, namespace=None):
                     red_url = reverse('%s:file_browser_base' % namespace)
                 else:
                     red_url = reverse('file_browser_base')
-            # check data
+            # Check data
             path = request.POST.get('path', '').strip('/')
             if '..' in path:
                 msg = _('Invalid base path.')
@@ -81,7 +91,7 @@ def storage_action(request, namespace=None):
             else:
                 dir_path = base_path
             dir_path = dir_path
-            # create upload folder
+            # Create upload folder
             try:
                 os.makedirs(dir_path, exist_ok=True)
             except Exception as e:
@@ -91,7 +101,7 @@ def storage_action(request, namespace=None):
                     return HttpResponseRedirect('%s#/%s' % (red_url, path))
                 else:
                     return JsonResponse(dict(error=msg), status=400)
-            # execute action
+            # Execute action
             if len(list(request.FILES.keys())) == 1:
                 msg = _('The file has been uploaded and is available at the location:')
             else:
@@ -101,11 +111,17 @@ def storage_action(request, namespace=None):
                 file_name = clean_file_name(uploaded_file.name)
                 if file_name == '.htaccess':
                     file_name += '_'
-                # write uploaded file
-                with open(os.path.join(dir_path, file_name), 'wb+') as fo:
+                # Write uploaded file
+                file_path = os.path.join(dir_path, file_name)
+                with open(file_path, 'wb+') as fo:
                     for chunk in uploaded_file.chunks():
                         fo.write(chunk)
-                # get url
+                # Antivirus check
+                try:
+                    antivirus_path_validator(file_path)
+                except ValidationError as e:
+                    return JsonResponse(dict(error=str(e)), status=400)
+                # Get url
                 if path:
                     url = base_url + '/' + path + '/' + file_name
                 else:
@@ -119,9 +135,9 @@ def storage_action(request, namespace=None):
             else:
                 return JsonResponse(dict(message=msg, urls=urls))
 
-        # folder form
+        # Folder form
         elif action == 'add_folder':
-            # check data
+            # Check data
             path = request.POST.get('path', '').strip('/')
             if '..' in path:
                 return JsonResponse(dict(error=_('Invalid base path.')), status=400)
@@ -131,7 +147,7 @@ def storage_action(request, namespace=None):
             name = clean_file_name(name)
             if not name:
                 return JsonResponse(dict(error=_('Invalid name.')), status=400)
-            # execute action
+            # Execute action
             if path:
                 target = os.path.join(base_path, path, name)
             else:
@@ -142,9 +158,9 @@ def storage_action(request, namespace=None):
                 return JsonResponse(dict(error='%s %s' % (_('Failed to create folder:'), e)), status=400)
             return JsonResponse(dict(message=_('Folder created.')))
 
-        # actions on several files form
+        # Actions on several files form
         elif action in ('rename', 'move', 'delete'):
-            # check data
+            # Check data
             path = request.POST.get('path', '').strip('/')
             if '..' in path:
                 return JsonResponse(dict(error=_('Invalid base path.')), status=400)
@@ -170,7 +186,7 @@ def storage_action(request, namespace=None):
                     new_name = new_name[:-len(new_name_ext)]
                 if not new_name or new_name == '.htaccess':
                     return JsonResponse(dict(error=_('Invalid name.')), status=400)
-                # execute action
+                # Execute action
                 index = 0
                 for name in names:
                     src = os.path.join(dir_path, name)
@@ -228,11 +244,11 @@ def storage_action(request, namespace=None):
                         return JsonResponse(dict(error='%s %s' % (_('Unable to delete file %s:') % name, e)), status=400)
                 return JsonResponse(dict(message=_('%(f)s file(s) and %(d)s directory(ies) successfully deleted.') % dict(f=files_deleted, d=dir_deleted)))
     else:
-        # actions using get method
+        # Actions using get method
         action = request.GET.get('action')
-        # search form
+        # Search form
         if action == 'search':
-            # get path
+            # Get path
             path = request.GET.get('path', '').strip('/')
             if '..' in path:
                 return JsonResponse(dict(error=_('Invalid base path.')), status=400)
@@ -242,7 +258,7 @@ def storage_action(request, namespace=None):
                 dir_path = base_path
             if not os.path.exists(dir_path):
                 return JsonResponse(dict(error=_('Requested path does not exist.')), status=400)
-            # get search command
+            # Get search command
             search = request.GET.get('search', '')
             search = search.replace('\'', '"').lower()
 
