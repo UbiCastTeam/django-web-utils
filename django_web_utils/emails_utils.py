@@ -309,7 +309,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, filter_err
                     break
 
     if no_sending_msg:
-        logger.info('%s\n%s\n%s', no_sending_msg, title, traceback.format_exc())
+        logger.info('%s\nSubject: %s\nTo: %s\nContent:\n%s\n%s', no_sending_msg, title, recipients, error, traceback.format_exc())
         return True, no_sending_msg
 
     fieldset_style = 'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'

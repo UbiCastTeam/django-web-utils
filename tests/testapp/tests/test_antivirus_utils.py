@@ -1,16 +1,21 @@
 '''
 Antivirus utils tests.
 '''
+from io import BytesIO
 from pathlib import Path
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import override_settings, TestCase
+from django.urls import reverse
 
 from django_web_utils.antivirus_utils import antivirus_path_validator, antivirus_file_validator, INFECTED_MESSAGE, DOES_NOT_EXIST_MESSAGE
 
 
 EICAR_TEST_CONTENT = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
+
+DEFAULT_MIDDLEWARES = settings.MIDDLEWARE
 
 
 class AntivirusUtilsTests(TestCase):
@@ -57,3 +62,27 @@ class AntivirusUtilsTests(TestCase):
         # Should raise ValidationError
         with self.assertRaisesMessage(ValidationError, str(INFECTED_MESSAGE)):
             antivirus_file_validator(upload_file)
+
+    @override_settings(MIDDLEWARE=DEFAULT_MIDDLEWARES + (
+        'django_web_utils.antivirus_utils.ReportInfectedFileUploadMiddleware',
+    ))
+    def test_form_get_request(self):
+        response = self.client.get(reverse('testapp:upload'))
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(MIDDLEWARE=DEFAULT_MIDDLEWARES + (
+        'django_web_utils.antivirus_utils.ReportInfectedFileUploadMiddleware',
+    ))
+    def test_form_post_request(self):
+        file = BytesIO(EICAR_TEST_CONTENT.encode('utf-8'))
+        response = self.client.post(reverse('testapp:upload'), data={'file': file})
+        self.assertEqual(response.status_code, 451)
+
+    @override_settings(MIDDLEWARE=DEFAULT_MIDDLEWARES + (
+        'django_web_utils.antivirus_utils.ReportInfectedFileUploadMiddleware',
+        'django_web_utils.json_utils.JsonErrorResponseMiddleware',
+    ))
+    def test_form_post_request_json(self):
+        file = BytesIO(EICAR_TEST_CONTENT.encode('utf-8'))
+        response = self.client.post(reverse('testapp:upload-json'), data={'file': file})
+        self.assertEqual(response.status_code, 451)

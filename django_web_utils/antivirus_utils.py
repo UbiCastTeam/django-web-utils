@@ -17,18 +17,30 @@ import socket
 import struct
 import sys
 # Django
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
+# Django web utils
+from django_web_utils.emails_utils import send_error_report_emails
+from django_web_utils.module_utils import import_module_by_python_path
 
 logger = logging.getLogger('djwutils.antivirus_utils')
 
+# The clamd socket path can be set in Django settings.
+SOCKET_PATH = getattr(settings, 'ANTIVIRUS_SOCKET_PATH', '/var/run/clamav/clamd.ctl')
+
+# The recipients for infected file upload report emails.
+# Can be a list of email addresses or a python module path to a callable returning the list.
+REPORTS_RECIPIENTS = getattr(settings, 'ANTIVIRUS_REPORTS_RECIPIENTS', None)
+
+MIDDLEWARE_MODULE = 'django_web_utils.antivirus_utils.ReportInfectedFileUploadMiddleware'
 
 INFECTED_MESSAGE = _('Your file was rejected because it is infected.')
 DOES_NOT_EXIST_MESSAGE = _('Cannot scan file because it does not exist.')
 INVALID_PATH_MESSAGE = _('Cannot scan file because it is neither a file nor a directory.')
 COMMAND_ERROR_MESSAGE = _('Failed to run file scanner.')
-
-SOCKET_PATH = '/var/run/clamav/clamd.ctl'
+BAN_WARNING_MESSAGE = _('Your request was reported and if you send again infected files, you will be banned.')
 
 
 class ClamdError(Exception):
@@ -313,6 +325,74 @@ class ClamAVDaemon:
             ) from AttributeError
 
 
+class FileInfectedError(Exception):
+    '''
+    Class for infected file errrors.
+    Used only if CLAMD_USE_MIDDLEWARE is enabled.
+    '''
+    def __init__(self, message):
+        # The message attribute is used to have the same format as ValidationError.
+        self.message = message
+        super().__init__(message)
+
+
+def on_file_infected_error(request):
+    '''
+    Function to log and report infected file upload.
+    '''
+    # Prepare message
+    if request.user.is_authenticated:
+        user_repr = 'user #' + str(request.user.id)
+        if hasattr(request.user, 'username'):
+            user_repr += ' "' + request.user.username + '"'
+        if hasattr(request.user, 'email'):
+            user_repr += ' <' + request.user.email + '>'
+    else:
+        user_repr = 'anonymous user'
+    log_subject = 'An infected file was uploaded'
+    log_msg = log_subject + '. IP: "' + request.META.get('REMOTE_ADDR', '') + '", ' + user_repr + '.'
+    logger.warning(log_msg)
+    # Get recipients
+    if isinstance(REPORTS_RECIPIENTS, str):
+        fct = import_module_by_python_path(REPORTS_RECIPIENTS)
+        recipients = fct()
+    elif isinstance(REPORTS_RECIPIENTS, (list, tuple, dict)):
+        recipients = REPORTS_RECIPIENTS
+    else:
+        recipients = [adm[1] for adm in settings.ADMINS]
+    # Send email if ricipients
+    if recipients:
+        send_error_report_emails(log_subject, log_msg, recipients=recipients)
+    return str(INFECTED_MESSAGE) + '\n' + str(BAN_WARNING_MESSAGE)
+
+
+class ReportInfectedFileUploadMiddleware:
+    '''
+    This middleware logs request information and returns a 451 HTTP code
+    (unavailable for legal reasons) response when an infected file is uploaded.
+    The purpose of this middleware is to be able to ban the IP with fai2ban.
+    '''
+    def __init__(self, get_response):
+        self.get_response = get_response
+        # One-time configuration and initialization.
+
+    def __call__(self, request):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+
+        response = self.get_response(request)
+
+        # Code to be executed for each request/response after
+        # the view is called.
+
+        return response
+
+    def process_exception(self, request, exception):
+        if isinstance(exception, FileInfectedError):
+            msg = on_file_infected_error(request)
+            return HttpResponse(msg, content_type='text/plain; charset=utf-8', status=451)
+
+
 def _remove_infected_file(path):
     '''
     Remove path (file or directory) if it exists.
@@ -351,6 +431,8 @@ def antivirus_path_validator(path, remove=True):
             logger.warning('Path "%s" is infected%s:\n%s', path, (', it will be removed' if remove else ''), report['files'])
             if remove:
                 _remove_infected_file(path)
+            if MIDDLEWARE_MODULE in settings.MIDDLEWARE:
+                raise FileInfectedError(INFECTED_MESSAGE)
             raise ValidationError(INFECTED_MESSAGE)
         logger.debug('Path "%s" is not infected:\n%s', path, report['files'])
 
@@ -375,6 +457,8 @@ def antivirus_file_validator(file, remove=True):
             logger.warning('Uploaded file "%s" is infected%s:\n%s', file.name, (', it will be removed' if remove else ''), report['files'])
             if remove and getattr(file, 'path', None):
                 _remove_infected_file(Path(file.path))
+            if MIDDLEWARE_MODULE in settings.MIDDLEWARE:
+                raise FileInfectedError(INFECTED_MESSAGE)
             raise ValidationError(INFECTED_MESSAGE)
         logger.debug('Uploaded file "%s" is not infected:\n%s', file.name, report['files'])
     finally:

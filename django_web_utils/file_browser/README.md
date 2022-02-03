@@ -3,6 +3,11 @@
 This app allows you to manipulate files in a specific directory.
 
 
+## Requirements
+
+This app requires clamav-daemon to check file content.
+
+
 ## Mandatory settings
 
 `FILE_BROWSER_DIRS`:
