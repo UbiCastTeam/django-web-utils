@@ -351,6 +351,7 @@ def on_file_infected_error(request):
         user_repr = 'anonymous user'
     log_subject = 'An infected file was uploaded'
     log_msg = log_subject + '. IP: "' + request.META.get('REMOTE_ADDR', '') + '", ' + user_repr + '.'
+    log_msg += '\nThe file was uploaded on this URL: ' + ('https://' if request.is_secure() else 'http://') + request.get_host() + request.get_full_path()
     logger.warning(log_msg)
     # Get recipients
     if isinstance(REPORTS_RECIPIENTS, str):
