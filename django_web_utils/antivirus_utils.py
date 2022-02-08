@@ -7,7 +7,7 @@ Requires:
 
 The ClamAVDaemon code is coming from clammy repository:
 https://github.com/ranguli/clammy
-It was slightly modified to fit this lib needs.
+It was greatly modified to fit this lib needs and to be able to scan large file as chunks.
 
 Settings:
 - ANTIVIRUS_SOCKET_PATH
@@ -26,6 +26,7 @@ import shutil
 import socket
 import struct
 import sys
+import traceback
 # Django
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -89,14 +90,10 @@ class ClamAVDaemon:
         self.host = host
         self.port = port
         self.unix_socket = unix_socket
+        self.socket_type = socket.AF_UNIX if unix_socket else socket.AF_INET
         self.timeout = timeout
 
-        if self.unix_socket:
-            self.socket_type = socket.AF_UNIX
-        else:
-            self.socket_type = socket.AF_INET
-
-        self.socket = self._init_socket()
+        self._init_socket()
 
     def _init_socket(self):
         try:
@@ -119,7 +116,7 @@ class ClamAVDaemon:
                 error_message = f'Error connecting to network socket with host "{self.host}" and port "{self.port}"'
             raise ClamdConnectionError(error_message) from error
 
-        return clamd_socket
+        self.socket = clamd_socket
 
     def ping(self):
         '''
@@ -149,7 +146,6 @@ class ClamAVDaemon:
           - ClamdConnectionError: in case of communication problem
         '''
         try:
-            self._init_socket()
             self._send_command('SHUTDOWN')
             # result = self._recv_response()
         finally:
@@ -177,7 +173,6 @@ class ClamAVDaemon:
         '''
         Send a command to the clamav server, and return the reply.
         '''
-        self._init_socket()
         try:
             self._send_command(command)
             response = self._recv_response().rsplit('ERROR', 1)
@@ -202,7 +197,6 @@ class ClamAVDaemon:
           - ClamdConnectionError: in case of communication problem
         '''
         try:
-            self._init_socket()
             self._send_command(command, filename)
 
             report = {'files': {}}
@@ -220,13 +214,19 @@ class ClamAVDaemon:
         finally:
             self._close_socket()
 
-    def instream(self, buff, max_chunk_size=1024):
+    def instream(self, buff, max_chunk_size=1048576, max_stream_size=26214400):
         '''
         Scan a buffer.
 
         buff  filelikeobj: buffer to scan
         max_chunk_size int: Maximum size of chunk to send to clamd in bytes
           MUST be < StreamMaxLength in /etc/clamav/clamd.conf
+          Default 1 MiB
+        max_stream_size int: Maximum size of stream to send to clamd in bytes
+          MUST be <= StreamMaxLength in /etc/clamav/clamd.conf
+          Used to segment scan for large stream
+          When segmented, the last chunk is always resend
+          Default 25 MiB
 
         return:
           - (dict): {FOUND: 1, files: {filename1: ('FOUND', 'virusname')}}
@@ -236,16 +236,54 @@ class ClamAVDaemon:
           - ClamdConnectionError: in case of communication problem
         '''
         try:
-            self._init_socket()
             self._send_command('INSTREAM')
 
+            stream_size = 0
+            last_chunk = None
             chunk = buff.read(max_chunk_size)
+            range_start, range_end = 0, 0
             while chunk:
+                if stream_size + len(chunk) >= max_stream_size:
+                    # Scan sent data
+                    self.socket.sendall(struct.pack(b'!L', 0))
+                    logger.debug('Instream scan range: %s-%s', range_start, range_end)
+
+                    result = self._recv_response()
+
+                    if len(result) > 0:
+                        if result == 'INSTREAM size limit exceeded. ERROR':
+                            raise ClamdBufferTooLongError(result)
+
+                        filename, reason, status = self.parse_response(result)
+                        if status != 'OK':
+                            report = {status: 1, 'files': {filename: (status, reason)}}
+                            return report
+
+                    # Initiate new instream scan
+                    self._close_socket()
+                    self._init_socket()
+                    self._send_command('INSTREAM')
+
+                    # Resend last chunk to scan content between two instream
+                    range_start = range_end - len(last_chunk)
+                    size = struct.pack(b'!L', len(last_chunk))
+                    self.socket.sendall(size + last_chunk)
+                    stream_size = len(last_chunk)
+                    last_chunk = None
+
+                # Send chunk
+                range_end += len(chunk)
                 size = struct.pack(b'!L', len(chunk))
                 self.socket.sendall(size + chunk)
+                stream_size += len(chunk)
+                last_chunk = chunk
+
+                # Get next chunk
                 chunk = buff.read(max_chunk_size)
 
+            # Scan sent data
             self.socket.sendall(struct.pack(b'!L', 0))
+            logger.debug('Instream scan range: %s-%s', range_start, range_end)
 
             result = self._recv_response()
 
@@ -255,7 +293,9 @@ class ClamAVDaemon:
 
                 filename, reason, status = self.parse_response(result)
                 report = {status: 1, 'files': {filename: (status, reason)}}
-                return report
+            else:
+                report = {'files': {}}
+            return report
         finally:
             self._close_socket()
 
@@ -268,7 +308,6 @@ class ClamAVDaemon:
         May raise:
           - ClamdConnectionError: in case of communication problem
         '''
-        self._init_socket()
         try:
             self._send_command('STATS')
             return self._recv_response_multiline()
@@ -435,8 +474,8 @@ def antivirus_path_validator(path, remove=True):
         clamav = ClamAVDaemon(unix_socket=sp)
         report = clamav.multi_scan(str(path))
         logger.debug('Scanned with antivirus path "%s": %s', path, report)
-    except Exception as e:
-        logger.error('Scan failed for path "%s": %s', path, e)
+    except Exception:
+        logger.error('Scan failed for path "%s":\n%s', path, traceback.format_exc())
         if remove:
             _remove_infected_file(path)
         raise ValidationError(COMMAND_ERROR_MESSAGE)
@@ -459,15 +498,14 @@ def antivirus_stream_validator(stream, remove=True):
     Check given file stream (for example in a model FileField) and raise ValidationError if invalid or infected.
     The `stream` argument must be a file object.
     '''
-    # Ensure file stream pointer is at beginning of the file
-    stream.seek(0)
+    initial_pos = stream.tell()
     try:
         sp = getattr(settings, 'ANTIVIRUS_SOCKET_PATH', None) or '/var/run/clamav/clamd.ctl'
         clamav = ClamAVDaemon(unix_socket=sp)
         report = clamav.instream(stream)
         logger.debug('Scanned with antivirus file "%s": %s', stream.name, report)
-    except Exception as e:
-        logger.error('Scan failed for stream "%s": %s', stream.name, e)
+    except Exception:
+        logger.error('Scan failed for stream "%s":\n%s', stream.name, traceback.format_exc())
         if remove and getattr(stream, 'path', None):
             _remove_infected_file(Path(stream.path))
         raise ValidationError(COMMAND_ERROR_MESSAGE)
@@ -484,8 +522,8 @@ def antivirus_stream_validator(stream, remove=True):
             raise ValidationError(SCAN_FAILED_MESSAGE)
         logger.debug('Stream "%s" is not infected:\n%s', stream.name, report['files'])
     finally:
-        # Return file stream pointer to beginning of the file again
-        stream.seek(0)
+        # Move file stream pointer to the initial position
+        stream.seek(initial_pos)
 
 
 def antivirus_file_validator(path, remove=True):
