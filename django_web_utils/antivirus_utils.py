@@ -10,6 +10,11 @@ https://github.com/ranguli/clammy
 It was greatly modified to fit this lib needs and to be able to scan large file as chunks.
 
 Settings:
+- ANTIVIRUS_ENABLED
+    Boolean to enable or not antivirus scan.
+    This setting impacts top level functions:
+    antivirus_path_validator, antivirus_stream_validator and antivirus_file_validator
+    Default: True
 - ANTIVIRUS_SOCKET_PATH
     The clamd socket path can be set in Django settings.
     Default: '/var/run/clamav/clamd.ctl'
@@ -459,15 +464,18 @@ def antivirus_path_validator(path, remove=True):
     Warning: The clamav unix user must be able to read the data to be able to scan it.
     Use the `antivirus_file_validator` function to avoid this constraint.
     '''
+    if not getattr(settings, 'ANTIVIRUS_ENABLED', True):
+        logger.info('Skipped scan of path "%s" because scan is disabled.', path)
+        return
     if isinstance(path, str):
         path = Path(path)
     elif not isinstance(path, Path):
         raise ValueError('Invalid argument type, a Path or a str is expected.')
     if not path.exists():
-        logger.warning('Cannot scan path "%s" because it does not exist.', path)
+        logger.info('Cannot scan path "%s" because it does not exist.', path)
         raise ValidationError(DOES_NOT_EXIST_MESSAGE)
     if not path.is_file() and not path.is_dir():
-        logger.warning('Cannot scan path "%s" because it is neither a file nor a directory.', path)
+        logger.info('Cannot scan path "%s" because it is neither a file nor a directory.', path)
         raise ValidationError(INVALID_PATH_MESSAGE)
     try:
         sp = getattr(settings, 'ANTIVIRUS_SOCKET_PATH', None) or '/var/run/clamav/clamd.ctl'
@@ -488,7 +496,7 @@ def antivirus_path_validator(path, remove=True):
                 raise FileInfectedError(INFECTED_MESSAGE)
             raise ValidationError(INFECTED_MESSAGE)
         elif report.get('ERROR'):
-            logger.warning('Path "%s" cannot be scanned%s:\n%s', path, (', it will be removed' if remove else ''), report['files'])
+            logger.error('Path "%s" cannot be scanned%s:\n%s', path, (', it will be removed' if remove else ''), report['files'])
             raise ValidationError(SCAN_FAILED_MESSAGE)
         logger.debug('Path "%s" is not infected:\n%s', path, report['files'])
 
@@ -498,6 +506,9 @@ def antivirus_stream_validator(stream, remove=True):
     Check given file stream (for example in a model FileField) and raise ValidationError if invalid or infected.
     The `stream` argument must be a file object.
     '''
+    if not getattr(settings, 'ANTIVIRUS_ENABLED', True):
+        logger.info('Skipped scan of stream "%s" because scan is disabled.', stream.name)
+        return
     initial_pos = stream.tell()
     try:
         sp = getattr(settings, 'ANTIVIRUS_SOCKET_PATH', None) or '/var/run/clamav/clamd.ctl'
@@ -518,7 +529,7 @@ def antivirus_stream_validator(stream, remove=True):
                 raise FileInfectedError(INFECTED_MESSAGE)
             raise ValidationError(INFECTED_MESSAGE)
         elif report.get('ERROR'):
-            logger.warning('Stream "%s" cannot be scanned%s:\n%s', stream.name, (', it will be removed' if remove else ''), report['files'])
+            logger.error('Stream "%s" cannot be scanned%s:\n%s', stream.name, (', it will be removed' if remove else ''), report['files'])
             raise ValidationError(SCAN_FAILED_MESSAGE)
         logger.debug('Stream "%s" is not infected:\n%s', stream.name, report['files'])
     finally:
@@ -532,12 +543,15 @@ def antivirus_file_validator(path, remove=True):
     The `path` argument must be a Path or a str.
     This function allows to check paths inaccessible for the clamav user.
     '''
+    if not getattr(settings, 'ANTIVIRUS_ENABLED', True):
+        logger.info('Skipped scan of file "%s" because scan is disabled.', path)
+        return
     if isinstance(path, str):
         path = Path(path)
     elif not isinstance(path, Path):
         raise ValueError('Invalid argument type, a Path or a str is expected.')
     if not path.is_file():
-        logger.warning('Cannot scan path "%s" because it is not a file.', path)
+        logger.info('Cannot scan path "%s" because it is not a file.', path)
         raise ValidationError(INVALID_FILE_MESSAGE)
     with open(path, 'rb') as fo:
         fo.path = path
