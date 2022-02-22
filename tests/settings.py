@@ -70,6 +70,8 @@ TEMPLATES = [
     },
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 AUTHENTICATION_BACKENDS = [
     'testapp.backend.SettingsBackend',
 ]
@@ -149,6 +151,11 @@ LOGGING = {
         },
     },
 }
+
+ADMINS = (
+    ('admin contact', 'admin@example.com'),
+)
+MANAGERS = ADMINS
 
 AUTHENTICATION_USERS = {'admin': {'password': 'test', 'is_active': True, 'is_staff': True, 'is_superuser': True}}
 

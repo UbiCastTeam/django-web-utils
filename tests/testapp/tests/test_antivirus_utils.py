@@ -6,6 +6,7 @@ from os import chmod
 from pathlib import Path
 
 from django.conf import settings
+from django.core import mail as dj_mail
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, TestCase
@@ -120,6 +121,10 @@ class AntivirusUtilsScanTests(TestCase):
         response = self.client.post(reverse('testapp:upload'), data={'file': file})
         self.assertEqual(response.status_code, 451)
 
+        mailinbox = [m.to[0] for m in dj_mail.outbox]
+        expected = [settings.ADMINS[0][1]]
+        self.assertListEqual(mailinbox, expected)
+
     @override_settings(MIDDLEWARE=DEFAULT_MIDDLEWARES + (
         'django_web_utils.antivirus_utils.ReportInfectedFileUploadMiddleware',
         'django_web_utils.json_utils.JsonErrorResponseMiddleware',
@@ -128,3 +133,7 @@ class AntivirusUtilsScanTests(TestCase):
         file = BytesIO(EICAR_TEST_CONTENT.encode('utf-8'))
         response = self.client.post(reverse('testapp:upload-json'), data={'file': file})
         self.assertEqual(response.status_code, 451)
+
+        mailinbox = [m.to[0] for m in dj_mail.outbox]
+        expected = [settings.ADMINS[0][1]]
+        self.assertListEqual(mailinbox, expected)
