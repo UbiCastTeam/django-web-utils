@@ -19,7 +19,26 @@ EICAR_TEST_CONTENT = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST
 DEFAULT_MIDDLEWARES = settings.MIDDLEWARE
 
 
-class AntivirusUtilsTests(TestCase):
+class AntivirusUtilsConfigTests(TestCase):
+    databases = []
+
+    def setUp(self):
+        print('\n\033[96m----- %s.%s -----\033[0m' % (self.__class__.__name__, self._testMethodName))
+        super().setUp()
+
+    def test_socket_path(self):
+        sp = avu.get_antivirus_socket_path()
+        self.assertTrue(Path(sp).exists())
+
+    def test_is_enabled(self):
+        enabled = getattr(settings, 'ANTIVIRUS_ENABLED', None)
+        self.assertIsNone(enabled)
+        enabled = avu.is_antivirus_enabled()
+        self.assertTrue(enabled)
+
+
+@override_settings(ANTIVIRUS_ENABLED=True)
+class AntivirusUtilsScanTests(TestCase):
     databases = []
 
     def setUp(self):

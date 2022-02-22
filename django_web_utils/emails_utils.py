@@ -276,7 +276,7 @@ def send_emails(subject, content, recipients=None, content_subtype='html', attac
     return True, sent
 
 
-def send_error_report_emails(title=None, error=None, recipients=None, filter_error=True):
+def send_error_report_emails(title=None, error=None, recipients=None, filter_error=True, show_traceback=True):
     '''
     Function to send last error traceback.
     Arguments:
@@ -323,10 +323,11 @@ def send_error_report_emails(title=None, error=None, recipients=None, filter_err
         content += '<div>%s</div>\n' % conditional_escape(error).replace('\n', '<br/>\n')
         content += '</fieldset>\n\n'
     # Traceback information
-    content += '<fieldset %s>\n' % fieldset_style
-    content += '<legend><b> Traceback </b></legend>\n'
-    content += '<div>%s</div>\n' % html_utils.get_html_traceback()
-    content += '</fieldset>\n\n'
+    if show_traceback:
+        content += '<fieldset %s>\n' % fieldset_style
+        content += '<legend><b> Traceback </b></legend>\n'
+        content += '<div>%s</div>\n' % html_utils.get_html_traceback()
+        content += '</fieldset>\n\n'
     # Send emails
     content = mark_safe(content)
     tplt = getattr(settings, 'EMAIL_ERROR_TEMPLATE', None)

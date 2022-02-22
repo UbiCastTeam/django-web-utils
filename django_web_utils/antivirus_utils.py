@@ -12,9 +12,10 @@ It was greatly modified to fit this lib needs and to be able to scan large file 
 Settings:
 - ANTIVIRUS_ENABLED
     Boolean to enable or not antivirus scan.
+    If no value is set (None), the antivirus scan will be enabled if the clamAV socket file exists.
     This setting impacts top level functions:
     antivirus_path_validator, antivirus_stream_validator and antivirus_file_validator
-    Default: True
+    Default: None
 - ANTIVIRUS_SOCKET_PATH
     The clamd socket path can be set in Django settings.
     Default: '/var/run/clamav/clamd.ctl'
@@ -379,7 +380,7 @@ class ClamAVDaemon:
 class FileInfectedError(Exception):
     '''
     Class for infected file errrors.
-    Used only if CLAMD_USE_MIDDLEWARE is enabled.
+    Used only if the `ReportInfectedFileUploadMiddleware` middleware is enabled.
     '''
     def __init__(self, message):
         # The message attribute is used to have the same format as ValidationError.
@@ -416,7 +417,7 @@ def on_file_infected_error(request):
         recipients = [adm[1] for adm in settings.ADMINS]
     # Send email if ricipients
     if recipients:
-        send_error_report_emails(log_subject, log_msg, recipients=recipients)
+        send_error_report_emails(log_subject, log_msg, recipients=recipients, show_traceback=False)
     return str(INFECTED_MESSAGE) + '\n' + str(BAN_WARNING_MESSAGE)
 
 
@@ -447,6 +448,19 @@ class ReportInfectedFileUploadMiddleware:
             return HttpResponse(msg, content_type='text/plain; charset=utf-8', status=451)
 
 
+def get_antivirus_socket_path():
+    return getattr(settings, 'ANTIVIRUS_SOCKET_PATH', None) or '/var/run/clamav/clamd.ctl'
+
+
+def is_antivirus_enabled():
+    enabled = getattr(settings, 'ANTIVIRUS_ENABLED', None)
+    if enabled is None:
+        socket_exists = Path(get_antivirus_socket_path()).exists()
+        settings.ANTIVIRUS_ENABLED = socket_exists  # Avoid checking again socket existence
+        return socket_exists
+    return bool(enabled)
+
+
 def _remove_infected_file(path):
     '''
     Remove path (file or directory) if it exists.
@@ -464,7 +478,7 @@ def antivirus_path_validator(path, remove=True):
     Warning: The clamav unix user must be able to read the data to be able to scan it.
     Use the `antivirus_file_validator` function to avoid this constraint.
     '''
-    if not getattr(settings, 'ANTIVIRUS_ENABLED', True):
+    if not is_antivirus_enabled():
         logger.info('Skipped scan of path "%s" because scan is disabled.', path)
         return
     if isinstance(path, str):
@@ -478,7 +492,7 @@ def antivirus_path_validator(path, remove=True):
         logger.info('Cannot scan path "%s" because it is neither a file nor a directory.', path)
         raise ValidationError(INVALID_PATH_MESSAGE)
     try:
-        sp = getattr(settings, 'ANTIVIRUS_SOCKET_PATH', None) or '/var/run/clamav/clamd.ctl'
+        sp = get_antivirus_socket_path()
         clamav = ClamAVDaemon(unix_socket=sp)
         report = clamav.multi_scan(str(path))
         logger.debug('Scanned with antivirus path "%s": %s', path, report)
@@ -506,12 +520,12 @@ def antivirus_stream_validator(stream, remove=True):
     Check given file stream (for example in a model FileField) and raise ValidationError if invalid or infected.
     The `stream` argument must be a file object.
     '''
-    if not getattr(settings, 'ANTIVIRUS_ENABLED', True):
+    if not is_antivirus_enabled():
         logger.info('Skipped scan of stream "%s" because scan is disabled.', stream.name)
         return
     initial_pos = stream.tell()
     try:
-        sp = getattr(settings, 'ANTIVIRUS_SOCKET_PATH', None) or '/var/run/clamav/clamd.ctl'
+        sp = get_antivirus_socket_path()
         clamav = ClamAVDaemon(unix_socket=sp)
         report = clamav.instream(stream)
         logger.debug('Scanned with antivirus file "%s": %s', stream.name, report)
@@ -543,7 +557,7 @@ def antivirus_file_validator(path, remove=True):
     The `path` argument must be a Path or a str.
     This function allows to check paths inaccessible for the clamav user.
     '''
-    if not getattr(settings, 'ANTIVIRUS_ENABLED', True):
+    if not is_antivirus_enabled():
         logger.info('Skipped scan of file "%s" because scan is disabled.', path)
         return
     if isinstance(path, str):
