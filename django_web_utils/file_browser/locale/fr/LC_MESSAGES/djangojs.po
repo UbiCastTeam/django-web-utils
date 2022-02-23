@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:25+0100\n"
+"POT-Creation-Date: 2022-02-23 14:40+0100\n"
 "PO-Revision-Date: 2021-12-23 17:02+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
@@ -18,121 +18,121 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 2.2.1\n"
 
-#: static/file_browser/file-browser.js:242
+#: static/file_browser/file-browser.js:239
 msgid "The folder is empty."
 msgstr "Le dossier est vide."
 
-#: static/file_browser/file-browser.js:280
+#: static/file_browser/file-browser.js:277
 msgid "Size:"
 msgstr "Taille :"
 
-#: static/file_browser/file-browser.js:282
+#: static/file_browser/file-browser.js:279
 msgid "Last modification:"
 msgstr "Dernière modification :"
 
-#: static/file_browser/file-browser.js:284
+#: static/file_browser/file-browser.js:281
 msgid "Files:"
 msgstr "Fichiers :"
 
-#: static/file_browser/file-browser.js:285
+#: static/file_browser/file-browser.js:282
 msgid "Folders:"
 msgstr "Dossiers :"
 
-#: static/file_browser/file-browser.js:291
-#: static/file_browser/file-browser.js:743
+#: static/file_browser/file-browser.js:288
 #: static/file_browser/file-browser.js:754
+#: static/file_browser/file-browser.js:765
 msgid "Delete"
 msgstr "Supprimer"
 
-#: static/file_browser/file-browser.js:292
-#: static/file_browser/file-browser.js:593
-#: static/file_browser/file-browser.js:596
+#: static/file_browser/file-browser.js:289
+#: static/file_browser/file-browser.js:604
+#: static/file_browser/file-browser.js:607
 msgid "Rename"
 msgstr "Renommer"
 
-#: static/file_browser/file-browser.js:293
-#: static/file_browser/file-browser.js:681
+#: static/file_browser/file-browser.js:290
 #: static/file_browser/file-browser.js:692
+#: static/file_browser/file-browser.js:703
 msgid "Move"
 msgstr "Déplacer"
 
-#: static/file_browser/file-browser.js:313
-#: static/file_browser/file-browser.js:499
-#: static/file_browser/file-browser.js:531
-#: static/file_browser/file-browser.js:804
+#: static/file_browser/file-browser.js:310
+#: static/file_browser/file-browser.js:510
+#: static/file_browser/file-browser.js:542
+#: static/file_browser/file-browser.js:815
 msgid "root"
 msgstr "racine"
 
-#: static/file_browser/file-browser.js:403
-#: static/file_browser/file-browser.js:778
+#: static/file_browser/file-browser.js:400
+#: static/file_browser/file-browser.js:789
 msgid "Loading"
 msgstr "Chargement"
 
-#: static/file_browser/file-browser.js:420
+#: static/file_browser/file-browser.js:431
 msgid "Ok"
 msgstr "Ok"
 
-#: static/file_browser/file-browser.js:482
+#: static/file_browser/file-browser.js:493
 msgid "New folder name:"
 msgstr "Nom du nouveau dossier :"
 
-#: static/file_browser/file-browser.js:499
+#: static/file_browser/file-browser.js:510
 msgid "Add a folder in"
 msgstr "Ajouter un dossier dans"
 
-#: static/file_browser/file-browser.js:502
-#: static/file_browser/file-browser.js:534
+#: static/file_browser/file-browser.js:513
+#: static/file_browser/file-browser.js:545
 msgid "Add"
 msgstr "Ajouter"
 
-#: static/file_browser/file-browser.js:505
-#: static/file_browser/file-browser.js:537
-#: static/file_browser/file-browser.js:599
-#: static/file_browser/file-browser.js:695
-#: static/file_browser/file-browser.js:757
-#: static/file_browser/file-browser.js:838
+#: static/file_browser/file-browser.js:516
+#: static/file_browser/file-browser.js:548
+#: static/file_browser/file-browser.js:610
+#: static/file_browser/file-browser.js:706
+#: static/file_browser/file-browser.js:768
+#: static/file_browser/file-browser.js:849
 msgid "Cancel"
 msgstr "Annuler"
 
-#: static/file_browser/file-browser.js:522
+#: static/file_browser/file-browser.js:533
 msgid "File to add:"
 msgstr "Fichier à ajouter :"
 
-#: static/file_browser/file-browser.js:531
+#: static/file_browser/file-browser.js:542
 msgid "Add a file in"
 msgstr "Ajouter un fichier dans"
 
-#: static/file_browser/file-browser.js:563
+#: static/file_browser/file-browser.js:574
 msgid "New name:"
 msgstr "Nouveau nom :"
 
-#: static/file_browser/file-browser.js:566
-#: static/file_browser/file-browser.js:626
+#: static/file_browser/file-browser.js:577
+#: static/file_browser/file-browser.js:637
 msgid "Selected file(s):"
 msgstr "Fichier(s) sélectionné(s) :"
 
-#: static/file_browser/file-browser.js:624
+#: static/file_browser/file-browser.js:635
 msgid "Move to:"
 msgstr "Déplacer vers :"
 
-#: static/file_browser/file-browser.js:685
-#: static/file_browser/file-browser.js:747
+#: static/file_browser/file-browser.js:696
+#: static/file_browser/file-browser.js:758
 msgid "files"
 msgstr "fichiers"
 
-#: static/file_browser/file-browser.js:720
+#: static/file_browser/file-browser.js:731
 msgid "Are you sure to delete the selected file(s) ?"
 msgstr "Êtes vous certain de vouloir supprimer les fichiers sélectionnés ?"
 
-#: static/file_browser/file-browser.js:745
+#: static/file_browser/file-browser.js:756
 msgid "one file"
 msgstr "un fichier"
 
-#: static/file_browser/file-browser.js:770
+#: static/file_browser/file-browser.js:781
 msgid "Search only in current dir"
 msgstr "Rechercher uniquement dans le dossier courant"
 
-#: static/file_browser/file-browser.js:832
-#: static/file_browser/file-browser.js:835
+#: static/file_browser/file-browser.js:843
+#: static/file_browser/file-browser.js:846
 msgid "Search"
 msgstr "Rechercher"

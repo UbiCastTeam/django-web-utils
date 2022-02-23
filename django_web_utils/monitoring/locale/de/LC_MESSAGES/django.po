@@ -7,152 +7,157 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:25+0100\n"
+"POT-Creation-Date: 2022-02-23 14:40+0100\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: \n"
 "X-Generator: Poedit 2.2.1\n"
 
-#: sysinfo.py:19
-msgid "Distributor ID"
-msgstr ""
-
-#: sysinfo.py:20
-msgid "Description"
-msgstr "Beschreibung"
-
-#: sysinfo.py:21
-msgid "Release"
-msgstr ""
-
-#: sysinfo.py:22
-msgid "Codename"
-msgstr ""
-
-#: sysinfo.py:42
+#: sysinfo.py:63
 msgid "Version"
 msgstr "Version"
 
-#: sysinfo.py:43
-msgid "Revision"
-msgstr ""
-
-#: sysinfo.py:44
-msgid "Python version"
-msgstr ""
-
-#: sysinfo.py:48
-msgid "Django version"
-msgstr ""
-
-#: sysinfo.py:56
-msgid "Database engine"
-msgstr ""
-
-#: sysinfo.py:57
-msgid "Django time zone"
-msgstr ""
-
-#: sysinfo.py:61
-msgid "Software"
-msgstr ""
-
+# Translated by DeepL.
 #: sysinfo.py:64
-msgid "Time zone"
-msgstr ""
+msgid "Revision"
+msgstr "Revision"
 
+# Translated by DeepL.
 #: sysinfo.py:65
-msgid "Uptime"
-msgstr ""
+msgid "Python version"
+msgstr "Python-Version"
 
+# Translated by DeepL.
 #: sysinfo.py:66
-msgid "Load"
-msgstr ""
+msgid "Django version"
+msgstr "Django-Version"
 
-#: sysinfo.py:67
+# Translated by DeepL.
+#: sysinfo.py:69
+msgid "Database engine"
+msgstr "Datenbank-Engine"
+
+# Translated by DeepL.
+#: sysinfo.py:71
+msgid "Django time zone"
+msgstr "Django Zeitzone"
+
+#: sysinfo.py:86
+msgid "Description"
+msgstr "Beschreibung"
+
+# Translated by DeepL.
+#: sysinfo.py:87
 msgid "Kernel"
-msgstr ""
+msgstr "Kernel"
 
-#: sysinfo.py:68
+#: sysinfo.py:88
 msgid "Hostname"
 msgstr "Hostname"
 
-#: sysinfo.py:69
-msgid "Platform"
-msgstr ""
+# Translated by DeepL.
+#: sysinfo.py:89
+msgid "Time zone"
+msgstr "Zeitzone"
 
-#: sysinfo.py:77
-msgid "OS"
-msgstr ""
+# Translated by DeepL.
+#: sysinfo.py:93
+msgid "Uptime"
+msgstr "Betriebszeit"
 
-#: sysinfo.py:84
-msgid "HDD"
-msgstr ""
+# Translated by DeepL.
+#: sysinfo.py:94
+msgid "Load"
+msgstr "Laden Sie"
 
-#: sysinfo.py:112 sysinfo.py:130
+# Translated by DeepL.
+#: sysinfo.py:128 sysinfo.py:155
 msgid "Model"
-msgstr ""
+msgstr "Modell"
 
-#: sysinfo.py:113
+# Translated by DeepL.
+#: sysinfo.py:129
 msgid "Cores"
-msgstr ""
+msgstr "Kerne"
 
-#: sysinfo.py:114
+# Translated by DeepL.
+#: sysinfo.py:130
 msgid "Default frequency"
-msgstr ""
+msgstr "Standardfrequenz"
 
-#: sysinfo.py:115
-msgid "Current frequency"
-msgstr ""
+# Translated by DeepL.
+#: sysinfo.py:171
+msgid "Software"
+msgstr "Software"
 
-#: sysinfo.py:116
+# Translated by DeepL.
+#: sysinfo.py:174
+msgid "OS"
+msgstr "OS"
+
+# Translated by DeepL.
+#: sysinfo.py:181
+msgid "HDD"
+msgstr "HDD"
+
+# Translated by DeepL.
+#: sysinfo.py:184
 msgid "CPU"
-msgstr ""
+msgstr "CPU"
 
-#: sysinfo.py:131
+# Translated by DeepL.
+#: sysinfo.py:187
 msgid "GPU"
-msgstr ""
+msgstr "GPU"
 
-#: sysinfo.py:144
+# Translated by DeepL.
+#: sysinfo.py:200
 msgid "Total"
-msgstr ""
+msgstr "Insgesamt"
 
-#: sysinfo.py:144 sysinfo.py:145 sysinfo.py:146
+#: sysinfo.py:200 sysinfo.py:201 sysinfo.py:202
 msgid "GB"
 msgstr "GB"
 
-#: sysinfo.py:145
+# Translated by DeepL.
+#: sysinfo.py:201
 msgid "Free"
-msgstr ""
+msgstr "Kostenlos"
 
-#: sysinfo.py:146
+# Translated by DeepL.
+#: sysinfo.py:202
 msgid "Cached"
-msgstr ""
+msgstr "Cached"
 
-#: sysinfo.py:148
+# Translated by DeepL.
+#: sysinfo.py:204
 msgid "Failed to get information"
-msgstr ""
+msgstr "Informationen konnten nicht abgerufen werden"
 
-#: sysinfo.py:149
+# Translated by DeepL.
+#: sysinfo.py:205
 msgid "Memory"
-msgstr ""
+msgstr "Speicher"
 
-#: sysinfo.py:156
+# Translated by DeepL.
+#: sysinfo.py:212
 msgid "Network"
-msgstr ""
+msgstr "Netzwerk"
 
-#: sysinfo.py:163
+# Translated by DeepL.
+#: sysinfo.py:219
 msgid "Sensors"
-msgstr ""
+msgstr "Sensoren"
 
+# Translated by DeepL.
 #: templates/monitoring/base.html:6 templates/monitoring/base.html:8
 msgid "Daemons monitoring"
-msgstr ""
+msgstr "Überwachung von Dämonen"
 
 #: templates/monitoring/config.html:5 templates/monitoring/config.html:41
 #: templates/monitoring/log.html:13 templates/monitoring/log.html:49
@@ -166,10 +171,11 @@ msgstr "Zurück"
 msgid "Refresh"
 msgstr "Aktualisieren"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:11 templates/monitoring/config.html:45
 #: templates/monitoring/log.html:29 templates/monitoring/log.html:65
 msgid "See raw content"
-msgstr ""
+msgstr "Siehe Rohinhalt"
 
 #: templates/monitoring/config.html:16
 msgid "Default configuration"
@@ -192,9 +198,10 @@ msgstr "Letzte Änderung:"
 msgid "Current configuration file path:"
 msgstr "Derzeitiger Konfigurationsdateipfad:"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:32
 msgid "Reset file"
-msgstr ""
+msgstr "Datei zurücksetzen"
 
 #: templates/monitoring/config.html:39
 msgid "Apply modifications"
@@ -208,25 +215,29 @@ msgstr "Status"
 msgid "Loading"
 msgstr "Lädt"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:17 templates/monitoring/panel.html:13
 msgid "Commands"
-msgstr ""
+msgstr "Befehle"
 
 #: templates/monitoring/daemon.html:19 templates/monitoring/panel.html:58
 msgid "Stop"
 msgstr "Stopp"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:20
 msgid "Configure"
-msgstr ""
+msgstr "Konfigurieren Sie"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:25 templates/monitoring/panel.html:12
 msgid "Log file"
-msgstr ""
+msgstr "Log-Datei"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:28 templates/monitoring/panel.html:22
 msgid "Last modification"
-msgstr ""
+msgstr "Letzte Änderung"
 
 #: templates/monitoring/daemon.html:32 templates/monitoring/panel.html:23
 msgid "File size"
@@ -240,90 +251,111 @@ msgstr "Aktionen"
 msgid "See"
 msgstr "Anzeigen"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:39 templates/monitoring/panel.html:49
 msgid "See tail"
-msgstr ""
+msgstr "Siehe Schwanz"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:41 templates/monitoring/panel.html:50
 msgid "Clear log"
-msgstr ""
+msgstr "Protokoll löschen"
 
+# Translated by DeepL.
 #: templates/monitoring/log.html:8 templates/monitoring/log.html:44
 msgid "Clear"
-msgstr ""
+msgstr "Klar"
 
+# Translated by DeepL.
 #: templates/monitoring/log.html:19 templates/monitoring/log.html:55
 msgid "File size:"
-msgstr ""
+msgstr "Größe der Datei:"
 
+# Translated by DeepL.
 #: templates/monitoring/log.html:26 templates/monitoring/log.html:62
 msgid "See complete file"
-msgstr ""
+msgstr "Vollständige Datei anzeigen"
 
+# Translated by DeepL.
 #: templates/monitoring/log.html:26 templates/monitoring/log.html:62
 msgid "See only end"
-msgstr ""
+msgstr "Siehe nur Ende"
 
+# Translated by DeepL.
 #: templates/monitoring/log.html:82
 msgid "Log file is empty."
-msgstr ""
+msgstr "Die Protokolldatei ist leer."
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:15
 msgid "Start all"
-msgstr ""
+msgstr "Alle starten"
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:16
 msgid "Stop all"
-msgstr ""
+msgstr "Alle anhalten"
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:17
 msgid "Restart all"
-msgstr ""
+msgstr "Alle neu starten"
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:26
 msgid "Clear all logs"
-msgstr ""
+msgstr "Alle Protokolle löschen"
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:38 views.py:163
 msgid "log file"
-msgstr ""
+msgstr "Protokolldatei"
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:38
 msgid "config file"
-msgstr ""
+msgstr "Konfigurationsdatei"
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:56
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #: templates/monitoring/panel.html:60
 msgid "Restart"
 msgstr "Neustart"
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:64
 msgid "Edit configuration"
-msgstr ""
+msgstr "Konfiguration bearbeiten"
 
+# Translated by DeepL.
 #: utils.py:31
 msgid "Log file cleared."
-msgstr ""
+msgstr "Die Logdatei wurde gelöscht."
 
+# Translated by DeepL.
 #: utils.py:36
 msgid "Invalid command."
-msgstr ""
+msgstr "Ungültiger Befehl."
 
+# Translated by DeepL.
 #: utils.py:39
 msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
-msgstr ""
+msgstr "Die gegebene Daemon-Klasse ist keine Unterklasse von Django web utils BaseDaemon."
 
+# Translated by DeepL.
 #: utils.py:47 utils.py:50
 msgid "No valid target for command."
-msgstr ""
+msgstr "Kein gültiges Ziel für den Befehl."
 
+# Translated by DeepL.
 #: utils.py:57
 msgid "The daemon script cannot be found."
-msgstr ""
+msgstr "Das Daemon-Skript kann nicht gefunden werden."
 
+# Translated by DeepL.
 #: utils.py:150
 #, python-format
 msgid ""
@@ -331,6 +363,9 @@ msgid ""
 "Only file tail and raw file are accessible.\n"
 "Warning: getting the raw file can saturate system memory."
 msgstr ""
+"Datei zu groß: %s.\n"
+"Nur Dateischwanz und Rohdatei sind zugänglich.\n"
+"Warnung: Das Abrufen der Rohdatei kann den Systemspeicher sättigen."
 
 #: utils.py:161
 msgid "Unable to display log file."
@@ -349,14 +384,17 @@ msgstr "Konfigurationsdatei kann nicht geschrieben werden."
 msgid "Configuration file updated."
 msgstr "Konfigurationsdatei aktualisiert."
 
+# Translated by DeepL.
 #: utils.py:199
 msgid "Unable to delete configuration file."
-msgstr ""
+msgstr "Konfigurationsdatei kann nicht gelöscht werden."
 
+# Translated by DeepL.
 #: utils.py:201
 msgid "Configuration file deleted."
-msgstr ""
+msgstr "Konfigurationsdatei gelöscht."
 
+# Translated by DeepL.
 #: utils.py:220
 #, python-format
 msgid ""
@@ -364,42 +402,54 @@ msgid ""
 "Only the raw file is accessible.\n"
 "Warning: getting the raw file can saturate system memory."
 msgstr ""
+"Die Datei ist zu groß: %s.\n"
+"Nur die Rohdatei ist zugänglich.\n"
+"Warnung: Das Abrufen der Rohdatei kann den Systemspeicher sättigen."
 
+# Translated by DeepL.
 #: utils.py:230
 msgid "Unable to display configuration file."
-msgstr ""
+msgstr "Die Konfigurationsdatei kann nicht angezeigt werden."
 
+# Translated by DeepL.
 #: utils.py:250
 msgid "Unable to read default configuration file."
-msgstr ""
+msgstr "Die Standardkonfigurationsdatei kann nicht gelesen werden."
 
+# Translated by DeepL.
 #: views.py:24
 msgid "You don't have the permission to access this url."
-msgstr ""
+msgstr "Sie haben keine Berechtigung für den Zugriff auf diese URL."
 
+# Translated by DeepL.
 #: views.py:29
 msgid "Please enter password."
-msgstr ""
+msgstr "Bitte Passwort eingeben."
 
+# Translated by DeepL.
 #: views.py:35
 msgid "Invalid password."
-msgstr ""
+msgstr "Ungültiges Passwort."
 
+# Translated by DeepL.
 #: views.py:113
 msgid "Invalid daemon name:"
-msgstr ""
+msgstr "Ungültiger Daemon-Name:"
 
+# Translated by DeepL.
 #: views.py:120
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" successfully executed."
-msgstr ""
+msgstr "Befehl \"%(cmd)s\" auf \"%(name)s\" erfolgreich ausgeführt."
 
+# Translated by DeepL.
 #: views.py:122
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" failed."
-msgstr ""
+msgstr "Der Befehl \"%(cmd)s\" auf \"%(name)s\" ist fehlgeschlagen."
 
+# Translated by DeepL.
 #: views.py:207
 #, python-format
 msgid "Edit configuration file: %s"
-msgstr ""
+msgstr "Konfigurationsdatei bearbeiten: %s"

@@ -7,44 +7,84 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:26+0100\n"
+"POT-Creation-Date: 2022-02-23 14:40+0100\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: \n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: \n"
 "X-Generator: Poedit 2.2.1\n"
 
+# Translated by DeepL.
 #: admin_utils.py:14
 msgid "Export selected objects as CSV file"
-msgstr ""
+msgstr "Geselecteerde objecten exporteren als CSV-bestand"
 
 #: admin_utils.py:112
 msgid "CSV export"
 msgstr "CSV-export"
 
+# Translated by DeepL.
+#: antivirus_utils.py:49
+msgid "Your request was reported and if you send again infected files, you will be banned."
+msgstr "Uw verzoek is gerapporteerd en als u weer geïnfecteerde bestanden verstuurt, wordt u verbannen."
+
+# Translated by DeepL.
+#: antivirus_utils.py:50
+msgid "Failed to run antivirus scanner."
+msgstr "De antivirusscanner werkt niet."
+
+# Translated by DeepL.
+#: antivirus_utils.py:51
+msgid "Cannot scan file because it does not exist."
+msgstr "Kan bestand niet scannen omdat het niet bestaat."
+
+# Translated by DeepL.
+#: antivirus_utils.py:52
+msgid "Your file was rejected because it is infected."
+msgstr "Uw bestand is geweigerd omdat het geïnfecteerd is."
+
+# Translated by DeepL.
+#: antivirus_utils.py:53
+msgid "Cannot scan file because it is not a file."
+msgstr "Kan bestand niet scannen omdat het geen bestand is."
+
+# Translated by DeepL.
+#: antivirus_utils.py:54
+msgid "Cannot scan file because it is neither a file nor a directory."
+msgstr "Kan bestand niet scannen omdat het noch een bestand noch een map is."
+
+# Translated by DeepL.
+#: antivirus_utils.py:55
+msgid "Failed to scan your file with the antivirus."
+msgstr "Uw bestand kon niet gescand worden met het antivirusprogramma."
+
 #: auth_utils.py:42
 msgid "Your account is disabled."
 msgstr "Dit account is gedeactiveerd."
 
+# Translated by DeepL.
 #: auth_utils.py:44
 msgid "Your username and password do not match."
-msgstr ""
+msgstr "Uw gebruikersnaam en wachtwoord komen niet overeen."
 
+# Translated by DeepL.
 #: auth_utils.py:46
 msgid "Authentication required."
-msgstr ""
+msgstr "Authenticatie vereist."
 
+# Translated by DeepL.
 #: auth_utils.py:49
 msgid "Access authentication"
-msgstr ""
+msgstr "Toegangsverificatie"
 
+# Translated by DeepL.
 #: auth_utils.py:85 auth_utils.py:90
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
-msgstr ""
+msgstr "Het wachtwoord moet ten minste 3 soorten tekens bevatten (de soorten zijn kleine letters, hoofdletters, cijfers en speciale tekens)."
 
 #: files_utils.py:40
 msgid "B"
@@ -70,145 +110,179 @@ msgstr "TB"
 msgid "Yes"
 msgstr "Ja"
 
+# Translated by DeepL.
 #: forms_utils.py:123
 msgid "No"
-msgstr ""
+msgstr "Geen"
 
-#: json_utils.py:80
+# Translated by DeepL.
+#: json_utils.py:91
 msgid "Invalid request method"
-msgstr ""
+msgstr "Ongeldige verzoekmethode"
 
-#: json_utils.py:88
+#: json_utils.py:96
 msgid "Authentication required"
 msgstr "Authenticatie is vereist"
 
-#: json_utils.py:91
+#: json_utils.py:127
 msgid "Access denied"
 msgstr "Toegang geweigerd"
 
-#: json_utils.py:93
+# Translated by DeepL.
+#: json_utils.py:129
 msgid "Page not found"
-msgstr ""
+msgstr "Pagina niet gevonden"
 
-#: json_utils.py:97
+# Translated by DeepL.
+#: json_utils.py:134
+msgid "Infected file detected"
+msgstr "Geïnfecteerd bestand gedetecteerd"
+
+# Translated by DeepL.
+#: json_utils.py:139
 msgid "Internal server error"
-msgstr ""
+msgstr "Interne serverfout"
 
+# Translated by DeepL.
 #: ldap_utils.py:76
 msgid "Error when initializing connection with LDAP server."
-msgstr ""
+msgstr "Fout bij initialiseren verbinding met LDAP-server."
 
 #: ldap_utils.py:76 ldap_utils.py:104 ldap_utils.py:131 ldap_utils.py:282
 msgid "Error:"
 msgstr "Fout:"
 
+# Translated by DeepL.
 #: ldap_utils.py:104
 msgid "Error when trying to authenticate on LDAP server."
-msgstr ""
+msgstr "Fout bij verificatie op LDAP-server."
 
+# Translated by DeepL.
 #: ldap_utils.py:130
 msgid "Search on LDAP server failed."
-msgstr ""
+msgstr "Zoeken op LDAP-server mislukt."
 
+# Translated by DeepL.
 #: ldap_utils.py:133
 msgid "Arguments:"
-msgstr ""
+msgstr "Argumenten:"
 
 #: ldap_utils.py:167
 msgid "User not found."
 msgstr "Gebruiker niet gevonden."
 
+# Translated by DeepL.
 #: ldap_utils.py:179
 msgid "Group not found."
-msgstr ""
+msgstr "Groep niet gevonden."
 
+# Translated by DeepL.
 #: ldap_utils.py:282
 msgid "Error when trying to get user information."
-msgstr ""
+msgstr "Fout bij het opvragen van gebruikersinformatie."
 
+# Translated by DeepL.
 #: ldap_utils.py:291
 msgid "Login failed (however the user exists in LDAP)."
-msgstr ""
+msgstr "Inloggen mislukt (de gebruiker bestaat echter in LDAP)."
 
+# Translated by DeepL.
 #: ldap_utils.py:293
 msgid "Login succeeded."
-msgstr ""
+msgstr "Inloggen gelukt."
 
+# Translated by DeepL.
 #: ldap_utils.py:294
 #, python-format
 msgid "User \"%s\" data:"
-msgstr ""
+msgstr "Gebruiker \"%s\" gegevens:"
 
+# Translated by DeepL.
 #: ldap_utils.py:299
 msgid "User groups:"
-msgstr ""
+msgstr "Gebruikersgroepen:"
 
+# Translated by DeepL.
 #: ldap_utils.py:304
 msgid "Error when trying to get groups."
-msgstr ""
+msgstr "Fout bij het ophalen van groepen."
 
+# Translated by DeepL.
 #: ldap_utils.py:315
 msgid "No groups found."
-msgstr ""
+msgstr "Geen groepen gevonden."
 
-#: settings_utils.py:33
+# Translated by DeepL.
+#: settings_utils.py:36
 msgid "Failed to backup settings:"
-msgstr ""
+msgstr "De back-up van de instellingen is mislukt:"
 
-#: settings_utils.py:71
+#: settings_utils.py:74
 msgid "No changes to save."
 msgstr "Geen wijzigingen om op te slaan."
 
-#: settings_utils.py:80 settings_utils.py:140
+# Translated by DeepL.
+#: settings_utils.py:83 settings_utils.py:143
 msgid "Your changes were not saved but were applied to the running software."
-msgstr ""
+msgstr "Uw wijzigingen zijn niet opgeslagen, maar wel toegepast op de draaiende software."
 
-#: settings_utils.py:117 settings_utils.py:169
-msgid "Unable to write configuration file:"
-msgstr ""
-
-#: settings_utils.py:118 settings_utils.py:170
-msgid "Your changes will be active after the service restart."
-msgstr ""
-
+# Translated by DeepL.
 #: settings_utils.py:120 settings_utils.py:172
-msgid "The service will be restarted in 2 seconds."
-msgstr ""
+msgid "Unable to write configuration file:"
+msgstr "Kan configuratiebestand niet schrijven:"
 
+# Translated by DeepL.
+#: settings_utils.py:121 settings_utils.py:173
+msgid "Your changes will be active after the service restart."
+msgstr "Uw wijzigingen zullen actief zijn na de herstart van de service."
+
+# Translated by DeepL.
+#: settings_utils.py:123 settings_utils.py:175
+msgid "The service will be restarted in 2 seconds."
+msgstr "De dienst wordt binnen 2 seconden opnieuw opgestart."
+
+# Translated by DeepL.
 #: system_utils.py:99
 msgid "Password required."
-msgstr ""
+msgstr "Wachtwoord vereist."
 
+# Translated by DeepL.
 #: system_utils.py:108
 #, python-format
 msgid "Command exited with code %s."
-msgstr ""
+msgstr "Commando afgesloten met code %s."
 
+# Translated by DeepL.
 #: system_utils.py:139 system_utils.py:141 system_utils.py:148
 #: system_utils.py:169
 msgid "Unable to write file."
-msgstr ""
+msgstr "Kan bestand niet schrijven."
 
+# Translated by DeepL.
 #: system_utils.py:139
 msgid "Specified path is a directory."
-msgstr ""
+msgstr "Het opgegeven pad is een directory."
 
+# Translated by DeepL.
 #: system_utils.py:141
 msgid "Invalid file path."
-msgstr ""
+msgstr "Ongeldig bestandspad."
 
+# Translated by DeepL.
 #: system_utils.py:154
 msgid "You need to send the main password to edit this file."
-msgstr ""
+msgstr "U moet het hoofdwachtwoord sturen om dit bestand te kunnen bewerken."
 
+# Translated by DeepL.
 #: system_utils.py:163
 #, python-format
 msgid "Unable to create temporary file \"%s\"."
-msgstr ""
+msgstr "Kan tijdelijk bestand \"%s\" niet aanmaken."
 
+# Translated by DeepL.
 #: system_utils.py:170
 msgid "File updated."
-msgstr ""
+msgstr "Bestand bijgewerkt."
 
 #: templates/forms_utils/password_toggle_input.html:5
 msgid "Hide value"

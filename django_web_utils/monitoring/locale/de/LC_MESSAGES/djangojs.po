@@ -7,48 +7,55 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:26+0100\n"
+"POT-Creation-Date: 2022-02-23 14:40+0100\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: \n"
 "X-Generator: Poedit 2.2.1\n"
 
+# Translated by DeepL.
 #: static/monitoring/daemons-manager.js:90
 msgid "No messages have been returned."
-msgstr ""
+msgstr "Es wurden keine Nachrichten zurückgeschickt."
 
+# Translated by DeepL.
 #: static/monitoring/daemons-manager.js:98
 msgid "Command output:"
-msgstr ""
+msgstr "Befehlsausgabe:"
 
+# Translated by DeepL.
 #: static/monitoring/daemons-manager.js:105
 msgid "Command result"
-msgstr ""
+msgstr "Befehl Ergebnis"
 
 #: static/monitoring/daemons-manager.js:108
 msgid "Close"
 msgstr "Schließen"
 
+# Translated by DeepL.
 #: static/monitoring/daemons-manager.js:137
 msgid "running"
-msgstr ""
+msgstr "läuft"
 
+# Translated by DeepL.
 #: static/monitoring/daemons-manager.js:139
 msgid "not running"
-msgstr ""
+msgstr "läuft nicht"
 
+# Translated by DeepL.
 #: static/monitoring/daemons-manager.js:144
 msgid "Click to enter password"
-msgstr ""
+msgstr "Klicken Sie, um das Passwort einzugeben"
 
+# Translated by DeepL.
 #: static/monitoring/daemons-manager.js:145
 msgid "need password"
-msgstr ""
+msgstr "Passwort erforderlich"
 
 #: static/monitoring/pwd-manager.js:35
 msgid "Password:"
@@ -58,10 +65,12 @@ msgstr "Passwort:"
 msgid "Send"
 msgstr "Senden"
 
+# Translated by DeepL.
 #: static/monitoring/pwd-manager.js:44
 msgid "Authenticating"
-msgstr ""
+msgstr "Authentifizierung"
 
+# Translated by DeepL.
 #: static/monitoring/pwd-manager.js:139
 msgid "Enter password"
-msgstr ""
+msgstr "Passwort eingeben"

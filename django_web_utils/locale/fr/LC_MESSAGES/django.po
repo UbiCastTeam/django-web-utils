@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:25+0100\n"
-"PO-Revision-Date: 2021-12-24 12:25+0100\n"
+"POT-Creation-Date: 2022-02-23 14:40+0100\n"
+"PO-Revision-Date: 2022-02-23 14:44+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -24,6 +24,34 @@ msgstr "Exporter les objets sélectionnés dans un fichier CSV"
 #: admin_utils.py:112
 msgid "CSV export"
 msgstr "Export CSV"
+
+#: antivirus_utils.py:49
+msgid "Your request was reported and if you send again infected files, you will be banned."
+msgstr "Votre requête a été signalée et si vous envoyez à nouveau des fichiers infectés, vous serez banni."
+
+#: antivirus_utils.py:50
+msgid "Failed to run antivirus scanner."
+msgstr "Échec de l'exécution du scanner antivirus."
+
+#: antivirus_utils.py:51
+msgid "Cannot scan file because it does not exist."
+msgstr "Impossible d'analyser le fichier car il n'existe pas."
+
+#: antivirus_utils.py:52
+msgid "Your file was rejected because it is infected."
+msgstr "Votre fichier a été rejeté car il est infecté."
+
+#: antivirus_utils.py:53
+msgid "Cannot scan file because it is not a file."
+msgstr "Impossible d'analyser le fichier car il ne s'agit pas d'un fichier."
+
+#: antivirus_utils.py:54
+msgid "Cannot scan file because it is neither a file nor a directory."
+msgstr "Impossible d'analyser le fichier car ce n'est ni un fichier ni un répertoire."
+
+#: antivirus_utils.py:55
+msgid "Failed to scan your file with the antivirus."
+msgstr "L'analyse de votre fichier par l'antivirus a échoué."
 
 #: auth_utils.py:42
 msgid "Your account is disabled."
@@ -73,23 +101,27 @@ msgstr "Oui"
 msgid "No"
 msgstr "Non"
 
-#: json_utils.py:80
+#: json_utils.py:91
 msgid "Invalid request method"
 msgstr "Méthode de requête invalide"
 
-#: json_utils.py:88
+#: json_utils.py:96
 msgid "Authentication required"
 msgstr "Authentification requise"
 
-#: json_utils.py:91
+#: json_utils.py:127
 msgid "Access denied"
 msgstr "Accès refusé"
 
-#: json_utils.py:93
+#: json_utils.py:129
 msgid "Page not found"
 msgstr "Page introuvable"
 
-#: json_utils.py:97
+#: json_utils.py:134
+msgid "Infected file detected"
+msgstr "Fichier infecté détecté"
+
+#: json_utils.py:139
 msgid "Internal server error"
 msgstr "Erreur interne au serveur"
 
@@ -150,27 +182,27 @@ msgstr "Erreur lors de la récupération des groupes de l'utilisateur."
 msgid "No groups found."
 msgstr "Aucun groupe n'a été trouvé."
 
-#: settings_utils.py:33
+#: settings_utils.py:36
 msgid "Failed to backup settings:"
 msgstr "Échec de la création d'un point de sauvegarde des paramètres :"
 
-#: settings_utils.py:71
+#: settings_utils.py:74
 msgid "No changes to save."
 msgstr "Aucune modification a sauvegarder."
 
-#: settings_utils.py:80 settings_utils.py:140
+#: settings_utils.py:83 settings_utils.py:143
 msgid "Your changes were not saved but were applied to the running software."
 msgstr "Vos modifications n'ont pas été sauvegardées mais ont été appliquées à l'application en cours."
 
-#: settings_utils.py:117 settings_utils.py:169
+#: settings_utils.py:120 settings_utils.py:172
 msgid "Unable to write configuration file:"
 msgstr "Impossible d'écrire le fichier de configuration :"
 
-#: settings_utils.py:118 settings_utils.py:170
+#: settings_utils.py:121 settings_utils.py:173
 msgid "Your changes will be active after the service restart."
 msgstr "Vos modifications seront actives après le redémarrage du service."
 
-#: settings_utils.py:120 settings_utils.py:172
+#: settings_utils.py:123 settings_utils.py:175
 msgid "The service will be restarted in 2 seconds."
 msgstr "Le service sera redémarré dans 2 secondes."
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:25+0100\n"
+"POT-Creation-Date: 2022-02-23 14:40+0100\n"
 "PO-Revision-Date: 2021-12-23 16:31+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
@@ -17,135 +17,115 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.1\n"
 
-#: sysinfo.py:19
-msgid "Distributor ID"
-msgstr "Identifiant du distributeur"
-
-#: sysinfo.py:20
-msgid "Description"
-msgstr "Description"
-
-#: sysinfo.py:21
-msgid "Release"
-msgstr "Jalon"
-
-#: sysinfo.py:22
-msgid "Codename"
-msgstr "Nom de code"
-
-#: sysinfo.py:42
+#: sysinfo.py:63
 msgid "Version"
 msgstr "Version"
 
-#: sysinfo.py:43
+#: sysinfo.py:64
 msgid "Revision"
 msgstr "Révision"
 
-#: sysinfo.py:44
+#: sysinfo.py:65
 msgid "Python version"
 msgstr "Version de Python"
 
-#: sysinfo.py:48
+#: sysinfo.py:66
 msgid "Django version"
 msgstr "Version de Django"
 
-#: sysinfo.py:56
+#: sysinfo.py:69
 msgid "Database engine"
 msgstr "Moteur de base de données"
 
-#: sysinfo.py:57
+#: sysinfo.py:71
 msgid "Django time zone"
 msgstr "Fuseau horaire de Django"
 
-#: sysinfo.py:61
-msgid "Software"
-msgstr "Logiciel"
+#: sysinfo.py:86
+msgid "Description"
+msgstr "Description"
 
-#: sysinfo.py:64
-msgid "Time zone"
-msgstr "Fuseau horaire"
-
-#: sysinfo.py:65
-msgid "Uptime"
-msgstr "Durée de fonctionnement"
-
-#: sysinfo.py:66
-msgid "Load"
-msgstr "Charge"
-
-#: sysinfo.py:67
+#: sysinfo.py:87
 msgid "Kernel"
 msgstr "Noyau"
 
-#: sysinfo.py:68
+#: sysinfo.py:88
 msgid "Hostname"
 msgstr "Nom d'hôte"
 
-#: sysinfo.py:69
-msgid "Platform"
-msgstr "Plate-forme"
+#: sysinfo.py:89
+msgid "Time zone"
+msgstr "Fuseau horaire"
 
-#: sysinfo.py:77
-msgid "OS"
-msgstr "OS"
+#: sysinfo.py:93
+msgid "Uptime"
+msgstr "Durée de fonctionnement"
 
-#: sysinfo.py:84
-msgid "HDD"
-msgstr "HDD"
+#: sysinfo.py:94
+msgid "Load"
+msgstr "Charge"
 
-#: sysinfo.py:112 sysinfo.py:130
+#: sysinfo.py:128 sysinfo.py:155
 msgid "Model"
 msgstr "Modèle"
 
-#: sysinfo.py:113
+#: sysinfo.py:129
 msgid "Cores"
 msgstr "Cœurs"
 
-#: sysinfo.py:114
+#: sysinfo.py:130
 msgid "Default frequency"
 msgstr "Fréquence nominale"
 
-#: sysinfo.py:115
-msgid "Current frequency"
-msgstr "Fréquence courante"
+#: sysinfo.py:171
+msgid "Software"
+msgstr "Logiciel"
 
-#: sysinfo.py:116
+#: sysinfo.py:174
+msgid "OS"
+msgstr "OS"
+
+#: sysinfo.py:181
+msgid "HDD"
+msgstr "HDD"
+
+#: sysinfo.py:184
 msgid "CPU"
 msgstr "CPU"
 
-#: sysinfo.py:131
+#: sysinfo.py:187
 msgid "GPU"
 msgstr "GPU"
 
-#: sysinfo.py:144
+#: sysinfo.py:200
 msgid "Total"
 msgstr "Total"
 
-#: sysinfo.py:144 sysinfo.py:145 sysinfo.py:146
+#: sysinfo.py:200 sysinfo.py:201 sysinfo.py:202
 msgid "GB"
 msgstr "Go"
 
-#: sysinfo.py:145
+#: sysinfo.py:201
 msgid "Free"
 msgstr "Libre"
 
-#: sysinfo.py:146
+#: sysinfo.py:202
 msgid "Cached"
 msgstr "En cache"
 
-#: sysinfo.py:148
+#: sysinfo.py:204
 msgid "Failed to get information"
 msgstr "Échec de l'obtention des informations"
 
-#: sysinfo.py:149
+#: sysinfo.py:205
 msgid "Memory"
 msgstr "Mémoire"
 
-#: sysinfo.py:156
+#: sysinfo.py:212
 msgid "Network"
 msgstr "Réseau"
 
-#: sysinfo.py:163
+#: sysinfo.py:219
 msgid "Sensors"
 msgstr "Capteurs"
 
@@ -408,3 +388,18 @@ msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Éditer le fichier de configuration : %s"
+
+#~ msgid "Distributor ID"
+#~ msgstr "Identifiant du distributeur"
+
+#~ msgid "Release"
+#~ msgstr "Jalon"
+
+#~ msgid "Codename"
+#~ msgstr "Nom de code"
+
+#~ msgid "Platform"
+#~ msgstr "Plate-forme"
+
+#~ msgid "Current frequency"
+#~ msgstr "Fréquence courante"

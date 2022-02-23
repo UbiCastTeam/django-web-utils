@@ -7,132 +7,149 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-24 14:26+0100\n"
+"POT-Creation-Date: 2022-02-23 14:40+0100\n"
 "PO-Revision-Date: 2021-12-24 14:31+0100\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: \n"
 "X-Generator: Poedit 2.2.1\n"
 
-#: static/file_browser/file-browser.js:242
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:239
 msgid "The folder is empty."
-msgstr ""
+msgstr "La carpeta está vacía."
 
-#: static/file_browser/file-browser.js:280
+#: static/file_browser/file-browser.js:277
 msgid "Size:"
 msgstr "Tamaño:"
 
-#: static/file_browser/file-browser.js:282
+#: static/file_browser/file-browser.js:279
 msgid "Last modification:"
 msgstr "Última modificación:"
 
-#: static/file_browser/file-browser.js:284
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:281
 msgid "Files:"
-msgstr ""
+msgstr "Archivos:"
 
-#: static/file_browser/file-browser.js:285
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:282
 msgid "Folders:"
-msgstr ""
+msgstr "Carpetas:"
 
-#: static/file_browser/file-browser.js:291
-#: static/file_browser/file-browser.js:743
+#: static/file_browser/file-browser.js:288
 #: static/file_browser/file-browser.js:754
+#: static/file_browser/file-browser.js:765
 msgid "Delete"
 msgstr "Eliminar"
 
-#: static/file_browser/file-browser.js:292
-#: static/file_browser/file-browser.js:593
-#: static/file_browser/file-browser.js:596
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:289
+#: static/file_browser/file-browser.js:604
+#: static/file_browser/file-browser.js:607
 msgid "Rename"
-msgstr ""
+msgstr "Cambiar el nombre de"
 
-#: static/file_browser/file-browser.js:293
-#: static/file_browser/file-browser.js:681
+#: static/file_browser/file-browser.js:290
 #: static/file_browser/file-browser.js:692
+#: static/file_browser/file-browser.js:703
 msgid "Move"
 msgstr "Mover"
 
-#: static/file_browser/file-browser.js:313
-#: static/file_browser/file-browser.js:499
-#: static/file_browser/file-browser.js:531
-#: static/file_browser/file-browser.js:804
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:310
+#: static/file_browser/file-browser.js:510
+#: static/file_browser/file-browser.js:542
+#: static/file_browser/file-browser.js:815
 msgid "root"
-msgstr ""
+msgstr "raíz"
 
-#: static/file_browser/file-browser.js:403
-#: static/file_browser/file-browser.js:778
+#: static/file_browser/file-browser.js:400
+#: static/file_browser/file-browser.js:789
 msgid "Loading"
 msgstr "Cargando"
 
-#: static/file_browser/file-browser.js:420
+#: static/file_browser/file-browser.js:431
 msgid "Ok"
 msgstr "Aceptar"
 
-#: static/file_browser/file-browser.js:482
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:493
 msgid "New folder name:"
-msgstr ""
+msgstr "Nuevo nombre de carpeta:"
 
-#: static/file_browser/file-browser.js:499
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:510
 msgid "Add a folder in"
-msgstr ""
+msgstr "Añadir una carpeta en"
 
-#: static/file_browser/file-browser.js:502
-#: static/file_browser/file-browser.js:534
+#: static/file_browser/file-browser.js:513
+#: static/file_browser/file-browser.js:545
 msgid "Add"
 msgstr "Añadir"
 
-#: static/file_browser/file-browser.js:505
-#: static/file_browser/file-browser.js:537
-#: static/file_browser/file-browser.js:599
-#: static/file_browser/file-browser.js:695
-#: static/file_browser/file-browser.js:757
-#: static/file_browser/file-browser.js:838
+#: static/file_browser/file-browser.js:516
+#: static/file_browser/file-browser.js:548
+#: static/file_browser/file-browser.js:610
+#: static/file_browser/file-browser.js:706
+#: static/file_browser/file-browser.js:768
+#: static/file_browser/file-browser.js:849
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: static/file_browser/file-browser.js:522
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:533
 msgid "File to add:"
-msgstr ""
+msgstr "Archivo para añadir:"
 
-#: static/file_browser/file-browser.js:531
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:542
 msgid "Add a file in"
-msgstr ""
+msgstr "Añadir un archivo en"
 
-#: static/file_browser/file-browser.js:563
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:574
 msgid "New name:"
-msgstr ""
+msgstr "Nuevo nombre:"
 
-#: static/file_browser/file-browser.js:566
-#: static/file_browser/file-browser.js:626
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:577
+#: static/file_browser/file-browser.js:637
 msgid "Selected file(s):"
-msgstr ""
+msgstr "Archivo(s) seleccionado(s):"
 
-#: static/file_browser/file-browser.js:624
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:635
 msgid "Move to:"
-msgstr ""
+msgstr "Muévete a:"
 
-#: static/file_browser/file-browser.js:685
-#: static/file_browser/file-browser.js:747
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:696
+#: static/file_browser/file-browser.js:758
 msgid "files"
-msgstr ""
+msgstr "archivos"
 
-#: static/file_browser/file-browser.js:720
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:731
 msgid "Are you sure to delete the selected file(s) ?"
-msgstr ""
+msgstr "¿Está seguro de que desea eliminar los archivos seleccionados?"
 
-#: static/file_browser/file-browser.js:745
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:756
 msgid "one file"
-msgstr ""
+msgstr "un archivo"
 
-#: static/file_browser/file-browser.js:770
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:781
 msgid "Search only in current dir"
-msgstr ""
+msgstr "Buscar sólo en la dirección actual"
 
-#: static/file_browser/file-browser.js:832
-#: static/file_browser/file-browser.js:835
+# Translated by DeepL.
+#: static/file_browser/file-browser.js:843
+#: static/file_browser/file-browser.js:846
 msgid "Search"
-msgstr ""
+msgstr "Buscar en"
