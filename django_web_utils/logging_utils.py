@@ -3,6 +3,17 @@
 import os
 import logging
 
+try:
+    import pygments
+    from pygments.lexers import SqlLexer
+    from pygments.formatters import Terminal256Formatter, TerminalTrueColorFormatter
+except ImportError:
+    pygments = SqlLexer = Terminal256Formatter = TerminalTrueColorFormatter = None
+try:
+    import sqlparse
+except ImportError:
+    sqlparse = None
+
 logger = logging.getLogger('djwutils.logging_utils')
 
 
@@ -123,3 +134,86 @@ class IgnoreNoSpaceLeftErrors(logging.Filter):
         except Exception as e:
             logger.error('IgnoreNoSpaceLeftErrors: Failed to parse error type: %s (record: %s).', e, record)
             return True
+
+
+class SQLFormatter(logging.Formatter):
+    """Pretty logger for SQL queries with optional indentation and syntax highlighting."""
+    def __init__(self, *args, **kwargs):
+        self.indent = kwargs.pop('indent', False)
+        self.true_color = kwargs.pop('true_color', False)
+        self.color_style = kwargs.pop('color_style', 'default')
+        super().__init__(*args, **kwargs)
+
+    def format(self, record):
+        # Remove leading and trailing whitespaces
+        sql = record.sql.strip()
+
+        if self.indent and sqlparse:
+            # Indent the SQL query
+            sql = sqlparse.format(sql, reindent=True)
+
+        if self.color_style != 'none' and all((pygments, SqlLexer, Terminal256Formatter, TerminalTrueColorFormatter)):
+            # Highlight the SQL query
+            terminal_formatter_cls = TerminalTrueColorFormatter if self.true_color else Terminal256Formatter
+            sql = pygments.highlight(sql, SqlLexer(), terminal_formatter_cls(style=self.color_style))
+
+        # Set the record's statement to the formatted query
+        record.statement = sql
+        return super(SQLFormatter, self).format(record)
+
+
+class OnlySlowSQLQueries(logging.Filter):
+    """Ignores SQL queries that execute in less than the provided threshold."""
+    def __init__(self, *args, **kwargs):
+        self.slow_query_threshold = kwargs.pop('slow_query_threshold_ms', 100) / 1000
+        super().__init__(*args, **kwargs)
+
+    def filter(self, record):
+        return record.duration >= self.slow_query_threshold
+
+
+def enable_sql_logging(
+    logging_config: dict,
+    indent=True, color_style='default', true_color=False,
+    only_slow_queries=False, slow_query_threshold_ms=100,
+):
+    # Formatters
+    formatters = logging_config.setdefault('formatters', {})
+    formatters['sql'] = {
+        '()': 'django_web_utils.logging_utils.SQLFormatter',
+        'format': '[%(duration).3f] %(statement)s',
+        'indent': indent,
+        'color_style': color_style,
+        'true_color': true_color,
+    }
+
+    # Filters
+    if only_slow_queries:
+        filters = logging_config.setdefault('filters', {})
+        filters['only_slow_sql_queries'] = {
+            '()': 'django_web_utils.logging_utils.OnlySlowSQLQueries',
+            'slow_query_threshold_ms': slow_query_threshold_ms,
+        }
+
+    # Handlers
+    handlers = logging_config.setdefault('handlers', {})
+    handlers['sql'] = {
+        'class': 'logging.StreamHandler',
+        'formatter': 'sql',
+        'level': 'DEBUG',
+    }
+    if only_slow_queries:
+        handlers['sql']['filters'] = ['only_slow_sql_queries']
+
+    # Loggers
+    loggers = logging_config.setdefault('loggers', {})
+    loggers['django.db.backends'] = {
+        'handlers': ['sql'],
+        'level': 'DEBUG',
+        'propagate': False,
+    }
+    loggers['django.db.backends.schema'] = {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+        'propagate': False,
+    }
