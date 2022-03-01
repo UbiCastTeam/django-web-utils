@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 import logging
+import os
+import re
+import traceback
 
 try:
     import pygments
@@ -142,24 +144,80 @@ class SQLFormatter(logging.Formatter):
         self.indent = kwargs.pop('indent', False)
         self.true_color = kwargs.pop('true_color', False)
         self.color_style = kwargs.pop('color_style', 'default')
+        self.truncate_sql = kwargs.pop('truncate_sql', -1)
+        self.traceback_filter = kwargs.pop('traceback_filter', None)
+        if self.traceback_filter:
+            self.traceback_filter = re.compile(self.traceback_filter)
+        self.traceback_lines = kwargs.pop('traceback_lines', 1)
+        self.only_slow_queries = kwargs.pop('only_slow_queries', False)
         super().__init__(*args, **kwargs)
 
     def format(self, record):
         # Remove leading and trailing whitespaces
         sql = record.sql.strip()
 
-        if self.indent and sqlparse:
-            # Indent the SQL query
-            sql = sqlparse.format(sql, reindent=True)
+        if self.truncate_sql > 0:
+            if len(sql) > self.truncate_sql:
+                sql = f'{sql[:self.truncate_sql]}...'
+        elif self.truncate_sql == 0:
+            sql = ''
+        else:
+            if self.indent and sqlparse:
+                # Indent the SQL query
+                sql = sqlparse.format(sql, reindent=True)
 
-        if self.color_style != 'none' and all((pygments, SqlLexer, Terminal256Formatter, TerminalTrueColorFormatter)):
-            # Highlight the SQL query
-            terminal_formatter_cls = TerminalTrueColorFormatter if self.true_color else Terminal256Formatter
-            sql = pygments.highlight(sql, SqlLexer(), terminal_formatter_cls(style=self.color_style))
+            if self.color_style != 'none' and all((pygments, SqlLexer, Terminal256Formatter, TerminalTrueColorFormatter)):
+                # Highlight the SQL query
+                terminal_formatter_cls = TerminalTrueColorFormatter if self.true_color else Terminal256Formatter
+                sql = pygments.highlight(sql, SqlLexer(), terminal_formatter_cls(style=self.color_style))
+
+        # Set the record's statement
+        prefix = 'SLOW SQL' if self.only_slow_queries else 'SQL'
+        duration = f'{record.duration * 1000:.1f}ms'
+        sql = sql.strip()
+        if sql:
+            record.statement = f'[{prefix} - {duration}]: {sql} [{duration}]'
+        else:
+            record.statement = f'[{prefix} - {duration}]:'
 
         # Set the record's statement to the formatted query
-        record.statement = sql
+        if self.traceback_lines != 0:
+            stack = traceback.extract_stack()
+            for i, frame_summary in enumerate(stack):
+                if 'django/db/models/query.py' in frame_summary.filename:
+                    stack = stack[:i]
+                    break
+            if self.traceback_filter:
+                stack = [line for line in stack if self.traceback_filter.search(line.filename)]
+            if self.traceback_lines > 0:
+                stack = stack[-self.traceback_lines:]
+            if stack:
+                tb = '\n'.join([
+                    f'{frame_summary.filename}:{frame_summary.lineno} in {frame_summary.name}\n\t{frame_summary.line}'
+                    for frame_summary in stack
+                ])
+            else:
+                tb = 'Unable to find query location in the stack.'
+            record.statement += f'\n{tb}'
+
+        if (self.truncate_sql < 0 and self.indent) or self.traceback_lines != 0:
+            record.statement += '\n'
+
         return super(SQLFormatter, self).format(record)
+
+
+class RegexFilter(logging.Filter):
+    """Ignores SQL queries that don't match the provided regex."""
+    def __init__(self, *args, **kwargs):
+        self.regex_filter = kwargs.pop('regex_filter', None)
+        if self.regex_filter:
+            self.regex_filter = re.compile(self.regex_filter)
+        super().__init__(*args, **kwargs)
+
+    def filter(self, record):
+        if not self.regex_filter:
+            return True
+        return bool(self.regex_filter.search(record.statement))
 
 
 class OnlySlowSQLQueries(logging.Filter):
@@ -175,21 +233,31 @@ class OnlySlowSQLQueries(logging.Filter):
 def enable_sql_logging(
     logging_config: dict,
     indent=True, color_style='default', true_color=False,
-    only_slow_queries=False, slow_query_threshold_ms=100,
+    truncate_sql=-1, traceback_filter=None, traceback_lines=1,
+    regex_filter=None, only_slow_queries=False, slow_query_threshold_ms=100,
 ):
     # Formatters
     formatters = logging_config.setdefault('formatters', {})
     formatters['sql'] = {
         '()': 'django_web_utils.logging_utils.SQLFormatter',
-        'format': '[%(duration).3f] %(statement)s',
+        'format': '%(statement)s',
         'indent': indent,
         'color_style': color_style,
         'true_color': true_color,
+        'truncate_sql': truncate_sql,
+        'traceback_filter': traceback_filter,
+        'traceback_lines': traceback_lines,
+        'only_slow_queries': only_slow_queries,
     }
 
     # Filters
+    filters = logging_config.setdefault('filters', {})
+    if regex_filter:
+        filters['regex_filter'] = {
+            '()': 'django_web_utils.logging_utils.settings.RegexFilter',
+            'regex_filter': regex_filter,
+        }
     if only_slow_queries:
-        filters = logging_config.setdefault('filters', {})
         filters['only_slow_sql_queries'] = {
             '()': 'django_web_utils.logging_utils.OnlySlowSQLQueries',
             'slow_query_threshold_ms': slow_query_threshold_ms,
@@ -202,8 +270,11 @@ def enable_sql_logging(
         'formatter': 'sql',
         'level': 'DEBUG',
     }
+    handlers['sql']['filters'] = []
+    if regex_filter:
+        handlers['sql']['filters'].append('regex_filter')
     if only_slow_queries:
-        handlers['sql']['filters'] = ['only_slow_sql_queries']
+        handlers['sql']['filters'].append('only_slow_sql_queries')
 
     # Loggers
     loggers = logging_config.setdefault('loggers', {})
