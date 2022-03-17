@@ -8,6 +8,7 @@ from pathlib import Path
 from django.conf import settings
 from django.core import mail as dj_mail
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings, TestCase
 from django.urls import reverse
@@ -65,6 +66,32 @@ class AntivirusUtilsScanTests(TestCase):
         # Should raise ValidationError
         with self.assertRaisesMessage(ValidationError, str(avu.INFECTED_MESSAGE)):
             avu.antivirus_path_validator(self.test_path)
+
+    def test_infected_stream(self):
+        with open(self.test_path, 'w') as fo:
+            # Write eicar test content
+            fo.write(EICAR_TEST_CONTENT)
+        # Should raise ValidationError
+        with self.assertRaisesMessage(ValidationError, str(avu.INFECTED_MESSAGE)):
+            with open(self.test_path, 'rb') as fo:
+                avu.antivirus_stream_validator(fo)
+
+    def test_infected_stream_closed(self):
+        with open(self.test_path, 'w') as fo:
+            # Write eicar test content
+            fo.write(EICAR_TEST_CONTENT)
+        # Should not raise any error because scan should be skipped (closed file)
+        fo = open(self.test_path, 'rb')
+        fo.close()
+        avu.antivirus_stream_validator(fo)
+
+    def test_infected_stream_reopen(self):
+        # Use ContentFile to handle re-opening
+        fo = ContentFile(EICAR_TEST_CONTENT.encode('utf-8'))
+        # Should raise ValidationError
+        with self.assertRaisesMessage(ValidationError, str(avu.INFECTED_MESSAGE)):
+            fo.close()
+            avu.antivirus_stream_validator(fo, skip_closed=False)
 
     def test_non_existent_path(self):
         # Should raise ValidationError
