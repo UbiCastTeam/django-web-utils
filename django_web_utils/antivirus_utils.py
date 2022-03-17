@@ -481,6 +481,7 @@ def antivirus_path_validator(path, remove=True):
     if not is_antivirus_enabled():
         logger.info('Skipped scan of path "%s" because scan is disabled.', path)
         return
+
     if isinstance(path, str):
         path = Path(path)
     elif not isinstance(path, Path):
@@ -491,6 +492,7 @@ def antivirus_path_validator(path, remove=True):
     if not path.is_file() and not path.is_dir():
         logger.info('Cannot scan path "%s" because it is neither a file nor a directory.', path)
         raise ValidationError(INVALID_PATH_MESSAGE)
+
     try:
         sp = get_antivirus_socket_path()
         clamav = ClamAVDaemon(unix_socket=sp)
@@ -515,7 +517,7 @@ def antivirus_path_validator(path, remove=True):
         logger.debug('Path "%s" is not infected:\n%s', path, report['files'])
 
 
-def antivirus_stream_validator(stream, remove=True):
+def antivirus_stream_validator(stream, remove=True, skip_closed=True):
     '''
     Check given file stream (for example in a model FileField) and raise ValidationError if invalid or infected.
     The `stream` argument must be a file object.
@@ -523,6 +525,15 @@ def antivirus_stream_validator(stream, remove=True):
     if not is_antivirus_enabled():
         logger.info('Skipped scan of stream "%s" because scan is disabled.', stream.name)
         return
+
+    was_closed = getattr(stream, 'closed', False)
+    if was_closed:
+        if skip_closed:
+            # This happens when the function is used as a validator on a model field and when the file hasn't changed.
+            logger.debug('Skipped scan of stream "%s" because stream is closed.', stream.name)
+            return
+        stream.open()
+
     initial_pos = stream.tell()
     try:
         sp = get_antivirus_socket_path()
@@ -548,7 +559,10 @@ def antivirus_stream_validator(stream, remove=True):
         logger.debug('Stream "%s" is not infected:\n%s', stream.name, report['files'])
     finally:
         # Move file stream pointer to the initial position
-        stream.seek(initial_pos)
+        if was_closed:
+            stream.close()
+        else:
+            stream.seek(initial_pos)
 
 
 def antivirus_file_validator(path, remove=True):
@@ -560,6 +574,7 @@ def antivirus_file_validator(path, remove=True):
     if not is_antivirus_enabled():
         logger.info('Skipped scan of file "%s" because scan is disabled.', path)
         return
+
     if isinstance(path, str):
         path = Path(path)
     elif not isinstance(path, Path):
@@ -567,6 +582,7 @@ def antivirus_file_validator(path, remove=True):
     if not path.is_file():
         logger.info('Cannot scan path "%s" because it is not a file.', path)
         raise ValidationError(INVALID_FILE_MESSAGE)
+
     with open(path, 'rb') as fo:
         fo.path = path
         antivirus_stream_validator(fo)
