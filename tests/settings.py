@@ -165,3 +165,15 @@ FILE_BROWSER_DIRS = {'storage': (os.path.join(BASE_DIR, 'tests', 'storage'), '/s
 
 # For reload_settings tests
 TIME_NOW = time.perf_counter_ns()
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dj_web_utils',
+        'USER': 'dj_web_utils',
+        'PASSWORD': 'dj_web_utils',
+        'HOST': 'localhost',
+        'PORT': 5432,
+        'TEST': {'NAME': 'dj_web_utils_test'},
+    },
+}

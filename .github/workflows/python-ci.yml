@@ -18,6 +18,21 @@ jobs:
       matrix:
         python-version: [3.7, 3.9]
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: dj_web_utils
+          POSTGRES_PASSWORD: dj_web_utils
+          POSTGRES_USER: dj_web_utils
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -36,7 +51,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install flake8 vulture django pillow bleach
+        python3 -m pip install flake8 vulture django pillow bleach psycopg2
     - name: Lint code with Python ${{ matrix.python-version }}
       run: |
         flake8 .
