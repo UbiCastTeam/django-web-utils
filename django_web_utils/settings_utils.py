@@ -191,7 +191,6 @@ def reload_settings(modules: Iterable[str] = ()):
 
     :param modules: any other module paths that need to be re-imported.
     """
-    from django.conf import settings, ENVIRONMENT_VARIABLE
     for module_path in (*modules, os.environ.get(ENVIRONMENT_VARIABLE)):
         sys.modules.pop(module_path)
 
