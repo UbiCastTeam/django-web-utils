@@ -183,10 +183,11 @@ class SQLFormatter(logging.Formatter):
         # Set the record's statement to the formatted query
         if self.traceback_lines != 0:
             stack = traceback.extract_stack()
-            for i, frame_summary in enumerate(stack):
-                if 'django/db/models/query.py' in frame_summary.filename:
-                    stack = stack[:i]
-                    break
+            if self.traceback_filter and self.traceback_lines > 0:
+                for i, frame_summary in enumerate(stack):
+                    if 'django/db/models/query.py' in frame_summary.filename:
+                        stack = stack[:i]
+                        break
             if self.traceback_filter:
                 stack = [line for line in stack if self.traceback_filter.search(line.filename)]
             if self.traceback_lines > 0:
@@ -254,7 +255,7 @@ def enable_sql_logging(
     filters = logging_config.setdefault('filters', {})
     if regex_filter:
         filters['regex_filter'] = {
-            '()': 'django_web_utils.logging_utils.settings.RegexFilter',
+            '()': 'django_web_utils.logging_utils.RegexFilter',
             'regex_filter': regex_filter,
         }
     if only_slow_queries:
