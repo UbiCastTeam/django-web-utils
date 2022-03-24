@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 services:
   db:
     image: postgres:latest
@@ -6,18 +6,19 @@ services:
       POSTGRES_USER: dj_web_utils
       POSTGRES_DB: dj_web_utils
       POSTGRES_PASSWORD: dj_web_utils
-    ports:
-      - "5432:5432"
-  django:
+  django_web_utils:
     image: debian
     environment:
       DJANGO_SETTINGS_MODULE: settings
       PYTHONPATH: /opt/src/tests:${PYTHONPATH}
+      POSTGRES_NAME: dj_web_utils
+      POSTGRES_USER: dj_web_utils
+      POSTGRES_PASSWORD: dj_web_utils
+    command: python3 tests/manage.py runserver 0.0.0.0:8200
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
       args:
-        - SKYREACH_APT_TOKEN
         - CLAMAV_MIRROR
     volumes:
       - type: bind

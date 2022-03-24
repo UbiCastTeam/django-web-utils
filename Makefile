@@ -4,9 +4,10 @@ export
 
 DOCKER_IMG := django_web_utils
 TMP_DOCKER_CT := django_web_utils_ct
+DOCKER_COMPOSE := docker compose -f docker/docker-compose.yml
 
 build_docker_img:
-	DOCKER_BUILDKIT=1 docker build --build-arg SKYREACH_APT_TOKEN=${SKYREACH_APT_TOKEN} --build-arg CLAMAV_MIRROR=${CLAMAV_MIRROR} -t ${DOCKER_IMG} -f docker/Dockerfile .
+	DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE} build
 
 lint:
 ifndef CI
@@ -24,21 +25,19 @@ endif
 
 run:
 	# Run Django test server on http://127.0.0.1:8200
-	docker run --rm -v ${CURDIR}:/opt/src -p 8200:8200 --name ${TMP_DOCKER_CT} ${DOCKER_IMG} python3 tests/manage.py runserver 0.0.0.0:8200
-
+	${DOCKER_COMPOSE} up --abort-on-container-exit
 test:
 ifndef CI
-	docker run -e CI=1 --rm -v ${CURDIR}:/opt/src --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
 else
 	pytest --reuse-db --cov=django_web_utils ${PYTEST_ARGS}
 endif
 
 shell:
-	docker run -it --rm -v ${CURDIR}:/opt/src --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
 
 stop:
-	docker kill ${TMP_DOCKER_CT} || true
-	docker rm ${TMP_DOCKER_CT} || true
+	${DOCKER_COMPOSE} stop && ${DOCKER_COMPOSE} rm -f
 
 po:
 	# Generate po files from source
