@@ -51,13 +51,16 @@ jobs:
     - name: Install Python dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install flake8 vulture django pillow bleach psycopg2
+        python3 -m pip install flake8 vulture django pillow bleach psycopg2 pytest pytest-cov pytest-django
     - name: Lint code with Python ${{ matrix.python-version }}
       run: |
-        flake8 .
+        make lint
     - name: Check for deadcode with Python ${{ matrix.python-version }}
       run: |
-        vulture --exclude docker/,submodules/ --min-confidence 90 .
+        make deadcode
     - name: Run test with Python ${{ matrix.python-version }}
+      env:
+        DJANGO_SETTINGS_MODULE: settings
+        PYTHONPATH: tests:${PYTHONPATH}
       run: |
-        python3 tests/manage.py test django_web_utils testapp
+        make test

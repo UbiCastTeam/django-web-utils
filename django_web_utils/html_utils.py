@@ -9,6 +9,7 @@ import html.entities
 import logging
 import re
 import traceback
+from copy import deepcopy
 # Django
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -43,7 +44,32 @@ def clean_html_tags(html, allow_iframes=False):
         attrs['iframe'] = iframe_attrs_check
         return bleach.clean(html, tags=tags, attributes=attrs, styles=ALLOWED_STYLES)
 
-    return bleach.clean(html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS, styles=ALLOWED_STYLES)
+    def img_attrs_check(tag, name, value):
+        if name in ALLOWED_ATTRS['img']:
+            if name == 'src':
+                protocols = ['data:image/'] + bleach.sanitizer.ALLOWED_PROTOCOLS
+                for protocol in protocols:
+                    if value.startswith(protocol):
+                        return True
+                return False
+            return True
+        return False
+
+    def a_attrs_check(tag, name, value):
+        if name in ALLOWED_ATTRS['a']:
+            if name == 'href':
+                for protocol in bleach.sanitizer.ALLOWED_PROTOCOLS:
+                    if value.startswith(protocol):
+                        return True
+                return False
+            return True
+        return False
+
+    allowed_attrs = deepcopy(ALLOWED_ATTRS)
+    allowed_attrs['img'] = img_attrs_check
+    allowed_attrs['a'] = a_attrs_check
+    protocols = bleach.sanitizer.ALLOWED_PROTOCOLS + ['data']
+    return bleach.clean(html, tags=ALLOWED_TAGS, attributes=allowed_attrs, styles=ALLOWED_STYLES, protocols=protocols)
 
 
 # strip_html_tags function
@@ -175,9 +201,10 @@ class TextHTMLParser(HTMLParser):
 
 
 def get_short_text(html_text, max_length=300, margin=100):
-    """
+    '''
     Function to get an html text which does not exceed a given number of chars.
-    """
+    ! Return empty if short text is not needed
+    '''
     if len(html_text) > max_length + margin:
         try:
             parser = TextHTMLParser(html_text, max_length)

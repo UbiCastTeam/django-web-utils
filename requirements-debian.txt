@@ -1,0 +1,4 @@
+clamav-daemon
+python3-django
+python3-pil
+python3-bleach
