@@ -218,7 +218,7 @@ class RegexFilter(logging.Filter):
     def filter(self, record):
         if not self.regex_filter:
             return True
-        return bool(self.regex_filter.search(record.statement))
+        return bool(self.regex_filter.search(record.sql))
 
 
 class OnlySlowSQLQueries(logging.Filter):
