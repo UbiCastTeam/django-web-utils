@@ -79,7 +79,7 @@ class SettingsStoreForm(BaseSettingsStoreForm, dj_forms.Form):
     def save(self, commit=True):
         if self.errors:
             raise ValueError(f'The form could not be saved: {self.errors}')
-        super().save(commit=commit)
+        return super().save(commit=commit)
 
 
 class SettingsStoreModelForm(BaseSettingsStoreForm, dj_forms.ModelForm):
