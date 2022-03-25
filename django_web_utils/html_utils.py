@@ -31,18 +31,12 @@ ALLOWED_STYLES = ['margin', 'padding', 'color', 'background', 'vertical-align', 
 # remove all non basic tags in the given html code
 # ----------------------------------------------------------------------------
 def clean_html_tags(html, allow_iframes=False):
-    if allow_iframes:
-        def iframe_attrs_check(tag, name, value):
-            if name in ('name', 'height', 'width', 'allowfullscreen', 'class', 'style'):
-                return True
-            if name == 'src' and value.startswith('https://'):
-                return True
-            return False
-
-        tags = list(ALLOWED_TAGS) + ['iframe']
-        attrs = dict(ALLOWED_ATTRS)
-        attrs['iframe'] = iframe_attrs_check
-        return bleach.clean(html, tags=tags, attributes=attrs, styles=ALLOWED_STYLES)
+    def iframe_attrs_check(tag, name, value):
+        if name in ('name', 'height', 'width', 'allowfullscreen', 'class', 'style'):
+            return True
+        if name == 'src' and value.startswith('https://'):
+            return True
+        return False
 
     def img_attrs_check(tag, name, value):
         if name in ALLOWED_ATTRS['img']:
@@ -66,10 +60,14 @@ def clean_html_tags(html, allow_iframes=False):
         return False
 
     allowed_attrs = deepcopy(ALLOWED_ATTRS)
+    tags = list(ALLOWED_TAGS)
+    if allow_iframes:
+        allowed_attrs['iframe'] = iframe_attrs_check
+        tags += ['iframe']
     allowed_attrs['img'] = img_attrs_check
     allowed_attrs['a'] = a_attrs_check
     protocols = bleach.sanitizer.ALLOWED_PROTOCOLS + ['data']
-    return bleach.clean(html, tags=ALLOWED_TAGS, attributes=allowed_attrs, styles=ALLOWED_STYLES, protocols=protocols)
+    return bleach.clean(html, tags=tags, attributes=allowed_attrs, styles=ALLOWED_STYLES, protocols=protocols)
 
 
 # strip_html_tags function

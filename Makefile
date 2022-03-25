@@ -11,14 +11,14 @@ build_docker_img:
 
 lint:
 ifndef CI
-	docker run -e CI=1 -v ${CURDIR}:/apps alpine/flake8:latest
+	docker run -e CI=1 --rm -v ${CURDIR}:/apps alpine/flake8:latest
 else
 	flake8 .
 endif
 
 deadcode:
 ifndef CI
-	docker run -e CI=1 -v ${CURDIR}:/apps registry.ubicast.net/docker/vulture:latest
+	docker run -e CI=1 --rm -v ${CURDIR}:/apps registry.ubicast.net/docker/vulture:latest
 else
 	vulture --exclude docker/,submodules/ --min-confidence 90 .
 endif
@@ -28,13 +28,13 @@ run:
 	${DOCKER_COMPOSE} up --abort-on-container-exit
 test:
 ifndef CI
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
 else
 	pytest --reuse-db --cov=django_web_utils ${PYTEST_ARGS}
 endif
 
 shell:
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
 
 stop:
 	${DOCKER_COMPOSE} stop && ${DOCKER_COMPOSE} rm -f
