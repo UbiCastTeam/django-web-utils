@@ -169,10 +169,10 @@ TIME_NOW = time.perf_counter_ns()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': 'db',
+        'NAME': os.environ.get('POSTGRES_NAME', 'dj_web_utils'),
+        'USER': os.environ.get('POSTGRES_USER', 'dj_web_utils'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'dj_web_utils'),
+        'HOST': os.environ.get('POSTGRES_HOSTNAME', 'localhost'),
         'PORT': 5432,
         'TEST': {'NAME': 'dj_web_utils_test'},
     },

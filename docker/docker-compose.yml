@@ -14,6 +14,7 @@ services:
       POSTGRES_NAME: dj_web_utils
       POSTGRES_USER: dj_web_utils
       POSTGRES_PASSWORD: dj_web_utils
+      POSTGRES_HOSTNAME: db
     command: python3 tests/manage.py runserver 0.0.0.0:8200
     build:
       context: ..
