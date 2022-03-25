@@ -26,7 +26,7 @@ SECRET_KEY = 'xvds$ppv5ha754g1yx3aax7ugr_2*fmeFc(lrc8/7kdez-63xn'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -169,10 +169,10 @@ TIME_NOW = time.perf_counter_ns()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dj_web_utils',
-        'USER': 'dj_web_utils',
-        'PASSWORD': 'dj_web_utils',
-        'HOST': 'localhost',
+        'NAME': os.environ.get('POSTGRES_NAME', 'dj_web_utils'),
+        'USER': os.environ.get('POSTGRES_USER', 'dj_web_utils'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'dj_web_utils'),
+        'HOST': os.environ.get('POSTGRES_HOSTNAME', 'localhost'),
         'PORT': 5432,
         'TEST': {'NAME': 'dj_web_utils_test'},
     },

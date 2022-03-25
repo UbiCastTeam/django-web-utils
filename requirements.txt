@@ -1,0 +1,4 @@
+django
+pillow
+bleach
+psycopg2-binary
