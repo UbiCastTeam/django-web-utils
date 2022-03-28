@@ -4,6 +4,7 @@ from typing import Type
 from django import forms as dj_forms
 from django.utils.translation import gettext_lazy as _
 
+from django_web_utils.forms_utils import BaseFileSettingsForm
 from .store import SettingsStoreBase
 
 
@@ -55,8 +56,15 @@ class BaseSettingsStoreForm:
         """
         Returns: success (boolean), changed (list of fields names).
         """
+        success, msg = None, None
         if hasattr(super(), 'save'):
-            super().save(commit)
+            result = super().save(commit)
+            # Compat with django_web_utils.forms_utils.BaseFileSettingsForm
+            if isinstance(self, BaseFileSettingsForm) and hasattr(result, '__len__') and len(result) == 2 and isinstance(result[0], bool):
+                success, msg = result
+                if success is False:
+                    return success, msg
+
         # Settings fields
         changed = {}
         for field, info in self.Meta.SETTINGS_STORE_MAPPING.items():
@@ -69,10 +77,12 @@ class BaseSettingsStoreForm:
         # Write changes to database
         if commit:
             if not changed:
-                return True, _('No changes to save.')
+                if success is None or not self.has_changed():
+                    return True, _('No changes to save.')
+                return success, msg
             self.settings_store.update(**changed)
             return True, _('Your changes will be active in a few seconds.')
-        return True, list(changed.items())
+        return True, list(changed.items()) + (msg if isinstance(msg, list) else ())
 
 
 class SettingsStoreForm(BaseSettingsStoreForm, dj_forms.Form):
