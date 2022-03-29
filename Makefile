@@ -18,7 +18,8 @@ endif
 
 deadcode:
 ifndef CI
-	docker run -e CI=1 --rm -v ${CURDIR}:/apps registry.ubicast.net/docker/vulture:latest
+	docker run -e CI=1 --rm -v ${CURDIR}:/apps registry.ubicast.net/docker/vulture:latest \
+		 --exclude docker/,submodules/ --min-confidence 90 .
 else
 	vulture --exclude docker/,submodules/ --min-confidence 90 .
 endif
