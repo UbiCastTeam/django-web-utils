@@ -11,7 +11,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 # Django web utils
-from django_web_utils.antivirus_utils import antivirus_path_validator
+from django_web_utils.antivirus_utils import antivirus_file_validator
 from django_web_utils.file_browser import config
 
 
@@ -118,7 +118,7 @@ def storage_action(request, namespace=None):
                         fo.write(chunk)
                 # Antivirus check
                 try:
-                    antivirus_path_validator(file_path)
+                    antivirus_file_validator(file_path)
                 except ValidationError as e:
                     return JsonResponse(dict(error=str(e)), status=400)
                 # Get url
