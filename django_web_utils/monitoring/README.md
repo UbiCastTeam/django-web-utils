@@ -13,7 +13,7 @@ Default is `monitoring`.
 To include urls, add this line to your `urls.py`:
 
 ``` python
-from django.conf.urls import include
+from django.urls import include
 from django.urls import re_path
 
 # ...

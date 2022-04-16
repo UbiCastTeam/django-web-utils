@@ -23,7 +23,7 @@ FILE_BROWSER_DIRS = {'storage': ('/home/test/dir', '/storage')}
 Urls example:
 
 ``` python
-from django.conf.urls import include
+from django.urls import include
 from django.urls import re_path
 
 # ...
