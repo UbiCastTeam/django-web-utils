@@ -10,6 +10,9 @@ if [[ ! "$DOCKER_TEST" ]]; then
 
     echo "==> Applying migrations..."
     python3 tests/manage.py migrate
+
+    echo "==> Creating superuser..."
+    DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=test@example.com DJANGO_SUPERUSER_PASSWORD=test python3 tests/manage.py createsuperuser --noinput
 fi
 
 echo "==> Running $@"

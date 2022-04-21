@@ -199,7 +199,7 @@ def storage_img_preview(request, namespace=None):
     try:
         image = Image.open(file_path)
         image.load()
-        image.thumbnail((200, 64), Image.ANTIALIAS)
+        image.thumbnail((200, 64), Image.Resampling.LANCZOS)
     except Exception:
         return HttpResponseRedirect(static('file_browser/img/img.png'))
 

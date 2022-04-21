@@ -8,7 +8,6 @@ from django.urls import reverse
 
 
 class FileBrowserTests(TestCase):
-    databases = []
 
     def setUp(self):
         print('\n\033[96m----- %s.%s -----\033[0m' % (self.__class__.__name__, self._testMethodName))
@@ -25,9 +24,12 @@ class FileBrowserTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_logged(self):
-        response = self.client.post(reverse('login'), {'username': 'admin', 'password': 'test'})
+        from django.contrib.auth.models import User
+        user = User(username='fb_admin', is_staff=True)
+        user.set_password('test')
+        user.save()
+        response = self.client.post(reverse('login'), {'username': user.username, 'password': 'test'})
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
         response = self.client.get(reverse('storage:file_browser_base'))
         self.assertEqual(response.status_code, 200)

@@ -3,13 +3,14 @@
 '''
 HTML utility functions
 '''
+from bleach.css_sanitizer import CSSSanitizer
+from copy import deepcopy
 from html.parser import HTMLParser
 import bleach
 import html.entities
 import logging
 import re
 import traceback
-from copy import deepcopy
 # Django
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -24,7 +25,7 @@ ALLOWED_ATTRS = {
     'td': ['rowspan', 'colspan'],
     'th': ['rowspan', 'colspan'],
 }
-ALLOWED_STYLES = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow', 'width', 'height']
+ALLOWED_CSS = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow', 'width', 'height']
 
 
 # clean_html_tags function
@@ -66,8 +67,9 @@ def clean_html_tags(html, allow_iframes=False):
         tags += ['iframe']
     allowed_attrs['img'] = img_attrs_check
     allowed_attrs['a'] = a_attrs_check
+    css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_CSS)
     protocols = bleach.sanitizer.ALLOWED_PROTOCOLS + ['data']
-    return bleach.clean(html, tags=tags, attributes=allowed_attrs, styles=ALLOWED_STYLES, protocols=protocols)
+    return bleach.clean(html, tags=tags, attributes=allowed_attrs, css_sanitizer=css_sanitizer, protocols=protocols)
 
 
 # strip_html_tags function

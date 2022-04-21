@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
@@ -73,7 +74,7 @@ TEMPLATES = [
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = [
-    'testapp.backend.SettingsBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 LOGIN_URL = '/login/'
@@ -105,17 +106,13 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-
 STATIC_URL = '/static/'
 
 
 # Browsing sessions
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_NAME = 'testsessionid'
-SESSION_ENGINE = 'django.contrib.sessions.backends.file'
-SESSION_FILE_PATH = os.path.join(BASE_DIR, 'tests', 'tmp')
-os.makedirs(SESSION_FILE_PATH, exist_ok=True)
+SESSION_COOKIE_NAME = 'dwusessionid'
 
 
 # A sample logging configuration. The only tangible logging
@@ -156,8 +153,6 @@ ADMINS = (
     ('admin contact', 'admin@example.com'),
 )
 MANAGERS = ADMINS
-
-AUTHENTICATION_USERS = {'admin': {'password': 'test', 'is_active': True, 'is_staff': True, 'is_superuser': True}}
 
 MONITORING_DAEMONS_INFO = 'testapp.daemons'
 
