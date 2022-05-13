@@ -25,15 +25,15 @@ ALLOWED_ATTRS = {
     'td': ['rowspan', 'colspan'],
     'th': ['rowspan', 'colspan'],
 }
-ALLOWED_CSS = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow', 'width', 'height']
+ALLOWED_CSS = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow', 'width', 'height', 'overflow']
 
 
-# clean_html_tags function
-# remove all non basic tags in the given html code
-# ----------------------------------------------------------------------------
-def clean_html_tags(html, allow_iframes=False):
+def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
+    '''
+    Function to remove all non allowed tags and attributes from the given HTML content.
+    '''
     def iframe_attrs_check(tag, name, value):
-        if name in ('name', 'height', 'width', 'allowfullscreen', 'class', 'style'):
+        if name in ('name', 'height', 'width', 'scrolling', 'allowfullscreen', 'class', 'style'):
             return True
         if name == 'src' and value.startswith('https://'):
             return True
@@ -67,21 +67,24 @@ def clean_html_tags(html, allow_iframes=False):
         tags += ['iframe']
     allowed_attrs['img'] = img_attrs_check
     allowed_attrs['a'] = a_attrs_check
+    if extra_allowed_attrs:
+        allowed_attrs.update(extra_allowed_attrs)
     css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_CSS)
     protocols = bleach.sanitizer.ALLOWED_PROTOCOLS + ['data']
     return bleach.clean(html, tags=tags, attributes=allowed_attrs, css_sanitizer=css_sanitizer, protocols=protocols)
 
 
-# strip_html_tags function
-# remove all html tags
-# ----------------------------------------------------------------------------
 def strip_html_tags(html):
+    '''
+    Function to remove all HTML tags from the given content.
+    '''
     return bleach.clean(html, strip=True)
 
 
-# unescape function
-# ----------------------------------------------------------------------------
 def unescape(text):
+    '''
+    Function to convert HTML characters tags to unicode characters.
+    '''
     text = strip_html_tags(text)
 
     def fixup(m):
@@ -106,18 +109,20 @@ def unescape(text):
     return re.sub(r'&#?\w+;', fixup, text)
 
 
-# get_meta_tag_text function
-# ----------------------------------------------------------------------------
 def get_meta_tag_text(text):
+    '''
+    Function to get a text that can be safely used in a "meta" tag from an HTML content.
+    '''
     result = unescape(text)
     result = strip_html_tags(result)
     result = result.strip().replace('"', '\'\'')
     return result
 
 
-# get_html_traceback function
-# ----------------------------------------------------------------------------
 def get_html_traceback(tb=None):
+    '''
+    Function to get a Python traceback as HTML content.
+    '''
     if not tb:
         tb = traceback.format_exc()
     error_tb = str(escape(tb))
@@ -131,11 +136,9 @@ def get_html_traceback(tb=None):
     return mark_safe('\n<br/>'.join(lines))
 
 
-# get_short_text function
-# ----------------------------------------------------------------------------
-class TextHTMLParser(HTMLParser):
+class _TextHTMLParser(HTMLParser):
     def __init__(self, html_text, max_length=300):
-        HTMLParser.__init__(self)
+        super().__init__()
         self._short = ''
         self._length = 0
         self._stop = False
@@ -202,12 +205,12 @@ class TextHTMLParser(HTMLParser):
 
 def get_short_text(html_text, max_length=300, margin=100):
     '''
-    Function to get an html text which does not exceed a given number of chars.
-    ! Return empty if short text is not needed
+    Function to get an HTML text which does not exceed a given number of chars.
+    ⚠ Returns an empty string if the text length is not exceeding the size limit!
     '''
     if len(html_text) > max_length + margin:
         try:
-            parser = TextHTMLParser(html_text, max_length)
+            parser = _TextHTMLParser(html_text, max_length)
             return parser.get_short()
         except Exception as e:
             logger.error('Unable to create short html text. %s' % e)
