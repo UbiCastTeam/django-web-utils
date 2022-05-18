@@ -393,7 +393,7 @@ def on_file_infected_error(request):
     Function to log and report infected file upload.
     '''
     # Prepare message
-    if request.user.is_authenticated:
+    if request.user.id:
         user_repr = 'user #' + str(request.user.id)
         if hasattr(request.user, 'username'):
             user_repr += ' "' + request.user.username + '"'
@@ -585,4 +585,4 @@ def antivirus_file_validator(path, remove=True):
 
     with open(path, 'rb') as fo:
         fo.path = path
-        antivirus_stream_validator(fo)
+        antivirus_stream_validator(fo, remove=remove)
