@@ -3,10 +3,9 @@ FROM debian:bullseye
 # Update clamav database
 RUN apt-get -q update && apt-get -qy install --no-install-recommends \
         ca-certificates clamav-daemon
-ARG CLAMAV_MIRROR="database.clamav.net"
-RUN chmod 644 /etc/clamav/freshclam.conf
-RUN sed -i 's/DatabaseMirror/#DatabaseMirror/gi' /etc/clamav/freshclam.conf
-RUN echo "DatabaseMirror $CLAMAV_MIRROR" >> /etc/clamav/freshclam.conf
+ARG CLAMAV_MIRROR
+RUN echo "PrivateMirror $CLAMAV_MIRROR" >> /etc/clamav/freshclam.conf
+RUN sed -i -E 's/^PrivateMirror\s+$//g' /etc/clamav/freshclam.conf
 RUN freshclam
 
 # Basic packages
