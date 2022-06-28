@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import socket
 # Django
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -62,6 +63,7 @@ def monitoring_panel(request):
         monitoring_namespace=config.NAMESPACE,
         daemons_names=daemons_names,
         daemons_groups=groups,
+        hostname=socket.gethostname(),
     ))
     return render(request, tplt, tplt_data)
 
@@ -163,6 +165,7 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
         title='%s - %s' % (label, _('log file')),
         back_url=back_url or reverse(config.NAMESPACE + ':monitoring-panel'),
         can_control=can_control,
+        hostname=socket.gethostname(),
         **result
     ))
     return render(request, tplt, tplt_data)

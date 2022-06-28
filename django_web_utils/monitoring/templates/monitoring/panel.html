@@ -9,7 +9,9 @@
     <tr class="center daemon-all">
         <th rowspan="2"></th>
         <th rowspan="2">{% trans "Status" %}</th>
-        <th colspan="3">{% trans "Log file" %}</th>
+        <th colspan="3">{% trans "Log file" %}
+            <span style="float: right;">({% trans "Hostname:" %} {{ hostname }})</span>
+        </th>
         <th rowspan="2">{% trans "Commands" %}
             <div class="bottom-bar center">
                 <button type="button" class="daemon-start" title="{% trans 'Start all' %}">▷</button>
