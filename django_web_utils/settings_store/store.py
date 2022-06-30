@@ -123,6 +123,7 @@ class SettingsStoreBase(Mapping):
         self._last_updated_at: Optional[datetime.datetime] = None
         self._last_refreshed_at: Optional[datetime.datetime] = None
         self._cache_ttl = cache_ttl
+        self._no_lock_timeout = False  # Use in tests to avoid random timeout errors.
 
     # GET/SET
     def __getattribute__(self, name):
@@ -274,10 +275,11 @@ class SettingsStoreBase(Mapping):
         if setting_names:
             self._validate_names(*setting_names)
             with transaction.atomic():
-                with connection.cursor() as cursor:
-                    cursor.execute(
-                        f"SET LOCAL lock_timeout = '{wait_timeout}ms';"
-                    )
+                if not self._no_lock_timeout:
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            f"SET LOCAL lock_timeout = '{wait_timeout}ms';"
+                        )
                 yield list(
                     self.model.objects.select_for_update(nowait=False).filter(
                         key__in=setting_names
@@ -286,10 +288,11 @@ class SettingsStoreBase(Mapping):
         else:
             with transaction.atomic():
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        f"SET LOCAL lock_timeout = '{wait_timeout}ms';"
-                        f'LOCK TABLE {self.model._meta.db_table} IN EXCLUSIVE MODE;'
-                    )
+                    stmt = ''
+                    if not self._no_lock_timeout:
+                        stmt += f"SET LOCAL lock_timeout = '{wait_timeout}ms';"
+                    stmt += f'LOCK TABLE {self.model._meta.db_table} IN EXCLUSIVE MODE;'
+                    cursor.execute(stmt)
                 yield
 
     @contextmanager
