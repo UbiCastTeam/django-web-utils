@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-23 14:40+0100\n"
+"POT-Creation-Date: 2022-07-11 06:38+0000\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -106,12 +106,12 @@ msgstr "GB"
 msgid "TB"
 msgstr "TB"
 
-#: forms_utils.py:121
+#: forms_utils.py:121 settings_store/forms.py:48
 msgid "Yes"
 msgstr "Ja"
 
 # Translated by DeepL.
-#: forms_utils.py:123
+#: forms_utils.py:123 settings_store/forms.py:50
 msgid "No"
 msgstr "Geen"
 
@@ -212,14 +212,19 @@ msgstr "Fout bij het ophalen van groepen."
 msgid "No groups found."
 msgstr "Geen groepen gevonden."
 
+#: settings_store/forms.py:81 settings_utils.py:74
+msgid "No changes to save."
+msgstr "Geen wijzigingen om op te slaan."
+
+# Translated by DeepL.
+#: settings_store/forms.py:84
+msgid "Your changes will be active in a few seconds."
+msgstr "Uw wijzigingen zullen binnen een paar seconden actief zijn."
+
 # Translated by DeepL.
 #: settings_utils.py:36
 msgid "Failed to backup settings:"
 msgstr "De back-up van de instellingen is mislukt:"
-
-#: settings_utils.py:74
-msgid "No changes to save."
-msgstr "Geen wijzigingen om op te slaan."
 
 # Translated by DeepL.
 #: settings_utils.py:83 settings_utils.py:143

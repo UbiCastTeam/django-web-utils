@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-23 14:40+0100\n"
-"PO-Revision-Date: 2022-02-23 14:44+0100\n"
+"POT-Creation-Date: 2022-07-11 06:38+0000\n"
+"PO-Revision-Date: 2022-07-11 08:37+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #: admin_utils.py:14
 msgid "Export selected objects as CSV file"
@@ -93,11 +93,11 @@ msgstr "Go"
 msgid "TB"
 msgstr "To"
 
-#: forms_utils.py:121
+#: forms_utils.py:121 settings_store/forms.py:48
 msgid "Yes"
 msgstr "Oui"
 
-#: forms_utils.py:123
+#: forms_utils.py:123 settings_store/forms.py:50
 msgid "No"
 msgstr "Non"
 
@@ -182,13 +182,17 @@ msgstr "Erreur lors de la récupération des groupes de l'utilisateur."
 msgid "No groups found."
 msgstr "Aucun groupe n'a été trouvé."
 
+#: settings_store/forms.py:81 settings_utils.py:74
+msgid "No changes to save."
+msgstr "Aucune modification a sauvegarder."
+
+#: settings_store/forms.py:84
+msgid "Your changes will be active in a few seconds."
+msgstr "Vos modifications seront actives dans quelques secondes."
+
 #: settings_utils.py:36
 msgid "Failed to backup settings:"
 msgstr "Échec de la création d'un point de sauvegarde des paramètres :"
-
-#: settings_utils.py:74
-msgid "No changes to save."
-msgstr "Aucune modification a sauvegarder."
 
 #: settings_utils.py:83 settings_utils.py:143
 msgid "Your changes were not saved but were applied to the running software."

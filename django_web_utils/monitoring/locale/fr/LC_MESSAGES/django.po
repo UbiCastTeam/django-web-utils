@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-23 14:40+0100\n"
-"PO-Revision-Date: 2021-12-23 16:31+0100\n"
+"POT-Creation-Date: 2022-07-11 06:38+0000\n"
+"PO-Revision-Date: 2022-07-11 08:37+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.4.2\n"
 
 #: sysinfo.py:63
 msgid "Version"
@@ -134,19 +134,19 @@ msgid "Daemons monitoring"
 msgstr "Surveillance des démons"
 
 #: templates/monitoring/config.html:5 templates/monitoring/config.html:41
-#: templates/monitoring/log.html:13 templates/monitoring/log.html:49
-#: templates/monitoring/log.html:74 templates/monitoring/panel.html:4
+#: templates/monitoring/log.html:13 templates/monitoring/log.html:51
+#: templates/monitoring/log.html:78 templates/monitoring/panel.html:4
 msgid "Back"
 msgstr "Retour"
 
 #: templates/monitoring/config.html:8 templates/monitoring/config.html:43
-#: templates/monitoring/log.html:16 templates/monitoring/log.html:52
-#: templates/monitoring/log.html:77
+#: templates/monitoring/log.html:16 templates/monitoring/log.html:56
+#: templates/monitoring/log.html:81
 msgid "Refresh"
 msgstr "Rafraîchir"
 
 #: templates/monitoring/config.html:11 templates/monitoring/config.html:45
-#: templates/monitoring/log.html:29 templates/monitoring/log.html:65
+#: templates/monitoring/log.html:31 templates/monitoring/log.html:69
 msgid "See raw content"
 msgstr "Voir le contenu brut"
 
@@ -162,8 +162,8 @@ msgstr "Outrepassement de la configuration"
 msgid "Configuration file size:"
 msgstr "Taille du fichier de configuration :"
 
-#: templates/monitoring/config.html:25 templates/monitoring/log.html:23
-#: templates/monitoring/log.html:59
+#: templates/monitoring/config.html:25 templates/monitoring/log.html:25
+#: templates/monitoring/log.html:63
 msgid "Last modification:"
 msgstr "Dernière modification :"
 
@@ -183,15 +183,15 @@ msgstr "Appliquer les modifications"
 msgid "Status"
 msgstr "Statut"
 
-#: templates/monitoring/daemon.html:13 templates/monitoring/panel.html:43
+#: templates/monitoring/daemon.html:13 templates/monitoring/panel.html:45
 msgid "Loading"
 msgstr "Chargement"
 
-#: templates/monitoring/daemon.html:17 templates/monitoring/panel.html:13
+#: templates/monitoring/daemon.html:17 templates/monitoring/panel.html:15
 msgid "Commands"
 msgstr "Commandes"
 
-#: templates/monitoring/daemon.html:19 templates/monitoring/panel.html:58
+#: templates/monitoring/daemon.html:19 templates/monitoring/panel.html:60
 msgid "Stop"
 msgstr "Arrêter"
 
@@ -203,83 +203,88 @@ msgstr "Configurer"
 msgid "Log file"
 msgstr "Fichier de journalisation"
 
-#: templates/monitoring/daemon.html:28 templates/monitoring/panel.html:22
+#: templates/monitoring/daemon.html:28 templates/monitoring/panel.html:24
 msgid "Last modification"
 msgstr "Dernière modification"
 
-#: templates/monitoring/daemon.html:32 templates/monitoring/panel.html:23
+#: templates/monitoring/daemon.html:32 templates/monitoring/panel.html:25
 msgid "File size"
 msgstr "Taille du fichier"
 
-#: templates/monitoring/daemon.html:36 templates/monitoring/panel.html:28
+#: templates/monitoring/daemon.html:36 templates/monitoring/panel.html:30
 msgid "Actions"
 msgstr "Actions"
 
-#: templates/monitoring/daemon.html:38 templates/monitoring/panel.html:48
+#: templates/monitoring/daemon.html:38 templates/monitoring/panel.html:50
 msgid "See"
 msgstr "Voir"
 
-#: templates/monitoring/daemon.html:39 templates/monitoring/panel.html:49
+#: templates/monitoring/daemon.html:39 templates/monitoring/panel.html:51
 msgid "See tail"
 msgstr "Voir la fin"
 
-#: templates/monitoring/daemon.html:41 templates/monitoring/panel.html:50
+#: templates/monitoring/daemon.html:41 templates/monitoring/panel.html:52
 msgid "Clear log"
 msgstr "Nettoyer le journal"
 
-#: templates/monitoring/log.html:8 templates/monitoring/log.html:44
+#: templates/monitoring/log.html:8 templates/monitoring/log.html:46
 msgid "Clear"
 msgstr "Nettoyer"
 
-#: templates/monitoring/log.html:19 templates/monitoring/log.html:55
+#: templates/monitoring/log.html:18 templates/monitoring/log.html:54
+#: templates/monitoring/panel.html:13
+msgid "Hostname:"
+msgstr "Nom d'hôte :"
+
+#: templates/monitoring/log.html:21 templates/monitoring/log.html:59
 msgid "File size:"
 msgstr "Taille du fichier :"
 
-#: templates/monitoring/log.html:26 templates/monitoring/log.html:62
+#: templates/monitoring/log.html:28 templates/monitoring/log.html:66
 msgid "See complete file"
 msgstr "Voir le fichier complet"
 
-#: templates/monitoring/log.html:26 templates/monitoring/log.html:62
+#: templates/monitoring/log.html:28 templates/monitoring/log.html:66
 msgid "See only end"
 msgstr "Voir seulement la fin"
 
-#: templates/monitoring/log.html:82
+#: templates/monitoring/log.html:86
 msgid "Log file is empty."
 msgstr "Le fichier de journalisation est vide."
 
-#: templates/monitoring/panel.html:15
+#: templates/monitoring/panel.html:17
 msgid "Start all"
 msgstr "Tout démarrer"
 
-#: templates/monitoring/panel.html:16
+#: templates/monitoring/panel.html:18
 msgid "Stop all"
 msgstr "Tout arrêter"
 
-#: templates/monitoring/panel.html:17
+#: templates/monitoring/panel.html:19
 msgid "Restart all"
 msgstr "Tout redémarrer"
 
-#: templates/monitoring/panel.html:26
+#: templates/monitoring/panel.html:28
 msgid "Clear all logs"
 msgstr "Nettoyer tous les journaux"
 
-#: templates/monitoring/panel.html:38 views.py:163
+#: templates/monitoring/panel.html:40 views.py:165
 msgid "log file"
 msgstr "fichier de journalisation"
 
-#: templates/monitoring/panel.html:38
+#: templates/monitoring/panel.html:40
 msgid "config file"
 msgstr "fichier de configuration"
 
-#: templates/monitoring/panel.html:56
+#: templates/monitoring/panel.html:58
 msgid "Start"
 msgstr "Démarrer"
 
-#: templates/monitoring/panel.html:60
+#: templates/monitoring/panel.html:62
 msgid "Restart"
 msgstr "Redémarrer"
 
-#: templates/monitoring/panel.html:64
+#: templates/monitoring/panel.html:66
 msgid "Edit configuration"
 msgstr "Modifier la configuration"
 
@@ -358,33 +363,33 @@ msgstr "Impossible d'afficher le fichier de configuration."
 msgid "Unable to read default configuration file."
 msgstr "Impossible de lire le fichier de configuration par défaut."
 
-#: views.py:24
+#: views.py:25
 msgid "You don't have the permission to access this url."
 msgstr "Vous n'avez pas la permission d'accéder à cette url."
 
-#: views.py:29
+#: views.py:30
 msgid "Please enter password."
 msgstr "Veuillez entrer le mot de passe."
 
-#: views.py:35
+#: views.py:36
 msgid "Invalid password."
 msgstr "Mot de passe incorrect."
 
-#: views.py:113
+#: views.py:115
 msgid "Invalid daemon name:"
 msgstr "Nom de démon invalide :"
 
-#: views.py:120
+#: views.py:122
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" successfully executed."
 msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a été exécutée avec succès."
 
-#: views.py:122
+#: views.py:124
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" failed."
 msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
 
-#: views.py:207
+#: views.py:210
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Éditer le fichier de configuration : %s"
