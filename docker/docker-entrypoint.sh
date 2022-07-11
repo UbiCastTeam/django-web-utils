@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-echo "==> Starting ClamAV..."
-# The systemctl command is not available here
-service clamav-daemon start
+if [[ "$NEED_CLAMAV" ]]; then
+    echo "==> Starting ClamAV..."
+    # The systemctl command is not available here
+    sudo service clamav-daemon start
+fi
 
 if [[ ! "$DOCKER_TEST" ]]; then
     echo "==> Waiting until the database is up and ready..."

@@ -1,5 +1,8 @@
 FROM debian:bullseye
 
+ENV LANG="C.UTF-8" LC_ALL="C.UTF-8"
+ENV DOCKER 1
+
 # Update clamav database
 RUN apt-get -q update && apt-get -qy install --no-install-recommends \
         ca-certificates clamav-daemon
@@ -10,7 +13,7 @@ RUN freshclam
 
 # Basic packages
 RUN apt-get -q update && apt-get -qy install --no-install-recommends \
-        curl gnupg sudo moreutils unzip make bash git git-lfs \
+        curl gnupg sudo moreutils unzip make bash git git-lfs gettext \
         postgresql-client python3 python3-setuptools python3-pip
 
 RUN mkdir -p /opt/src
@@ -21,6 +24,14 @@ RUN pip3 install --upgrade pip
 COPY setup.py setup.py
 RUN pip3 install --no-cache-dir -e '.[dev]'
 RUN rm setup.py
+
+# Add user matching local uid/gid
+ARG USER_UID
+ARG USER_GID
+RUN groupadd --gid $USER_GID devuser
+RUN useradd --uid $USER_UID --gid $USER_GID --home-dir /home/devuser --groups sudo --shell /bin/bash devuser
+RUN echo "devuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+USER devuser
 
 EXPOSE 8200
 
