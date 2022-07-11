@@ -3,62 +3,66 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-11 06:46+0000\n"
-"PO-Revision-Date: 2021-12-24 14:31+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: \n"
-"Language: es\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.1\n"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:239
 msgid "The folder is empty."
-msgstr "La carpeta está vacía."
+msgstr "Kansio on tyhjä."
 
+# Translated by DeepL.
 #: static/file_browser/file-browser.js:277
 msgid "Size:"
-msgstr "Tamaño:"
+msgstr "Koko:"
 
+# Translated by DeepL.
 #: static/file_browser/file-browser.js:279
 msgid "Last modification:"
-msgstr "Última modificación:"
+msgstr "Viimeisin muutos:"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:281
 msgid "Files:"
-msgstr "Archivos:"
+msgstr "Tiedostot:"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:282
 msgid "Folders:"
-msgstr "Carpetas:"
+msgstr "Kansiot:"
 
+# Translated by DeepL.
 #: static/file_browser/file-browser.js:288
 #: static/file_browser/file-browser.js:754
 #: static/file_browser/file-browser.js:765
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "Poista"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:289
 #: static/file_browser/file-browser.js:604
 #: static/file_browser/file-browser.js:607
 msgid "Rename"
-msgstr "Cambiar el nombre de"
+msgstr "Nimeä uudelleen"
 
+# Translated by DeepL.
 #: static/file_browser/file-browser.js:290
 #: static/file_browser/file-browser.js:692
 #: static/file_browser/file-browser.js:703
 msgid "Move"
-msgstr "Mover"
+msgstr "Siirrä"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:310
@@ -66,32 +70,36 @@ msgstr "Mover"
 #: static/file_browser/file-browser.js:542
 #: static/file_browser/file-browser.js:815
 msgid "root"
-msgstr "raíz"
+msgstr "root"
 
+# Translated by DeepL.
 #: static/file_browser/file-browser.js:400
 #: static/file_browser/file-browser.js:789
 msgid "Loading"
-msgstr "Cargando"
+msgstr "Ladataan"
 
+# Translated by DeepL.
 #: static/file_browser/file-browser.js:431
 msgid "Ok"
-msgstr "Aceptar"
+msgstr "Ok"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:493
 msgid "New folder name:"
-msgstr "Nuevo nombre de carpeta:"
+msgstr "Uusi kansion nimi:"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:510
 msgid "Add a folder in"
-msgstr "Añadir una carpeta en"
+msgstr "Lisää kansio"
 
+# Translated by DeepL.
 #: static/file_browser/file-browser.js:513
 #: static/file_browser/file-browser.js:545
 msgid "Add"
-msgstr "Añadir"
+msgstr "Lisää"
 
+# Translated by DeepL.
 #: static/file_browser/file-browser.js:516
 #: static/file_browser/file-browser.js:548
 #: static/file_browser/file-browser.js:610
@@ -99,57 +107,57 @@ msgstr "Añadir"
 #: static/file_browser/file-browser.js:768
 #: static/file_browser/file-browser.js:849
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr "Peruuta"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:533
 msgid "File to add:"
-msgstr "Archivo para añadir:"
+msgstr "Lisättävä tiedosto:"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:542
 msgid "Add a file in"
-msgstr "Añadir un archivo en"
+msgstr "Lisää tiedosto osoitteessa"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:574
 msgid "New name:"
-msgstr "Nuevo nombre:"
+msgstr "Uusi nimi:"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:577
 #: static/file_browser/file-browser.js:637
 msgid "Selected file(s):"
-msgstr "Archivo(s) seleccionado(s):"
+msgstr "Valitut tiedostot:"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:635
 msgid "Move to:"
-msgstr "Muévete a:"
+msgstr "Siirry:"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:696
 #: static/file_browser/file-browser.js:758
 msgid "files"
-msgstr "archivos"
+msgstr "tiedostot"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:731
 msgid "Are you sure to delete the selected file(s) ?"
-msgstr "¿Está seguro de que desea eliminar los archivos seleccionados?"
+msgstr "Oletko varma, että haluat poistaa valitun tiedoston (valitut tiedostot)?"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:756
 msgid "one file"
-msgstr "un archivo"
+msgstr "yksi tiedosto"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:781
 msgid "Search only in current dir"
-msgstr "Buscar sólo en la dirección actual"
+msgstr "Etsi vain nykyisestä hakemistosta"
 
 # Translated by DeepL.
 #: static/file_browser/file-browser.js:843
 #: static/file_browser/file-browser.js:846
 msgid "Search"
-msgstr "Buscar en"
+msgstr "Etsi"

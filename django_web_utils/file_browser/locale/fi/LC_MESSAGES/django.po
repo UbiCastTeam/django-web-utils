@@ -3,263 +3,271 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-11 06:46+0000\n"
-"PO-Revision-Date: 2021-12-24 14:31+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: \n"
-"Language: es\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.1\n"
 
 # Translated by DeepL.
 #: templates/file_browser/base.html:6 templates/file_browser/base.html:8
 #: templates/file_browser/body.html:6
 msgid "File browser"
-msgstr "Buscador de archivos"
+msgstr "Tiedostoselain"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:9
 msgid "Quit"
-msgstr "Deja"
+msgstr "Lopeta"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:16
 msgid "Add a folder"
-msgstr "Añadir una carpeta"
+msgstr "Lisää kansio"
 
+# Translated by DeepL.
 #: templates/file_browser/body.html:17
 msgid "Add a file"
-msgstr "Añadir un archivo"
+msgstr "Lisää tiedosto"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:18
 msgid "Search"
-msgstr "Buscar en"
+msgstr "Etsi"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:26
 msgid "Show messages"
-msgstr "Mostrar mensajes"
+msgstr "Näytä viestit"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:27
 msgid "Hide messages"
-msgstr "Ocultar mensajes"
+msgstr "Piilota viestit"
 
+# Translated by DeepL.
 #: templates/file_browser/body.html:38
 msgid "Loading"
-msgstr "Cargando"
+msgstr "Ladataan"
 
+# Translated by DeepL.
 #: templates/file_browser/body.html:44
 msgid "Drop files here to add them"
-msgstr "Arrastrar aquí los archivos para añadirlos"
+msgstr "Lisää tiedostot tänne pudottamalla ne"
 
+# Translated by DeepL.
 #: templates/file_browser/body.html:46
 msgid "Upload in progress"
-msgstr "Subida en progreso"
+msgstr "Lataus käynnissä"
 
+# Translated by DeepL.
 #: templates/file_browser/body.html:53
 msgid "Total size:"
-msgstr "Tamaño total:"
+msgstr "Kokonaiskoko:"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:54
 msgid "Number of folders:"
-msgstr "Número de carpetas:"
+msgstr "Kansioiden määrä:"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:55
 msgid "Number of files:"
-msgstr "Número de archivos:"
+msgstr "Tiedostojen määrä:"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:56
 msgid "Order by:"
-msgstr "Pedir por:"
+msgstr "Tilaa mennessä:"
 
+# Translated by DeepL.
 #: templates/file_browser/body.html:58 templates/file_browser/body.html:59
 msgid "name"
-msgstr "nombre"
+msgstr "nimi"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:60 templates/file_browser/body.html:61
 msgid "size"
-msgstr "tamaño"
+msgstr "koko"
 
 # Translated by DeepL.
 #: templates/file_browser/body.html:62 templates/file_browser/body.html:63
 msgid "modification date"
-msgstr "fecha de modificación"
+msgstr "muutospäivä"
 
+# Translated by DeepL.
 #: templates/file_browser/body.html:66
 msgid "Refresh"
-msgstr "Actualizar"
+msgstr "Päivitä"
 
 # Translated by DeepL.
 #: views.py:62
 #, python-format
 msgid "Folder \"%s\" does not exist."
-msgstr "La carpeta \"%s\" no existe."
+msgstr "Kansiota \"%s\" ei ole olemassa."
 
 # Translated by DeepL.
 #: views.py:64
 msgid "Root folder"
-msgstr "Carpeta raíz"
+msgstr "Juurikansio"
 
 # Translated by DeepL.
 #: views.py:99
 #, python-format
 msgid "Folder \"%s\" does not exist"
-msgstr "La carpeta \"%s\" no existe"
+msgstr "Kansiota \"%s\" ei ole olemassa"
 
 # Translated by DeepL.
 #: views.py:172
 msgid "Parent folder"
-msgstr "Carpeta de los padres"
+msgstr "Vanhempi kansio"
 
 # Translated by DeepL.
 #: views_action.py:58
 msgid "No base path defined in configuration."
-msgstr "No se ha definido la ruta base en la configuración."
+msgstr "Konfiguraatiossa ei ole määritetty peruspolkua."
 
 # Translated by DeepL.
 #: views_action.py:61
 msgid "No base url defined in configuration."
-msgstr "No hay url base definida en la configuración."
+msgstr "Konfiguraatiossa ei ole määritetty perusurl-osoitetta."
 
 # Translated by DeepL.
 #: views_action.py:76 views_action.py:143 views_action.py:166
 #: views_action.py:254
 msgid "Invalid base path."
-msgstr "Ruta base inválida."
+msgstr "Väärä peruspolku."
 
 # Translated by DeepL.
 #: views_action.py:83
 msgid "No files in request."
-msgstr "No hay archivos en la solicitud."
+msgstr "Pyynnössä ei ole tiedostoja."
 
 # Translated by DeepL.
 #: views_action.py:98 views_action.py:158
 msgid "Failed to create folder:"
-msgstr "Fallo en la creación de la carpeta:"
+msgstr "Kansion luominen epäonnistui:"
 
 # Translated by DeepL.
 #: views_action.py:106
 msgid "The file has been uploaded and is available at the location:"
-msgstr "El archivo ha sido cargado y está disponible en el lugar:"
+msgstr "Tiedosto on ladattu ja se on saatavilla osoitteessa:"
 
 # Translated by DeepL.
 #: views_action.py:108
 msgid "The files have been uploaded and are available at the locations:"
-msgstr "Los archivos se han cargado y están disponibles en los lugares:"
+msgstr "Tiedostot on ladattu, ja ne ovat saatavilla paikoissa:"
 
 # Translated by DeepL.
 #: views_action.py:146 views_action.py:181
 #, python-format
 msgid "The \"%s\" field is required."
-msgstr "El campo \"%s\" es obligatorio."
+msgstr "Kenttä \"%s\" on pakollinen."
 
 # Translated by DeepL.
 #: views_action.py:149 views_action.py:188
 msgid "Invalid name."
-msgstr "Nombre inválido."
+msgstr "Väärä nimi."
 
 # Translated by DeepL.
 #: views_action.py:159
 msgid "Folder created."
-msgstr "Carpeta creada."
+msgstr "Kansio luotu."
 
 # Translated by DeepL.
 #: views_action.py:176
 msgid "No files selected."
-msgstr "No hay archivos seleccionados."
+msgstr "Tiedostoja ei ole valittu."
 
 # Translated by DeepL.
 #: views_action.py:194
 #, python-format
 msgid "The file \"%s\" does not exist."
-msgstr "El archivo \"%s\" no existe."
+msgstr "Tiedostoa \"%s\" ei ole olemassa."
 
 # Translated by DeepL.
 #: views_action.py:203
 #, python-format
 msgid "The file \"%s\" already exists."
-msgstr "El archivo \"%s\" ya existe."
+msgstr "Tiedosto \"%s\" on jo olemassa."
 
 # Translated by DeepL.
 #: views_action.py:206
 msgid "File renamed."
-msgstr "Archivo renombrado."
+msgstr "Tiedoston nimi muutettu."
 
 # Translated by DeepL.
 #: views_action.py:208
 msgid "Files renamed."
-msgstr "Archivos renombrados."
+msgstr "Tiedostot nimetty uudelleen."
 
 # Translated by DeepL.
 #: views_action.py:213
 msgid "No path specfied to move files in."
-msgstr "No se ha especificado la ruta para mover los archivos."
+msgstr "Tiedostojen siirtämiseen ei ole määritetty polkua."
 
 # Translated by DeepL.
 #: views_action.py:220
 msgid "Destination path does not exists."
-msgstr "La ruta de destino no existe."
+msgstr "Määränpään polkua ei ole olemassa."
 
 # Translated by DeepL.
 #: views_action.py:229
 #, python-format
 msgid "Unable to move file %s:"
-msgstr "No se puede mover el archivo %s:"
+msgstr "Tiedostoa ei voi siirtää %s:"
 
 # Translated by DeepL.
 #: views_action.py:230
 #, python-format
 msgid "%s file(s) successfully moved."
-msgstr "%s archivo(s) movido(s) con éxito."
+msgstr "%s tiedosto(t) siirretty onnistuneesti."
 
 # Translated by DeepL.
 #: views_action.py:244
 #, python-format
 msgid "Unable to delete file %s:"
-msgstr "No se puede eliminar el archivo %s:"
+msgstr "Tiedostoa %s ei voi poistaa:"
 
 # Translated by DeepL.
 #: views_action.py:245
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
-msgstr "%(f)s archivo(s) y %(d)s directorio(s) eliminados con éxito."
+msgstr "%(f)s tiedosto(t) ja %(d)s hakemisto(t) onnistuneesti poistettu."
 
 # Translated by DeepL.
 #: views_action.py:260
 msgid "Requested path does not exist."
-msgstr "La ruta solicitada no existe."
+msgstr "Pyydettyä polkua ei ole olemassa."
 
 # Translated by DeepL.
 #: views_action.py:300
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
-msgstr "%(count)s resultados de \"%(search)s\" en \"%(path)s\"."
+msgstr "%(count)s tulokset \"%(search)s\" in \"%(path)s\"."
 
 # Translated by DeepL.
 #: views_action.py:302
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
-msgstr "%(count)s resultados para \"%(search)s\"."
+msgstr "%(count)s tulokset \"%(search)s\"."
 
 # Translated by DeepL.
 #: views_action.py:304
 #, python-format
 msgid "No results for \"%(search)s\"."
-msgstr "No hay resultados para \"%(search)s\"."
+msgstr "Ei tuloksia \"%(search)s\"."
 
+# Translated by DeepL.
 #: views_action.py:308
 msgid "Invalid action requested."
-msgstr "Se ha solicitado una acción no válida."
+msgstr "Pyydetty virheellinen toiminto."

@@ -3,97 +3,100 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-07-11 06:46+0000\n"
-"PO-Revision-Date: 2021-12-24 14:33+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
-"Language-Team: \n"
-"Language: es\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.1\n"
 
+# Translated by DeepL.
 #: sysinfo.py:63
 msgid "Version"
-msgstr "Versión"
+msgstr "Versio"
 
 # Translated by DeepL.
 #: sysinfo.py:64
 msgid "Revision"
-msgstr "Revisión"
+msgstr "Tarkistus"
 
 # Translated by DeepL.
 #: sysinfo.py:65
 msgid "Python version"
-msgstr "Versión de Python"
+msgstr "Python-versio"
 
 # Translated by DeepL.
 #: sysinfo.py:66
 msgid "Django version"
-msgstr "Versión de Django"
+msgstr "Djangon versio"
 
 # Translated by DeepL.
 #: sysinfo.py:69
 msgid "Database engine"
-msgstr "Motor de la base de datos"
+msgstr "Tietokantamoottori"
 
 # Translated by DeepL.
 #: sysinfo.py:71
 msgid "Django time zone"
-msgstr "Zona horaria de Django"
+msgstr "Djangon aikavyöhyke"
 
+# Translated by DeepL.
 #: sysinfo.py:86
 msgid "Description"
-msgstr "Descripción"
+msgstr "Kuvaus"
 
 # Translated by DeepL.
 #: sysinfo.py:87
 msgid "Kernel"
-msgstr "Núcleo"
+msgstr "Ydin"
 
+# Translated by DeepL.
 #: sysinfo.py:88
 msgid "Hostname"
-msgstr "Nombre del host"
+msgstr "Isäntänimi"
 
 # Translated by DeepL.
 #: sysinfo.py:89
 msgid "Time zone"
-msgstr "Zona horaria"
+msgstr "Aikavyöhyke"
 
 # Translated by DeepL.
 #: sysinfo.py:93
 msgid "Uptime"
-msgstr "Tiempo de funcionamiento"
+msgstr "Käyntiaika"
 
 # Translated by DeepL.
 #: sysinfo.py:94
 msgid "Load"
-msgstr "Carga"
+msgstr "Lataa"
 
 # Translated by DeepL.
 #: sysinfo.py:128 sysinfo.py:155
 msgid "Model"
-msgstr "Modelo"
+msgstr "Malli"
 
 # Translated by DeepL.
 #: sysinfo.py:129
 msgid "Cores"
-msgstr "Núcleos"
+msgstr "Ytimet"
 
 # Translated by DeepL.
 #: sysinfo.py:130
 msgid "Default frequency"
-msgstr "Frecuencia por defecto"
+msgstr "Oletustaajuus"
 
 # Translated by DeepL.
 #: sysinfo.py:171
 msgid "Software"
-msgstr "Software"
+msgstr "Ohjelmisto"
 
 # Translated by DeepL.
 #: sysinfo.py:174
@@ -103,7 +106,7 @@ msgstr "OS"
 # Translated by DeepL.
 #: sysinfo.py:181
 msgid "HDD"
-msgstr "HDD"
+msgstr "KIINTOLEVY"
 
 # Translated by DeepL.
 #: sysinfo.py:184
@@ -118,8 +121,9 @@ msgstr "GPU"
 # Translated by DeepL.
 #: sysinfo.py:200
 msgid "Total"
-msgstr "Total"
+msgstr "Yhteensä"
 
+# Translated by DeepL.
 #: sysinfo.py:200 sysinfo.py:201 sysinfo.py:202
 msgid "GB"
 msgstr "GB"
@@ -127,238 +131,254 @@ msgstr "GB"
 # Translated by DeepL.
 #: sysinfo.py:201
 msgid "Free"
-msgstr "Gratis"
+msgstr "Vapaa"
 
 # Translated by DeepL.
 #: sysinfo.py:202
 msgid "Cached"
-msgstr "En caché"
+msgstr "Välimuistissa"
 
 # Translated by DeepL.
 #: sysinfo.py:204
 msgid "Failed to get information"
-msgstr "No se ha podido obtener información"
+msgstr "Tietojen saaminen epäonnistui"
 
 # Translated by DeepL.
 #: sysinfo.py:205
 msgid "Memory"
-msgstr "Memoria"
+msgstr "Muisti"
 
 # Translated by DeepL.
 #: sysinfo.py:212
 msgid "Network"
-msgstr "Red"
+msgstr "Verkko"
 
 # Translated by DeepL.
 #: sysinfo.py:219
 msgid "Sensors"
-msgstr "Sensores"
+msgstr "Anturit"
 
 # Translated by DeepL.
 #: templates/monitoring/base.html:6 templates/monitoring/base.html:8
 msgid "Daemons monitoring"
-msgstr "Vigilancia de los demonios"
+msgstr "Daemonien seuranta"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:5 templates/monitoring/config.html:41
 #: templates/monitoring/log.html:13 templates/monitoring/log.html:51
 #: templates/monitoring/log.html:78 templates/monitoring/panel.html:4
 msgid "Back"
-msgstr "Atrás"
+msgstr "Takaisin"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:8 templates/monitoring/config.html:43
 #: templates/monitoring/log.html:16 templates/monitoring/log.html:56
 #: templates/monitoring/log.html:81
 msgid "Refresh"
-msgstr "Actualizar"
+msgstr "Päivitä"
 
 # Translated by DeepL.
 #: templates/monitoring/config.html:11 templates/monitoring/config.html:45
 #: templates/monitoring/log.html:31 templates/monitoring/log.html:69
 msgid "See raw content"
-msgstr "Ver contenido en bruto"
+msgstr "Katso raaka sisältö"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:16
 msgid "Default configuration"
-msgstr "Configuración predeterminada"
+msgstr "Oletuskonfiguraatio"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:19
 msgid "Configuration override"
-msgstr "Anulación de configuración"
+msgstr "Konfiguraation ohitus"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:24
 msgid "Configuration file size:"
-msgstr "Tamaño del archivo de configuración:"
+msgstr "Konfiguraatiotiedoston koko:"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:25 templates/monitoring/log.html:25
 #: templates/monitoring/log.html:63
 msgid "Last modification:"
-msgstr "Última modificación:"
+msgstr "Viimeisin muutos:"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:31
 msgid "Current configuration file path:"
-msgstr "Ruta del archivo de configuración actual:"
+msgstr "Nykyisen määritystiedoston polku:"
 
 # Translated by DeepL.
 #: templates/monitoring/config.html:32
 msgid "Reset file"
-msgstr "Restablecer el archivo"
+msgstr "Nollaa tiedosto"
 
+# Translated by DeepL.
 #: templates/monitoring/config.html:39
 msgid "Apply modifications"
-msgstr "Aplicar modificaciones"
+msgstr "Sovelletaan muutoksia"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:12 templates/monitoring/panel.html:11
 msgid "Status"
-msgstr "Estado"
+msgstr "Tila"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:13 templates/monitoring/panel.html:45
 msgid "Loading"
-msgstr "Cargando"
+msgstr "Ladataan"
 
 # Translated by DeepL.
 #: templates/monitoring/daemon.html:17 templates/monitoring/panel.html:15
 msgid "Commands"
-msgstr "Comandos"
+msgstr "Komennot"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:19 templates/monitoring/panel.html:60
 msgid "Stop"
-msgstr "Detener"
+msgstr "Stop"
 
 # Translated by DeepL.
 #: templates/monitoring/daemon.html:20
 msgid "Configure"
-msgstr "Configurar"
+msgstr "Määritä"
 
 # Translated by DeepL.
 #: templates/monitoring/daemon.html:25 templates/monitoring/panel.html:12
 msgid "Log file"
-msgstr "Archivo de registro"
+msgstr "Lokitiedosto"
 
 # Translated by DeepL.
 #: templates/monitoring/daemon.html:28 templates/monitoring/panel.html:24
 msgid "Last modification"
-msgstr "Última modificación"
+msgstr "Viimeisin muutos"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:32 templates/monitoring/panel.html:25
 msgid "File size"
-msgstr "Tamaño del archivo"
+msgstr "Tiedoston koko"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:36 templates/monitoring/panel.html:30
 msgid "Actions"
-msgstr "Acciones"
+msgstr "Toimet"
 
+# Translated by DeepL.
 #: templates/monitoring/daemon.html:38 templates/monitoring/panel.html:50
 msgid "See"
-msgstr "Ver"
+msgstr "Katso"
 
 # Translated by DeepL.
 #: templates/monitoring/daemon.html:39 templates/monitoring/panel.html:51
 msgid "See tail"
-msgstr "Ver cola"
+msgstr "Katso häntä"
 
 # Translated by DeepL.
 #: templates/monitoring/daemon.html:41 templates/monitoring/panel.html:52
 msgid "Clear log"
-msgstr "Borrar el registro"
+msgstr "Tyhjennä loki"
 
 # Translated by DeepL.
 #: templates/monitoring/log.html:8 templates/monitoring/log.html:46
 msgid "Clear"
-msgstr "Claro"
+msgstr "Kirkas"
 
 # Translated by DeepL.
 #: templates/monitoring/log.html:18 templates/monitoring/log.html:54
 #: templates/monitoring/panel.html:13
 msgid "Hostname:"
-msgstr "Nombre de host:"
+msgstr "Isäntänimi:"
 
+# Translated by DeepL.
 #: templates/monitoring/log.html:21 templates/monitoring/log.html:59
 msgid "File size:"
-msgstr "Tamaño del archivo:"
+msgstr "Tiedoston koko:"
 
 # Translated by DeepL.
 #: templates/monitoring/log.html:28 templates/monitoring/log.html:66
 msgid "See complete file"
-msgstr "Ver archivo completo"
+msgstr "Katso koko tiedosto"
 
 # Translated by DeepL.
 #: templates/monitoring/log.html:28 templates/monitoring/log.html:66
 msgid "See only end"
-msgstr "Ver sólo el final"
+msgstr "Katso vain loppu"
 
 # Translated by DeepL.
 #: templates/monitoring/log.html:86
 msgid "Log file is empty."
-msgstr "El archivo de registro está vacío."
+msgstr "Lokitiedosto on tyhjä."
 
 # Translated by DeepL.
 #: templates/monitoring/panel.html:17
 msgid "Start all"
-msgstr "Empezar todo"
+msgstr "Aloita kaikki"
 
 # Translated by DeepL.
 #: templates/monitoring/panel.html:18
 msgid "Stop all"
-msgstr "Detener todo"
+msgstr "Pysäytä kaikki"
 
 # Translated by DeepL.
 #: templates/monitoring/panel.html:19
 msgid "Restart all"
-msgstr "Reiniciar todo"
+msgstr "Käynnistä kaikki uudelleen"
 
 # Translated by DeepL.
 #: templates/monitoring/panel.html:28
 msgid "Clear all logs"
-msgstr "Borrar todos los registros"
+msgstr "Tyhjennä kaikki lokit"
 
 # Translated by DeepL.
 #: templates/monitoring/panel.html:40 views.py:165
 msgid "log file"
-msgstr "archivo de registro"
+msgstr "lokitiedosto"
 
 # Translated by DeepL.
 #: templates/monitoring/panel.html:40
 msgid "config file"
-msgstr "archivo de configuración"
+msgstr "konfigurointitiedosto"
 
 # Translated by DeepL.
 #: templates/monitoring/panel.html:58
 msgid "Start"
-msgstr "Inicie"
+msgstr "Aloita"
 
+# Translated by DeepL.
 #: templates/monitoring/panel.html:62
 msgid "Restart"
-msgstr "Reiniciar"
+msgstr "Käynnistä uudelleen"
 
 # Translated by DeepL.
 #: templates/monitoring/panel.html:66
 msgid "Edit configuration"
-msgstr "Editar la configuración"
+msgstr "Muokkaa kokoonpanoa"
 
 # Translated by DeepL.
 #: utils.py:31
 msgid "Log file cleared."
-msgstr "Archivo de registro borrado."
+msgstr "Lokitiedosto tyhjennetty."
 
 # Translated by DeepL.
 #: utils.py:36
 msgid "Invalid command."
-msgstr "Comando inválido."
+msgstr "Virheellinen komento."
 
 # Translated by DeepL.
 #: utils.py:39
 msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
-msgstr "La clase daemon dada no es una subclase de Django web utils BaseDaemon."
+msgstr "Kyseinen daemon-luokka ei ole Django web utils BaseDaemon -luokan aliluokka."
 
 # Translated by DeepL.
 #: utils.py:47 utils.py:50
 msgid "No valid target for command."
-msgstr "No hay objetivo válido para el comando."
+msgstr "Komennolle ei ole kelvollista kohdetta."
 
 # Translated by DeepL.
 #: utils.py:57
 msgid "The daemon script cannot be found."
-msgstr "No se puede encontrar el script demonio."
+msgstr "Daemon-skriptiä ei löydy."
 
 # Translated by DeepL.
 #: utils.py:150
@@ -368,36 +388,40 @@ msgid ""
 "Only file tail and raw file are accessible.\n"
 "Warning: getting the raw file can saturate system memory."
 msgstr ""
-"Archivo demasiado grande: %s.\n"
-"Sólo se puede acceder a la cola del archivo y al archivo raw.\n"
-"Advertencia: obtener el archivo raw puede saturar la memoria del sistema."
+"Tiedosto liian suuri: %s.\n"
+"Vain tiedoston häntä ja raakatiedosto ovat käytettävissä.\n"
+"Varoitus: Raakatiedoston hakeminen voi kuormittaa järjestelmän muistia."
 
+# Translated by DeepL.
 #: utils.py:161
 msgid "Unable to display log file."
-msgstr "No se ha podido mostrar el archivo de registro."
+msgstr "Lokitiedostoa ei voida näyttää."
 
+# Translated by DeepL.
 #: utils.py:161 utils.py:188 utils.py:192 utils.py:199 utils.py:230
 #: utils.py:250
 msgid "Error:"
-msgstr "Error:"
+msgstr "Virhe:"
 
+# Translated by DeepL.
 #: utils.py:188 utils.py:192
 msgid "Unable to write configuration file."
-msgstr "No se puede escribir en el archivo de configuración."
+msgstr "Konfiguraatiotiedoston kirjoittaminen ei onnistu."
 
+# Translated by DeepL.
 #: utils.py:194
 msgid "Configuration file updated."
-msgstr "Archivo de configuración actualizado."
+msgstr "Konfiguraatiotiedosto päivitetty."
 
 # Translated by DeepL.
 #: utils.py:199
 msgid "Unable to delete configuration file."
-msgstr "No se puede eliminar el archivo de configuración."
+msgstr "Konfiguraatiotiedoston poistaminen ei onnistu."
 
 # Translated by DeepL.
 #: utils.py:201
 msgid "Configuration file deleted."
-msgstr "Archivo de configuración eliminado."
+msgstr "Konfiguraatiotiedosto poistettu."
 
 # Translated by DeepL.
 #: utils.py:220
@@ -407,54 +431,54 @@ msgid ""
 "Only the raw file is accessible.\n"
 "Warning: getting the raw file can saturate system memory."
 msgstr ""
-"Archivo demasiado grande: %s.\n"
-"Sólo se puede acceder al archivo sin procesar.\n"
-"Advertencia: obtener el archivo sin procesar puede saturar la memoria del sistema."
+"Tiedosto liian suuri: %s.\n"
+"Vain raakatiedosto on käytettävissä.\n"
+"Varoitus: Raakatiedoston hakeminen voi kuormittaa järjestelmän muistia."
 
 # Translated by DeepL.
 #: utils.py:230
 msgid "Unable to display configuration file."
-msgstr "No se puede mostrar el archivo de configuración."
+msgstr "Konfiguraatiotiedostoa ei voida näyttää."
 
 # Translated by DeepL.
 #: utils.py:250
 msgid "Unable to read default configuration file."
-msgstr "No se puede leer el archivo de configuración por defecto."
+msgstr "Oletuskokoonpanotiedostoa ei pystytä lukemaan."
 
 # Translated by DeepL.
 #: views.py:25
 msgid "You don't have the permission to access this url."
-msgstr "No tienes permiso para acceder a esta url."
+msgstr "Sinulla ei ole oikeutta käyttää tätä url-osoitetta."
 
 # Translated by DeepL.
 #: views.py:30
 msgid "Please enter password."
-msgstr "Por favor, introduzca la contraseña."
+msgstr "Anna salasana."
 
 # Translated by DeepL.
 #: views.py:36
 msgid "Invalid password."
-msgstr "Contraseña inválida."
+msgstr "Virheellinen salasana."
 
 # Translated by DeepL.
 #: views.py:115
 msgid "Invalid daemon name:"
-msgstr "Nombre de demonio inválido:"
+msgstr "Virheellinen demonin nimi:"
 
 # Translated by DeepL.
 #: views.py:122
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" successfully executed."
-msgstr "Comando \"%(cmd)s\" en \"%(name)s\" ejecutado con éxito."
+msgstr "Komento \"%(cmd)s\" on \"%(name)s\" suoritettu onnistuneesti."
 
 # Translated by DeepL.
 #: views.py:124
 #, python-format
 msgid "Command \"%(cmd)s\" on \"%(name)s\" failed."
-msgstr "El comando \"%(cmd)s\" en \"%(name)s\" ha fallado."
+msgstr "Komento \"%(cmd)s\" on \"%(name)s\" epäonnistui."
 
 # Translated by DeepL.
 #: views.py:210
 #, python-format
 msgid "Edit configuration file: %s"
-msgstr "Editar el archivo de configuración: %s"
+msgstr "Muokkaa asetustiedostoa: %s"
