@@ -157,6 +157,12 @@ class SettingsStoreBase(Mapping):
     def __len__(self):
         return len(self._mapping)
 
+    def __repr__(self):
+        return f'{super().__repr__()}: {str(self)}'
+
+    def __str__(self):
+        return str(self._mapping)
+
     # DEFAULTS
     @classmethod
     def _is_setting_name(cls, name):
