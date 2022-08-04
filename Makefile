@@ -12,9 +12,10 @@ ifeq ($(shell expr $(USER_GID) \< 1000), 1)
 	USER_GID := 1000
 endif
 
-DOCKER_IMG := django_web_utils
-TMP_DOCKER_CT := django_web_utils_ct
+DOCKER_IMG ?= django_web_utils
+TMP_DOCKER_CT ?= django_web_utils_ct
 DOCKER_COMPOSE := docker compose -f docker/docker-compose.yml
+NEED_CLAMAV ?= 1
 
 build_docker_img:
 	DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE} build
@@ -35,17 +36,17 @@ endif
 
 run:
 	# Run Django test server on http://127.0.0.1:8200
-	${DOCKER_COMPOSE} up -e NEED_CLAMAV=1 --abort-on-container-exit
+	${DOCKER_COMPOSE} up -e "NEED_CLAMAV=${NEED_CLAMAV}" --abort-on-container-exit
 
 test:
 ifndef DOCKER
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e NEED_CLAMAV=1 --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "NEED_CLAMAV=${NEED_CLAMAV}" -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
 else
 	pytest --reuse-db --cov=django_web_utils ${PYTEST_ARGS}
 endif
 
 shell:
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "NEED_CLAMAV=${NEED_CLAMAV}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
 
 stop:
 	${DOCKER_COMPOSE} stop && ${DOCKER_COMPOSE} rm -f

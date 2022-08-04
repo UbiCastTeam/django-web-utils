@@ -46,8 +46,16 @@ make mo
 
 ### Tests
 
+To run all tests:
+
 ``` bash
 make test
+```
+
+To run a single test without starting the antivirus:
+
+``` bash
+make test NEED_CLAMAV=0 PYTEST_ARGS='-x tests/testapp/tests/test_csv_utils.py'
 ```
 
 ### Run test server

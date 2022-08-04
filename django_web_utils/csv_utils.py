@@ -3,40 +3,39 @@
 '''
 CSV utility functions
 '''
-from io import StringIO
-import csv
+from collections.abc import Iterable
 # Django
-from django.http import HttpResponse
+from django.http import StreamingHttpResponse
 
 
-class CSVFile():
-    '''
-    Simple class to generate a CSV response.
-    If a request object is given, some settings will be get from request.GET:
+def csv_streaming_response(rows_iterator: Iterable, parameters: dict = None, file_name: str = None) -> StreamingHttpResponse:
+    """
+    Simple function to stream a CSV file.
+    The "rows_iterator" should send a list for each CSV row.
+    If a parameters dict is given, some settings will be retrieved from it:
         delimiter, quote and encoding
-    '''
+    """
+    delimiter = parameters['delimiter'][0] if parameters and parameters.get('delimiter') else ','
+    quotechar = parameters['quote'][0] if parameters and parameters.get('quote') else '"'
+    if quotechar == delimiter:
+        quotechar = "'" if quotechar == '"' else '"'
+    charset = 'cp1252' if parameters and parameters.get('encoding') == 'cp1252' else 'utf-8'
 
-    def __init__(self, request=None):
-        delimiter = request.GET['delimiter'][0] if request and request.GET.get('delimiter') else ','
-        quotechar = request.GET['quote'][0] if request and request.GET.get('quote') else '"'
-        quotechar = quotechar if quotechar != delimiter else ('\'' if quotechar == '"' else '"')
-        self.csv_file = StringIO()
-        self.csv_writer = csv.writer(self.csv_file, delimiter=delimiter, quotechar=quotechar, quoting=csv.QUOTE_MINIMAL)
-        self.charset = 'cp1252' if request and request.GET.get('encoding') == 'cp1252' else 'utf-8'
+    def clean_value(val):
+        cleaned = val if isinstance(val, str) else str(val)
+        if delimiter in cleaned:
+            cleaned = cleaned.replace(quotechar, quotechar + quotechar)
+            cleaned = quotechar + cleaned + quotechar
+        return cleaned
 
-    def write_row(self, columns):
-        self.csv_writer.writerow(columns)
+    def iterator():
+        for row in rows_iterator():
+            yield (delimiter.join([clean_value(val) for val in row]) + '\r\n').encode(charset, 'replace')
 
-    def write_line_break(self, lines=1):
-        self.csv_file.write('\r\n' * lines)
-
-    def get_text(self):
-        csv_content = self.csv_file.getvalue().encode(self.charset, 'replace')
-        return csv_content
-
-    def get_response(self, file_name=None):
-        csv_content = self.get_text()
-        response = HttpResponse(csv_content, content_type='text/csv; charset=' + self.charset)
-        if file_name:
-            response['Content-Disposition'] = 'attachment; filename="%s"' % file_name
-        return response
+    response = StreamingHttpResponse(iterator(), content_type=f'text/csv; charset={charset}')
+    if file_name:
+        response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+    response['Content-Encoding'] = 'identity'
+    response['X-Accel-Buffering'] = 'no'
+    response['X-Accel-Charset'] = charset
+    return response
