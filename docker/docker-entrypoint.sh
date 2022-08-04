@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ "$NEED_CLAMAV" ]]; then
+if [[ "$NEED_CLAMAV" == "1" ]]; then
     echo "==> Starting ClamAV..."
     # The systemctl command is not available here
     sudo service clamav-daemon start
