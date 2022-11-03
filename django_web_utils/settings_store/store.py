@@ -16,6 +16,9 @@ if TYPE_CHECKING:
     from .models import AbstractSettingsModel
 
 
+MISSING = object()
+
+
 class InvalidSetting(Exception):
     pass
 
@@ -117,13 +120,13 @@ class SettingsStoreBase(Mapping):
         cls._validate_model(lazy=True)
         cls._defaults: dict = cls._get_defaults()
 
-    def __init__(self, cache_ttl: int = 0):
+    def __init__(self, cache_ttl: int = 0, default_lock_timeout: Optional[int] = 100):
         # Initialize a per-instance internal mapping with default values
         self._mapping: dict = deepcopy(self._defaults)
         self._last_updated_at: Optional[datetime.datetime] = None
         self._last_refreshed_at: Optional[datetime.datetime] = None
         self._cache_ttl = cache_ttl
-        self._no_lock_timeout = False  # Use in tests to avoid random timeout errors.
+        self._default_lock_timeout = default_lock_timeout
 
     # GET/SET
     def __getattribute__(self, name):
@@ -174,16 +177,11 @@ class SettingsStoreBase(Mapping):
 
     @classmethod
     def _get_defaults(cls):
-        super_get_defaults = getattr(super(), '_get_defaults', None)
-        if super_get_defaults:
-            defaults = {k: v for k, v in super_get_defaults()}
-        else:
-            defaults = {}
-
-        for attr_name in cls.__dict__.keys():
-            if cls._is_setting_name(attr_name):
-                defaults[attr_name] = getattr(cls, attr_name)
-        return defaults
+        return {
+            attr_name: getattr(cls, attr_name)
+            for attr_name in cls.__dict__.keys()
+            if cls._is_setting_name(attr_name)
+        }
 
     @classmethod
     def get_default(cls, setting_name):
@@ -275,13 +273,16 @@ class SettingsStoreBase(Mapping):
         return refreshed
 
     @contextmanager
-    def _lock(self, *setting_names, wait_timeout: int = 100):
-        wait_timeout = max(1, int(wait_timeout))
+    def _lock(self, *setting_names, wait_timeout: Optional[int] = MISSING):
+        if wait_timeout is MISSING:
+            wait_timeout = self._default_lock_timeout
+        if wait_timeout is not None:
+            wait_timeout = max(1, int(wait_timeout))
 
         if setting_names:
             self._validate_names(*setting_names)
             with transaction.atomic():
-                if not self._no_lock_timeout:
+                if wait_timeout is not None:
                     with connection.cursor() as cursor:
                         cursor.execute(
                             f"SET LOCAL lock_timeout = '{wait_timeout}ms';"
@@ -295,14 +296,14 @@ class SettingsStoreBase(Mapping):
             with transaction.atomic():
                 with connection.cursor() as cursor:
                     stmt = ''
-                    if not self._no_lock_timeout:
+                    if wait_timeout is not None:
                         stmt += f"SET LOCAL lock_timeout = '{wait_timeout}ms';"
                     stmt += f'LOCK TABLE {self.model._meta.db_table} IN EXCLUSIVE MODE;'
                     cursor.execute(stmt)
                 yield
 
     @contextmanager
-    def lock(self, *setting_names, wait_timeout: int = 100):
+    def lock(self, *setting_names, wait_timeout: Optional[int] = MISSING):
         """
         Lock specific settings or all settings. Locks are transaction-bound.
         This means the call to this function must be done within a transaction
@@ -320,10 +321,11 @@ class SettingsStoreBase(Mapping):
         with self._lock(*setting_names, wait_timeout=wait_timeout):
             yield True
 
-    def update(self, **updates):
+    def update(self, wait_timeout: Optional[int] = MISSING, **updates):
         """
         Updates settings in the database.
 
+        :param wait_timeout: overrides the default wait timeout for the lock.
         :param updates: key/value mapping of settings to update.
         :return: None
         """
@@ -334,7 +336,7 @@ class SettingsStoreBase(Mapping):
         self._validate_names(*update_keys)
 
         # Upsert the keys into the database.
-        with self._lock(*update_keys, wait_timeout=100) as db_models:
+        with self._lock(*update_keys, wait_timeout=wait_timeout) as db_models:
             # TODO: When Django brings support for Postgres' upsert statement
             #       (INSERT... ON CONFLICT...), these 3 queries should be
             #       replaced with one upsert using the unique index on `key` as

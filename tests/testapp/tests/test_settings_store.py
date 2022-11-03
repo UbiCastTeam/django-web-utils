@@ -521,6 +521,40 @@ class SettingsStoreLockTests(TransactionTestCase):
         self.assertEqual(settings_store_2.STR_VAL, 'foo_upd')
         self.assertEqual(settings_store_2.FLOAT_VAL, 6.6)
 
+    @contextmanager
+    def _check_applied_timeout(self, expected_timeout):
+        with mock.patch('django_web_utils.settings_store.store.connection') as mock_conn:
+            mock_execute = mock_conn.cursor.return_value.__enter__.return_value.execute
+            yield mock_execute
+            if expected_timeout is None:
+                mock_execute.assert_not_called()
+            else:
+                mock_execute.assert_called_once()
+                sql = mock_execute.call_args[0][0]
+                if expected_timeout >= 1:
+                    assert f"SET LOCAL lock_timeout = '{expected_timeout}ms';" in sql
+                else:
+                    assert "SET LOCAL lock_timeout = '1ms';" in sql
+
+    def test_settings_store__lock_timeout_override(self):
+        settings_store = get_new_setting_store(default_lock_timeout=None)
+        with self._check_applied_timeout(expected_timeout=None):
+            settings_store.update(STR_VAL='foo_upd')
+        with self._check_applied_timeout(expected_timeout=100):
+            settings_store.update(STR_VAL='foo_upd', wait_timeout=100)
+
+        settings_store = get_new_setting_store(default_lock_timeout=100)
+        with self._check_applied_timeout(expected_timeout=100):
+            settings_store.update(STR_VAL='foo_upd')
+        with self._check_applied_timeout(expected_timeout=200):
+            settings_store.update(STR_VAL='foo_upd', wait_timeout=200)
+
+        settings_store = get_new_setting_store(default_lock_timeout=200)
+        with self._check_applied_timeout(expected_timeout=200):
+            settings_store.update(STR_VAL='foo_upd')
+        with self._check_applied_timeout(expected_timeout=100):
+            settings_store.update(STR_VAL='foo_upd', wait_timeout=100)
+
 
 class SettingsStoreFormTests(TestCase):
     def setUp(self):
