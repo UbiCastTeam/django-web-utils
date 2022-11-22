@@ -7,7 +7,7 @@ from setuptools import setup
 
 INSTALL_REQUIRES = [
     'bleach[css] >= 5.0, < 5.1',
-    'pillow >= 9.1, < 9.2',
+    'pillow >= 9.3, < 9.4',
 ]
 
 EXTRAS_REQUIRE = {
