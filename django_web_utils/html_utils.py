@@ -17,6 +17,8 @@ from django.utils.safestring import mark_safe
 
 logger = logging.getLogger('djwutils.html_utils')
 
+# For any change in the constants below, please update the same constant in the JSU project:
+# https://github.com/UbiCastTeam/jsu/blob/main/vendors/tinymce/tinymce.custom.js
 ALLOWED_TAGS = ['div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'img', 'fieldset', 'legend', 'pre', 'code', 'blockquote', 'video', 'source']
 ALLOWED_ATTRS = {
     '*': ['class', 'style'],
