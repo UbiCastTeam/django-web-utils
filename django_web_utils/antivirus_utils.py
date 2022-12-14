@@ -498,11 +498,11 @@ def antivirus_path_validator(path, remove=True):
         clamav = ClamAVDaemon(unix_socket=sp)
         report = clamav.multi_scan(str(path))
         logger.debug('Scanned with antivirus path "%s": %s', path, report)
-    except Exception:
+    except Exception as err:
         logger.error('Scan failed for path "%s":\n%s', path, traceback.format_exc())
         if remove:
             _remove_infected_file(path)
-        raise ValidationError(COMMAND_ERROR_MESSAGE)
+        raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}')
     else:
         if report.get('FOUND'):
             logger.warning('Path "%s" is infected%s:\n%s', path, (', it will be removed' if remove else ''), report['files'])
@@ -540,11 +540,11 @@ def antivirus_stream_validator(stream, remove=True, skip_closed=True):
         clamav = ClamAVDaemon(unix_socket=sp)
         report = clamav.instream(stream)
         logger.debug('Scanned with antivirus file "%s": %s', stream.name, report)
-    except Exception:
+    except Exception as err:
         logger.error('Scan failed for stream "%s":\n%s', stream.name, traceback.format_exc())
         if remove and getattr(stream, 'path', None):
             _remove_infected_file(Path(stream.path))
-        raise ValidationError(COMMAND_ERROR_MESSAGE)
+        raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}')
     else:
         if report.get('FOUND'):
             logger.warning('Stream "%s" is infected%s:\n%s', stream.name, (', it will be removed' if remove else ''), report['files'])
