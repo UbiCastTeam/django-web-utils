@@ -1,11 +1,9 @@
-'''
-Antivirus utils tests.
-'''
+import subprocess
 from io import BytesIO
 from os import chmod
 from pathlib import Path
-import pytest
 
+import pytest
 from django.conf import settings
 from django.core import mail as dj_mail
 from django.core.exceptions import ValidationError
@@ -16,22 +14,29 @@ from django.urls import reverse
 
 from django_web_utils import antivirus_utils as avu
 
+pytestmark = pytest.mark.usefixtures('clamav_daemon')
 
 EICAR_TEST_CONTENT = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*'
 
 DEFAULT_MIDDLEWARES = settings.MIDDLEWARE
 
 
-@pytest.fixture(scope='function')
-def test_path():
-    path = Path('/tmp/djwutils-antivirus-test.txt')
-    if path.exists():
-        path.unlink()
+@pytest.fixture(scope='session')
+def clamav_daemon():
+    # Start ClamAV daemon if not running
+    if not Path('/var/run/clamav/clamd.ctl').exists():
+        # The systemctl command is not available here because of docker
+        subprocess.run(['sudo', 'service', 'clamav-daemon', 'start'], stdin=subprocess.DEVNULL, check=True)
+
+
+@pytest.fixture()
+def test_path(tmp_dir):
+    path = tmp_dir / 'djwutils-antivirus-test.txt'
+    path.unlink(missing_ok=True)
 
     yield path
 
-    if path.exists():
-        path.unlink()
+    path.unlink(missing_ok=True)
 
 
 def test_socket_path():

@@ -1,9 +1,6 @@
-'''
-Time utils tests.
-'''
-import pytest
 from contextlib import nullcontext
 
+import pytest
 from django_web_utils.time_utils import get_hms_tuple, get_hms_str
 
 

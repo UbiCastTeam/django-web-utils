@@ -15,10 +15,13 @@ endif
 DOCKER_IMG ?= django_web_utils
 TMP_DOCKER_CT ?= django_web_utils_ct
 DOCKER_COMPOSE := docker compose -f docker/docker-compose.yml
-NEED_CLAMAV ?= 1
+NEED_CLAMAV ?= 0
 
 build_docker_img:
 	DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE} build
+
+rebuild_docker_img:
+	DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE} build --no-cache
 
 lint:
 ifndef IN_FLAKE8
@@ -40,7 +43,7 @@ run:
 
 test:
 ifndef DOCKER
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "NEED_CLAMAV=${NEED_CLAMAV}" -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
 else
 	pytest --reuse-db --cov=django_web_utils ${PYTEST_ARGS}
 endif
