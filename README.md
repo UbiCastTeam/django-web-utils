@@ -2,7 +2,7 @@
 
 A collection of utilities for web projects based on Django.
 
-This library is only compatible with Python 3.7+.
+This library is only compatible with Python 3.9+.
 
 
 ## Usage
@@ -52,16 +52,22 @@ To run all tests:
 make test
 ```
 
-To run a single test without starting the antivirus:
+To run a single test:
 
 ``` bash
-make test NEED_CLAMAV=0 PYTEST_ARGS='-x tests/testapp/tests/test_csv_utils.py'
+make test PYTEST_ARGS='-x tests/testapp/tests/test_csv_utils.py'
 ```
 
 ### Run test server
 
 ``` bash
 make run
+```
+
+With antivirus:
+
+``` bash
+make run NEED_CLAMAV=1
 ```
 
 ### Remove Python compiled files

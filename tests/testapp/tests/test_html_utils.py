@@ -1,5 +1,4 @@
 import pytest
-
 from django_web_utils.html_utils import clean_html_tags, get_short_text
 
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 from django import forms as dj_forms
 
 from django_web_utils.antivirus_utils import antivirus_stream_validator

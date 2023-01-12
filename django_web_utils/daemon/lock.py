@@ -1,64 +1,64 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
-Lock function
-This simple lock system is using the system hostname as reference.
-'''
-from functools import wraps
+"""
+Lock functions
+This simple lock system is based on a file and is using the system hostname as reference.
+"""
 import datetime
 import logging
-import os
 import socket
 import time
+from pathlib import Path
+from functools import wraps
 
 logger = logging.getLogger('djwutils.daemon.lock')
 
 
+class LockAlreadyAcquired(Exception):
+    pass
+
+
 def acquire_lock(path, timeout=None):
-    # timeout can be None or a timedelta object
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    # The timeout value can be None or a timedelta object
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
     hostname = socket.gethostname()
     try:
-        mtime = os.path.getmtime(path)
+        mtime = datetime.datetime.fromtimestamp(path.stat().st_mtime)
     except FileNotFoundError:
         pass
     else:
-        if timeout and datetime.datetime.fromtimestamp(mtime) < datetime.datetime.now() - timeout:
-            logger.info('Lock file "%s" has timed out.', path)
+        if timeout and mtime < datetime.datetime.now() - timeout:
+            logger.info(f'Lock file "{path}" has timed out.')
         else:
             try:
-                with open(path, 'r') as fo:
-                    content = fo.read()
-            except Exception as e:
-                logger.debug('Failed to read lock file "%s", retrying in 2s. Error was: %s', path, e)
+                content = path.read_text()
+            except OSError as e:
+                logger.debug(f'Failed to read lock file "{path}", retrying in 2s. Error was: {e}')
                 time.sleep(2)
                 try:
-                    with open(path, 'r') as fo:
-                        content = fo.read()
-                except Exception as e:
-                    logger.info('Failed to read lock file "%s", assuming another host is using it. Error was: %s', path, e)
+                    content = path.read_text()
+                except OSError as e:
+                    logger.info(f'Failed to read lock file "{path}", assuming another host is using it. Error was: {e}')
                     return False
             if content != hostname:
-                logger.info('Could not acquire lock file "%s" because it is currently attributed to host "%s".', path, content)
+                logger.info(f'Could not acquire lock file "{path}" because it is currently attributed to host "{content}".')
                 return False
             else:
-                logger.info('Lock file "%s" already exists and is attributed to current hostname.', path)
-    with open(path, 'w') as fo:
-        fo.write(hostname)
-    logger.info('Lock file "%s" acquired.', path)
+                logger.info(f'Lock file "{path}" already exists and is attributed to current hostname.')
+    path.write_text(hostname)
+    logger.info(f'Lock file "{path}" acquired.')
     return True
 
 
 def release_lock(path):
-    if os.path.exists(path):
+    path = Path(path)
+    if path.exists():
         hostname = socket.gethostname()
-        with open(path, 'r') as fo:
-            content = fo.read()
+        content = path.read_text()
         if content == hostname:
-            os.remove(path)
-            logger.info('Lock file "%s" released.', path)
+            path.unlink(missing_ok=True)
+            logger.info(f'Lock file "{path}" released.')
         else:
-            logger.warning('Cannot release lock file "%s" because it is owned by host "%s".', path, content)
+            logger.warning(f'Cannot release lock file "{path}" because it is owned by host "{content}".')
             return False
     return True
 
@@ -68,11 +68,11 @@ def require_lock(path, timeout=None, silent=True):
         @wraps(function)
         def _wrapped_function(*args, **kwargs):
             if not acquire_lock(path, timeout):
-                msg = 'Could not get lock "%s".' % path
+                msg = f'Could not get lock "{path}".'
                 if silent:
                     logger.info(msg)
                 else:
-                    raise Exception(msg)
+                    raise LockAlreadyAcquired(msg)
             else:
                 try:
                     return function(*args, **kwargs)
