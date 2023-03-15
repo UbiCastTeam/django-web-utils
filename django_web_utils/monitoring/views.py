@@ -1,16 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import logging
-import os
 import socket
-# Django
+
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
-# Django web utils
+from django.utils.translation import gettext as _
+
 from django_web_utils import json_utils
 from django_web_utils import system_utils
 from django_web_utils.monitoring import config, utils
@@ -24,7 +21,7 @@ def check_password(request):
     if not request.user.is_superuser:
         return JsonResponse(error=_('You don\'t have the permission to access this url.'), code='perm', status=403)
     if request.method == 'POST':
-        # check that password is OK
+        # Check that password is OK
         pwd = request.POST.get('data')
         if not pwd:
             return JsonResponse(dict(error=_('Please enter password.'), code='nopwd'), status=400)
@@ -42,11 +39,11 @@ def check_password(request):
 @login_required
 def monitoring_panel(request):
     info = config.get_daemons_info()
-    groups = list()
-    daemons_names = list()
+    groups = []
+    daemons_names = []
     for name in info.GROUPS_NAMES:
         group = dict(info.GROUPS[name])
-        group['accessible_daemons'] = list()
+        group['accessible_daemons'] = []
         for daemon in group['members']:
             if config.can_access_daemon(daemon, request):
                 group['accessible_daemons'].append(daemon)
@@ -56,7 +53,7 @@ def monitoring_panel(request):
     if info.GROUPS_NAMES and not daemons_names:
         raise PermissionDenied()
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
-    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else dict()
+    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else {}
     tplt_data.update(dict(
         monitoring_page='panel',
         monitoring_body='monitoring/panel.html',
@@ -78,7 +75,7 @@ def monitoring_status(request):
     else:
         targets = info.DAEMONS_NAMES
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
-    data = dict()
+    data = {}
     for name in targets:
         daemon = info.DAEMONS[name]
         if not config.can_access_daemon(daemon, request):
@@ -103,7 +100,7 @@ def monitoring_command(request):
         all_daemons = False
         names = [name]
 
-    msgs = list()
+    msgs = []
     for name in names:
         daemon = info.DAEMONS.get(name)
         if not config.can_control_daemon(daemon, request):
@@ -112,16 +109,16 @@ def monitoring_command(request):
             if all_daemons:
                 continue
             success = False
-            out = '%s %s' % (_('Invalid daemon name:'), name)
+            out = '%s %s' % (_('The daemon name is invalid:'), name)
         else:
             if command in ('start', 'restart') and daemon.get('only_stop'):
                 continue
             else:
                 success, out = utils.execute_daemon_command(request, daemon, command)
         if success:
-            text = _('Command "%(cmd)s" on "%(name)s" successfully executed.')
+            text = _('The command "%(cmd)s" on "%(name)s" was successfully executed.')
         else:
-            text = _('Command "%(cmd)s" on "%(name)s" failed.')
+            text = _('The command "%(cmd)s" on "%(name)s" has failed.')
         msgs.append(dict(
             name=name,
             level='success' if success else 'error',
@@ -145,19 +142,19 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
         can_control = config.can_control_daemon(daemon, request)
         if request.method == 'POST' and not can_control:
             raise PermissionDenied()
-        path = daemon['log_path'] if daemon.get('log_path') else os.path.join(daemon['cls'].LOG_DIR, '%s.log' % name)
+        path = daemon['log_path'] if daemon.get('log_path') else (daemon['cls'].LOG_DIR / f'{name}.log')
         label = daemon.get('label')
         if daemon.get('is_root'):
             owner = 'root'
     if not label:
-        label = os.path.basename(path)
+        label = path.name
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
     result = utils.log_view(request, path=path, owner=owner, date_adjust_fct=date_adjust_fct)
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
-    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else dict()
+    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else {}
     tplt_data.update(dict(
         monitoring_page='log',
         monitoring_body='monitoring/log.html',
@@ -195,14 +192,14 @@ def monitoring_config(request, name=None, path=None, owner='self', back_url=None
     if not path:
         raise Exception('No configuration path given.')
     if not name:
-        name = os.path.basename(path)
+        name = path.name
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
     result = utils.edit_conf_view(request, path=path, default_conf=default_conf, owner=owner, date_adjust_fct=date_adjust_fct)
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
-    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else dict()
+    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else {}
     tplt_data.update(dict(
         monitoring_page='config',
         monitoring_body='monitoring/config.html',

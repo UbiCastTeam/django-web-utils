@@ -1,19 +1,14 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
-Daemon monitoring utilities
-'''
 import datetime
 import logging
-import os
 import stat
 import sys
-# Django
+from pathlib import Path
+
 from django.contrib import messages
 from django.http import FileResponse, HttpResponseRedirect
 from django.utils.http import http_date
 from django.utils.translation import gettext_lazy as _
-# django_web_utils
+
 from django_web_utils import files_utils
 from django_web_utils import system_utils
 from django_web_utils.daemon.base import BaseDaemon
@@ -24,7 +19,7 @@ FILE_SIZE_LIMIT = 524288000  # 500 MB
 
 
 def clear_log(request, path, owner='self'):
-    if os.path.exists(path):
+    if path.exists():
         success, msg = system_utils.write_file_as(request, '', path, owner)
         if not success:
             return success, msg
@@ -52,11 +47,12 @@ def execute_daemon_command(request, daemon, command):
     path = sys.modules[cls.__module__].__file__
     if path.endswith('pyc'):
         path = path[:-1]
-    if not os.path.isfile(path):
-        logger.error('The daemon script cannot be found. Path: %s' % path)
+    path = Path(path)
+    if not path.is_file():
+        logger.error('The daemon script cannot be found. Path: %s', path)
         return False, str(_('The daemon script cannot be found.'))
 
-    cmd = 'python3 %s %s' % (path, command)
+    cmd = f'python3 "{path}" {command}'
     success, output = system_utils.execute_command(cmd, user='root' if is_root else 'self', request=request)
     if not output:
         output = 'No output from command.'
@@ -92,10 +88,10 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
         running = None
     # Get log file properties
     size = mtime = ''
-    if log_path and os.path.exists(log_path):
-        size = '%s %s' % files_utils.get_unit(os.path.getsize(log_path))
-        mtime = os.path.getmtime(log_path)
-        mtime = datetime.datetime.fromtimestamp(mtime)
+    if log_path and log_path.exists():
+        statobj = log_path.stat()
+        size = '%s %s' % files_utils.get_unit(statobj.st_size)
+        mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)
         if date_adjust_fct:
             mtime = date_adjust_fct(mtime)
         mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
@@ -121,18 +117,17 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
     content = size = mtime = ''
     lines = 0
     tail_only = 'tail' in request.GET if tail is None else tail
-    if os.path.exists(path):
+    if path.exists():
         try:
+            statobj = path.stat()
             if 'raw' in request.GET:
                 # Get raw content
-                statobj = os.stat(path)
                 response = FileResponse(open(path, 'rb'), content_type='text/plain; charset=utf-8')
                 response['Last-Modified'] = http_date(statobj.st_mtime)
                 if stat.S_ISREG(statobj.st_mode):
                     response['Content-Length'] = statobj.st_size
                 return response
-            fsize = os.path.getsize(path)
-            size = '%s %s' % files_utils.get_unit(fsize)
+            size = '%s %s' % files_utils.get_unit(statobj.st_size)
             if tail_only:
                 # Read only file end
                 content = b''
@@ -146,14 +141,12 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
                         break
                 content = content.decode('utf-8')
             else:
-                if fsize > FILE_SIZE_LIMIT:
+                if statobj.st_size > FILE_SIZE_LIMIT:
                     content = str(_('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size)
                 else:
-                    with open(path, 'r') as fd:
-                        content = fd.read()
+                    content = path.read_text()
                     lines = content.count('\n')
-            mtime = os.path.getmtime(path)
-            mtime = datetime.datetime.fromtimestamp(mtime)
+            mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)
             if date_adjust_fct:
                 mtime = date_adjust_fct(mtime)
             mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
@@ -183,7 +176,7 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
         content = request.POST.get('conf_content')
         if content:
             try:
-                os.makedirs(os.path.dirname(path), exist_ok=True)
+                path.parent.mkdir(parents=True, exist_ok=True)
             except Exception as e:
                 messages.error(request, '%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), e))
                 return HttpResponseRedirect(request.get_full_path())
@@ -203,26 +196,23 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
 
     # Prepare display
     size = mtime = ''
-    if os.path.exists(path):
+    if path.exists():
         try:
+            statobj = path.stat()
             if 'raw' in request.GET:
                 # Get raw content
-                statobj = os.stat(path)
                 response = FileResponse(open(path, 'rb'), content_type='text/plain; charset=utf-8')
                 response['Last-Modified'] = http_date(statobj.st_mtime)
                 if stat.S_ISREG(statobj.st_mode):
                     response['Content-Length'] = statobj.st_size
                 return response
-            fsize = os.path.getsize(path)
-            size = '%s %s' % files_utils.get_unit(fsize)
+            size = '%s %s' % files_utils.get_unit(statobj.st_size)
             if not content:
-                if fsize > FILE_SIZE_LIMIT:
+                if statobj.st_size > FILE_SIZE_LIMIT:
                     content = str(_('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size)
                 else:
-                    with open(path, 'r') as fd:
-                        content = fd.read()
-            mtime = os.path.getmtime(path)
-            mtime = datetime.datetime.fromtimestamp(mtime)
+                    content = path.read_text()
+            mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)
             if date_adjust_fct:
                 mtime = date_adjust_fct(mtime)
             mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
@@ -242,7 +232,7 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
             elif isinstance(val, str):
                 val = 'u\'%s\'' % val
             default_conf_content += '%s = %s\n' % (key, val)
-    elif not default_conf and default_conf_path and os.path.isfile(default_conf_path):
+    elif not default_conf and default_conf_path and Path(default_conf_path).is_file():
         try:
             with open(default_conf_path, 'r') as fd:
                 default_conf_content = fd.read()

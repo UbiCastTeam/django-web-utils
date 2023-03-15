@@ -1,39 +1,46 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 '''
 Files utility functions
 '''
 import os
 import subprocess
+from pathlib import Path
 # Django
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 
-# get_size function
-# to get size of a dir
-# ----------------------------------------------------------------------------
 def get_size(path, ignore_du_errors=True):
-    if os.path.isfile(path):
-        return os.path.getsize(path)
-    elif os.path.isdir(path):
+    """
+    Function to get the size of a file or a dir.
+    Dir size is retrieved using the "du" command (faster than Python).
+    """
+    path = Path(path)
+    if path.is_file():
+        return path.stat().st_size
+    elif path.is_dir():
         # "du" is much faster than getting size file of all files using python
-        p = subprocess.run(['du', '-sb', path], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+        p = subprocess.run(['du', '-sb', str(path)], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.stdout.decode('utf-8').strip()
         err = p.stderr.decode('utf-8').strip()
         if not ignore_du_errors and p.returncode != 0:
-            raise Exception('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
+            raise RuntimeError('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
         try:
-            return int(out.split('\t')[0])
-        except Exception:
-            raise Exception('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
+            return int(out.split('\t', 1)[0])
+        except ValueError:
+            raise RuntimeError('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
     else:
-        # socket or something else
+        # Socket or something else
         return 0
 
 
-# get_unit function
-# ----------------------------------------------------------------------------
+def get_size_display(size=0, path=None):
+    size, unit = get_unit(size, path)
+    return f'{size} {unit}'
+
+
 def get_unit(size=0, path=None):
+    """
+    DEPRECATED, use "get_size_display" instead of this function
+    """
     if path is not None:
         size = get_size(path)
     if abs(size) <= 1000:
@@ -57,59 +64,42 @@ def get_unit(size=0, path=None):
     return size, unit
 
 
-# get_new_path function
-# ----------------------------------------------------------------------------
 def get_new_path(path, new_extension=None):
-    fdir = os.path.dirname(path)
-    fname = os.path.basename(path).lower()
-    if '.' in path:
-        splitted = fname.split('.')
-        fname = '.'.join(splitted[:-1])
+    path = Path(path)
+    fdir = path.parent
+    fname = path.name.lower().strip('.')
+    if '.' in fname:
+        fname, fext = fname.rsplit('.', 1)
         if new_extension:
-            fext = '.%s' % new_extension
+            fext = f'.{new_extension}'
         else:
-            fext = '.%s' % splitted[-1]
+            fext = f'.{fext}'
     else:
         fname = fname
-        fext = '.%s' % new_extension if new_extension else ''
+        fext = f'.{new_extension}' if new_extension else ''
     count = 1
     if '_' in fname:
-        splitted = fname.split('_')
+        name, count = fname.rsplit('_', 1)
         try:
-            count = int(splitted[-1])
+            count = int(count)
         except ValueError:
             pass
         else:
             count += 1
-            fname = '_'.join(splitted[:-1])
-    dest = '%s/%s_%s%s' % (fdir, fname, count, fext)
-    while os.path.exists(dest):
+            fname = name
+    dest = fdir / f'{fname}_{count}{fext}'
+    while dest.exists():
         count += 1
-        dest = '%s/%s_%s%s' % (fdir, fname, count, fext)
+        dest = fdir / f'{fname}_{count}{fext}'
     return dest
 
 
-# remove_dir function
-# (recursive function to remove a dir and its content)
-# ----------------------------------------------------------------------------
-def remove_dir(path):
-    if not os.path.isdir(path):
-        return
-    for name in os.listdir(path):
-        fpath = os.path.join(path, name)
-        if os.path.isfile(fpath):
-            os.remove(fpath)
-        elif os.path.isdir(fpath):
-            remove_dir(fpath)
-    os.rmdir(path)
-
-
-# reverse_readline function
-# (to read a file from its end without loading it competely)
-# ----------------------------------------------------------------------------
-def reverse_read(filename, buf_size=8192):
-    # utf-8 decoding is not in this function to avoid splitting unicode characters.
-    with open(filename, 'rb') as fh:
+def reverse_read(path, buf_size=8192):
+    """
+    Function to read a file starting from its end without loading it competely.
+    UTF-8 decoding is not made in this function to avoid splitting unicode characters.
+    """
+    with open(path, 'rb') as fh:
         segment = None
         offset = 0
         fh.seek(0, os.SEEK_END)

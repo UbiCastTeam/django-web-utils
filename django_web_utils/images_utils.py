@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 '''
 Images utility functions
 '''
@@ -10,8 +8,6 @@ from PIL import Image
 from django_web_utils.files_utils import get_new_path
 
 
-# get_image_ratio function
-# ----------------------------------------------------------------------------
 def get_image_ratio(image_path):
     try:
         img = Image.open(image_path)
@@ -26,8 +22,6 @@ def get_image_ratio(image_path):
             return 0
 
 
-# get_image_info function
-# ----------------------------------------------------------------------------
 def get_image_info(path):
     file_size = 0
     file_extension = ''
@@ -47,27 +41,23 @@ def get_image_info(path):
     return dict(file_size=file_size, file_extension=file_extension, file_mtime=file_mtime, image_width=size[0], image_height=size[1])
 
 
-# rotate_image function
-# ----------------------------------------------------------------------------
 def rotate_image(path, clockwise=True, rename=True):
     img = Image.open(path)
     img.load()
     img = img.rotate(-90 if clockwise else 90, expand=1)
     if rename:
-        dest = get_new_path(path)
+        dest = str(get_new_path(path))
     else:
         dest = path
     img.save(dest)
     return dest
 
 
-# encode_as_jpeg function
-# ----------------------------------------------------------------------------
 def encode_as_jpeg(path, quality=85):
     img = Image.open(path)
     img.load()
     if img.mode != 'RGB':
         img = img.convert('RGB')
-    dest = get_new_path(path, new_extension='jpg')
+    dest = str(get_new_path(path, new_extension='jpg'))
     img.save(dest, 'JPEG', quality=quality)
     return dest

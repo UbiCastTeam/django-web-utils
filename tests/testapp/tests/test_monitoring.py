@@ -56,7 +56,11 @@ def test_logged(client):
     content = json.loads(response.content.decode('utf-8'))
     content['hosts']['log_mtime'] = 'test'
     content['hosts']['log_size'] = 'test'
-    assert content == {'hosts': {'running': None, 'need_password': False, 'log_size': 'test', 'log_mtime': 'test'}, 'fake': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''}}
+    assert content == {
+        'hosts': {'running': None, 'need_password': False, 'log_size': 'test', 'log_mtime': 'test'},
+        'fake': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''},
+        'dummy': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''},
+    }
 
     response = client.get(reverse('monitoring:monitoring-status'), {'name': 'fake'})
     assert response.status_code == 200
@@ -82,7 +86,9 @@ def test_logged(client):
     assert response.status_code == 200
     assert response['Content-Type'] == 'application/json'
     content = json.loads(response.content.decode('utf-8'))
-    assert content == {'messages': [{'level': 'success', 'name': 'fake', 'out': 'Log file cleared.', 'text': 'Command "clear_log" on "fake" successfully executed.'}]}
+    assert content == {'messages': [
+        {'level': 'success', 'name': 'fake', 'out': 'Log file cleared.', 'text': 'The command "clear_log" on "fake" was successfully executed.'}
+    ]}
 
 
 def test_sysinfo():

@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Daemonization function
-'''
+"""
 import os
 import resource
 import sys
 
 
 def daemonize(redirect_to=None, rundir='/', umask=0o022, close_all_files=False):
-    '''Detach a process from the controlling terminal and run it in the background as a daemon.'''
+    """
+    Detach a process from the controlling terminal and run it in the background as a daemon.
+    """
     sys.stdout.flush()
     sys.stderr.flush()
 
@@ -20,8 +20,8 @@ def daemonize(redirect_to=None, rundir='/', umask=0o022, close_all_files=False):
         # and inherits the parent's process group ID.  This step is required
         # to insure that the next call to os.setsid is successful.
         pid = os.fork()
-    except OSError as e:
-        raise Exception('%s [%d]' % (e.strerror, e.errno))
+    except OSError as err:
+        raise RuntimeError('%s [%d]' % (err.strerror, err.errno)) from err
 
     if pid == 0:  # The first child.
         # To become the session leader of this new session and the process group
@@ -39,8 +39,8 @@ def daemonize(redirect_to=None, rundir='/', umask=0o022, close_all_files=False):
             # longer a session leader, preventing the daemon from ever acquiring
             # a controlling terminal.
             pid = os.fork()  # Fork a second child.
-        except OSError as e:
-            raise Exception('%s [%d]' % (e.strerror, e.errno))
+        except OSError as err:
+            raise RuntimeError('%s [%d]' % (err.strerror, err.errno)) from err
 
         if pid == 0:  # The second child.
             # Since the current working directory may be a mounted filesystem, we

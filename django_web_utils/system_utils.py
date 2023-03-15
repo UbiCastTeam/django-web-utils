@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 '''
 System utility functions
 '''
@@ -11,20 +9,13 @@ import random
 import pwd
 import grp
 import subprocess
-# Django
+from pathlib import Path
+
 try:
-    from django.utils.translation import gettext
-except Exception:
-    gettext = None
-
-
-def _(text):
-    if gettext:
-        try:
-            return gettext(text)
-        except Exception:
-            pass
-    return text
+    from django.utils.translation import gettext as _
+except ImportError:
+    def _(text):
+        return text
 
 
 # get_unix_user function
@@ -117,9 +108,9 @@ def execute_command(cmd, user='self', pwd=None, request=None, is_root=False):
 # is_pid_running
 # ----------------------------------------------------------------------------
 def is_pid_running(pid_file_path, user='self', request=None):
-    success, output = execute_command('cat %s' % pid_file_path, user=user, request=request)
+    success, output = execute_command(f'cat "{pid_file_path}"', user=user, request=request)
     if success:
-        cmd = 'ps -p %s' % output.strip()
+        cmd = f'ps -p {output.strip()}'
         success, output = execute_command(cmd, user=user, request=request)
     return success
 
@@ -127,7 +118,7 @@ def is_pid_running(pid_file_path, user='self', request=None):
 # is_process_running
 # ----------------------------------------------------------------------------
 def is_process_running(process_name, user='self', request=None):
-    cmd = 'ps ax | grep \'%s\' | grep -v \'grep\' > /dev/null 2>&1' % process_name
+    cmd = f"ps ax | grep '{process_name}' | grep -v 'grep' > /dev/null 2>&1"
     success, output = execute_command(cmd, user=user, request=request)
     return success
 
@@ -135,36 +126,36 @@ def is_process_running(process_name, user='self', request=None):
 # write_file_as
 # ----------------------------------------------------------------------------
 def write_file_as(request, content, file_path, user='self'):
-    if os.path.isdir(file_path):
+    file_path = Path(file_path)
+    if file_path.is_dir():
         return False, '%s %s' % (_('Unable to write file.'), _('Specified path is a directory.'))
-    if '"' in file_path or '\'' in file_path or '$' in file_path:
+    path_str = str(file_path)
+    if '"' in path_str or '\'' in path_str or '$' in path_str:
         return False, '%s %s' % (_('Unable to write file.'), _('Invalid file path.'))
     try:
         # try to write file like usual
-        with open(file_path, 'w+') as fd:
-            fd.write(content)
-    except Exception as e:
-        if e.errno != errno.EACCES:
-            return False, '%s %s' % (_('Unable to write file.'), e)
+        file_path.write_text(content)
+    except OSError as err:
+        if err.errno != errno.EACCES:
+            return False, '%s %s' % (_('Unable to write file.'), err)
         # write file as given user
         #   to write as given user we first write the content in a temporary file then we
         #   transfer the content to the destination file. This method is used to avoid
         #   problems with special characters.
         if 'pwd' not in request.session:
-            return False, str(_('You need to send the main password to edit this file.'))
+            return False, _('You need to send the main password to edit this file.')
         # write tmp file
         rd_chars = ''.join([random.choice('0123456789abcdef') for i in range(10)])
         date_dump = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S_%f')
-        tmp_path = '/tmp/djwutils-tmp_%s_%s' % (date_dump, rd_chars)
+        tmp_path = Path(f'/tmp/djwutils-tmp_{date_dump}_{rd_chars}')
         try:
-            with open(tmp_path, 'w+') as fd:
-                fd.write(content)
-        except Exception as e:
-            return False, '%s %s' % (_('Unable to create temporary file "%s".') % tmp_path, e)
+            tmp_path.write_text(content)
+        except OSError as err:
+            return False, '%s %s' % (_('Unable to create temporary file "%s".') % tmp_path, err)
         # transfer content in final file without altering file permissions
-        cmd = 'cat \'%s\' > \'%s\'' % (tmp_path, file_path)
+        cmd = f"cat '{tmp_path}' > '{file_path}'"
         success, output = execute_command(cmd, user=user, request=request)
-        os.remove(tmp_path)
+        tmp_path.unlink(missing_ok=True)
         if not success:
             return False, '%s %s' % (_('Unable to write file.'), output)
-    return True, str(_('File updated.'))
+    return True, _('File updated.')

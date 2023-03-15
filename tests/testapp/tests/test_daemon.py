@@ -29,7 +29,6 @@ def test_daemon_start():
     logger.info('////!\\\\\\\\ A traceback will be displayed after this line, this is intended, ignore it.')
 
     class TestDaemon(BaseDaemon):
-        NEED_DJANGO = False
 
         def exit(self, code=0):
             # Override exit function to check expected code
@@ -38,7 +37,7 @@ def test_daemon_start():
             raise RuntimeError(f'Canceled exit with expected code ({code}).')
 
     # Logging will be displayed twice because of logging init in the daemon class
-    daemon = TestDaemon(argv=['notused', 'start', '-n'])
+    daemon = TestDaemon(['-f', 'start'])
     with pytest.raises(RuntimeError):
         daemon.start()
 
