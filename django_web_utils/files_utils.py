@@ -107,9 +107,9 @@ def remove_dir(path):
 # reverse_readline function
 # (to read a file from its end without loading it competely)
 # ----------------------------------------------------------------------------
-def reverse_read(filename, buf_size=8192):
+def reverse_read(path, buf_size=8192):
     # utf-8 decoding is not in this function to avoid splitting unicode characters.
-    with open(filename, 'rb') as fh:
+    with open(path, 'rb') as fh:
         segment = None
         offset = 0
         fh.seek(0, os.SEEK_END)

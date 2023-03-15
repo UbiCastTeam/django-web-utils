@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Daemon base class
-To create daemon (which can use django easily).
-'''
+Useful to create daemons which can use Django easily.
+"""
+import argparse
 import datetime
 import importlib.util
 import logging
@@ -13,101 +12,106 @@ import socket
 import subprocess
 import sys
 import traceback
-# django_web_utils
+from pathlib import Path
+
 from django_web_utils.daemon.daemonization import daemonize
 
 logger = logging.getLogger('djwutils.daemon.base')
 
 
-class BaseDaemon(object):
-    '''
+class BaseDaemon:
+    """
     Class to initialize daemons.
 
-    To create a daemon, just create a class which
-    herits from this one and implement the run function.
+    To create a daemon, just create a class which inherits
+    from this one and implement the run function.
 
-    Log file will be located in LOG_DIR/<daemon_file_name>.log
-    PID file is located in PID_DIR/<daemon_file_name>.pid
-    '''
+    Log file will be located in `LOG_DIR/<daemon_file_name>.log`.
+    PID file is located in `PID_DIR/<daemon_file_name>.pid`.
+    """
 
-    CONF_DIR = '/tmp/djwutils-daemon'
-    LOG_DIR = '/tmp/djwutils-daemon'
-    PID_DIR = '/tmp/djwutils-daemon'
-    SERVER_DIR = None  # Dir to append in sys.path
-    SETTINGS_MODULE = 'settings'
+    CONF_DIR = Path('/tmp/djwutils-daemon')
+    LOG_DIR = Path('/tmp/djwutils-daemon')
+    PID_DIR = Path('/tmp/djwutils-daemon')
+    WORK_DIR = Path('/')
+    # Dir to append in `sys.path`. Ignored if set to `None`.
+    SERVER_DIR = None
+    # Django settings module (for example: `'myproject.settings'`). Django is not loaded if set to `None`.
+    SETTINGS_MODULE = None
 
-    USAGE = '''USAGE: %s start|restart|stop|clear_log [-n] [-s] [-f] [*options]
-    -n: launch daemon in current thread and not in background
-    -s: allow simultaneous execution
-    -f: force log to use a file and not the standard output'''
-    NEED_DJANGO = True
     DEFAULTS = dict(LOGGING_LEVEL='INFO')
 
-    def __init__(self, argv=None):
-        object.__init__(self)
+    def __init__(self, args=None):
+        # Set env
+        # get daemon script path before changing dir
+        self.daemon_path = Path.cwd() / sys.argv[0]
+        os.environ['LANG'] = 'C.UTF-8'
+        os.environ['LC_ALL'] = 'C.UTF-8'
+        os.chdir(self.WORK_DIR)
+
+        # Get config
+        self.config = {}
+        self.load_config()
+
+        # Parse args
+        parser = argparse.ArgumentParser(
+            description=(self.__class__.__doc__ or 'Daemon').strip(),
+            formatter_class=argparse.RawTextHelpFormatter)
+        parser.add_argument(
+            '-f', '--foreground', action='store_true',
+            help='Launch daemon in current thread and not in background. Enabling this will set the log output ot standard output.')
+        parser.add_argument(
+            '-s', '--simultaneous', action='store_true',
+            help='Allow simultaneous execution.')
+        parser.add_argument(
+            '-l', '--log', action='store_true',
+            help='Force log to file and not the standard output.')
+        parser.add_argument(
+            'action', choices=['start', 'stop', 'restart', 'clear_log'],
+            help='Action to run.')
+        parser.add_argument(
+            'extra', nargs=argparse.REMAINDER,
+            help='Extra arguments for the action.')
+        args = parser.parse_args(args)
+
+        self._should_daemonize = not args.foreground
+        self._simultaneous = args.simultaneous
+        self._log_in_file = self._should_daemonize or args.log
+        self._extra_args = args.extra
+
+        # Run command
         try:
-            # Set env
-            # get daemon script path before changing dir
-            self.daemon_path = os.path.join(os.getcwd(), sys.argv[0])
-            os.environ['LANG'] = 'C.UTF-8'
-            os.environ['LC_ALL'] = 'C.UTF-8'
-            os.chdir('/')  # to avoid wrong imports
-            # Get config
-            self.config = dict()
-            self.load_config()
-            # Parse args
-            args = list(argv) if argv else list()
-            self._should_daemonize = True
-            if '-n' in args:
-                self._should_daemonize = False
-                args.remove('-n')
-            self._simultaneous = False
-            if '-s' in args:
-                self._simultaneous = True
-                args.remove('-s')
-            self._log_in_file = self._should_daemonize
-            if '-f' in args:
-                self._log_in_file = True
-                args.remove('-f')
-            valid_commands = ('start', 'restart', 'stop', 'clear_log')
-            if len(args) > 0 and args[0] not in valid_commands:
-                args.pop(0)  # this script path
-            self._command = None
-            if len(args) > 0 and args[0] in valid_commands:
-                self._command = args.pop(0)
-            self._cleaned_args = args
-            # Run command
-            self._run_command()
+            self._run_command(args.action)
         except Exception:
             self._exit_with_error('Error when initializing base daemon.')
 
     def run(self, *args):
-        msg = 'Function "run" is not implemented in daemon "%s"' % self.get_name()
+        msg = f'Function "run" is not implemented in daemon "{self.get_name()}".'
         logger.error(msg)
         raise NotImplementedError(msg)
 
     @classmethod
     def get_name(cls):
         if not hasattr(cls, '_file_name'):
-            cls._file_name = os.path.basename(sys.modules[cls.__module__].__file__)[:-3]
+            cls._file_name = Path(sys.modules[cls.__module__].__file__).name[:-3]
         return cls._file_name
 
     @classmethod
     def get_pid_path(cls):
         if not hasattr(cls, '_pid_path'):
-            cls._pid_path = os.path.join(cls.PID_DIR, '%s.pid' % cls.get_name())
+            cls._pid_path = cls.PID_DIR / f'{cls.get_name()}.pid'
         return cls._pid_path
 
     @classmethod
     def get_log_path(cls):
         if not hasattr(cls, '_log_path'):
-            cls._log_path = os.path.join(cls.LOG_DIR, '%s.log' % cls.get_name())
+            cls._log_path = cls.LOG_DIR / f'{cls.get_name()}.log'
         return cls._log_path
 
     @classmethod
     def get_conf_path(cls):
         if not hasattr(cls, '_conf_path'):
-            cls._conf_path = os.path.join(cls.CONF_DIR, '%s.py' % cls.get_name())
+            cls._conf_path = cls.CONF_DIR / f'{cls.get_name()}.py'
         return cls._conf_path
 
     def get_config(self, option, default=None):
@@ -115,9 +119,9 @@ class BaseDaemon(object):
 
     def load_config(self):
         self.config = dict(self.DEFAULTS)
-        if not os.path.exists(self.get_conf_path()):
+        if not self.get_conf_path().exists():
             return False
-        spec = importlib.util.spec_from_file_location('cfg', self.get_conf_path())
+        spec = importlib.util.spec_from_file_location('cfg', str(self.get_conf_path()))
         cfg = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cfg)
         for key in list(cfg.__dict__.keys()):
@@ -125,62 +129,61 @@ class BaseDaemon(object):
                 self.config[key] = cfg.__dict__[key]
         return True
 
-    def _run_command(self):
-        if self._command in ('restart', 'stop'):
+    def _run_command(self, command):
+        if command in ('restart', 'stop'):
             # check if daemon is already launched
             pid = self._look_for_existing_process()
             if pid:
-                print('Stopping %s... ' % self.get_name(), file=sys.stdout)
+                print(f'Stopping {self.get_name()}... ', file=sys.stdout)
                 # kill process and its children
-                result = os.system('kill -- -$(ps hopgid %s | sed \'s/^ *//g\')' % pid)
-                if result != 0:
-                    print('Cannot stop %s' % self.get_name(), file=sys.stderr)
+                p = subprocess.run(f'kill -- -$(ps hopgid {pid} | sed \'s/^ *//g\')', shell=True)
+                if p.returncode != 0:
+                    print(f'Cannot stop {self.get_name()}.', file=sys.stderr)
                     self.exit(129)
-                os.remove(self.get_pid_path())
-                print('%s stopped' % self.get_name(), file=sys.stdout)
+                self.get_pid_path().unlink(missing_ok=True)
+                print(f'{self.get_name()} stopped.', file=sys.stdout)
             else:
-                print('%s is not running' % self.get_name(), file=sys.stdout)
-        elif self._command == 'start':
+                print(f'{self.get_name()} is not running.', file=sys.stdout)
+        elif command == 'start':
             # check if daemon is already launched
             pid = self._look_for_existing_process()
             if pid and not self._simultaneous:
-                print('%s is already running' % self.get_name(), file=sys.stderr)
+                print(f'{self.get_name()} is already running.', file=sys.stderr)
                 self.exit(130)
-        elif self._command == 'clear_log':
-            if os.path.exists(self.get_log_path()):
-                with open(self.get_log_path(), 'w') as fo:
-                    fo.write('')
-            print('Log file cleared for %s.' % self.get_name(), file=sys.stdout)
+        elif command == 'clear_log':
+            if self.get_log_path().exists():
+                self.get_log_path().write_text('')
+            print(f'Log file cleared for {self.get_name()}.', file=sys.stdout)
         else:
             print(self.USAGE % self.daemon_path, file=sys.stderr)
             self.exit(128)
 
-        if self._command in ('start', 'restart'):
-            print('Starting %s...' % self.get_name(), file=sys.stdout)
+        if command in ('start', 'restart'):
+            print(f'Starting {self.get_name()}...', file=sys.stdout)
             sys.stdout.flush()
             try:
                 if self._should_daemonize:
-                    daemonize(redirect_to=self.get_log_path() if self._log_in_file else None)
+                    daemonize(redirect_to=str(self.get_log_path()) if self._log_in_file else None)
                 if not self._simultaneous:
                     self._write_pid()
                 self._setup_sys_path()
-                if self.NEED_DJANGO and self.SETTINGS_MODULE:
+                if self.SETTINGS_MODULE:
                     self._setup_django()
                 self._setup_logging()
             except Exception:
-                self._exit_with_error('Error when starting %s.' % self.get_name(), code=134)
+                self._exit_with_error(f'Error when starting {self.get_name()}.', code=134)
         else:
             self.exit(0)
 
     def _setup_sys_path(self):
-        if self.SERVER_DIR and os.path.isdir(self.SERVER_DIR):
+        if self.SERVER_DIR and self.SERVER_DIR.is_dir():
             # Remove current file directory from sys.path to avoid incorrect imports
             if '.' in sys.path:
                 sys.path.remove('.')
             if '' in sys.path:
                 sys.path.remove('')
-            if self.SERVER_DIR not in sys.path:
-                sys.path.append(self.SERVER_DIR)
+            if str(self.SERVER_DIR) not in sys.path:
+                sys.path.append(str(self.SERVER_DIR))
 
     def _setup_django(self):
         # set django settings, so that django modules can be imported
@@ -194,7 +197,7 @@ class BaseDaemon(object):
 
     def _setup_logging(self):
         try:
-            os.makedirs(self.LOG_DIR, exist_ok=True)
+            self.LOG_DIR.mkdir(parents=True, exist_ok=True)
         except Exception as e:
             print('Cannot create log directory %s: %s' % (self.LOG_DIR, e), file=sys.stderr)
             self.exit(131)
@@ -251,79 +254,80 @@ class BaseDaemon(object):
         logger.debug('Logging configured.')
 
     def _look_for_existing_process(self):
-        '''check if the daemon is already launched and return its pid if it is, else None'''
-        pid = None
+        """
+        Check if the daemon is already launched and return its pid if it is, else None
+        """
         try:
-            with open(self.get_pid_path(), 'r') as fo:
-                pid = int(fo.read())
-        except Exception:
-            pass
-        else:
-            mod = sys.modules[self.__class__.__module__]
-            if pid and os.system('ps -p %s -f | grep "%s" >/dev/null' % (pid, os.path.basename(mod.__file__))) != 0:
-                os.remove(self.get_pid_path())
-                pid = None
+            pid = int(self.get_pid_path().read_text())
+        except (OSError, ValueError):
+            return None
+        p = subprocess.run(
+            ['ps', '-p', str(pid), '-f'], encoding='utf-8',
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if self.get_name() in p.stdout:
+            self.get_pid_path().unlink(missing_ok=True)
+            pid = None
         return pid
 
     def _write_pid(self):
-        '''write pid into pidfile'''
-        pid_dir = os.path.dirname(self.get_pid_path())
+        """
+        Write pid into pidfile
+        """
+        pid_path = self.get_pid_path()
         try:
-            os.makedirs(pid_dir, exist_ok=True)
-            with open(self.get_pid_path(), 'w+') as fo:
-                fo.write(str(os.getpid()))
-        except Exception as e:
-            print('Cannot write pid into pidfile %s' % self.get_pid_path(), file=sys.stderr)
+            pid_path.parent.mkdir(parents=True, exist_ok=True)
+            pid_path.write_text(str(os.getpid()))
+        except OSError as e:
+            print(f'Cannot write pid into pidfile {pid_path}', file=sys.stderr)
             raise e
         else:
             self._pid_written = True
 
     def _exit_with_error(self, msg=None, code=-1):
-        if self._should_daemonize:
-            # sys.stderr is not visible if daemonized
+        if self._log_in_file:
             try:
-                with open('/tmp/daemon-error_%s' % self.get_name(), 'w+') as fo:
-                    fo.write('Date: %s (local time).\n\n' % datetime.datetime.now())
+                with open(self.get_log_path(), 'a') as fo:
+                    fo.write('Date: %s (local time).\n' % datetime.datetime.now())
                     if msg:
-                        fo.write(msg + '\n\n')
+                        fo.write(msg + '\n')
                     fo.write(traceback.format_exc())
-            except Exception as e:
-                print(e, file=sys.stderr)
+            except Exception as err:
+                print(err, file=sys.stderr)
         try:
             self.send_error_email(msg, tb=True)
         except Exception as e:
             print(e, file=sys.stderr)
         self.exit(code)
 
-    def start(self, argv=None):
-        argv = self._cleaned_args if not argv else argv
+    def start(self, args=None):
+        args = self._extra_args if args is None else args
         # Run daemon
         try:
-            if argv:
-                logger.info('Starting daemon %s with arguments: "%s".', self.get_name(), '" "'.join(argv))
+            if args:
+                logger.info('Starting daemon %s with arguments: %s.', self.get_name(), args)
             else:
                 logger.info('Starting daemon %s without arguments.', self.get_name())
-            self.run(*argv)
+            self.run(*args)
         except Exception:
-            self._exit_with_error('Error when running %s.' % self.get_name(), code=140)
+            self._exit_with_error(f'Error when running {self.get_name()}.', code=140)
         except KeyboardInterrupt:
-            logger.info('%s interrupted by KeyboardInterrupt', self.get_name())
+            logger.info('Daemon %s interrupted by KeyboardInterrupt', self.get_name())
             self.exit(141)
         self.exit(0)
 
-    def restart(self, argv=None):
+    def restart(self, args=None):
         # function to restart daemon itself
-        argv = self._cleaned_args if not argv else argv
+        args = self._extra_args if args is None else args
         # remove pid file to avoid kill command when restarting
         try:
-            os.remove(self.get_pid_path())
-        except Exception as e:
-            logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.', e)
+            self.get_pid_path().unlink(missing_ok=True)
+        except OSError as err:
+            logger.error('Error when trying to remove pid file.\n    Error: %s\nAs the pid file cannot be removed, the restart will probably kill daemon itself.', err)
 
         # execute restart command (if the daemon was not daemonized it will become so)
-        cmd = ['python3', self.daemon_path, 'restart']
-        if argv:
-            cmd.extend(argv)
+        cmd = ['python3', str(self.daemon_path), 'restart']
+        if args:
+            cmd.extend(args)
         p = subprocess.run(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
         out = p.stdout.strip()
         err = p.stderr.strip()
@@ -334,16 +338,13 @@ class BaseDaemon(object):
 
     def exit(self, code=0):
         if getattr(self, '_pid_written', False):
-            try:
-                os.remove(self.get_pid_path())
-            except Exception:
-                pass
-        logger.debug('Daemon %s ended (return code: %s).\n', self.get_name(), code)
+            self.get_pid_path().unlink(missing_ok=True)
+        logger.debug('Daemon %s ended (return code: %s).', self.get_name(), code)
         sys.exit(code)
 
     def send_error_email(self, msg, tb=False, recipients=None):
         logger.error('%s\n%s', msg, traceback.format_exc() if tb else msg)
-        if not self.NEED_DJANGO:
+        if not self.SETTINGS_MODULE:
             self._setup_django()
         from django_web_utils import emails_utils
         emails_utils.send_error_report_emails(

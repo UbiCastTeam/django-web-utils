@@ -56,7 +56,11 @@ def test_logged(client):
     content = json.loads(response.content.decode('utf-8'))
     content['hosts']['log_mtime'] = 'test'
     content['hosts']['log_size'] = 'test'
-    assert content == {'hosts': {'running': None, 'need_password': False, 'log_size': 'test', 'log_mtime': 'test'}, 'fake': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''}}
+    assert content == {
+        'hosts': {'running': None, 'need_password': False, 'log_size': 'test', 'log_mtime': 'test'},
+        'fake': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''},
+        'dummy': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''},
+    }
 
     response = client.get(reverse('monitoring:monitoring-status'), {'name': 'fake'})
     assert response.status_code == 200

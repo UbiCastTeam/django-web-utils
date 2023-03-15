@@ -1,16 +1,13 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import logging
-import os
 import socket
-# Django
+
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
-# Django web utils
+
 from django_web_utils import json_utils
 from django_web_utils import system_utils
 from django_web_utils.monitoring import config, utils
@@ -145,12 +142,12 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
         can_control = config.can_control_daemon(daemon, request)
         if request.method == 'POST' and not can_control:
             raise PermissionDenied()
-        path = daemon['log_path'] if daemon.get('log_path') else os.path.join(daemon['cls'].LOG_DIR, '%s.log' % name)
+        path = daemon['log_path'] if daemon.get('log_path') else (daemon['cls'].LOG_DIR / f'{name}.log')
         label = daemon.get('label')
         if daemon.get('is_root'):
             owner = 'root'
     if not label:
-        label = os.path.basename(path)
+        label = path.name
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
     result = utils.log_view(request, path=path, owner=owner, date_adjust_fct=date_adjust_fct)
@@ -195,7 +192,7 @@ def monitoring_config(request, name=None, path=None, owner='self', back_url=None
     if not path:
         raise Exception('No configuration path given.')
     if not name:
-        name = os.path.basename(path)
+        name = path.name
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
     result = utils.edit_conf_view(request, path=path, default_conf=default_conf, owner=owner, date_adjust_fct=date_adjust_fct)
