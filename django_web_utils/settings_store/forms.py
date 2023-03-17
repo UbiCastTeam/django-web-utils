@@ -9,10 +9,10 @@ from .store import SettingsStoreBase
 
 
 class BaseSettingsStoreForm:
-    '''
+    """
     Form designed to change settings in database.
     Settings that can be altered must be defined in Meta.SETTINGS_STORE_MAPPING.
-    '''
+    """
     def __init__(self, *args, settings_store=None, **kwargs):
         initial = kwargs.setdefault('initial', dict())
         if settings_store:

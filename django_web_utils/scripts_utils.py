@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Scripts utility functions
-'''
+"""
 import sys
 import subprocess
 

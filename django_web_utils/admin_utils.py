@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Django admin utility functions
-'''
+"""
 import csv
 # Django
 from django.contrib import admin

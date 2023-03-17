@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Forms utility functions
-'''
+"""
 import os
 import logging
 # Django
@@ -25,9 +23,9 @@ class FileInfo():
 
 
 class NoLinkClearableFileInput(dj_forms.ClearableFileInput):
-    '''
+    """
     Widget for a file upload without link to the file.
-    '''
+    """
 
     def render(self, name, value, *args, **kwargs):
         obj_value = FileInfo(value) if isinstance(value, str) else value
@@ -35,9 +33,9 @@ class NoLinkClearableFileInput(dj_forms.ClearableFileInput):
 
 
 class PasswordToggleInput(dj_forms.TextInput):
-    '''
+    """
     Widget to allow user to toggle a password input between text or password type.
-    '''
+    """
     template_name = 'forms_utils/password_toggle_input.html'
     orig_template_name = dj_forms.TextInput.template_name
 
@@ -50,9 +48,9 @@ class PasswordToggleInput(dj_forms.TextInput):
 
 
 class ProtectedFileField(dj_forms.FileField):
-    '''
+    """
     A field for a file which is not accessible for the user.
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(widget=NoLinkClearableFileInput(), *args, **kwargs)
@@ -91,10 +89,10 @@ class ProtectedFileField(dj_forms.FileField):
 
 
 class BaseFileSettingsForm(object):
-    '''
+    """
     Form designed to change settings file values and restart server then.
     Settings that can be altered must be defined in Meta.SETTINGS_MAPPING.
-    '''
+    """
 
     def __init__(self, *args, **kwargs):
         initial = kwargs.get('initial', dict())
@@ -126,9 +124,9 @@ class BaseFileSettingsForm(object):
             return default_values
 
     def save(self, commit=True):
-        '''
+        """
         Returns: success (boolean), changed (list of fields names).
-        '''
+        """
         if hasattr(super(), 'save'):
             super().save(commit)
         # Settings fields

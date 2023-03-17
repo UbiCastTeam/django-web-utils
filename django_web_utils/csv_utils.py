@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 CSV utility functions
-'''
+"""
 from collections.abc import Iterable
 # Django
 from django.http import StreamingHttpResponse

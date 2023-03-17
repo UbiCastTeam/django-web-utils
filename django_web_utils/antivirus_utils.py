@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Antivirus utility functions
 Requires:
  clamav-daemon
@@ -23,7 +21,7 @@ Settings:
     The recipients for infected file upload report emails.
     Can be a list of email addresses or a python module path to a callable returning the list.
     Default: email adresses of settings.ADMINS
-'''
+"""
 from pathlib import Path
 import contextlib
 import logging
@@ -56,43 +54,43 @@ SCAN_FAILED_MESSAGE = _('Failed to scan your file with the antivirus.')
 
 
 class ClamdError(Exception):
-    '''
+    """
     Generic Clamd error class.
-    '''
+    """
 
 
 class ClamdResponseError(ClamdError):
-    '''
+    """
     Class for response errrors.
-    '''
+    """
 
 
 class ClamdBufferTooLongError(ClamdResponseError):
-    '''
+    """
     Class for errors with clamd using INSTREAM with a buffer lenght > StreamMaxLength in /etc/clamav/clamd.conf.
-    '''
+    """
 
 
 class ClamdConnectionError(ClamdError):
-    '''
+    """
     Class for communication errors with clamd.
-    '''
+    """
 
 
 class ClamAVDaemon:
-    '''
+    """
     Class for using clamd with a network socket.
-    '''
+    """
     SCAN_RESPONSE = re.compile(r'^(?P<path>.*): ((?P<virus>.+) )?(?P<status>(FOUND|OK|ERROR))$')
 
     def __init__(self, host='127.0.0.1', port=3310, unix_socket=None, timeout=None):
-        '''
+        """
         Args:
             host (string): The hostname or IP address (if connecting to a network socket)
             port (int): TCP port (if connecting to a network socket)
             unix_socket (str):
             timeout (float or None) : socket timeout
-        '''
+        """
         self.host = host
         self.port = port
         self.unix_socket = unix_socket
@@ -125,32 +123,32 @@ class ClamAVDaemon:
         self.socket = clamd_socket
 
     def ping(self):
-        '''
+        """
         Sends the ping command to the ClamAV daemon.
-        '''
+        """
         return self._basic_command('PING')
 
     def version(self):
-        '''
+        """
         Sends the version command to the ClamAV daemon.
-        '''
+        """
         return self._basic_command('VERSION')
 
     def reload(self):
-        '''
+        """
         Sends the reload command to the ClamAV daemon.
-        '''
+        """
         return self._basic_command('RELOAD')
 
     def shutdown(self):
-        '''
+        """
         Force Clamd to shutdown and exit.
 
         return: nothing
 
         May raise:
           - ClamdConnectionError: in case of communication problem
-        '''
+        """
         try:
             self._send_command('SHUTDOWN')
             # result = self._recv_response()
@@ -158,27 +156,27 @@ class ClamAVDaemon:
             self._close_socket()
 
     def scan(self, filename):
-        '''
+        """
         Scan a file.
-        '''
+        """
         return self._file_system_scan('SCAN', filename)
 
     def cont_scan(self, filename):
-        '''
+        """
         Scan a file but don't stop if a virus is found.
-        '''
+        """
         return self._file_system_scan('CONTSCAN', filename)
 
     def multi_scan(self, filename):
-        '''
+        """
         Scan a file using multiple threads.
-        '''
+        """
         return self._file_system_scan('MULTISCAN', filename)
 
     def _basic_command(self, command):
-        '''
+        """
         Send a command to the clamav server, and return the reply.
-        '''
+        """
         try:
             self._send_command(command)
             response = self._recv_response().rsplit('ERROR', 1)
@@ -189,7 +187,7 @@ class ClamAVDaemon:
             self._close_socket()
 
     def _file_system_scan(self, command, filename):
-        '''
+        """
         Scan a file or directory given by filename using multiple threads (faster on SMP machines).
         Do not stop on error or virus found.
         Scan with archive support enabled.
@@ -201,7 +199,7 @@ class ClamAVDaemon:
 
         May raise:
           - ClamdConnectionError: in case of communication problem
-        '''
+        """
         try:
             self._send_command(command, filename)
 
@@ -221,7 +219,7 @@ class ClamAVDaemon:
             self._close_socket()
 
     def instream(self, buff, max_chunk_size=1048576, max_stream_size=26214400):
-        '''
+        """
         Scan a buffer.
 
         buff  filelikeobj: buffer to scan
@@ -240,7 +238,7 @@ class ClamAVDaemon:
         May raise :
           - ClamdBufferTooLongError: if the buffer size exceeds clamd limits
           - ClamdConnectionError: in case of communication problem
-        '''
+        """
         try:
             self._send_command('INSTREAM')
 
@@ -306,14 +304,14 @@ class ClamAVDaemon:
             self._close_socket()
 
     def stats(self):
-        '''
+        """
         Get Clamscan stats.
 
         return: (string) clamscan stats
 
         May raise:
           - ClamdConnectionError: in case of communication problem
-        '''
+        """
         try:
             self._send_command('STATS')
             return self._recv_response_multiline()
@@ -321,12 +319,12 @@ class ClamAVDaemon:
             self._close_socket()
 
     def _send_command(self, cmd, *args):
-        '''
+        """
         Sends a command to the ClamAV daemon.
 
         `man clamd` recommends to prefix commands with z, but we will use \n
         terminated strings, as python<->clamd has some problems with \0x00
-        '''
+        """
         concat_args = ''
         if args:
             concat_args = ' ' + ' '.join(args)
@@ -336,9 +334,9 @@ class ClamAVDaemon:
         self.socket.sendall(cmd)
 
     def _recv_response(self):
-        '''
+        """
         Receive line from clamd.
-        '''
+        """
         try:
             with contextlib.closing(self.socket.makefile('rb')) as file_object:
                 return file_object.readline().decode('utf-8').strip()
@@ -348,9 +346,9 @@ class ClamAVDaemon:
             ) from error
 
     def _recv_response_multiline(self):
-        '''
+        """
         Receive multiple line response from clamd and strip all whitespace characters.
-        '''
+        """
         try:
             with contextlib.closing(self.socket.makefile('rb')) as file_object:
                 return file_object.read().decode('utf-8')
@@ -360,15 +358,15 @@ class ClamAVDaemon:
             ) from error
 
     def _close_socket(self):
-        '''
+        """
         Close clamd socket.
-        '''
+        """
         self.socket.close()
 
     def parse_response(self, msg):
-        '''
+        """
         Parses responses for SCAN, CONTSCAN, MULTISCAN and STREAM commands.
-        '''
+        """
         try:
             return self.SCAN_RESPONSE.match(msg).group('path', 'virus', 'status')
         except AttributeError:
@@ -378,10 +376,10 @@ class ClamAVDaemon:
 
 
 class FileInfectedError(Exception):
-    '''
+    """
     Class for infected file errrors.
     Used only if the `ReportInfectedFileUploadMiddleware` middleware is enabled.
-    '''
+    """
     def __init__(self, message):
         # The message attribute is used to have the same format as ValidationError.
         self.message = message
@@ -389,9 +387,9 @@ class FileInfectedError(Exception):
 
 
 def on_file_infected_error(request):
-    '''
+    """
     Function to log and report infected file upload.
-    '''
+    """
     # Prepare message
     if request.user.id:
         user_repr = 'user #' + str(request.user.id)
@@ -422,11 +420,11 @@ def on_file_infected_error(request):
 
 
 class ReportInfectedFileUploadMiddleware:
-    '''
+    """
     This middleware logs request information and returns a 451 HTTP code
     (unavailable for legal reasons) response when an infected file is uploaded.
     The purpose of this middleware is to be able to ban the IP with fai2ban.
-    '''
+    """
     def __init__(self, get_response):
         self.get_response = get_response
         # One-time configuration and initialization.
@@ -462,9 +460,9 @@ def is_antivirus_enabled():
 
 
 def _remove_infected_file(path):
-    '''
+    """
     Remove path (file or directory) if it exists.
-    '''
+    """
     if path.is_dir():
         shutil.rmtree(path)
     elif path.is_file():
@@ -472,12 +470,12 @@ def _remove_infected_file(path):
 
 
 def antivirus_path_validator(path, remove=True):
-    '''
+    """
     Check given path (file or directory) and raise ValidationError if invalid or infected.
     The `path` argument must be a Path or a str.
     Warning: The clamav unix user must be able to read the data to be able to scan it.
     Use the `antivirus_file_validator` function to avoid this constraint.
-    '''
+    """
     if not is_antivirus_enabled():
         logger.info('Skipped scan of path "%s" because scan is disabled.', path)
         return
@@ -518,10 +516,10 @@ def antivirus_path_validator(path, remove=True):
 
 
 def antivirus_stream_validator(stream, remove=True, skip_closed=True):
-    '''
+    """
     Check given file stream (for example in a model FileField) and raise ValidationError if invalid or infected.
     The `stream` argument must be a file object.
-    '''
+    """
     if not is_antivirus_enabled():
         logger.info('Skipped scan of stream "%s" because scan is disabled.', stream.name)
         return
@@ -566,11 +564,11 @@ def antivirus_stream_validator(stream, remove=True, skip_closed=True):
 
 
 def antivirus_file_validator(path, remove=True):
-    '''
+    """
     Check given file path and raise ValidationError if invalid or infected.
     The `path` argument must be a Path or a str.
     This function allows to check paths inaccessible for the clamav user.
-    '''
+    """
     if not is_antivirus_enabled():
         logger.info('Skipped scan of file "%s" because scan is disabled.', path)
         return

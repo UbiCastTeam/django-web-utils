@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 HTML utility functions
-'''
+"""
 from bleach.css_sanitizer import CSSSanitizer
 from copy import deepcopy
 from html.parser import HTMLParser
@@ -33,9 +31,9 @@ ALLOWED_CSS = ['margin', 'padding', 'color', 'background', 'vertical-align', 'fo
 
 
 def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
-    '''
+    """
     Function to remove all non allowed tags and attributes from the given HTML content.
-    '''
+    """
     def iframe_attrs_check(tag, name, value):
         if name in ('name', 'height', 'width', 'scrolling', 'allowfullscreen', 'class', 'style'):
             return True
@@ -79,16 +77,16 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
 
 
 def strip_html_tags(html):
-    '''
+    """
     Function to remove all HTML tags from the given content.
-    '''
+    """
     return bleach.clean(html, strip=True)
 
 
 def unescape(text):
-    '''
+    """
     Function to convert HTML characters tags to unicode characters.
-    '''
+    """
     text = strip_html_tags(text)
 
     def fixup(m):
@@ -114,9 +112,9 @@ def unescape(text):
 
 
 def get_meta_tag_text(text):
-    '''
+    """
     Function to get a text that can be safely used in a "meta" tag from an HTML content.
-    '''
+    """
     result = unescape(text)
     result = strip_html_tags(result)
     result = result.strip().replace('"', '\'\'')
@@ -124,9 +122,9 @@ def get_meta_tag_text(text):
 
 
 def get_html_traceback(tb=None):
-    '''
+    """
     Function to get a Python traceback as HTML content.
-    '''
+    """
     if not tb:
         tb = traceback.format_exc()
     error_tb = str(escape(tb))
@@ -208,10 +206,10 @@ class _TextHTMLParser(HTMLParser):
 
 
 def get_short_text(html_text, max_length=300, margin=100):
-    '''
+    """
     Function to get an HTML text which does not exceed a given number of chars.
     ⚠ Returns an empty string if the text length is not exceeding the size limit!
-    '''
+    """
     if len(html_text) > max_length + margin:
         try:
             parser = _TextHTMLParser(html_text, max_length)

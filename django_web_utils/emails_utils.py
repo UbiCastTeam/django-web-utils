@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Emails utility functions
 
 Optional settings:
@@ -15,7 +13,7 @@ The template should contain a subject tag.
 For example, a valid template could look like this:
 <subject>The email subject</subject>
 The email content
-'''
+"""
 import datetime
 import logging
 import os
@@ -105,7 +103,7 @@ def _get_recipients_list(recipients):
 
 
 def send_template_emails(template, context=None, recipients=None, content_subtype='html', attachments=None):
-    '''
+    """
     Function to send emails with a template.
     Arguments:
         template: template path.
@@ -117,7 +115,7 @@ def send_template_emails(template, context=None, recipients=None, content_subtyp
             (user objects can be given as recipient)
         content_subtype: email content type.
         attachments: list of attachments.
-    '''
+    """
     # Get common context
     common_ctx = _get_context()
     if common_ctx:
@@ -210,7 +208,7 @@ def send_template_emails(template, context=None, recipients=None, content_subtyp
 
 
 def send_emails(subject, content, recipients=None, content_subtype='html', attachments=None):
-    '''
+    """
     Function to send emails without template.
     Arguments:
         subject: email subject.
@@ -222,7 +220,7 @@ def send_emails(subject, content, recipients=None, content_subtype='html', attac
             (user objects can be given as recipient)
         content_subtype: email content type.
         attachments: list of attachments.
-    '''
+    """
     # Get common context
     ctx = _get_context()
     # Get sender
@@ -277,7 +275,7 @@ def send_emails(subject, content, recipients=None, content_subtype='html', attac
 
 
 def send_error_report_emails(title=None, error=None, recipients=None, filter_error=True, show_traceback=True):
-    '''
+    """
     Function to send last error traceback.
     Arguments:
         title: label to add to subject.
@@ -288,7 +286,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, filter_err
             str format: test@test.com
             (user objects can be given as recipient)
         filter_error: filter error type with default filters.
-    '''
+    """
     if title:
         title = 'Error report - %s' % title
     else:

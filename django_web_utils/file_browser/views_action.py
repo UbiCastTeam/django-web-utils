@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import os
 import re
 import shutil
@@ -16,10 +14,10 @@ from django_web_utils.file_browser import config
 
 
 def recursive_remove(path):
-    '''
+    """
     Function to remove a dir and all its file.
     Returns the number of deleted files and dirs.
-    '''
+    """
     files_deleted = 0
     dir_deleted = 0
     if not os.path.exists(path):
@@ -38,10 +36,10 @@ def recursive_remove(path):
 
 
 def clean_file_name(name):
-    '''
+    """
     This function is like the slugify function of Django,
     but it allows points and uppercase letters.
-    '''
+    """
     name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
     name = re.sub(r'[^\.\w\s-]', '', name).strip()
     name = re.sub(r'[-\s]+', '-', name)
@@ -50,9 +48,9 @@ def clean_file_name(name):
 
 @config.view_decorator
 def storage_action(request, namespace=None):
-    '''
+    """
     Storage action view.
-    '''
+    """
     base_path = config.get_base_path(namespace)
     if not base_path:
         return JsonResponse(dict(error=_('No base path defined in configuration.')), status=400)

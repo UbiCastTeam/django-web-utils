@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # Django
 from django.urls import re_path
 from django.views.decorators.cache import cache_page

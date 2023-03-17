@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 from PIL import Image
 import datetime
 import logging
@@ -20,9 +18,9 @@ IMAGES_EXTENSION = ['png', 'gif', 'bmp', 'tiff', 'jpg', 'jpeg']
 
 @config.view_decorator
 def storage_manager(request, namespace=None):
-    '''
+    """
     Storage manager view.
-    '''
+    """
     base_url = config.get_base_url(namespace)
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'file_browser/base.html'
     return render(request, tplt, {
@@ -32,9 +30,9 @@ def storage_manager(request, namespace=None):
 
 
 def recursive_dirs(path):
-    '''
+    """
     Function to get all sub dirs from a dir recursively.
-    '''
+    """
     dirs = list()
     try:
         files_names = os.listdir(path)
@@ -53,9 +51,9 @@ def recursive_dirs(path):
 
 @config.view_decorator
 def storage_dirs(request, namespace=None):
-    '''
+    """
     Storage dirs view.
-    '''
+    """
     base_path = config.get_base_path(namespace)
 
     if not os.path.exists(base_path):
@@ -66,9 +64,9 @@ def storage_dirs(request, namespace=None):
 
 
 def get_info(path):
-    '''
+    """
     Function to get information on a path.
-    '''
+    """
     size = 0
     nb_files = 0
     nb_dirs = 0
@@ -88,9 +86,9 @@ def get_info(path):
 
 @config.view_decorator
 def storage_content(request, namespace=None):
-    '''
+    """
     Storage content view.
-    '''
+    """
     base_path = config.get_base_path(namespace)
     path = request.GET.get('path', '').strip('/')
     folder_path = base_path if not path else os.path.join(base_path, path)
@@ -185,9 +183,9 @@ def storage_content(request, namespace=None):
 
 @config.view_decorator
 def storage_img_preview(request, namespace=None):
-    '''
+    """
     Storage image preview view.
-    '''
+    """
     base_path = config.get_base_path(namespace)
     path = request.GET.get('path', '').strip('/')
     if not path:

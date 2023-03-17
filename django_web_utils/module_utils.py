@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 def import_module_by_python_path(module):
     if not isinstance(module, str):

@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Authentication utility functions
-'''
+"""
 import base64
 import re
 # Django
@@ -13,10 +11,10 @@ from django.utils.translation import gettext as _
 
 
 def login_required_basicauth(function):
-    '''
+    """
     Decorator to handle login through basicauth.
     Check that user is authenticated and if not, return a basic http authentication request.
-    '''
+    """
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated:
             return function(request, *args, **kwargs)
@@ -53,9 +51,9 @@ def login_required_basicauth(function):
 
 @login_required_basicauth
 def login_basicauth(request, redirect_to=None):
-    '''
+    """
     Function to log users in using basicauth.
-    '''
+    """
     rt = request.GET.get('next')
     if not rt:
         rt = redirect_to
@@ -65,10 +63,10 @@ def login_basicauth(request, redirect_to=None):
 
 
 class CharactersTypesValidator:
-    '''
+    """
     Password validator to check that passwords contain at least 3 types of characters.
     Types are lower case letters, upper case letters, digits and special characters.
-    '''
+    """
 
     def validate(self, password, user=None):
         letter_types = 0

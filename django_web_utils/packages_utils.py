@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Packages utility functions
-'''
+"""
 import datetime
 import logging
 import os

@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Rss utility functions
-'''
+"""
 import pytz
 
 from django.conf import settings

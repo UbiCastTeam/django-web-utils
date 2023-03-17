@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Module to handle file settings.
 The OVERRIDE_PATH setting must be set to the local settings override path.
-'''
+"""
 import datetime
 import logging
 import os

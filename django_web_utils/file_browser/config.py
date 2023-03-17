@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 # Django
 from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings

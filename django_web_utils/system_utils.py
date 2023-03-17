@@ -1,6 +1,6 @@
-'''
+"""
 System utility functions
-'''
+"""
 import os
 import sys
 import errno

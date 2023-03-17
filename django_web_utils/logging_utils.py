@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import logging
 import os
 import re
@@ -85,11 +83,11 @@ def get_generic_logging_config(logs_dir, debug):
 class IgnoreTimeoutErrors(logging.Filter):
 
     def filter(self, record):
-        '''
+        """
         Ignore WSGI connection errors (UnreadablePostError)
         Like:
             UnreadablePostError: error during read(---) on wsgi.input
-        '''
+        """
         try:
             err_class = record.exc_info[0].__name__ if record.exc_info is not None else 'None'
         except Exception as e:
@@ -102,13 +100,13 @@ class IgnoreTimeoutErrors(logging.Filter):
 class IgnoreDatabaseErrors(logging.Filter):
 
     def filter(self, record):
-        '''
+        """
         Ignore database connection errors (OperationalError)
         Like:
             OperationalError: could not connect to server: Connection refused
             OperationalError: server closed the connection unexpectedly
             OperationalError: SSL SYSCALL error: EOF detected
-        '''
+        """
         try:
             err_class = record.exc_info[0].__name__ if record.exc_info is not None else 'None'
         except Exception as e:
@@ -121,11 +119,11 @@ class IgnoreDatabaseErrors(logging.Filter):
 class IgnoreNoSpaceLeftErrors(logging.Filter):
 
     def filter(self, record):
-        '''
+        """
         Ignore no space left errors (OSError)
         Like:
             OSError [Errno 28] No space left on device: ...
-        '''
+        """
         try:
             err_class = record.exc_info[0].__name__ if record.exc_info is not None else 'None'
             if err_class == 'OSError':

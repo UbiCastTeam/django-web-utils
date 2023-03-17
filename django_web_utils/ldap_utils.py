@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 LDAP utility functions
 Requires ldap3 > 2.1
-'''
+"""
 from ldap3.utils.conv import escape_filter_chars
 import ldap3
 import logging

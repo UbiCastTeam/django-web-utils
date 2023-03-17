@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-'''
+"""
 Iframe utility functions
 To use this module, you should create the following templates:
     400.html, 401.html, 403.html, 404.html, 405.html, 500.html
 All these templates should be in a dir called iframe.
-'''
+"""
 from urllib.parse import quote
 import logging
 import traceback
@@ -35,11 +33,11 @@ IframeHttp404 = Http404
 # iframe_view decorator
 # ----------------------------------------------------------------------------
 def iframe_view(function=None, methods=None, login_url=None, login_required=False):
-    '''
+    """
     Returns 400, 401, 403, 404, 405 and 500 errors with Iframe template.
     The "methods" argument can be used to allow only some methods on a particular view.
     To allow several methods, use this format: "GET, PUT".
-    '''
+    """
     def decorator(fct):
         @xframe_options_exempt
         def _wrapped_view(request, *args, **kwargs):
