@@ -54,10 +54,10 @@ shell:
 stop:
 	${DOCKER_COMPOSE} stop && ${DOCKER_COMPOSE} rm -f
 
-po:
+generate_po:
 	# Generate po files from source
 ifndef DOCKER
-	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make po
+	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_po
 else
 	cd django_web_utils \
 	&& django-admin makemessages --all --no-wrap
@@ -69,10 +69,10 @@ else
 	&& django-admin makemessages -d djangojs --all --no-wrap
 endif
 
-mo:
+generate_mo:
 	# Generate mo files from po files
 ifndef DOCKER
-	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make mo
+	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_mo
 else
 	cd django_web_utils \
 	&& django-admin compilemessages
@@ -81,6 +81,23 @@ else
 	cd django_web_utils/monitoring \
 	&& django-admin compilemessages
 endif
+
+translate:
+	make generate_po
+	docker run -v ${CURDIR}:/apps registry.ubicast.net/devtools/translator:main translator \
+		--api-key "${DEEPL_API_KEY}" \
+		--path django_web_utils \
+		--source-language EN \
+		--target-language DE \
+		--target-language ES \
+		--target-language FI \
+		--target-language FR \
+		--target-language NL \
+		--glossaries-dir deepl_glossaries \
+		--mark-language-fuzzy FR \
+		--log-level=info ${TRANSLATE_ARGS}
+	make generate_po
+	make generate_mo
 
 clean:
 	# Remove compiled Python files
