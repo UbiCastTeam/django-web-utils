@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-11 06:46+0000\n"
+"POT-Creation-Date: 2023-04-04 07:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,164 +110,164 @@ msgid "Refresh"
 msgstr "Päivitä"
 
 # Translated by DeepL.
-#: views.py:62
+#: views.py:60
 #, python-format
 msgid "Folder \"%s\" does not exist."
 msgstr "Kansiota \"%s\" ei ole olemassa."
 
 # Translated by DeepL.
-#: views.py:64
+#: views.py:62
 msgid "Root folder"
 msgstr "Juurikansio"
 
 # Translated by DeepL.
-#: views.py:99
+#: views.py:97
 #, python-format
 msgid "Folder \"%s\" does not exist"
 msgstr "Kansiota \"%s\" ei ole olemassa"
 
 # Translated by DeepL.
-#: views.py:172
+#: views.py:170
 msgid "Parent folder"
 msgstr "Vanhempi kansio"
 
 # Translated by DeepL.
-#: views_action.py:58
+#: views_action.py:56
 msgid "No base path defined in configuration."
 msgstr "Konfiguraatiossa ei ole määritetty peruspolkua."
 
 # Translated by DeepL.
-#: views_action.py:61
+#: views_action.py:59
 msgid "No base url defined in configuration."
 msgstr "Konfiguraatiossa ei ole määritetty perusurl-osoitetta."
 
 # Translated by DeepL.
-#: views_action.py:76 views_action.py:143 views_action.py:166
-#: views_action.py:254
+#: views_action.py:74 views_action.py:141 views_action.py:164
+#: views_action.py:252
 msgid "Invalid base path."
 msgstr "Väärä peruspolku."
 
 # Translated by DeepL.
-#: views_action.py:83
+#: views_action.py:81
 msgid "No files in request."
 msgstr "Pyynnössä ei ole tiedostoja."
 
 # Translated by DeepL.
-#: views_action.py:98 views_action.py:158
+#: views_action.py:96 views_action.py:156
 msgid "Failed to create folder:"
 msgstr "Kansion luominen epäonnistui:"
 
 # Translated by DeepL.
-#: views_action.py:106
+#: views_action.py:104
 msgid "The file has been uploaded and is available at the location:"
 msgstr "Tiedosto on ladattu ja se on saatavilla osoitteessa:"
 
 # Translated by DeepL.
-#: views_action.py:108
+#: views_action.py:106
 msgid "The files have been uploaded and are available at the locations:"
 msgstr "Tiedostot on ladattu, ja ne ovat saatavilla paikoissa:"
 
 # Translated by DeepL.
-#: views_action.py:146 views_action.py:181
+#: views_action.py:144 views_action.py:179
 #, python-format
 msgid "The \"%s\" field is required."
 msgstr "Kenttä \"%s\" on pakollinen."
 
 # Translated by DeepL.
-#: views_action.py:149 views_action.py:188
+#: views_action.py:147 views_action.py:186
 msgid "Invalid name."
 msgstr "Väärä nimi."
 
 # Translated by DeepL.
-#: views_action.py:159
+#: views_action.py:157
 msgid "Folder created."
 msgstr "Kansio luotu."
 
 # Translated by DeepL.
-#: views_action.py:176
+#: views_action.py:174
 msgid "No files selected."
 msgstr "Tiedostoja ei ole valittu."
 
 # Translated by DeepL.
-#: views_action.py:194
+#: views_action.py:192
 #, python-format
 msgid "The file \"%s\" does not exist."
 msgstr "Tiedostoa \"%s\" ei ole olemassa."
 
 # Translated by DeepL.
-#: views_action.py:203
+#: views_action.py:201
 #, python-format
 msgid "The file \"%s\" already exists."
 msgstr "Tiedosto \"%s\" on jo olemassa."
 
 # Translated by DeepL.
-#: views_action.py:206
+#: views_action.py:204
 msgid "File renamed."
 msgstr "Tiedoston nimi muutettu."
 
 # Translated by DeepL.
-#: views_action.py:208
+#: views_action.py:206
 msgid "Files renamed."
 msgstr "Tiedostot nimetty uudelleen."
 
 # Translated by DeepL.
-#: views_action.py:213
+#: views_action.py:211
 msgid "No path specfied to move files in."
 msgstr "Tiedostojen siirtämiseen ei ole määritetty polkua."
 
 # Translated by DeepL.
-#: views_action.py:220
+#: views_action.py:218
 msgid "Destination path does not exists."
 msgstr "Määränpään polkua ei ole olemassa."
 
 # Translated by DeepL.
-#: views_action.py:229
+#: views_action.py:227
 #, python-format
 msgid "Unable to move file %s:"
 msgstr "Tiedostoa ei voi siirtää %s:"
 
 # Translated by DeepL.
-#: views_action.py:230
+#: views_action.py:228
 #, python-format
 msgid "%s file(s) successfully moved."
 msgstr "%s tiedosto(t) siirretty onnistuneesti."
 
 # Translated by DeepL.
-#: views_action.py:244
+#: views_action.py:242
 #, python-format
 msgid "Unable to delete file %s:"
 msgstr "Tiedostoa %s ei voi poistaa:"
 
 # Translated by DeepL.
-#: views_action.py:245
+#: views_action.py:243
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
 msgstr "%(f)s tiedosto(t) ja %(d)s hakemisto(t) onnistuneesti poistettu."
 
 # Translated by DeepL.
-#: views_action.py:260
+#: views_action.py:258
 msgid "Requested path does not exist."
 msgstr "Pyydettyä polkua ei ole olemassa."
 
 # Translated by DeepL.
-#: views_action.py:300
+#: views_action.py:298
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
 msgstr "%(count)s tulokset \"%(search)s\" in \"%(path)s\"."
 
 # Translated by DeepL.
-#: views_action.py:302
+#: views_action.py:300
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
 msgstr "%(count)s tulokset \"%(search)s\"."
 
 # Translated by DeepL.
-#: views_action.py:304
+#: views_action.py:302
 #, python-format
 msgid "No results for \"%(search)s\"."
 msgstr "Ei tuloksia \"%(search)s\"."
 
 # Translated by DeepL.
-#: views_action.py:308
+#: views_action.py:306
 msgid "Invalid action requested."
 msgstr "Pyydetty virheellinen toiminto."

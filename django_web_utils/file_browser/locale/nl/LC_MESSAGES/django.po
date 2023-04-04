@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-11 06:46+0000\n"
+"POT-Creation-Date: 2023-04-04 07:56+0000\n"
 "PO-Revision-Date: 2021-12-24 14:32+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -102,163 +102,163 @@ msgid "Refresh"
 msgstr "Verversen"
 
 # Translated by DeepL.
-#: views.py:62
+#: views.py:60
 #, python-format
 msgid "Folder \"%s\" does not exist."
 msgstr "Map \"%s\" bestaat niet."
 
 # Translated by DeepL.
-#: views.py:64
+#: views.py:62
 msgid "Root folder"
 msgstr "Hoofdmap"
 
 # Translated by DeepL.
-#: views.py:99
+#: views.py:97
 #, python-format
 msgid "Folder \"%s\" does not exist"
 msgstr "Map \"%s\" bestaat niet"
 
 # Translated by DeepL.
-#: views.py:172
+#: views.py:170
 msgid "Parent folder"
 msgstr "Ouder map"
 
 # Translated by DeepL.
-#: views_action.py:58
+#: views_action.py:56
 msgid "No base path defined in configuration."
 msgstr "Geen basispad gedefinieerd in configuratie."
 
 # Translated by DeepL.
-#: views_action.py:61
+#: views_action.py:59
 msgid "No base url defined in configuration."
 msgstr "Geen basis url gedefinieerd in configuratie."
 
 # Translated by DeepL.
-#: views_action.py:76 views_action.py:143 views_action.py:166
-#: views_action.py:254
+#: views_action.py:74 views_action.py:141 views_action.py:164
+#: views_action.py:252
 msgid "Invalid base path."
 msgstr "Ongeldig basispad."
 
 # Translated by DeepL.
-#: views_action.py:83
+#: views_action.py:81
 msgid "No files in request."
 msgstr "Geen bestanden in aanvraag."
 
 # Translated by DeepL.
-#: views_action.py:98 views_action.py:158
+#: views_action.py:96 views_action.py:156
 msgid "Failed to create folder:"
 msgstr "Faalde om map aan te maken:"
 
 # Translated by DeepL.
-#: views_action.py:106
+#: views_action.py:104
 msgid "The file has been uploaded and is available at the location:"
 msgstr "Het bestand is geüpload en is beschikbaar op de locatie:"
 
 # Translated by DeepL.
-#: views_action.py:108
+#: views_action.py:106
 msgid "The files have been uploaded and are available at the locations:"
 msgstr "De bestanden zijn geüpload en zijn beschikbaar op de locaties:"
 
 # Translated by DeepL.
-#: views_action.py:146 views_action.py:181
+#: views_action.py:144 views_action.py:179
 #, python-format
 msgid "The \"%s\" field is required."
 msgstr "Het veld \"%s\" is verplicht."
 
 # Translated by DeepL.
-#: views_action.py:149 views_action.py:188
+#: views_action.py:147 views_action.py:186
 msgid "Invalid name."
 msgstr "Ongeldige naam."
 
 # Translated by DeepL.
-#: views_action.py:159
+#: views_action.py:157
 msgid "Folder created."
 msgstr "Map aangemaakt."
 
 # Translated by DeepL.
-#: views_action.py:176
+#: views_action.py:174
 msgid "No files selected."
 msgstr "Geen bestanden geselecteerd."
 
 # Translated by DeepL.
-#: views_action.py:194
+#: views_action.py:192
 #, python-format
 msgid "The file \"%s\" does not exist."
 msgstr "Het bestand \"%s\" bestaat niet."
 
 # Translated by DeepL.
-#: views_action.py:203
+#: views_action.py:201
 #, python-format
 msgid "The file \"%s\" already exists."
 msgstr "Het bestand \"%s\" bestaat al."
 
 # Translated by DeepL.
-#: views_action.py:206
+#: views_action.py:204
 msgid "File renamed."
 msgstr "Bestand hernoemd."
 
 # Translated by DeepL.
-#: views_action.py:208
+#: views_action.py:206
 msgid "Files renamed."
 msgstr "Bestanden hernoemd."
 
 # Translated by DeepL.
-#: views_action.py:213
+#: views_action.py:211
 msgid "No path specfied to move files in."
 msgstr "Geen pad gespecificeerd om bestanden naar te verplaatsen."
 
 # Translated by DeepL.
-#: views_action.py:220
+#: views_action.py:218
 msgid "Destination path does not exists."
 msgstr "Bestemmingspad bestaat niet."
 
 # Translated by DeepL.
-#: views_action.py:229
+#: views_action.py:227
 #, python-format
 msgid "Unable to move file %s:"
 msgstr "Kan bestand niet verplaatsen %s:"
 
 # Translated by DeepL.
-#: views_action.py:230
+#: views_action.py:228
 #, python-format
 msgid "%s file(s) successfully moved."
 msgstr "%s bestand(en) succesvol verplaatst."
 
 # Translated by DeepL.
-#: views_action.py:244
+#: views_action.py:242
 #, python-format
 msgid "Unable to delete file %s:"
 msgstr "Kan bestand %s niet verwijderen:"
 
 # Translated by DeepL.
-#: views_action.py:245
+#: views_action.py:243
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
 msgstr "%(f)s bestand(en) en %(d)s map(pen) succesvol verwijderd."
 
 # Translated by DeepL.
-#: views_action.py:260
+#: views_action.py:258
 msgid "Requested path does not exist."
 msgstr "Het gevraagde pad bestaat niet."
 
 # Translated by DeepL.
-#: views_action.py:300
+#: views_action.py:298
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
 msgstr "%(count)s resultaten voor \"%(search)s\" in \"%(path)s\"."
 
 # Translated by DeepL.
-#: views_action.py:302
+#: views_action.py:300
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
 msgstr "%(count)s resultaten voor \"%(search)s\"."
 
 # Translated by DeepL.
-#: views_action.py:304
+#: views_action.py:302
 #, python-format
 msgid "No results for \"%(search)s\"."
 msgstr "Geen resultaten voor \"%(search)s\"."
 
-#: views_action.py:308
+#: views_action.py:306
 msgid "Invalid action requested."
 msgstr "Ongeldige actie aangevraagd."

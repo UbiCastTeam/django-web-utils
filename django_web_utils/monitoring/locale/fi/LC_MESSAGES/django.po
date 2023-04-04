@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-11 06:46+0000\n"
+"POT-Creation-Date: 2023-04-04 07:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,142 +19,142 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # Translated by DeepL.
-#: sysinfo.py:63
+#: sysinfo.py:61
 msgid "Version"
 msgstr "Versio"
 
 # Translated by DeepL.
-#: sysinfo.py:64
+#: sysinfo.py:62
 msgid "Revision"
 msgstr "Tarkistus"
 
 # Translated by DeepL.
-#: sysinfo.py:65
+#: sysinfo.py:63
 msgid "Python version"
 msgstr "Python-versio"
 
 # Translated by DeepL.
-#: sysinfo.py:66
+#: sysinfo.py:64
 msgid "Django version"
 msgstr "Djangon versio"
 
 # Translated by DeepL.
-#: sysinfo.py:69
+#: sysinfo.py:67
 msgid "Database engine"
 msgstr "Tietokantamoottori"
 
 # Translated by DeepL.
-#: sysinfo.py:71
+#: sysinfo.py:69
 msgid "Django time zone"
 msgstr "Djangon aikavyöhyke"
 
 # Translated by DeepL.
-#: sysinfo.py:86
+#: sysinfo.py:84
 msgid "Description"
 msgstr "Kuvaus"
 
 # Translated by DeepL.
-#: sysinfo.py:87
+#: sysinfo.py:85
 msgid "Kernel"
 msgstr "Ydin"
 
 # Translated by DeepL.
-#: sysinfo.py:88
+#: sysinfo.py:86
 msgid "Hostname"
 msgstr "Isäntänimi"
 
 # Translated by DeepL.
-#: sysinfo.py:89
+#: sysinfo.py:87
 msgid "Time zone"
 msgstr "Aikavyöhyke"
 
 # Translated by DeepL.
-#: sysinfo.py:93
+#: sysinfo.py:91
 msgid "Uptime"
 msgstr "Käyntiaika"
 
 # Translated by DeepL.
-#: sysinfo.py:94
+#: sysinfo.py:92
 msgid "Load"
 msgstr "Lataa"
 
 # Translated by DeepL.
-#: sysinfo.py:128 sysinfo.py:155
+#: sysinfo.py:126 sysinfo.py:153
 msgid "Model"
 msgstr "Malli"
 
 # Translated by DeepL.
-#: sysinfo.py:129
+#: sysinfo.py:127
 msgid "Cores"
 msgstr "Ytimet"
 
 # Translated by DeepL.
-#: sysinfo.py:130
+#: sysinfo.py:128
 msgid "Default frequency"
 msgstr "Oletustaajuus"
 
 # Translated by DeepL.
-#: sysinfo.py:171
+#: sysinfo.py:169
 msgid "Software"
 msgstr "Ohjelmisto"
 
 # Translated by DeepL.
-#: sysinfo.py:174
+#: sysinfo.py:172
 msgid "OS"
 msgstr "OS"
 
 # Translated by DeepL.
-#: sysinfo.py:181
+#: sysinfo.py:179
 msgid "HDD"
 msgstr "KIINTOLEVY"
 
 # Translated by DeepL.
-#: sysinfo.py:184
+#: sysinfo.py:182
 msgid "CPU"
 msgstr "CPU"
 
 # Translated by DeepL.
-#: sysinfo.py:187
+#: sysinfo.py:185
 msgid "GPU"
 msgstr "GPU"
 
 # Translated by DeepL.
-#: sysinfo.py:200
+#: sysinfo.py:198
 msgid "Total"
 msgstr "Yhteensä"
 
 # Translated by DeepL.
-#: sysinfo.py:200 sysinfo.py:201 sysinfo.py:202
+#: sysinfo.py:198 sysinfo.py:199 sysinfo.py:200
 msgid "GB"
 msgstr "GB"
 
 # Translated by DeepL.
-#: sysinfo.py:201
+#: sysinfo.py:199
 msgid "Free"
 msgstr "Vapaa"
 
 # Translated by DeepL.
-#: sysinfo.py:202
+#: sysinfo.py:200
 msgid "Cached"
 msgstr "Välimuistissa"
 
 # Translated by DeepL.
-#: sysinfo.py:204
+#: sysinfo.py:202
 msgid "Failed to get information"
 msgstr "Tietojen saaminen epäonnistui"
 
 # Translated by DeepL.
-#: sysinfo.py:205
+#: sysinfo.py:203
 msgid "Memory"
 msgstr "Muisti"
 
 # Translated by DeepL.
-#: sysinfo.py:212
+#: sysinfo.py:210
 msgid "Network"
 msgstr "Verkko"
 
 # Translated by DeepL.
-#: sysinfo.py:219
+#: sysinfo.py:217
 msgid "Sensors"
 msgstr "Anturit"
 
@@ -331,7 +331,7 @@ msgid "Clear all logs"
 msgstr "Tyhjennä kaikki lokit"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:40 views.py:165
+#: templates/monitoring/panel.html:40 views.py:162
 msgid "log file"
 msgstr "lokitiedosto"
 
@@ -356,32 +356,32 @@ msgid "Edit configuration"
 msgstr "Muokkaa kokoonpanoa"
 
 # Translated by DeepL.
-#: utils.py:31
+#: utils.py:26
 msgid "Log file cleared."
 msgstr "Lokitiedosto tyhjennetty."
 
 # Translated by DeepL.
-#: utils.py:36
+#: utils.py:31
 msgid "Invalid command."
 msgstr "Virheellinen komento."
 
 # Translated by DeepL.
-#: utils.py:39
+#: utils.py:34
 msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
 msgstr "Kyseinen daemon-luokka ei ole Django web utils BaseDaemon -luokan aliluokka."
 
 # Translated by DeepL.
-#: utils.py:47 utils.py:50
+#: utils.py:42 utils.py:45
 msgid "No valid target for command."
 msgstr "Komennolle ei ole kelvollista kohdetta."
 
 # Translated by DeepL.
-#: utils.py:57
+#: utils.py:53
 msgid "The daemon script cannot be found."
 msgstr "Daemon-skriptiä ei löydy."
 
 # Translated by DeepL.
-#: utils.py:150
+#: utils.py:145
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -393,38 +393,38 @@ msgstr ""
 "Varoitus: Raakatiedoston hakeminen voi kuormittaa järjestelmän muistia."
 
 # Translated by DeepL.
-#: utils.py:161
+#: utils.py:154
 msgid "Unable to display log file."
 msgstr "Lokitiedostoa ei voida näyttää."
 
 # Translated by DeepL.
-#: utils.py:161 utils.py:188 utils.py:192 utils.py:199 utils.py:230
-#: utils.py:250
+#: utils.py:154 utils.py:181 utils.py:185 utils.py:192 utils.py:220
+#: utils.py:240
 msgid "Error:"
 msgstr "Virhe:"
 
 # Translated by DeepL.
-#: utils.py:188 utils.py:192
+#: utils.py:181 utils.py:185
 msgid "Unable to write configuration file."
 msgstr "Konfiguraatiotiedoston kirjoittaminen ei onnistu."
 
 # Translated by DeepL.
-#: utils.py:194
+#: utils.py:187
 msgid "Configuration file updated."
 msgstr "Konfiguraatiotiedosto päivitetty."
 
 # Translated by DeepL.
-#: utils.py:199
+#: utils.py:192
 msgid "Unable to delete configuration file."
 msgstr "Konfiguraatiotiedoston poistaminen ei onnistu."
 
 # Translated by DeepL.
-#: utils.py:201
+#: utils.py:194
 msgid "Configuration file deleted."
 msgstr "Konfiguraatiotiedosto poistettu."
 
 # Translated by DeepL.
-#: utils.py:220
+#: utils.py:212
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -436,49 +436,53 @@ msgstr ""
 "Varoitus: Raakatiedoston hakeminen voi kuormittaa järjestelmän muistia."
 
 # Translated by DeepL.
-#: utils.py:230
+#: utils.py:220
 msgid "Unable to display configuration file."
 msgstr "Konfiguraatiotiedostoa ei voida näyttää."
 
 # Translated by DeepL.
-#: utils.py:250
+#: utils.py:240
 msgid "Unable to read default configuration file."
 msgstr "Oletuskokoonpanotiedostoa ei pystytä lukemaan."
 
 # Translated by DeepL.
-#: views.py:25
+#: views.py:22
 msgid "You don't have the permission to access this url."
 msgstr "Sinulla ei ole oikeutta käyttää tätä url-osoitetta."
 
 # Translated by DeepL.
-#: views.py:30
+#: views.py:27
 msgid "Please enter password."
 msgstr "Anna salasana."
 
 # Translated by DeepL.
-#: views.py:36
+#: views.py:33
 msgid "Invalid password."
 msgstr "Virheellinen salasana."
 
 # Translated by DeepL.
-#: views.py:115
-msgid "Invalid daemon name:"
-msgstr "Virheellinen demonin nimi:"
+#: views.py:112
+msgid "The daemon name is invalid:"
+msgstr "Palvelimen nimi on virheellinen:"
 
 # Translated by DeepL.
-#: views.py:122
+#: views.py:119
 #, python-format
-msgid "Command \"%(cmd)s\" on \"%(name)s\" successfully executed."
-msgstr "Komento \"%(cmd)s\" on \"%(name)s\" suoritettu onnistuneesti."
+msgid "The command \"%(cmd)s\" on \"%(name)s\" was successfully executed."
+msgstr "Komento \"%(cmd)s\" on \"%(name)s\" suoritettiin onnistuneesti."
 
 # Translated by DeepL.
-#: views.py:124
+#: views.py:121
 #, python-format
-msgid "Command \"%(cmd)s\" on \"%(name)s\" failed."
-msgstr "Komento \"%(cmd)s\" on \"%(name)s\" epäonnistui."
+msgid "The command \"%(cmd)s\" on \"%(name)s\" has failed."
+msgstr "Komento \"%(cmd)s\" on \"%(name)s\" on epäonnistunut."
 
 # Translated by DeepL.
-#: views.py:210
+#: views.py:207
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Muokkaa asetustiedostoa: %s"
+
+# Translated by DeepL.
+#~ msgid "Invalid daemon name:"
+#~ msgstr "Virheellinen demonin nimi:"

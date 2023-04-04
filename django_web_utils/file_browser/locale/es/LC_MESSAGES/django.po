@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-11 06:46+0000\n"
+"POT-Creation-Date: 2023-04-04 07:56+0000\n"
 "PO-Revision-Date: 2021-12-24 14:31+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -103,163 +103,163 @@ msgid "Refresh"
 msgstr "Actualizar"
 
 # Translated by DeepL.
-#: views.py:62
+#: views.py:60
 #, python-format
 msgid "Folder \"%s\" does not exist."
 msgstr "La carpeta \"%s\" no existe."
 
 # Translated by DeepL.
-#: views.py:64
+#: views.py:62
 msgid "Root folder"
 msgstr "Carpeta raíz"
 
 # Translated by DeepL.
-#: views.py:99
+#: views.py:97
 #, python-format
 msgid "Folder \"%s\" does not exist"
 msgstr "La carpeta \"%s\" no existe"
 
 # Translated by DeepL.
-#: views.py:172
+#: views.py:170
 msgid "Parent folder"
 msgstr "Carpeta de los padres"
 
 # Translated by DeepL.
-#: views_action.py:58
+#: views_action.py:56
 msgid "No base path defined in configuration."
 msgstr "No se ha definido la ruta base en la configuración."
 
 # Translated by DeepL.
-#: views_action.py:61
+#: views_action.py:59
 msgid "No base url defined in configuration."
 msgstr "No hay url base definida en la configuración."
 
 # Translated by DeepL.
-#: views_action.py:76 views_action.py:143 views_action.py:166
-#: views_action.py:254
+#: views_action.py:74 views_action.py:141 views_action.py:164
+#: views_action.py:252
 msgid "Invalid base path."
 msgstr "Ruta base inválida."
 
 # Translated by DeepL.
-#: views_action.py:83
+#: views_action.py:81
 msgid "No files in request."
 msgstr "No hay archivos en la solicitud."
 
 # Translated by DeepL.
-#: views_action.py:98 views_action.py:158
+#: views_action.py:96 views_action.py:156
 msgid "Failed to create folder:"
 msgstr "Fallo en la creación de la carpeta:"
 
 # Translated by DeepL.
-#: views_action.py:106
+#: views_action.py:104
 msgid "The file has been uploaded and is available at the location:"
 msgstr "El archivo ha sido cargado y está disponible en el lugar:"
 
 # Translated by DeepL.
-#: views_action.py:108
+#: views_action.py:106
 msgid "The files have been uploaded and are available at the locations:"
 msgstr "Los archivos se han cargado y están disponibles en los lugares:"
 
 # Translated by DeepL.
-#: views_action.py:146 views_action.py:181
+#: views_action.py:144 views_action.py:179
 #, python-format
 msgid "The \"%s\" field is required."
 msgstr "El campo \"%s\" es obligatorio."
 
 # Translated by DeepL.
-#: views_action.py:149 views_action.py:188
+#: views_action.py:147 views_action.py:186
 msgid "Invalid name."
 msgstr "Nombre inválido."
 
 # Translated by DeepL.
-#: views_action.py:159
+#: views_action.py:157
 msgid "Folder created."
 msgstr "Carpeta creada."
 
 # Translated by DeepL.
-#: views_action.py:176
+#: views_action.py:174
 msgid "No files selected."
 msgstr "No hay archivos seleccionados."
 
 # Translated by DeepL.
-#: views_action.py:194
+#: views_action.py:192
 #, python-format
 msgid "The file \"%s\" does not exist."
 msgstr "El archivo \"%s\" no existe."
 
 # Translated by DeepL.
-#: views_action.py:203
+#: views_action.py:201
 #, python-format
 msgid "The file \"%s\" already exists."
 msgstr "El archivo \"%s\" ya existe."
 
 # Translated by DeepL.
-#: views_action.py:206
+#: views_action.py:204
 msgid "File renamed."
 msgstr "Archivo renombrado."
 
 # Translated by DeepL.
-#: views_action.py:208
+#: views_action.py:206
 msgid "Files renamed."
 msgstr "Archivos renombrados."
 
 # Translated by DeepL.
-#: views_action.py:213
+#: views_action.py:211
 msgid "No path specfied to move files in."
 msgstr "No se ha especificado la ruta para mover los archivos."
 
 # Translated by DeepL.
-#: views_action.py:220
+#: views_action.py:218
 msgid "Destination path does not exists."
 msgstr "La ruta de destino no existe."
 
 # Translated by DeepL.
-#: views_action.py:229
+#: views_action.py:227
 #, python-format
 msgid "Unable to move file %s:"
 msgstr "No se puede mover el archivo %s:"
 
 # Translated by DeepL.
-#: views_action.py:230
+#: views_action.py:228
 #, python-format
 msgid "%s file(s) successfully moved."
 msgstr "%s archivo(s) movido(s) con éxito."
 
 # Translated by DeepL.
-#: views_action.py:244
+#: views_action.py:242
 #, python-format
 msgid "Unable to delete file %s:"
 msgstr "No se puede eliminar el archivo %s:"
 
 # Translated by DeepL.
-#: views_action.py:245
+#: views_action.py:243
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
 msgstr "%(f)s archivo(s) y %(d)s directorio(s) eliminados con éxito."
 
 # Translated by DeepL.
-#: views_action.py:260
+#: views_action.py:258
 msgid "Requested path does not exist."
 msgstr "La ruta solicitada no existe."
 
 # Translated by DeepL.
-#: views_action.py:300
+#: views_action.py:298
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
 msgstr "%(count)s resultados de \"%(search)s\" en \"%(path)s\"."
 
 # Translated by DeepL.
-#: views_action.py:302
+#: views_action.py:300
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
 msgstr "%(count)s resultados para \"%(search)s\"."
 
 # Translated by DeepL.
-#: views_action.py:304
+#: views_action.py:302
 #, python-format
 msgid "No results for \"%(search)s\"."
 msgstr "No hay resultados para \"%(search)s\"."
 
-#: views_action.py:308
+#: views_action.py:306
 msgid "Invalid action requested."
 msgstr "Se ha solicitado una acción no válida."
