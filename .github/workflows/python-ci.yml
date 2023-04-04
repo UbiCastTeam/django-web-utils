@@ -54,14 +54,14 @@ jobs:
         python3 -m pip install -e '.[dev]'
     - name: Lint code with Python ${{ matrix.python-version }}
       run: |
-        make lint
+        make lint_local
     - name: Check for deadcode with Python ${{ matrix.python-version }}
       run: |
-        make deadcode
+        make deadcode_local
     - name: Run test with Python ${{ matrix.python-version }}
       env:
         DJANGO_SETTINGS_MODULE: settings
         PYTHONPATH: tests:${PYTHONPATH}
         DOCKER: 1
       run: |
-        make test
+        make test_local

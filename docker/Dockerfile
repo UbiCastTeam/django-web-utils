@@ -1,7 +1,6 @@
 FROM debian:bullseye
 
 ENV LANG="C.UTF-8" LC_ALL="C.UTF-8"
-ENV DOCKER 1
 
 # Update clamav database
 RUN apt-get -q update && apt-get -qy install --no-install-recommends \

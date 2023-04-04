@@ -17,70 +17,65 @@ TMP_DOCKER_CT ?= django_web_utils_ct
 DOCKER_COMPOSE := docker compose -f docker/docker-compose.yml
 NEED_CLAMAV ?= 0
 
-build_docker_img:
+docker_build:
 	DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE} build
 
-rebuild_docker_img:
+docker_rebuild:
 	DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE} build --no-cache
 
 lint:
-ifndef IN_FLAKE8
-	docker run -v ${CURDIR}:/apps registry.ubicast.net/docker/flake8:latest make lint
-else
+	docker run -v ${CURDIR}:/apps registry.ubicast.net/docker/flake8:latest make lint_local
+
+lint_local:
 	flake8 .
-endif
 
 deadcode:
-ifndef IN_VULTURE
-	docker run -v ${CURDIR}:/apps registry.ubicast.net/docker/vulture:latest make deadcode
-else
+	docker run -v ${CURDIR}:/apps registry.ubicast.net/docker/vulture:latest make deadcode_local
+
+deadcode_local:
 	vulture --exclude docker/,submodules/ --min-confidence 90 .
-endif
 
 run:
 	# Run Django test server on http://127.0.0.1:8200
-	${DOCKER_COMPOSE} up -e "NEED_CLAMAV=${NEED_CLAMAV}" --abort-on-container-exit
-
-test:
-ifndef DOCKER
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test
-else
-	pytest --reuse-db --cov=django_web_utils ${PYTEST_ARGS}
-endif
-
-shell:
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "NEED_CLAMAV=${NEED_CLAMAV}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
+	${DOCKER_COMPOSE} up --abort-on-container-exit
 
 stop:
 	${DOCKER_COMPOSE} stop && ${DOCKER_COMPOSE} rm -f
 
+shell:
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "NEED_CLAMAV=${NEED_CLAMAV}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
+
+test:
+	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test_local
+
+test_local:
+	pytest --reuse-db --cov=django_web_utils ${PYTEST_ARGS}
+
 generate_po:
 	# Generate po files from source
-ifndef DOCKER
-	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_po
-else
+	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_po_local
+
+generate_po_local:
 	cd django_web_utils \
-	&& django-admin makemessages --all --no-wrap
+		&& django-admin makemessages --all --no-wrap
 	cd django_web_utils/file_browser \
-	&& django-admin makemessages --all --no-wrap \
-	&& django-admin makemessages -d djangojs --all --no-wrap
+		&& django-admin makemessages --all --no-wrap \
+		&& django-admin makemessages -d djangojs --all --no-wrap
 	cd django_web_utils/monitoring \
-	&& django-admin makemessages --all --no-wrap \
-	&& django-admin makemessages -d djangojs --all --no-wrap
-endif
+		&& django-admin makemessages --all --no-wrap \
+		&& django-admin makemessages -d djangojs --all --no-wrap
 
 generate_mo:
 	# Generate mo files from po files
-ifndef DOCKER
-	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_mo
-else
+	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_mo_local
+
+generate_mo_local:
 	cd django_web_utils \
-	&& django-admin compilemessages
+		&& django-admin compilemessages
 	cd django_web_utils/file_browser \
-	&& django-admin compilemessages
+		&& django-admin compilemessages
 	cd django_web_utils/monitoring \
-	&& django-admin compilemessages
-endif
+		&& django-admin compilemessages
 
 translate:
 	make generate_po

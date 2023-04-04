@@ -40,8 +40,8 @@ make deadcode
 ### Translations
 
 ``` bash
-make po
-make mo
+make generate_po
+make generate_mo
 ```
 
 ### Tests
