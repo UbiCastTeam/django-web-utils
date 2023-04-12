@@ -13,25 +13,29 @@
             <span style="float: right;">({% trans "Hostname:" %} {{ hostname }})</span>
         </th>
         <th rowspan="2">{% trans "Commands" %}
-            <div class="bottom-bar center">
-                <button type="button" class="daemon-start" title="{% trans 'Start all' %}">▷</button>
-                <button type="button" class="daemon-stop" title="{% trans 'Stop all' %}">□</button>
-                <button type="button" class="daemon-restart" title="{% trans 'Restart all' %}">↻</button>
-            </div>
+           {% if show_top_controls %}
+                <div class="bottom-bar center">
+                    <button type="button" class="daemon-start" title="{% trans 'Start all' %}">▷</button>
+                    <button type="button" class="daemon-stop" title="{% trans 'Stop all' %}">□</button>
+                    <button type="button" class="daemon-restart" title="{% trans 'Restart all' %}">↻</button>
+                </div>
+            {% endif %}
         </th>
     </tr>
     <tr class="center daemon-all">
         <th>{% trans "Last modification" %}</th>
         <th>{% trans "File size" %}</th>
         <th>
-            <span class="right">
-                <button class="daemon-log-clear" title="{% trans 'Clear all logs' %}">✖</button>
-            </span>
+            {% if show_top_controls %}
+                <span class="right">
+                    <button class="daemon-log-clear" title="{% trans 'Clear all logs' %}">✖</button>
+                </span>
+            {% endif %}
             {% trans "Actions" %}
         </th>
     </tr>
     {% for group in daemons_groups %}
-        {% for daemon in group.members %}
+        {% for daemon in group.daemons %}
             <tr class="{% cycle 'even' 'odd' %}">
                 {% if forloop.first %}
                     <th rowspan="{{ group.rowspan }}" class="daemons-group-name"><div>{{ group.label }}</div></th>
@@ -49,21 +53,25 @@
                     {% if not daemon.only_conf %}
                         <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}"><button type="button">{% trans "See" %}</button></a>
                         <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}?tail"><button type="button">{% trans "See tail" %}</button></a>
-                        <button type="button" class="daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
+                        {% if daemon.show_controls %}
+                            <button type="button" class="daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
+                        {% endif %}
                     {% endif %}
                 </td>
                 <td class="nowrap">
-                    {% if not daemon.no_commands %}
-                        {% if not daemon.only_stop %}
-                            <button type="button" class="daemon-start" title="{% trans 'Start' %}">▷</button>
+                    {% if daemon.show_controls %}
+                        {% if not daemon.no_commands %}
+                            {% if not daemon.only_stop %}
+                                <button type="button" class="daemon-start" title="{% trans 'Start' %}">▷</button>
+                            {% endif %}
+                            <button type="button" class="daemon-stop" title="{% trans 'Stop' %}">□</button>
+                            {% if not daemon.only_stop %}
+                                <button type="button" class="daemon-restart" title="{% trans 'Restart' %}">↻</button>
+                            {% endif %}
                         {% endif %}
-                        <button type="button" class="daemon-stop" title="{% trans 'Stop' %}">□</button>
-                        {% if not daemon.only_stop %}
-                            <button type="button" class="daemon-restart" title="{% trans 'Restart' %}">↻</button>
+                        {% if daemon.conf_path %}
+                            <a href="{% url monitoring_namespace|add:':monitoring-config' daemon.name %}" title="{% trans 'Edit configuration' %}"><button type="button">⚙</button></a>
                         {% endif %}
-                    {% endif %}
-                    {% if daemon.conf_path %}
-                        <a href="{% url monitoring_namespace|add:':monitoring-config' daemon.name %}" title="{% trans 'Edit configuration' %}"><button type="button">⚙</button></a>
                     {% endif %}
                 </td>
             </tr>
@@ -78,7 +86,7 @@
     var dman = new DaemonsManager({
         daemons: [
         {% for group in daemons_groups %}
-            {% for daemon in group.members %}
+            {% for daemon in group.daemons %}
             { name: "{{ daemon.name }}"{% if daemon.is_root %}, isRoot: true{% endif %} },
             {% endfor %}
         {% endfor %}

@@ -41,6 +41,15 @@ Content example of this module:
 ``` python
 from django.utils.translation import gettext_lazy as _
 
+
+def CAN_ACCESS(request):
+    return request.user.is_authenticated
+
+
+def CAN_CONTROL(request):
+    return request.user.is_authenticated and request.user.is_superuser
+
+
 DAEMONS = [
     dict(
         group='base', name='django', label=_('Django'),

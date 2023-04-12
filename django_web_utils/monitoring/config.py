@@ -41,9 +41,9 @@ def get_daemons_info():
                     daemon['cls'] = import_module_by_python_path(daemon['cls'])
                     daemon['conf_path'] = daemon['cls'].get_conf_path()
                     daemon['log_path'] = daemon['cls'].get_log_path()
-                if not daemon.get('can_access'):
+                if daemon.get('can_access') is None:
                     daemon['can_access'] = getattr(info_module, 'CAN_ACCESS', lambda request: request.user.is_superuser)
-                if not daemon.get('can_control'):
+                if daemon.get('can_control') is None:
                     daemon['can_control'] = getattr(info_module, 'CAN_CONTROL', lambda request: request.user.is_superuser)
                 cleaned_info.GROUPS[daemon['group']]['members'].append(daemon)
                 cleaned_info.GROUPS[daemon['group']]['rowspan'] += 2

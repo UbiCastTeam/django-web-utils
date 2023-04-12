@@ -39,18 +39,23 @@ def check_password(request):
 @login_required
 def monitoring_panel(request):
     info = config.get_daemons_info()
+    if not info.GROUPS_NAMES:
+        raise Http404()
     groups = []
-    daemons_names = []
+    show_top_controls = False
     for name in info.GROUPS_NAMES:
         group = dict(info.GROUPS[name])
-        group['accessible_daemons'] = []
-        for daemon in group['members']:
-            if config.can_access_daemon(daemon, request):
-                group['accessible_daemons'].append(daemon)
-                daemons_names.append(daemon['name'])
-        if group['accessible_daemons']:
-            groups.append(dict(info.GROUPS[name]))
-    if info.GROUPS_NAMES and not daemons_names:
+        group['daemons'] = []
+        for member in group['members']:
+            if config.can_access_daemon(member, request):
+                daemon = dict(member)
+                daemon['show_controls'] = config.can_control_daemon(member, request)
+                if daemon['show_controls']:
+                    show_top_controls = True
+                group['daemons'].append(daemon)
+        if group['daemons']:
+            groups.append(group)
+    if not groups:
         raise PermissionDenied()
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
     tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else {}
@@ -58,8 +63,8 @@ def monitoring_panel(request):
         monitoring_page='panel',
         monitoring_body='monitoring/panel.html',
         monitoring_namespace=config.NAMESPACE,
-        daemons_names=daemons_names,
         daemons_groups=groups,
+        show_top_controls=show_top_controls,
         hostname=socket.gethostname(),
     ))
     return render(request, tplt, tplt_data)
