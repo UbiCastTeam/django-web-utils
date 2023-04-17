@@ -11,7 +11,7 @@ INSTALL_REQUIRES = [
 
 EXTRAS_REQUIRE = {
     'dev': [
-        'django >= 3.2, < 4.0',
+        'django >= 4.1, < 4.2',
         'flake8',
         'psycopg2-binary',
         'pytest',
