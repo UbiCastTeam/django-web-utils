@@ -5,15 +5,15 @@ from setuptools import setup
 
 
 INSTALL_REQUIRES = [
-    'bleach[css] >= 5.0, < 5.1',
-    'pillow >= 9.3, < 9.4',
+    'bleach[css] >= 6.0, < 7.0',
+    'pillow >= 9.5',
 ]
 
 EXTRAS_REQUIRE = {
     'dev': [
-        'django >= 4.1, < 4.2',
+        'django >= 4.2',
         'flake8',
-        'psycopg2-binary',
+        'psycopg[binary] >= 3.1',
         'pytest',
         'pytest-cov',
         'pytest-django',

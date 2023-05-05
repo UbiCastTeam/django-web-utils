@@ -16,7 +16,6 @@ pytestmark = pytest.mark.django_db(transaction=True)
 def another_connection():
     conn = None
     try:
-        connections.ensure_defaults('default')
         backend = load_backend(connections.databases['default']['ENGINE'])
         conn = backend.DatabaseWrapper(connections.databases['default'])
         yield conn
@@ -59,19 +58,19 @@ def test_settings_store__lock__rows(django_assert_num_queries):
 
     # rows vs. rows
     with lock_on_another_connection(settings_store, 'STR_VAL'):
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(4):
             assert lock_key(settings_store, 'FLOAT_VAL', wait_timeout=1) is True
 
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(4):
             with pytest.raises(OperationalError):
                 lock_key(settings_store, 'STR_VAL', wait_timeout=1)
 
     # rows vs. table
     with lock_on_another_connection(settings_store):
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(4):
             with pytest.raises(OperationalError):
                 lock_key(settings_store, 'STR_VAL', wait_timeout=1)
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(4):
             with pytest.raises(OperationalError):
                 lock_key(settings_store, 'FLOAT_VAL', wait_timeout=1)
 
@@ -81,13 +80,13 @@ def test_settings_store__lock__table(django_assert_num_queries):
 
     # table vs. rows
     with lock_on_another_connection(settings_store, 'STR_VAL'):
-        with django_assert_num_queries(1):
+        with django_assert_num_queries(3):
             with pytest.raises(OperationalError):
                 lock_key(settings_store, wait_timeout=1)
 
     # table vs. table
     with lock_on_another_connection(settings_store):
-        with django_assert_num_queries(1):
+        with django_assert_num_queries(3):
             with pytest.raises(OperationalError):
                 lock_key(settings_store, wait_timeout=1)
 
@@ -97,7 +96,7 @@ def test_settings_store__lock_for_update(django_assert_num_queries):
 
     # update vs. rows lock
     with lock_on_another_connection(settings_store, 'STR_VAL'):
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(4):
             with pytest.raises(OperationalError):
                 settings_store.update(STR_VAL='foo_upd')
 
@@ -106,11 +105,11 @@ def test_settings_store__lock_for_update(django_assert_num_queries):
 
     # update vs. table lock
     with lock_on_another_connection(settings_store):
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(4):
             with pytest.raises(OperationalError):
                 settings_store.update(STR_VAL='foo_upd')
 
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(4):
             with pytest.raises(OperationalError):
                 settings_store.update(FLOAT_VAL=6.6)
 

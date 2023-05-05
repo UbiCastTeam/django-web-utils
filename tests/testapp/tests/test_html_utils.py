@@ -1,5 +1,5 @@
 import pytest
-from django_web_utils.html_utils import clean_html_tags, get_short_text
+from django_web_utils import html_utils
 
 
 @pytest.mark.parametrize('value,allow_iframes,expected', [
@@ -23,8 +23,43 @@ from django_web_utils.html_utils import clean_html_tags, get_short_text
         '<a href="http://google.com"></a>', id='conserve_a_http_href'),
 ])
 def test_clean_html_tags(value, allow_iframes, expected):
-    iframe = clean_html_tags(value, allow_iframes=allow_iframes)
+    iframe = html_utils.clean_html_tags(value, allow_iframes=allow_iframes)
     assert iframe == expected
+    assert sorted(html_utils.ALLOWED_TAGS) == [
+        'a',
+        'b',
+        'blockquote',
+        'br',
+        'code',
+        'div',
+        'em',
+        'fieldset',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'i',
+        'img',
+        'legend',
+        'li',
+        'ol',
+        'p',
+        'pre',
+        'source',
+        'span',
+        'strong',
+        'sub',
+        'sup',
+        'table',
+        'tbody',
+        'td',
+        'th',
+        'thead',
+        'tr',
+        'u',
+        'ul',
+        'video',
+    ]
 
 
 @pytest.mark.parametrize('value,extra_allowed_attrs,expected', [
@@ -32,12 +67,13 @@ def test_clean_html_tags(value, allow_iframes, expected):
         '<div data-name="the name">Sample</div>', None,
         '<div>Sample</div>', id='default_allowed_attrs'),
     pytest.param(
-        '<div data-name="the name">Sample</div>', {'div': ['data-name']},
+        '<div data-name="the name">Sample</div>', {'div': {'data-name'}},
         '<div data-name="the name">Sample</div>', id='allow_data_name_attr'),
 ])
 def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
-    iframe = clean_html_tags(value, extra_allowed_attrs=extra_allowed_attrs)
+    iframe = html_utils.clean_html_tags(value, extra_allowed_attrs=extra_allowed_attrs)
     assert iframe == expected
+    assert sorted(html_utils.ALLOWED_ATTRS.keys()) == ['*', 'a', 'img', 'source', 'td', 'th', 'video']
 
 
 @pytest.mark.parametrize('value,max_length,margin,expected', [
@@ -52,5 +88,5 @@ def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
         '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>Lorem ipsum dolor ...</p>', id='short_long_string'),
 ])
 def test_get_short_text(value, max_length, margin, expected):
-    short_html = get_short_text(value, max_length=max_length, margin=margin)
+    short_html = html_utils.get_short_text(value, max_length=max_length, margin=margin)
     assert short_html == expected
