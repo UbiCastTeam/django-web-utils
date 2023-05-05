@@ -352,11 +352,12 @@ class SettingsStoreBase(Mapping):
 
             self._validate(**{db_model.key: db_model.value for db_model in db_models})
 
-            self.model.objects.bulk_update(
-                db_models,
-                fields=('value', 'updated_at'),
-                batch_size=len(db_models),
-            )
+            if models_count := len(db_models):
+                self.model.objects.bulk_update(
+                    db_models,
+                    fields=('value', 'updated_at'),
+                    batch_size=models_count,
+                )
 
             # Any leftover updates don't exist in the db yet. This is an error.
             if updates:

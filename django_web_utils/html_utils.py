@@ -17,17 +17,17 @@ logger = logging.getLogger('djwutils.html_utils')
 
 # For any change in the constants below, please update the same constant in the JSU project:
 # https://github.com/UbiCastTeam/jsu/blob/main/vendors/tinymce/tinymce.custom.js
-ALLOWED_TAGS = ['div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'img', 'fieldset', 'legend', 'pre', 'code', 'blockquote', 'video', 'source']
+ALLOWED_TAGS = {'div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'img', 'fieldset', 'legend', 'pre', 'code', 'blockquote', 'video', 'source'}
 ALLOWED_ATTRS = {
-    '*': ['class', 'style'],
-    'a': ['href', 'target', 'title'],
-    'img': ['alt', 'src', 'title'],
-    'td': ['rowspan', 'colspan'],
-    'th': ['rowspan', 'colspan'],
-    'source': ['src', 'type'],
-    'video': ['src', 'poster', 'loop', 'autoplay', 'muted', 'controls', 'playsinline', 'preload']
+    '*': {'class', 'style'},
+    'a': {'href', 'target', 'title'},
+    'img': {'alt', 'src', 'title'},
+    'td': {'rowspan', 'colspan'},
+    'th': {'rowspan', 'colspan'},
+    'source': {'src', 'type'},
+    'video': {'src', 'poster', 'loop', 'autoplay', 'muted', 'controls', 'playsinline', 'preload'}
 }
-ALLOWED_CSS = ['margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow', 'width', 'height', 'overflow']
+ALLOWED_CSS = {'margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow', 'width', 'height', 'overflow'}
 
 
 def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
@@ -44,7 +44,7 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
     def img_attrs_check(tag, name, value):
         if name in ALLOWED_ATTRS['img']:
             if name == 'src':
-                protocols = ['data:image/'] + bleach.sanitizer.ALLOWED_PROTOCOLS
+                protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data:image/'}
                 for protocol in protocols:
                     if value.startswith(protocol):
                         return True
@@ -63,16 +63,16 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
         return False
 
     allowed_attrs = deepcopy(ALLOWED_ATTRS)
-    tags = list(ALLOWED_TAGS)
+    tags = set(ALLOWED_TAGS)
     if allow_iframes:
         allowed_attrs['iframe'] = iframe_attrs_check
-        tags += ['iframe']
+        tags |= {'iframe'}
     allowed_attrs['img'] = img_attrs_check
     allowed_attrs['a'] = a_attrs_check
     if extra_allowed_attrs:
         allowed_attrs.update(extra_allowed_attrs)
     css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_CSS)
-    protocols = bleach.sanitizer.ALLOWED_PROTOCOLS + ['data']
+    protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data'}
     return bleach.clean(html, tags=tags, attributes=allowed_attrs, css_sanitizer=css_sanitizer, protocols=protocols)
 
 
