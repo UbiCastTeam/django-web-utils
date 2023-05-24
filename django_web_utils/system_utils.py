@@ -21,7 +21,10 @@ except ImportError:
 # get_unix_user function
 # ----------------------------------------------------------------------------
 def get_unix_user():
-    return pwd.getpwuid(os.getuid()).pw_name
+    uid = os.getuid()
+    if uid == 0:
+        return 'root'
+    return pwd.getpwuid(uid).pw_name
 
 
 # run_as function
