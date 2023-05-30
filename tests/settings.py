@@ -21,6 +21,8 @@ os.environ['PYTHONWARNINGS'] = 'always'  # Also affect subprocesses
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+OVERRIDE_PATH = '/tmp/djwutils_override.py'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'xvds$ppv5ha754g1yx3aax7ugr_2*fmeFc(lrc8/7kdez-63xn'
 
@@ -98,8 +100,6 @@ TIME_ZONE = 'UTC'
 SITE_ID = 1
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = False
 
