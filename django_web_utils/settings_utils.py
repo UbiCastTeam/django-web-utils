@@ -5,6 +5,7 @@ The OVERRIDE_PATH setting must be set to the local settings override path.
 import datetime
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Iterable, Optional, Any
@@ -19,7 +20,7 @@ logger = logging.getLogger('djwutils.settings_utils')
 def backup_settings(max_backups: int = 10) -> Optional[Path]:
     """
     Make a copy of the settings override file.
-    Only one backup is made per day and at maximum 10 backups (default).
+    Only one backup is made per day and only the last 10 (default) backups are retained.
     """
     override_path = Path(settings.OVERRIDE_PATH) if getattr(settings, 'OVERRIDE_PATH', None) else None
     if not override_path or not override_path.exists():
@@ -32,13 +33,13 @@ def backup_settings(max_backups: int = 10) -> Optional[Path]:
     if backup_path.exists():
         return backup_path
 
-    paths = sorted([
+    paths = sorted(
         path
         for path in override_path.parent.iterdir()
         if path.is_file() and path.name.startswith(f'{override_path.name}.backup_')
-    ])
-    while len(paths) >= max_backups:
-        paths.pop(0).unlink()
+    )
+    for i in range(0, len(paths) - max_backups + 1):
+        paths[i].unlink(missing_ok=True)
 
     current = override_path.read_bytes()
     backup_path.write_bytes(current)
@@ -84,6 +85,8 @@ def set_settings(**data: Any) -> tuple[bool, str]:
 
     # Change locally settings
     for key, value in data.items():
+        if not re.match(r'[A-Za-z][A-Za-z0-9_]*', key):
+            return False, (_('Invalid setting name: %s') % key)
         setattr(settings, key, value)
     logger.info('Updating following settings: %s', list(data.keys()))
 
@@ -96,41 +99,36 @@ def set_settings(**data: Any) -> tuple[bool, str]:
         msg = _('Your changes were not saved but were applied to the running software.')
         return True, msg
 
-    # Update settings file
+    # Get content
     try:
-        content = override_path.read_text().strip() + '\n'
+        initial_content = override_path.read_text()
     except FileNotFoundError:
-        content = ''
+        initial_content = ''
+    content = initial_content.strip()
+    if content and not content.endswith('\n'):
+        content += '\n'
 
+    # Update content
     for key, value in data.items():
-        # Get content to write in var
         value_str = _get_value_str(value)
+        content, substitutions = re.subn(
+            fr'^(\s*){key}\s*=.+$',
+            fr'\1{key} = {value_str}',
+            content,
+            flags=re.MULTILINE)
+        if not substitutions:
+            content += f'{key} = {value_str}\n'
 
-        lindex = content.find(key)
-        if lindex < 0:
-            # Add var to settings
-            content += '%s = %s\n' % (key, value_str)
-        else:
-            # Change current var
-            lindex += len(key)
-            sub = content[lindex:]
-            rindex = sub.find('\n')
-            if rindex < 0:
-                content = '%s = %s' % (content[:lindex], value_str)
-            else:
-                rindex += lindex
-                content = '%s = %s%s' % (content[:lindex], value_str, content[rindex:])
-    content = content.strip() + '\n'
-
-    try:
-        if content:
+    # Write changes
+    if content != initial_content:
+        try:
             # Backup settings before writing
             backup_settings()
             # Write settings
             override_path.write_text(content)
-    except OSError as e:
-        logger.error('Unable to write configuration file. %s', e)
-        return False, '%s %s' % (_('Unable to write configuration file:'), e)
+        except OSError as e:
+            logger.error('Unable to write configuration file. %s', e)
+            return False, '%s %s' % (_('Unable to write configuration file:'), e)
 
     msg = _('Your changes have been applied. The service will be reloaded in a few seconds to make them effective.')
     # The service reload should be handled with the "touch-reload" uwsgi
@@ -147,6 +145,8 @@ def remove_settings(*keys: str) -> tuple[bool, str]:
 
     # Change locally settings
     for key in keys:
+        if not re.match(r'[A-Za-z][A-Za-z0-9_]*', key):
+            return False, (_('Invalid setting name: %s') % key)
         if hasattr(settings, key):
             delattr(settings, key)
 
@@ -159,26 +159,31 @@ def remove_settings(*keys: str) -> tuple[bool, str]:
         msg = _('Your changes were not saved but were applied to the running software.')
         return True, msg
 
-    # Update settings file
-    if override_path.exists() and keys:
-        content = override_path.read_text().strip() + '\n'
+    # Get content
+    try:
+        initial_content = override_path.read_text()
+    except FileNotFoundError:
+        pass
+    else:
+        content = initial_content.strip()
+        if content and not content.endswith('\n'):
+            content += '\n'
 
-        removed_lines = 0
-        new_lines = []
-        for line in content.split('\n'):
-            key = line.split('=', 1)[0].strip()
-            if key in keys:
-                removed_lines += 1
-            else:
-                new_lines.append(line)
+        # Update content
+        for key in keys:
+            content = re.sub(fr'^\s*{key}\s*=.+$', '', content, flags=re.MULTILINE)
+        content = re.sub(r'\n+', '\n', content.lstrip('\n'))
 
-        if removed_lines > 0:
-            content = '\n'.join(new_lines)
+        # Write changes
+        if content != initial_content:
             try:
                 # Backup settings before writing
                 backup_settings()
                 # Write settings
-                override_path.write_text(content)
+                if not content.strip():
+                    override_path.unlink(missing_ok=True)
+                else:
+                    override_path.write_text(content)
             except OSError as e:
                 logger.error('Unable to write configuration file. %s' % e)
                 return False, '%s %s' % (_('Unable to write configuration file:'), e)

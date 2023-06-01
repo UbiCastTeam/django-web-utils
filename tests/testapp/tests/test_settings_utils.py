@@ -33,11 +33,11 @@ def override_file():
 
 def _get_override_files():
     path = Path(settings.OVERRIDE_PATH)
-    return sorted([
+    return sorted(
         p.name
         for p in path.parent.iterdir()
         if p.name.startswith(path.name)
-    ])
+    )
 
 
 def test_backup_settings__no_override():
@@ -61,8 +61,8 @@ def test_backup_settings__with_override(override_file):
 
 
 def test_backup_settings__max_reached(override_file):
-    for i in range(10):
-        Path(f'{override_file}.backup_2023-01-1{i}.py').touch()
+    for i in range(10, 22):
+        Path(f'{override_file}.backup_2023-01-{i:02}.py').touch()
 
     assert _get_override_files() == [
         'djwutils_override.py',
@@ -76,6 +76,8 @@ def test_backup_settings__max_reached(override_file):
         'djwutils_override.py.backup_2023-01-17.py',
         'djwutils_override.py.backup_2023-01-18.py',
         'djwutils_override.py.backup_2023-01-19.py',
+        'djwutils_override.py.backup_2023-01-20.py',
+        'djwutils_override.py.backup_2023-01-21.py',
     ]
 
     path = settings_utils.backup_settings()
@@ -85,8 +87,6 @@ def test_backup_settings__max_reached(override_file):
 
     assert _get_override_files() == [
         'djwutils_override.py',
-        'djwutils_override.py.backup_2023-01-11.py',
-        'djwutils_override.py.backup_2023-01-12.py',
         'djwutils_override.py.backup_2023-01-13.py',
         'djwutils_override.py.backup_2023-01-14.py',
         'djwutils_override.py.backup_2023-01-15.py',
@@ -94,6 +94,8 @@ def test_backup_settings__max_reached(override_file):
         'djwutils_override.py.backup_2023-01-17.py',
         'djwutils_override.py.backup_2023-01-18.py',
         'djwutils_override.py.backup_2023-01-19.py',
+        'djwutils_override.py.backup_2023-01-20.py',
+        'djwutils_override.py.backup_2023-01-21.py',
         path.name,
     ]
 
@@ -101,6 +103,13 @@ def test_backup_settings__max_reached(override_file):
 def test_set_settings__no_values():
     success, msg = settings_utils.set_settings()
     assert success, msg
+    path = Path(settings.OVERRIDE_PATH)
+    assert not path.exists()
+
+
+def test_set_settings__invalid_key():
+    success, msg = settings_utils.set_settings(**{'0a': 1})
+    assert not success, msg
     path = Path(settings.OVERRIDE_PATH)
     assert not path.exists()
 
@@ -189,6 +198,13 @@ def test_remove_settings__no_names():
 def test_remove_settings__no_override():
     success, msg = settings_utils.remove_settings('TEST')
     assert success, msg
+    path = Path(settings.OVERRIDE_PATH)
+    assert not path.exists()
+
+
+def test_remove_settings__invalid_key():
+    success, msg = settings_utils.remove_settings(*['0a'])
+    assert not success, msg
     path = Path(settings.OVERRIDE_PATH)
     assert not path.exists()
 
