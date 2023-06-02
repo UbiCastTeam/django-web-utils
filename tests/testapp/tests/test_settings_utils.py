@@ -22,6 +22,7 @@ def override_file():
     path.write_text(
         'BOOL = True\n'
         'BOOL_2 = False\n'
+        '\n'
         '# Comment\n'
         'DICT = {"nope": 24}\n'
     )
@@ -142,6 +143,7 @@ def test_set_and_remove_settings(override_file, override_content):
     if override_content is True:
         assert path.read_text() == '''BOOL = False
 BOOL_2 = False
+
 # Comment
 DICT = {'1234': {456: None, }, }
 STR = 'test text'
@@ -170,6 +172,7 @@ TUPLE = ('val', 48, )
     assert success, msg
     if override_content is True:
         assert path.read_text() == '''BOOL_2 = False
+
 # Comment
 DICT = {'1234': {456: None, }, }
 STR = 'test text'

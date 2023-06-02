@@ -171,8 +171,7 @@ def remove_settings(*keys: str) -> tuple[bool, str]:
 
         # Update content
         for key in keys:
-            content = re.sub(fr'^\s*{key}\s*=.+$', '', content, flags=re.MULTILINE)
-        content = re.sub(r'\n+', '\n', content.lstrip('\n'))
+            content = re.sub(fr'(^|\n)\s*{key}\s*=.+(\n|$)', r'\1', content)
 
         # Write changes
         if content != initial_content:
