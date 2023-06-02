@@ -88,7 +88,7 @@ class ProtectedFileField(dj_forms.FileField):
             return False
 
 
-class BaseFileSettingsForm(object):
+class BaseFileSettingsForm():
     """
     Form designed to change settings file values and restart server then.
     Settings that can be altered must be defined in Meta.SETTINGS_MAPPING.
@@ -125,21 +125,21 @@ class BaseFileSettingsForm(object):
 
     def save(self, commit=True):
         """
-        Returns: success (boolean), changed (list of fields names).
+        Returns: success (boolean), changed settings (dict) if commit or message (str).
         """
         if hasattr(super(), 'save'):
             super().save(commit)
         # Settings fields
-        changed = list()
+        changed = {}
         for field, info in self.Meta.SETTINGS_MAPPING.items():
             value = self.cleaned_data.get(field, info['default'])
             if not value and info['default'] is None and getattr(settings, info['setting'], None) is None:
                 continue
             if getattr(settings, info['setting'], info['default']) != value:
-                changed.append((info['setting'], value))
+                changed[info['setting']] = value
         # Write settings file
         if commit:
-            return set_settings(changed)
+            return set_settings(**changed)
         return True, changed
 
 
