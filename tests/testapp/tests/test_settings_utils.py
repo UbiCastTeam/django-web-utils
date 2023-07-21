@@ -115,6 +115,25 @@ def test_set_settings__invalid_key():
     assert not path.exists()
 
 
+def test_set_settings__multiline():
+    success, msg = settings_utils.set_settings(MULTILINE='1\n2\\')
+    assert success, msg
+    path = Path(settings.OVERRIDE_PATH)
+    assert path.read_text() == "MULTILINE = '1\\n2\\'\n"
+
+    success, msg = settings_utils.set_settings(TEST=True)
+    assert success, msg
+    path = Path(settings.OVERRIDE_PATH)
+    assert path.read_text() == "MULTILINE = '1\\n2\\'\nTEST = True\n"
+
+    # The second save triggers a bug:
+    # https://redmine.ubicast.net/issues/38214
+    success, msg = settings_utils.set_settings(MULTILINE='1\n2\\')
+    assert success, msg
+    path = Path(settings.OVERRIDE_PATH)
+    assert path.read_text() == "MULTILINE = '1\\n2\\'\nTEST = True\n"
+
+
 @pytest.mark.parametrize('override_content', [
     pytest.param(None, id='no override'),
     pytest.param(False, id='empty override'),
@@ -135,6 +154,7 @@ def test_set_and_remove_settings(override_file, override_content):
         DICT={'1234': {456: None}},
         LIST=['test', 12],
         TUPLE=('val', 48),
+        MULTILINE='1\n2 \' "e',
     )
     assert success, msg
 
@@ -152,6 +172,7 @@ INT = 47
 FLOAT = 0.89
 LIST = ['test', 12, ]
 TUPLE = ('val', 48, )
+MULTILINE = '1\\n2 \\' "e'
 '''
     else:
         assert path.read_text() == '''STR = 'test text'
@@ -162,6 +183,7 @@ FLOAT = 0.89
 DICT = {'1234': {456: None, }, }
 LIST = ['test', 12, ]
 TUPLE = ('val', 48, )
+MULTILINE = '1\\n2 \\' "e'
 '''
     if override_content is None:
         assert len(_get_override_files()) == 1
@@ -180,6 +202,7 @@ NONE = None
 INT = 47
 FLOAT = 0.89
 TUPLE = ('val', 48, )
+MULTILINE = '1\\n2 \\' "e'
 '''
     else:
         assert path.read_text() == '''STR = 'test text'
@@ -188,6 +211,7 @@ INT = 47
 FLOAT = 0.89
 DICT = {'1234': {456: None, }, }
 TUPLE = ('val', 48, )
+MULTILINE = '1\\n2 \\' "e'
 '''
 
 

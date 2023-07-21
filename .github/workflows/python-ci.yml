@@ -62,6 +62,5 @@ jobs:
       env:
         DJANGO_SETTINGS_MODULE: settings
         PYTHONPATH: tests:${PYTHONPATH}
-        DOCKER: 1
       run: |
         make test_local

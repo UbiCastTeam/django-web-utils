@@ -10,6 +10,22 @@ class FileForm(dj_forms.Form):
     file = dj_forms.FileField(label='File', required=True, validators=[antivirus_stream_validator])
 
 
+class SettingsFileForm(FileSettingsForm):
+    int_val = dj_forms.IntegerField(label='Integer value', required=False)
+    float_val = dj_forms.FloatField(label='Float value', min_value=0, required=False)
+    bool_val = dj_forms.BooleanField(label='Boolean value', required=False)
+    str_val = dj_forms.CharField(label='From file value', required=False, widget=dj_forms.Textarea())
+
+    class Meta(FileSettingsForm.Meta):
+        SETTINGS_MAPPING = {
+            'int_val': {'setting': 'INT_VAL', 'default': 12},
+            'float_val': {'setting': 'FLOAT_VAL', 'default': 1.5},
+            'bool_val': {'setting': 'BOOL_VAL', 'default': None},
+            'str_val': {'setting': 'STR_VAL', 'default': None},
+        }
+        default_values = FileSettingsForm.Meta.get_default_values(SETTINGS_MAPPING)
+
+
 class SettingsStoreValForm(SettingsStoreForm):
     str_val = dj_forms.CharField(label='String value', max_length=100, required=False)
     float_val = dj_forms.FloatField(label='Float value', min_value=0, required=False)

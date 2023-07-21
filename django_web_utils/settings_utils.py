@@ -71,9 +71,7 @@ def _get_value_str(value):
             value_str += _get_value_str(key) + ': ' + _get_value_str(sub_val) + ', '
         value_str += '}'
     else:
-        value_str = str(value)
-        value_str = value_str.replace('\'', '\\\'').replace('\n', '\\n').replace('\r', '')
-        value_str = '\'%s\'' % value_str
+        value_str = "'" + str(value).replace('\r', '').replace('\n', '\\n').replace("'", "\\'") + "'"
     return value_str
 
 
@@ -111,12 +109,14 @@ def set_settings(**data: Any) -> tuple[bool, str]:
     # Update content
     for key, value in data.items():
         value_str = _get_value_str(value)
-        content, substitutions = re.subn(
-            fr'^(\s*){key}\s*=.+$',
-            fr'\1{key} = {value_str}',
-            content,
-            flags=re.MULTILINE)
-        if not substitutions:
+        # Do not use `re.sub` here because it breaks escaping of `\`:
+        # https://docs.python.org/3/library/re.html#re.sub
+        match = re.search(fr'(^|\n)(\s*){key}\s*=.+($|\n)', content)
+        if match:
+            start, end = match.span()
+            grps = match.groups()
+            content = f'{content[:start]}{grps[0]}{grps[1]}{key} = {value_str}{grps[2]}{content[end:]}'
+        else:
             content += f'{key} = {value_str}\n'
 
     # Write changes
