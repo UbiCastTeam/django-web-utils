@@ -20,9 +20,11 @@ __pycache__
 pip-log.txt
 
 # Unit test / coverage reports
-.coverage*
+.coverage
+.coverage-*
+coverage.xml
+htmlcov
 .pytest_cache
-nosetests.xml
 
 # Mr Developer
 .mr.developer.cfg

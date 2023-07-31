@@ -48,8 +48,9 @@ shell:
 test:
 	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test_local
 
+test_local:PYTEST_ARGS := $(or ${PYTEST_ARGS},--cov=django_web_utils --cov-report html --cov-report term tests/testapp/tests)
 test_local:
-	pytest --reuse-db --cov=django_web_utils ${PYTEST_ARGS}
+	pytest --reuse-db ${PYTEST_ARGS}
 
 generate_po:
 	# Generate po files from source
