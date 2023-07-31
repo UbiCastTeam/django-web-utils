@@ -1,9 +1,13 @@
+from pathlib import Path
+
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render
 
 from django_web_utils import json_utils
 from django_web_utils.csv_utils import csv_streaming_response
 
-from .forms import FileForm
+from .forms import FileForm, SettingsFileForm
 
 
 def _handle_request(request):
@@ -17,6 +21,31 @@ def _handle_request(request):
 
 def test_upload(request):
     return HttpResponse(str(_handle_request(request)))
+
+
+def test_forms(request):
+    if request.method == 'POST':
+        form = SettingsFileForm(request.POST)
+        if not form.is_valid():
+            success = False
+            msg = 'The submitted form is incorrect. Please correct all errors in form and send it again.'
+        else:
+            success, msg = form.save()
+    else:
+        form = SettingsFileForm()
+        success, msg = '', ''
+
+    try:
+        settings_file = Path(settings.OVERRIDE_PATH).read_text()
+    except FileNotFoundError:
+        settings_file = 'does not exist'
+
+    return render(request, 'forms.html', {
+        'form': form,
+        'success': success,
+        'message': msg,
+        'settings_file': settings_file,
+    })
 
 
 def test_csv(request):

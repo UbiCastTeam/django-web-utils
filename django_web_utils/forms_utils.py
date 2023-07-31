@@ -95,7 +95,7 @@ class BaseFileSettingsForm():
     """
 
     def __init__(self, *args, **kwargs):
-        initial = kwargs.get('initial', dict())
+        initial = kwargs.get('initial', {})
         for field, info in self.Meta.SETTINGS_MAPPING.items():
             if field not in initial:
                 val = getattr(settings, info['setting'], info['default'])
@@ -123,20 +123,33 @@ class BaseFileSettingsForm():
                     default_values[field] = info['default']
             return default_values
 
+    def clean(self):
+        data = super().clean()
+        # Check "changed_data" regarding settings fields
+        for field, info in self.Meta.SETTINGS_MAPPING.items():
+            val = data.get(field, info['default'])
+            if isinstance(val, str):
+                val = val.replace('\r', '')
+            if val == getattr(settings, info['setting'], info['default']):
+                if field in self.changed_data:
+                    self.changed_data.remove(field)
+            else:
+                if field not in self.changed_data:
+                    self.changed_data.append(field)
+        return data
+
     def save(self, commit=True):
         """
         Returns: success (boolean), changed settings (dict) if commit or message (str).
         """
         if hasattr(super(), 'save'):
             super().save(commit)
-        # Settings fields
-        changed = {}
-        for field, info in self.Meta.SETTINGS_MAPPING.items():
-            value = self.cleaned_data.get(field, info['default'])
-            if not value and info['default'] is None and getattr(settings, info['setting'], None) is None:
-                continue
-            if getattr(settings, info['setting'], info['default']) != value:
-                changed[info['setting']] = value
+        # Get changed settings fields
+        changed = {
+            info['setting']: self.cleaned_data.get(field, info['default'])
+            for field, info in self.Meta.SETTINGS_MAPPING.items()
+            if field in self.changed_data
+        }
         # Write settings file
         if commit:
             return set_settings(**changed)
