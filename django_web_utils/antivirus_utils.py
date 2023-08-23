@@ -218,19 +218,23 @@ class ClamAVDaemon:
         finally:
             self._close_socket()
 
-    def instream(self, buff, max_chunk_size=1048576, max_stream_size=26214400):
+    def instream(self, buff, max_chunk_size=1048576, max_stream_size=20971520):
         """
         Scan a buffer.
 
-        buff  filelikeobj: buffer to scan
-        max_chunk_size int: Maximum size of chunk to send to clamd in bytes
-          MUST be < StreamMaxLength in /etc/clamav/clamd.conf
-          Default 1 MiB
-        max_stream_size int: Maximum size of stream to send to clamd in bytes
-          MUST be <= StreamMaxLength in /etc/clamav/clamd.conf
-          Used to segment scan for large stream
-          When segmented, the last chunk is always resend
-          Default 25 MiB
+        buff filelikeobj: Buffer to scan.
+        max_chunk_size int: Maximum size of chunk to send to clamd in bytes.
+          MUST be < StreamMaxLength in /etc/clamav/clamd.conf.
+          Default 1 MiB.
+        max_stream_size int: Maximum size of stream to send to clamd in bytes.
+          Used to segment scan for large stream.
+          When segmented, the last chunk is always resend.
+          MUST be < StreamMaxLength in /etc/clamav/clamd.conf.
+          In case of usage with compressed content, the StreamMaxLength value
+          must be a lot larger. For example, with a 10:1 compression ratio,
+          the StreamMaxLength should be set to 200M for a max_stream_size
+          value set to 20 MiB.
+          Default 20 MiB.
 
         return:
           - (dict): {FOUND: 1, files: {filename1: ('FOUND', 'virusname')}}
@@ -400,8 +404,9 @@ def on_file_infected_error(request):
     else:
         user_repr = 'anonymous user'
     log_subject = 'An infected file was uploaded'
-    log_msg = log_subject + '. IP: "' + request.META.get('REMOTE_ADDR', '') + '", ' + user_repr + '.'
-    log_msg += '\nThe file was uploaded on this URL: ' + ('https://' if request.is_secure() else 'http://') + request.get_host() + request.get_full_path()
+    log_msg = log_subject + '. IP: "' + request.META.get('REMOTE_ADDR', '') + '", ' + user_repr + '.' + \
+        '\nThe file was uploaded on this URL: ' + ('https://' if request.is_secure() else 'http://') + \
+        request.get_host() + request.get_full_path()
     logger.warning(log_msg)
     # Get recipients
     # Recipients can be a list of email addresses or a python module path to a callable returning the list.
@@ -503,14 +508,20 @@ def antivirus_path_validator(path, remove=True):
         raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}')
     else:
         if report.get('FOUND'):
-            logger.warning('Path "%s" is infected%s:\n%s', path, (', it will be removed' if remove else ''), report['files'])
+            logger.warning(
+                'Path "%s" is infected%s:\n%s',
+                path, (', it will be removed' if remove else ''), report['files']
+            )
             if remove:
                 _remove_infected_file(path)
             if MIDDLEWARE_MODULE in settings.MIDDLEWARE:
                 raise FileInfectedError(INFECTED_MESSAGE)
             raise ValidationError(INFECTED_MESSAGE)
         elif report.get('ERROR'):
-            logger.error('Path "%s" cannot be scanned%s:\n%s', path, (', it will be removed' if remove else ''), report['files'])
+            logger.error(
+                'Path "%s" cannot be scanned%s:\n%s',
+                path, (', it will be removed' if remove else ''), report['files']
+            )
             raise ValidationError(SCAN_FAILED_MESSAGE)
         logger.debug('Path "%s" is not infected:\n%s', path, report['files'])
 
@@ -545,14 +556,20 @@ def antivirus_stream_validator(stream, remove=True, skip_closed=True):
         raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}')
     else:
         if report.get('FOUND'):
-            logger.warning('Stream "%s" is infected%s:\n%s', stream.name, (', it will be removed' if remove else ''), report['files'])
+            logger.warning(
+                'Stream "%s" is infected%s:\n%s',
+                stream.name, (', it will be removed' if remove else ''), report['files']
+            )
             if remove and getattr(stream, 'path', None):
                 _remove_infected_file(Path(stream.path))
             if MIDDLEWARE_MODULE in settings.MIDDLEWARE:
                 raise FileInfectedError(INFECTED_MESSAGE)
             raise ValidationError(INFECTED_MESSAGE)
         elif report.get('ERROR'):
-            logger.error('Stream "%s" cannot be scanned%s:\n%s', stream.name, (', it will be removed' if remove else ''), report['files'])
+            logger.error(
+                'Stream "%s" cannot be scanned%s:\n%s',
+                stream.name, (', it will be removed' if remove else ''), report['files']
+            )
             raise ValidationError(SCAN_FAILED_MESSAGE)
         logger.debug('Stream "%s" is not infected:\n%s', stream.name, report['files'])
     finally:
