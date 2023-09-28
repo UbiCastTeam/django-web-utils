@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-04 07:56+0000\n"
-"PO-Revision-Date: 2022-07-11 08:37+0200\n"
+"PO-Revision-Date: 2023-09-28 09:42+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: admin_utils.py:12
 msgid "Export selected objects as CSV file"
@@ -184,7 +184,7 @@ msgstr "Aucun groupe n'a été trouvé."
 
 #: settings_store/forms.py:81 settings_utils.py:72
 msgid "No changes to save."
-msgstr "Aucune modification a sauvegarder."
+msgstr "Aucune modification à sauvegarder."
 
 #: settings_store/forms.py:84
 msgid "Your changes will be active in a few seconds."
