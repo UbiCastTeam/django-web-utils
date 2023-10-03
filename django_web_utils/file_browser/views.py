@@ -9,7 +9,7 @@ from django.templatetags.static import static
 from django.utils.translation import gettext as _
 # Django web utils
 from django_web_utils.file_browser import config
-from django_web_utils.files_utils import get_unit
+from django_web_utils.files_utils import get_size_display
 
 logger = logging.getLogger('djwutils.file_browser.views')
 
@@ -119,7 +119,7 @@ def storage_content(request, namespace=None):
         file_properties = {
             'name': file_name,
             'size': size,
-            'size_h': '%s %s' % get_unit(size),
+            'size_h': get_size_display(size),
             'is_dir': False,
             'nb_files': nb_files,
             'nb_dirs': nb_dirs,
@@ -141,7 +141,7 @@ def storage_content(request, namespace=None):
             file_properties['mdate'] = mdate
             files.append(file_properties)
         # Else: socket or other, ignored
-    total_size = '%s %s' % get_unit(total_size)
+    total_size = get_size_display(total_size)
 
     # Ordering
     order = request.GET.get('order', 'name-asc')

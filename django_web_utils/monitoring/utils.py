@@ -90,7 +90,7 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
     size = mtime = ''
     if log_path and log_path.exists():
         statobj = log_path.stat()
-        size = '%s %s' % files_utils.get_unit(statobj.st_size)
+        size = files_utils.get_size_display(statobj.st_size)
         mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)
         if date_adjust_fct:
             mtime = date_adjust_fct(mtime)
@@ -127,7 +127,7 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
                 if stat.S_ISREG(statobj.st_mode):
                     response['Content-Length'] = statobj.st_size
                 return response
-            size = '%s %s' % files_utils.get_unit(statobj.st_size)
+            size = files_utils.get_size_display(statobj.st_size)
             if tail_only:
                 # Read only file end
                 content = b''
@@ -206,7 +206,7 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
                 if stat.S_ISREG(statobj.st_mode):
                     response['Content-Length'] = statobj.st_size
                 return response
-            size = '%s %s' % files_utils.get_unit(statobj.st_size)
+            size = files_utils.get_size_display(statobj.st_size)
             if not content:
                 if statobj.st_size > FILE_SIZE_LIMIT:
                     content = str(_('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size)

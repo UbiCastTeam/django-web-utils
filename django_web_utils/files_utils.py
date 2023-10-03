@@ -42,14 +42,6 @@ def get_size(path, ignore_du_errors=True):
 
 
 def get_size_display(size=0, path=None):
-    size, unit = get_unit(size, path)
-    return f'{size} {unit}'
-
-
-def get_unit(size=0, path=None):
-    """
-    DEPRECATED, use "get_size_display" instead of this function
-    """
     if path is not None:
         size = get_size(path)
     if abs(size) <= 1000:
@@ -70,7 +62,7 @@ def get_unit(size=0, path=None):
                     size /= 1000.0
                     unit = _('TB')
     size = round(size, 1)
-    return size, unit
+    return f'{size} {unit}'
 
 
 def get_new_path(path, new_extension=None):
