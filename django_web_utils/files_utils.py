@@ -1,11 +1,17 @@
 """
 Files utility functions
 """
+import datetime
 import os
 import subprocess
 from pathlib import Path
-# Django
-from django.utils.translation import gettext as _
+from typing import Optional
+
+try:
+    from django.utils.translation import gettext as _
+except ImportError:
+    def _(text):
+        return text
 
 
 def get_size(path, ignore_du_errors=True):
@@ -18,7 +24,10 @@ def get_size(path, ignore_du_errors=True):
         return path.stat().st_size
     elif path.is_dir():
         # "du" is much faster than getting size file of all files using python
-        p = subprocess.run(['du', '-sb', str(path)], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.run(
+            ['du', '-sb', str(path)],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         out = p.stdout.decode('utf-8').strip()
         err = p.stderr.decode('utf-8').strip()
         if not ignore_du_errors and p.returncode != 0:
@@ -111,3 +120,32 @@ def reverse_read(path, buf_size=8192):
             remaining_size -= buf_size
             yield segment
         yield None
+
+
+def backup_file(file_path: Path, max_backups: int = 10) -> Optional[Path]:
+    """
+    Make a backup copy of a file.
+    Only one backup is made per day and only the last 10 (default) backups are retained.
+    This function is not intended to be used with large files as it reads entirely the source file to copy it.
+    """
+    if not file_path or not file_path.is_file():
+        return
+
+    mtime = file_path.stat().st_mtime
+    date_str = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d')
+
+    backup_path = file_path.parent / f'{file_path.name}.backup_{date_str}{file_path.suffix}'
+    if backup_path.exists():
+        return backup_path
+
+    paths = sorted(
+        path
+        for path in file_path.parent.iterdir()
+        if path.is_file() and path.name.startswith(f'{file_path.name}.backup_')
+    )
+    for i in range(0, len(paths) - max_backups + 1):
+        paths[i].unlink(missing_ok=True)
+
+    current = file_path.read_bytes()
+    backup_path.write_bytes(current)
+    return backup_path

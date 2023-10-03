@@ -2,7 +2,6 @@
 Module to handle file settings.
 The OVERRIDE_PATH setting must be set to the local settings override path.
 """
-import datetime
 import logging
 import os
 import re
@@ -14,36 +13,18 @@ from django.conf import settings, ENVIRONMENT_VARIABLE
 from django.utils.functional import empty
 from django.utils.translation import gettext as _
 
+from django_web_utils.files_utils import backup_file
+
 logger = logging.getLogger('djwutils.settings_utils')
 
 
-def backup_settings(max_backups: int = 10) -> Optional[Path]:
+def backup_settings() -> Optional[Path]:
     """
-    Make a copy of the settings override file.
-    Only one backup is made per day and only the last 10 (default) backups are retained.
+    Make a backup copy of the settings override file.
+    See `backup_file` description for more information.
     """
-    override_path = Path(settings.OVERRIDE_PATH) if getattr(settings, 'OVERRIDE_PATH', None) else None
-    if not override_path or not override_path.exists():
-        return
-
-    mtime = override_path.stat().st_mtime
-    date_str = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d')
-
-    backup_path = override_path.parent / f'{override_path.name}.backup_{date_str}.py'
-    if backup_path.exists():
-        return backup_path
-
-    paths = sorted(
-        path
-        for path in override_path.parent.iterdir()
-        if path.is_file() and path.name.startswith(f'{override_path.name}.backup_')
-    )
-    for i in range(0, len(paths) - max_backups + 1):
-        paths[i].unlink(missing_ok=True)
-
-    current = override_path.read_bytes()
-    backup_path.write_bytes(current)
-    return backup_path
+    if getattr(settings, 'OVERRIDE_PATH', None):
+        return backup_file(Path(settings.OVERRIDE_PATH))
 
 
 def _get_value_str(value):
