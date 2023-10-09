@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-04 07:56+0000\n"
+"POT-Creation-Date: 2023-10-09 14:34+0000\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -86,23 +86,23 @@ msgstr "Autenticación de acceso"
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
 msgstr "La contraseña debe contener al menos 3 tipos de caracteres (los tipos son letras minúsculas, letras mayúsculas, dígitos y caracteres especiales)."
 
-#: files_utils.py:47
+#: files_utils.py:48
 msgid "B"
 msgstr "B"
 
-#: files_utils.py:51
+#: files_utils.py:52
 msgid "kB"
 msgstr "kB"
 
-#: files_utils.py:55
+#: files_utils.py:56
 msgid "MB"
 msgstr "MB"
 
-#: files_utils.py:59
+#: files_utils.py:60
 msgid "GB"
 msgstr "GB"
 
-#: files_utils.py:62
+#: files_utils.py:63
 msgid "TB"
 msgstr "TB"
 
@@ -212,7 +212,7 @@ msgstr "Error al intentar obtener grupos."
 msgid "No groups found."
 msgstr "No se han encontrado grupos."
 
-#: settings_store/forms.py:81 settings_utils.py:72
+#: settings_store/forms.py:81 settings_utils.py:64 settings_utils.py:125
 msgid "No changes to save."
 msgstr "Ningún cambio que guardar."
 
@@ -222,70 +222,65 @@ msgid "Your changes will be active in a few seconds."
 msgstr "Sus cambios se activarán en unos segundos."
 
 # Translated by DeepL.
-#: settings_utils.py:34
-msgid "Failed to backup settings:"
-msgstr "Fallo en la copia de seguridad de la configuración:"
+#: settings_utils.py:69 settings_utils.py:131
+#, python-format
+msgid "Invalid setting name: %s"
+msgstr "Nombre de ajuste no válido: %s"
 
 # Translated by DeepL.
-#: settings_utils.py:81 settings_utils.py:141
+#: settings_utils.py:79 settings_utils.py:141
 msgid "Your changes were not saved but were applied to the running software."
 msgstr "Sus cambios no se han guardado, pero se han aplicado al software en funcionamiento."
 
 # Translated by DeepL.
-#: settings_utils.py:118 settings_utils.py:170
+#: settings_utils.py:113 settings_utils.py:170
 msgid "Unable to write configuration file:"
 msgstr "No se puede escribir el archivo de configuración:"
 
 # Translated by DeepL.
-#: settings_utils.py:119 settings_utils.py:171
-msgid "Your changes will be active after the service restart."
-msgstr "Sus cambios se activarán tras el reinicio del servicio."
+#: settings_utils.py:115 settings_utils.py:172
+msgid "Your changes have been applied. The service will be reloaded in a few seconds to make them effective."
+msgstr "Sus cambios se han aplicado. El servicio se recargará en unos segundos para hacerlos efectivos."
 
 # Translated by DeepL.
-#: settings_utils.py:121 settings_utils.py:173
-msgid "The service will be restarted in 2 seconds."
-msgstr "El servicio se reiniciará en 2 segundos."
-
-# Translated by DeepL.
-#: system_utils.py:90
+#: system_utils.py:93
 msgid "Password required."
 msgstr "Se requiere una contraseña."
 
 # Translated by DeepL.
-#: system_utils.py:99
+#: system_utils.py:102
 #, python-format
 msgid "Command exited with code %s."
 msgstr "El comando salió con el código %s."
 
 # Translated by DeepL.
-#: system_utils.py:131 system_utils.py:134 system_utils.py:140
-#: system_utils.py:160
+#: system_utils.py:134 system_utils.py:137 system_utils.py:143 system_utils.py:163
 msgid "Unable to write file."
 msgstr "No se puede escribir el archivo."
 
 # Translated by DeepL.
-#: system_utils.py:131
+#: system_utils.py:134
 msgid "Specified path is a directory."
 msgstr "La ruta especificada es un directorio."
 
 # Translated by DeepL.
-#: system_utils.py:134
+#: system_utils.py:137
 msgid "Invalid file path."
 msgstr "Ruta de archivo no válida."
 
 # Translated by DeepL.
-#: system_utils.py:146
+#: system_utils.py:149
 msgid "You need to send the main password to edit this file."
 msgstr "Es necesario enviar la contraseña principal para editar este archivo."
 
 # Translated by DeepL.
-#: system_utils.py:154
+#: system_utils.py:157
 #, python-format
 msgid "Unable to create temporary file \"%s\"."
 msgstr "No se ha podido crear el archivo temporal \"%s\"."
 
 # Translated by DeepL.
-#: system_utils.py:161
+#: system_utils.py:164
 msgid "File updated."
 msgstr "Archivo actualizado."
 
@@ -293,7 +288,18 @@ msgstr "Archivo actualizado."
 msgid "Hide value"
 msgstr "Ocultar valor"
 
-#: templates/forms_utils/password_toggle_input.html:5
-#: templates/forms_utils/password_toggle_input.html:7
+#: templates/forms_utils/password_toggle_input.html:5 templates/forms_utils/password_toggle_input.html:7
 msgid "Edit value"
 msgstr "Editar valor"
+
+# Translated by DeepL.
+#~ msgid "Failed to backup settings:"
+#~ msgstr "Fallo en la copia de seguridad de la configuración:"
+
+# Translated by DeepL.
+#~ msgid "Your changes will be active after the service restart."
+#~ msgstr "Sus cambios se activarán tras el reinicio del servicio."
+
+# Translated by DeepL.
+#~ msgid "The service will be restarted in 2 seconds."
+#~ msgstr "El servicio se reiniciará en 2 segundos."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-04 07:56+0000\n"
+"POT-Creation-Date: 2023-10-09 14:36+0000\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -211,7 +211,7 @@ msgstr "Aplicar modificaciones"
 msgid "Status"
 msgstr "Estado"
 
-#: templates/monitoring/daemon.html:13 templates/monitoring/panel.html:45
+#: templates/monitoring/daemon.html:13 templates/monitoring/panel.html:49
 msgid "Loading"
 msgstr "Cargando"
 
@@ -220,7 +220,7 @@ msgstr "Cargando"
 msgid "Commands"
 msgstr "Comandos"
 
-#: templates/monitoring/daemon.html:19 templates/monitoring/panel.html:60
+#: templates/monitoring/daemon.html:19 templates/monitoring/panel.html:67
 msgid "Stop"
 msgstr "Detener"
 
@@ -235,29 +235,29 @@ msgid "Log file"
 msgstr "Archivo de registro"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:28 templates/monitoring/panel.html:24
+#: templates/monitoring/daemon.html:28 templates/monitoring/panel.html:26
 msgid "Last modification"
 msgstr "Última modificación"
 
-#: templates/monitoring/daemon.html:32 templates/monitoring/panel.html:25
+#: templates/monitoring/daemon.html:32 templates/monitoring/panel.html:27
 msgid "File size"
 msgstr "Tamaño del archivo"
 
-#: templates/monitoring/daemon.html:36 templates/monitoring/panel.html:30
+#: templates/monitoring/daemon.html:36 templates/monitoring/panel.html:34
 msgid "Actions"
 msgstr "Acciones"
 
-#: templates/monitoring/daemon.html:38 templates/monitoring/panel.html:50
+#: templates/monitoring/daemon.html:38 templates/monitoring/panel.html:54
 msgid "See"
 msgstr "Ver"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:39 templates/monitoring/panel.html:51
+#: templates/monitoring/daemon.html:39 templates/monitoring/panel.html:55
 msgid "See tail"
 msgstr "Ver cola"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:41 templates/monitoring/panel.html:52
+#: templates/monitoring/daemon.html:41 templates/monitoring/panel.html:57
 msgid "Clear log"
 msgstr "Borrar el registro"
 
@@ -292,46 +292,46 @@ msgid "Log file is empty."
 msgstr "El archivo de registro está vacío."
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:17
+#: templates/monitoring/panel.html:18
 msgid "Start all"
 msgstr "Empezar todo"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:18
+#: templates/monitoring/panel.html:19
 msgid "Stop all"
 msgstr "Detener todo"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:19
+#: templates/monitoring/panel.html:20
 msgid "Restart all"
 msgstr "Reiniciar todo"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:28
+#: templates/monitoring/panel.html:31
 msgid "Clear all logs"
 msgstr "Borrar todos los registros"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:40 views.py:162
+#: templates/monitoring/panel.html:44 views.py:167
 msgid "log file"
 msgstr "archivo de registro"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:40
+#: templates/monitoring/panel.html:44
 msgid "config file"
 msgstr "archivo de configuración"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:58
+#: templates/monitoring/panel.html:65
 msgid "Start"
 msgstr "Inicie"
 
-#: templates/monitoring/panel.html:62
+#: templates/monitoring/panel.html:69
 msgid "Restart"
 msgstr "Reiniciar"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:66
+#: templates/monitoring/panel.html:73
 msgid "Edit configuration"
 msgstr "Editar la configuración"
 
@@ -437,24 +437,24 @@ msgid "Invalid password."
 msgstr "Contraseña inválida."
 
 # Translated by DeepL.
-#: views.py:112
+#: views.py:117
 msgid "The daemon name is invalid:"
 msgstr "El nombre del demonio no es válido:"
 
 # Translated by DeepL.
-#: views.py:119
+#: views.py:124
 #, python-format
 msgid "The command \"%(cmd)s\" on \"%(name)s\" was successfully executed."
 msgstr "El comando \"%(cmd)s\" en \"%(name)s\" se ha ejecutado correctamente."
 
 # Translated by DeepL.
-#: views.py:121
+#: views.py:126
 #, python-format
 msgid "The command \"%(cmd)s\" on \"%(name)s\" has failed."
 msgstr "El comando \"%(cmd)s\" en \"%(name)s\" ha fallado."
 
 # Translated by DeepL.
-#: views.py:207
+#: views.py:212
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Editar el archivo de configuración: %s"
