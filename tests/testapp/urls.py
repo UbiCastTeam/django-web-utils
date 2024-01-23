@@ -1,10 +1,13 @@
 from django.conf import settings
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import include, path, re_path
+from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.static import serve
 
 from . import views
+
+admin.autodiscover()
 
 testpatterns = (
     [
@@ -24,6 +27,7 @@ testpatterns = (
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('admin/', admin.site.urls),
     path('storage-browser/', include(('django_web_utils.file_browser.urls', 'storage'), namespace='storage'), {'namespace': 'storage'}),
     path('monitoring/', include(('django_web_utils.monitoring.urls', 'monitoring'), namespace='monitoring')),
     path('', include(testpatterns)),

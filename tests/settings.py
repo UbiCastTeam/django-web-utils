@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admin',
 
     'django_web_utils',
     'django_web_utils.file_browser',
@@ -68,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
             )
         },
     },
