@@ -193,8 +193,6 @@ def test_form_request__get(client):
     'django_web_utils.antivirus_utils.ReportInfectedFileUploadMiddleware',
 ))
 def test_form_request__post(client):
-    dj_mail.outbox = []
-
     file = BytesIO(EICAR_TEST_CONTENT.encode('utf-8'))
     response = client.post(reverse('testapp:upload'), data={'file': file})
     assert response.status_code == 451
@@ -210,8 +208,6 @@ def test_form_request__post(client):
     'django_web_utils.json_utils.JsonErrorResponseMiddleware',
 ))
 def test_form_request__post_json(client):
-    dj_mail.outbox = []
-
     file = BytesIO(EICAR_TEST_CONTENT.encode('utf-8'))
     response = client.post(reverse('testapp:upload-json'), data={'file': file})
     assert response.status_code == 451

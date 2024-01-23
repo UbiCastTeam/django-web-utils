@@ -2,6 +2,12 @@ import shutil
 from pathlib import Path
 
 import pytest
+from django.core import mail
+
+
+@pytest.fixture(autouse=True)
+def clear_mailbox():
+    mail.outbox = []
 
 
 @pytest.fixture()
