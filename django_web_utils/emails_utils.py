@@ -37,7 +37,9 @@ logger = logging.getLogger('djwutils.emails_utils')
 
 class Recipient:
     def __init__(self, user=None, **info):
-        self.name = (user.get_full_name() if user else info.pop('name', '')).replace('"', '”').replace('\'', '’')
+        self.name = (
+            user.get_full_name() if hasattr(user, 'get_full_name') else info.pop('name', '')
+        ).replace('"', '”').replace('\'', '’')
         self.email = user.email if user else info.pop('email', None)
         self.lang = (
             getattr(user, 'emails_lang', None) if user else info.pop('lang', None)
