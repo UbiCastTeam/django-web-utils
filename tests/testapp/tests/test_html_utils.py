@@ -13,14 +13,14 @@ from django_web_utils import html_utils
         '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg=="></iframe><img src="data:image/png;base64,ABCD"><a href="http://google.com"></a>', True,
         '<iframe></iframe><img src="data:image/png;base64,ABCD"><a href="http://google.com"></a>', id='escape_multiple'),
     pytest.param(
-        '<img src="data:image/png;base64,ABCD">', False,
-        '<img src="data:image/png;base64,ABCD">', id='conserve_base64_image'),
+        '<img src="data:image/png;base64,ABCD" style="width: 50%">', False,
+        '<img src="data:image/png;base64,ABCD" style="width: 50%;">', id='conserve_base64_image'),
     pytest.param(
         '<a href="data:image/png;base64,ABCD">', False,
         '<a></a>', id='clean_a_base64_href'),
     pytest.param(
-        '<a href="http://google.com"></a>', False,
-        '<a href="http://google.com"></a>', id='conserve_a_http_href'),
+        '<a href="http://google.com" style="font-size: 75%"></a>', False,
+        '<a href="http://google.com" style="font-size: 75%;"></a>', id='conserve_a_http_href'),
 ])
 def test_clean_html_tags(value, allow_iframes, expected):
     iframe = html_utils.clean_html_tags(value, allow_iframes=allow_iframes)

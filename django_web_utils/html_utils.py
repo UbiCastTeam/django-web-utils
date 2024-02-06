@@ -17,7 +17,11 @@ logger = logging.getLogger('djwutils.html_utils')
 
 # For any change in the constants below, please update the same constant in the JSU project:
 # https://github.com/UbiCastTeam/jsu/blob/main/vendors/tinymce/tinymce.custom.js
-ALLOWED_TAGS = {'div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'img', 'fieldset', 'legend', 'pre', 'code', 'blockquote', 'video', 'source'}
+ALLOWED_TAGS = {
+    'div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li',
+    'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'img', 'fieldset', 'legend',
+    'pre', 'code', 'blockquote', 'video', 'source'
+}
 ALLOWED_ATTRS = {
     '*': {'class', 'style'},
     'a': {'href', 'target', 'title'},
@@ -27,7 +31,11 @@ ALLOWED_ATTRS = {
     'source': {'src', 'type'},
     'video': {'src', 'poster', 'loop', 'autoplay', 'muted', 'controls', 'playsinline', 'preload'}
 }
-ALLOWED_CSS = {'margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight', 'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow', 'border', 'border-radius', 'box-shadow', 'width', 'height', 'overflow'}
+ALLOWED_CSS = {
+    'margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight',
+    'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow',
+    'border', 'border-radius', 'box-shadow', 'width', 'height', 'overflow'
+}
 
 
 def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
@@ -42,27 +50,30 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
         return False
 
     def img_attrs_check(tag, name, value):
-        if name in ALLOWED_ATTRS['img']:
-            if name == 'src':
-                protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data:image/'}
-                for protocol in protocols:
-                    if value.startswith(protocol):
-                        return True
-                return False
+        if name == 'src':
+            protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data:image/'}
+            for protocol in protocols:
+                if value.startswith(protocol):
+                    return True
+            return False
+        if name in ALLOWED_ATTRS['*'] or name in ALLOWED_ATTRS['img']:
             return True
         return False
 
     def a_attrs_check(tag, name, value):
-        if name in ALLOWED_ATTRS['a']:
-            if name == 'href':
-                for protocol in bleach.sanitizer.ALLOWED_PROTOCOLS:
-                    if value.startswith(protocol):
-                        return True
-                return False
+        if name == 'href':
+            for protocol in bleach.sanitizer.ALLOWED_PROTOCOLS:
+                if value.startswith(protocol):
+                    return True
+            return False
+        if name in ALLOWED_ATTRS['*'] or name in ALLOWED_ATTRS['a']:
             return True
         return False
 
     allowed_attrs = deepcopy(ALLOWED_ATTRS)
+    for key in ALLOWED_ATTRS.keys():
+        if key != '*':
+            allowed_attrs[key] |= ALLOWED_ATTRS['*']
     tags = set(ALLOWED_TAGS)
     if allow_iframes:
         allowed_attrs['iframe'] = iframe_attrs_check
