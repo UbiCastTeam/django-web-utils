@@ -5,6 +5,7 @@
 /* global gettext */
 /* global jsu */
 /* global OverlayDisplayManager */
+/* global PollingManager */
 /* global PwdManager */
 
 function DaemonsManager (options) {
@@ -32,12 +33,7 @@ function DaemonsManager (options) {
 }
 
 DaemonsManager.prototype.init = function () {
-    for (let i = 0; i < this.daemons.length; i++) {
-        let daemon = this.daemons[i];
-        if (typeof daemon == 'string') {
-            daemon = { name: daemon };
-            this.daemons[i] = daemon;
-        }
+    for (const daemon of this.daemons) {
         const clearBtn = document.querySelector('.daemon-' + daemon.name + ' .daemon-log-clear');
         if (clearBtn) {
             clearBtn.addEventListener('click', this.sendDaemonCommand.bind(this, daemon, 'clear_log'));
@@ -55,9 +51,9 @@ DaemonsManager.prototype.init = function () {
             restartBtn.addEventListener('click', this.sendDaemonCommand.bind(this, daemon, 'restart'));
         }
     }
-    this.refreshDaemonStatus();
-};
 
+    new PollingManager(this.refreshDaemons.bind(this), this.refreshDelay);
+};
 
 DaemonsManager.prototype.sendDaemonCommand = function (daemon, cmd) {
     if (!daemon.name) {
@@ -112,7 +108,7 @@ DaemonsManager.prototype._sendDaemonCommand = function (daemon, cmd) {
     });
 };
 
-DaemonsManager.prototype.refreshDaemonStatus = function () {
+DaemonsManager.prototype.refreshDaemons = function (notifyEnd) {
     const obj = this;
     jsu.httpRequest({
         method: 'GET',
@@ -121,50 +117,49 @@ DaemonsManager.prototype.refreshDaemonStatus = function () {
         callback: function (req, response) {
             if (req.status != 200) {
                 console.error('Failed to get daemons status.', req);
-                return;
-            }
-            let daemonName;
-            for (daemonName in response) {
-                if (!(daemonName in obj.daemons)) {
-                    obj.daemons[daemonName] = {};
-                }
-                const stored = obj.daemons[daemonName];
-                const running = response[daemonName].running;
-                if (running !== stored.running) {
-                    stored.running = running;
-                    const statusEle = document.querySelector('.daemon-' + daemonName + ' .daemon-status');
-                    if (running === true) {
-                        statusEle.innerHTML = '<span class="green">' + jsu.escapeHTML(gettext('running')) + '</span>';
-                    } else if (running === false) {
-                        statusEle.innerHTML = '<span class="red">' + jsu.escapeHTML(gettext('not running')) + '</span>';
-                    } else {
-                        statusEle.innerHTML = '<span class="yellow"> ? </span>';
-                        const btnEle = document.createElement('button');
-                        btnEle.setAttribute('type', 'button');
-                        btnEle.setAttribute('title', gettext('Click to enter password'));
-                        btnEle.innerHTML = jsu.escapeHTML(gettext('need password'));
-                        btnEle.addEventListener('click', function () {
-                            obj.pwdMan.checkPassword();
-                        });
-                        statusEle.appendChild(btnEle);
-                    }
-                }
-                const logMTime = response[daemonName].log_mtime;
-                if (logMTime !== stored.logMTime) {
-                    stored.logMTime = logMTime;
-                    const mTimeEle = document.querySelector('.daemon-' + daemonName + ' .daemon-log-mtime');
-                    mTimeEle.textContent = logMTime ? logMTime : '-';
-                }
-                const logSize = response[daemonName].log_size;
-                if (logSize !== stored.logSize) {
-                    stored.logSize = logSize;
-                    const sizeEle = document.querySelector('.daemon-' + daemonName + ' .daemon-log-size');
-                    sizeEle.textContent = logSize ? logSize : '-';
+            } else {
+                for (const name in response) {
+                    obj.updateDaemonData(name, response[name]);
                 }
             }
+            notifyEnd();
         }
     });
-    setTimeout(function () {
-        obj.refreshDaemonStatus();
-    }, this.refreshDelay);
+};
+
+DaemonsManager.prototype.updateDaemonData = function (name, data) {
+    if (!(name in this.daemons)) {
+        this.daemons[name] = {};
+    }
+    const stored = this.daemons[name];
+    const running = data.running;
+    if (running !== stored.running) {
+        stored.running = running;
+        const statusEle = document.querySelector('.daemon-' + name + ' .daemon-status');
+        if (running === true) {
+            statusEle.innerHTML = '<span class="green">' + jsu.escapeHTML(gettext('running')) + '</span>';
+        } else if (running === false) {
+            statusEle.innerHTML = '<span class="red">' + jsu.escapeHTML(gettext('not running')) + '</span>';
+        } else {
+            statusEle.innerHTML = '<span class="yellow"> ? </span>';
+            const btnEle = document.createElement('button');
+            btnEle.setAttribute('type', 'button');
+            btnEle.setAttribute('title', gettext('Click to enter password'));
+            btnEle.innerHTML = jsu.escapeHTML(gettext('need password'));
+            btnEle.addEventListener('click', this.pwdMan.checkPassword);
+            statusEle.appendChild(btnEle);
+        }
+    }
+    const logMTime = data.log_mtime;
+    if (logMTime !== stored.logMTime) {
+        stored.logMTime = logMTime;
+        const mTimeEle = document.querySelector('.daemon-' + name + ' .daemon-log-mtime');
+        mTimeEle.textContent = logMTime ? logMTime : '-';
+    }
+    const logSize = data.log_size;
+    if (logSize !== stored.logSize) {
+        stored.logSize = logSize;
+        const sizeEle = document.querySelector('.daemon-' + name + ' .daemon-log-size');
+        sizeEle.textContent = logSize ? logSize : '-';
+    }
 };
