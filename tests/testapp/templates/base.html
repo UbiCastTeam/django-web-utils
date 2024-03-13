@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        {% block head %}{% endblock %}
+        <style type="text/css">
+            body > nav {
+                float: left;
+                margin: 20px;
+                width: 250px;
+            }
+            body > main {
+                margin-left: 300px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav>
+            <fieldset>
+                <legend>Navigation</legend>
+                <ul>
+                    <li><a href="{% url 'testapp:magic_login' %}">Magic login</a></li>
+                    <li><a href="{% url 'testapp:forms' %}">Forms</a></li>
+                    <li><a href="{% url 'storage:file_browser_base' %}">File browser</a></li>
+                    <li><a href="{% url 'monitoring:monitoring-panel' %}">Monitoring</a></li>
+                    <li><a href="/admin/">Django admin</a></li>
+                </ul>
+            </fieldset>
+            <fieldset>
+                <legend>Account</legend>
+                <div>
+                    {% if user.is_authenticated %}
+                        <span>Connected as: {{ user }}</span>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit">Logout</button>
+                        </form>
+                    {% else %}
+                        <span>Not connected</span>
+                    {% endif %}
+                </div>
+            </fieldset>
+        </nav>
+        <main>
+            <h1>{% block title %}{% endblock %}</h1>
+            {% for message in messages %}
+                <p>{{ message.tags }} - {{ message|linebreaksbr }}</p>
+            {% endfor %}
+            {% block main %}{% endblock %}
+        </main>
+    </body>
+</html>

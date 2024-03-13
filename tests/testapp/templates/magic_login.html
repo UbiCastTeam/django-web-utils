@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Magic login{% endblock %}
 
 {% block main %}
     <form method="post" action="">
         {% csrf_token %}
-        {{ form }}
+        {{ magic_login_form }}
         <button type="submit">Submit</button>
     </form>
 {% endblock %}

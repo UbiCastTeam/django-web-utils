@@ -81,6 +81,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'django_web_utils.magic_login.backend.MagicLoginBackend',
 ]
 
 LOGIN_URL = '/login/'
@@ -143,13 +144,12 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
             'level': 'INFO',
         },
-        'djwutils': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
     },
 }
 

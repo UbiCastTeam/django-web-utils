@@ -209,7 +209,7 @@ def test_form_request__post(client):
 ))
 def test_form_request__post_json(client):
     file = BytesIO(EICAR_TEST_CONTENT.encode('utf-8'))
-    response = client.post(reverse('testapp:upload-json'), data={'file': file})
+    response = client.post(reverse('testapp:upload_json'), data={'file': file})
     assert response.status_code == 451
 
     mailinbox = [m.to[0] for m in dj_mail.outbox]

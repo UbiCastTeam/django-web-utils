@@ -1,11 +1,13 @@
 from pathlib import Path
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 
 from django_web_utils import json_utils
 from django_web_utils.csv_utils import csv_streaming_response
+from django_web_utils.magic_login.views import MagicLoginView
 
 from .forms import FileForm, SettingsFileForm
 
@@ -63,3 +65,26 @@ def test_csv(request):
 @json_utils.json_view
 def test_upload_json(request):
     return JsonResponse(_handle_request(request))
+
+
+class CustomMagicLoginView(MagicLoginView):
+    users_json_path = Path('/tmp/djwutils/users.json')
+    template_view = 'magic_login.html'
+
+    def create_user(self, info):
+        try:
+            user = User.objects.filter(email=info['email'])[0]
+        except IndexError:
+            user = User(email=info['email'])
+        changed = []
+        for attr, val in info.items():
+            if attr == 'email':
+                continue
+            if getattr(user, attr) != val:
+                setattr(user, attr, val)
+                changed.append(attr)
+        if not user.id:
+            user.save()
+        elif changed:
+            user.save(update_fields=changed)
+        return user
