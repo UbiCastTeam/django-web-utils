@@ -1,26 +1,24 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-    </head>
-    <body>
-        <h1>Forms tests</h1>
-        <fieldset>
-            <legend>Info</legend>
-            <div>has_changed: {{ form.has_changed }}</div>
-            <div>changed_data: {{ form.changed_data }}</div>
-            <div>save success: {{ success }}</div>
-            <div>save message: {{ message }}</div>
-            <div>settings file: <pre>{{ settings_file }}</pre></div>
-        </fieldset>
-        <fieldset>
-            <legend>Form</legend>
-            <form method="post" action=".">
-                {% csrf_token %}
-                {{ form }}
-                <div>
-                    <button type="submit">Submit</button>
-                </div>
-            </form>
-        </fieldset>
-    </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Forms tests{% endblock %}
+
+{% block main %}
+    <fieldset>
+        <legend>Info</legend>
+        <div>has_changed: {{ form.has_changed }}</div>
+        <div>changed_data: {{ form.changed_data }}</div>
+        <div>save success: {{ success }}</div>
+        <div>save message: {{ message }}</div>
+        <div>settings file: <pre>{{ settings_file }}</pre></div>
+    </fieldset>
+    <fieldset>
+        <legend>Form</legend>
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ form }}
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </fieldset>
+{% endblock %}
