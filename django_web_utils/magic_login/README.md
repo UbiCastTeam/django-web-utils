@@ -24,8 +24,9 @@ Create a sub class of the view `django_web_utils.magic_login.views.MagicLoginVie
     - `users_json_path: Path`
     - `template_view: str`
     - `template_email: Optional[str]`
-- Implement the functions:
-    - `create_user(self, info: dict) -> AbstractBaseUser`
+- Implement the functions (classmethod):
+    - `get_users(cls) -> dict[str, AbstractBaseUser]`
+    - `create_user(cls, info: dict) -> AbstractBaseUser`
 
 More details are available in the [source file](./views.py).
 
@@ -40,4 +41,26 @@ urlpatterns = [
     # ...
     path('login-magic/', MyMagicLoginView.as_view(), name='login-magic'),
 ]
+```
+
+
+## Cleaning
+
+To delete useless user accounts that are no more registered in the json file, call the following method:
+
+```python
+from myproject.views import MyMagicLoginView
+
+MyMagicLoginView.delete_unregistered_users()
+```
+
+Make sure you have correctly defined the method `get_users` in your custom class otherwise the cleaning method will do nothing.
+This method should return something like:
+
+```
+{
+    'magic-user1@exmaple.com': <User object 1>,
+    'magic-user2@exmaple.com': <User object 2>,
+    ...
+}
 ```

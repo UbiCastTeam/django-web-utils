@@ -71,7 +71,15 @@ class CustomMagicLoginView(MagicLoginView):
     users_json_path = Path('/tmp/djwutils/users.json')
     template_view = 'magic_login.html'
 
-    def create_user(self, info):
+    @classmethod
+    def get_users(cls):
+        return {
+            user.email: user
+            for user in User.objects.filter(username__startswith='magic-')
+        }
+
+    @classmethod
+    def create_user(cls, info):
         try:
             user = User.objects.filter(email=info['email'])[0]
         except IndexError:

@@ -45,8 +45,58 @@ class MagicLoginView(View):
     template_email: Optional[str] = None
 
     @classmethod
+    def get_users(cls) -> dict[str, AbstractBaseUser]:
+        """
+        Retrieve all users related to the magic login feature.
+        It should return a dict with email as keys and user objects as values.
+        This function is used for cleaning actions.
+        """
+        raise NotImplementedError()
+
+    @classmethod
+    def create_user(cls, info: dict) -> AbstractBaseUser:
+        """
+        Function to create a user account from the information of the JSON file.
+        If the account already exists, nothing should be done.
+        """
+        raise NotImplementedError()
+
+    @classmethod
     def is_available(cls):
         return cls.users_json_path.exists()
+
+    @classmethod
+    def get_users_info(cls) -> dict:
+        """
+        Read the users json file and return its decoded content.
+        """
+        try:
+            content = cls.users_json_path.read_text()
+        except FileNotFoundError:
+            return {}
+        try:
+            data = json.loads(content)
+            if not isinstance(data, dict):
+                raise ValueError('A dict is expected.')
+        except (json.JSONDecodeError, ValueError) as err:
+            logger.error('Failed to parse content of "%s" file: %s', cls.users_json_path, err)
+            return {}
+        return data
+
+    @classmethod
+    def delete_unregistered_users(cls):
+        """
+        Delete all user accounts related to magic login that do not exist in the json file.
+        """
+        users_info = cls.get_users_info()
+        for email, user in cls.get_users().items():
+            if email not in users_info:
+                logger.info(
+                    'Deleting user account %s because it is tagged as a magic login user and '
+                    'it does not exist in the json file "%s"',
+                    user, cls.users_json_path
+                )
+                user.delete()
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         """
@@ -73,11 +123,13 @@ class MagicLoginView(View):
 
     def process_email(self, request: HttpRequest, email: str) -> None:
         ip = request.META['REMOTE_ADDR']
-        info = self.get_user_info(email)
+        users_info = self.get_users_info()
+        info = users_info.get(email)
         if not info:
             logger.warning('Invalid request for magic login link. IP: %s, email: "%s".', ip, email)
             messages.warning(request, _('The requested email address is not allowed.'))
             return False
+        info['email'] = email
         user = self.create_user(info)
         if not request.session.session_key or not request.session.exists(request.session.session_key):
             request.session.create()
@@ -114,23 +166,6 @@ class MagicLoginView(View):
             messages.success(request, _('An email has been sent to you with the link to log in.'))
         return success
 
-    def get_user_info(self, email: str) -> dict:
-        try:
-            content = self.users_json_path.read_text()
-        except FileNotFoundError:
-            return None
-        try:
-            data = json.loads(content)
-            if not isinstance(data, dict):
-                raise ValueError('A dict is expected.')
-        except (json.JSONDecodeError, ValueError) as err:
-            logger.error('Failed to parse content of "%s" file: %s', self.users_json_path, err)
-            return None
-        info = data.get(email)
-        if info:
-            info['email'] = email
-        return info
-
     def authenticate_user(self, request: HttpRequest) -> bool:
         if not request.session or not isinstance(request.session.get('magic_login_id'), int):
             messages.error(request, _('Your session has expired, please get a new link to retry.'))
@@ -152,16 +187,9 @@ class MagicLoginView(View):
         login(request, user)
         return True
 
-    def create_user(self, info: dict) -> AbstractBaseUser:
-        """
-        Function to create a user account from the information of the JSON file.
-        If the account already exists, nothing should be done.
-        """
-        raise NotImplementedError()
-
     def generate_token(self, user: AbstractBaseUser, session_key: str) -> str:
         """
-        Function to generate a token for a user.
+        Generate a token for a user.
         """
         generator = PasswordResetTokenGenerator()
         generator.key_salt = session_key
@@ -169,7 +197,7 @@ class MagicLoginView(View):
 
     def check_token(self, user: AbstractBaseUser, session_key: str, token: str) -> bool:
         """
-        Function to check the token for a user.
+        Check the validity of a token for a user.
         """
         generator = PasswordResetTokenGenerator()
         generator.key_salt = session_key
@@ -177,7 +205,7 @@ class MagicLoginView(View):
 
     def get_next_url(self, request: HttpRequest) -> str:
         """
-        Function to get the next URL to redirect the user after login.
+        Get the next URL to redirect the user after login.
         """
         next_page = request.GET.get('next', '')
         if '://' in next_page:

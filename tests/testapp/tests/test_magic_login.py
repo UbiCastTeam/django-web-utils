@@ -57,31 +57,28 @@ def test_available():
 
 
 def test_user_info__no_json():
-    view = CustomMagicLoginView()
-    assert view.get_user_info('magic@example.com') is None
+    assert CustomMagicLoginView.get_users_info() == {}
 
 
 @pytest.mark.usefixtures('corrupted_file')
 def test_user_info__corrupted_json():
-    view = CustomMagicLoginView()
-    assert view.get_user_info('magic@example.com') is None
+    assert CustomMagicLoginView.get_users_info() == {}
 
 
 @pytest.mark.usefixtures('invalid_file')
 def test_user_info__invalid_json():
-    view = CustomMagicLoginView()
-    assert view.get_user_info('magic@example.com') is None
+    assert CustomMagicLoginView.get_users_info() == {}
 
 
 @pytest.mark.usefixtures('filled_file')
 def test_user_info__valid():
-    view = CustomMagicLoginView()
-    assert view.get_user_info('magic@example.com') == {
-        'email': 'magic@example.com',
-        'username': 'magic-user',
-        'first_name': 'Magic',
-        'last_name': 'User',
-        'is_staff': True,
+    assert CustomMagicLoginView.get_users_info() == {
+        'magic@example.com': {
+            'username': 'magic-user',
+            'first_name': 'Magic',
+            'last_name': 'User',
+            'is_staff': True,
+        }
     }
 
 
@@ -176,3 +173,42 @@ def test_allowed_email(request, client, with_template, already_exist, next_url, 
     assert user.last_name == 'User'
     assert user.is_staff is True
     assert user.is_superuser is False
+
+
+def test_delete_users__no_file():
+    User.objects.create(username='magic-user')
+
+    CustomMagicLoginView.delete_unregistered_users()
+
+    assert not User.objects.filter(username='magic-user').exists()
+
+
+@pytest.mark.usefixtures('filled_file')
+def test_delete_users__with_file():
+    User.objects.create(username='magic-user', email='magic@example.com')
+
+    CustomMagicLoginView.delete_unregistered_users()
+
+    assert User.objects.filter(username='magic-user').exists()
+
+
+@pytest.mark.usefixtures('filled_file')
+def test_delete_users__with_file__no_email():
+    User.objects.create(username='magic-user')
+
+    CustomMagicLoginView.delete_unregistered_users()
+
+    assert not User.objects.filter(username='magic-user').exists()
+
+
+@pytest.mark.usefixtures('filled_file')
+def test_delete_users__with_file__multiple():
+    User.objects.create(username='magic-user', email='magic@example.com')
+    User.objects.create(username='magic-1', email='magic1@example.com')
+    User.objects.create(username='magic-2', email='magic2@example.com')
+
+    CustomMagicLoginView.delete_unregistered_users()
+
+    assert User.objects.filter(username='magic-user').exists()
+    assert not User.objects.filter(username='magic-1').exists()
+    assert not User.objects.filter(username='magic-2').exists()
