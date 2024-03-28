@@ -7,7 +7,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.html import escape
@@ -17,15 +16,14 @@ from django.views.generic import View
 
 from django_web_utils.emails_utils import send_template_emails, send_emails
 from django_web_utils.magic_login.forms import RequestMagicLoginForm
-from django_web_utils.magic_login.backend import MagicLoginBackend
+from django_web_utils.magic_login.tokens import generate_token
 
 logger = logging.getLogger(__name__)
 
 
 class MagicLoginView(View):
     """
-    View to use the magic login feature.
-    This feature allows users to login using a link sent to them by email.
+    View for the magic login feature.
     """
 
     # The `users_json_path` value must be the path to the file containing the allowed users.
@@ -134,7 +132,7 @@ class MagicLoginView(View):
         if not request.session.session_key or not request.session.exists(request.session.session_key):
             request.session.create()
         request.session['magic_login_id'] = user.id
-        token = self.generate_token(user, request.session.session_key)
+        token = generate_token(user, request.session.session_key)
         next_url = self.get_next_url(request)
         subject = _('Link to authenticate on %s') % request.get_host()
         body = mark_safe(
@@ -170,38 +168,14 @@ class MagicLoginView(View):
         if not request.session or not isinstance(request.session.get('magic_login_id'), int):
             messages.error(request, _('Your session has expired, please get a new link to retry.'))
             return False
-        backend = MagicLoginBackend()
-        user = backend.get_user(request.session['magic_login_id'])
-        if user is None:
-            messages.error(request, _('Your request is invalid.'))
-            return False
-        if not self.check_token(user, request.session.session_key, request.GET.get('t', '')):
-            messages.error(request, _('Your request is invalid.'))
-            return False
-        user = authenticate(request, magic_login_user=user)
+        user = authenticate(request, magic_login_id=request.session['magic_login_id'])
         if not user:
-            messages.error(request, _('The "MagicLoginBackend" is missing from authentication backends.'))
+            messages.error(request, _('Your request is invalid.'))
             return False
         ip = request.META['REMOTE_ADDR']
         logger.info('A magic login link was used to authenticate user %s (IP: %s).', user, ip)
         login(request, user)
         return True
-
-    def generate_token(self, user: AbstractBaseUser, session_key: str) -> str:
-        """
-        Generate a token for a user.
-        """
-        generator = PasswordResetTokenGenerator()
-        generator.key_salt = session_key
-        return generator.make_token(user)
-
-    def check_token(self, user: AbstractBaseUser, session_key: str, token: str) -> bool:
-        """
-        Check the validity of a token for a user.
-        """
-        generator = PasswordResetTokenGenerator()
-        generator.key_salt = session_key
-        return generator.check_token(user, token)
 
     def get_next_url(self, request: HttpRequest) -> str:
         """
