@@ -6,7 +6,9 @@ from collections.abc import Iterable
 from django.http import StreamingHttpResponse
 
 
-def csv_streaming_response(rows_iterator: Iterable, parameters: dict = None, file_name: str = None) -> StreamingHttpResponse:
+def csv_streaming_response(
+    rows_iterator: Iterable, parameters: dict = None, file_name: str = None
+) -> StreamingHttpResponse:
     """
     Simple function to stream a CSV file.
     The "rows_iterator" should send a list for each CSV row.
@@ -21,6 +23,8 @@ def csv_streaming_response(rows_iterator: Iterable, parameters: dict = None, fil
 
     def clean_value(val):
         cleaned = val if isinstance(val, str) else str(val)
+        cleaned = cleaned.replace('\r', '')
+        cleaned = cleaned.replace('\n', ' ')
         if delimiter in cleaned:
             cleaned = cleaned.replace(quotechar, quotechar + quotechar)
             cleaned = quotechar + cleaned + quotechar
