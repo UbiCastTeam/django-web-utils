@@ -85,8 +85,8 @@ Required arguments:
     {% endif %}
 </table>
 {% endif %}
-<script type="text/javascript" src="{% url namespace|add:':monitoring-jsi18n' %}"></script>
-<script type="text/javascript" src="{% static 'monitoring/daemons-manager.js' %}?_=5"></script>
+<script type="text/javascript" src="{% url namespace|add:':monitoring-jsi18n' %}?_=1"></script>
+<script type="text/javascript" src="{% static 'monitoring/daemons-manager.js' %}?_=6"></script>
 <script type="text/javascript">
     var dman = new DaemonsManager({
         daemons: [{name: "{{ daemon }}"}],
