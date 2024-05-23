@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-09 14:34+0000\n"
-"PO-Revision-Date: 2023-10-09 16:35+0200\n"
+"POT-Creation-Date: 2024-05-23 13:37+0000\n"
+"PO-Revision-Date: 2024-05-23 15:42+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -181,6 +181,51 @@ msgstr "Erreur lors de la récupération des groupes de l'utilisateur."
 #: ldap_utils.py:313
 msgid "No groups found."
 msgstr "Aucun groupe n'a été trouvé."
+
+#: magic_login/forms.py:11
+msgid "Email address"
+msgstr "Adresse e-mail"
+
+#: magic_login/forms.py:16
+msgid "Invalid email address."
+msgstr "L'adresse e-mail n'est pas valide."
+
+#: magic_login/views.py:115
+msgid "The submitted form is incorrect. Please correct all errors and send it again."
+msgstr "Le formulaire saisi est incorrect. Veuillez corriger les erreurs puis le renvoyer."
+
+#: magic_login/views.py:128
+msgid "The requested email address is not allowed."
+msgstr "L'adresse e-mail demandée n'est pas autorisée."
+
+#: magic_login/views.py:137
+#, python-format
+msgid "Link to authenticate on %s"
+msgstr "Lien pour s'authentifier sur %s"
+
+#: magic_login/views.py:148
+msgid "Here is the link to log in on the site:"
+msgstr "Voici le lien pour s'authentifier sur le site :"
+
+#: magic_login/views.py:149
+msgid "If you did not request this link, ignore this email."
+msgstr "Si vous n'avez pas demandé ce lien, ignorez cet e-mail."
+
+#: magic_login/views.py:162
+msgid "Failed to send the email:"
+msgstr "L'envoi de l'e-mail a échoué :"
+
+#: magic_login/views.py:164
+msgid "An email has been sent to you with the link to log in."
+msgstr "Un e-mail vous a été envoyé avec le lien pour vous connecter."
+
+#: magic_login/views.py:169
+msgid "Your session has expired, please get a new link to retry."
+msgstr "Votre session a expiré, veuillez obtenir un nouveau lien pour réessayer."
+
+#: magic_login/views.py:173
+msgid "Your request is invalid."
+msgstr "Votre requête n'est pas valide."
 
 #: settings_store/forms.py:81 settings_utils.py:64 settings_utils.py:125
 msgid "No changes to save."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-04 07:56+0000\n"
+"POT-Creation-Date: 2024-05-23 13:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,61 +19,65 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:90
+#: static/monitoring/daemons-manager.js:77
 msgid "No messages have been returned."
 msgstr "Viestejä ei ole palautettu."
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:98
+#: static/monitoring/daemons-manager.js:86
 msgid "Command output:"
 msgstr "Komennon ulostulo:"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:105
+#: static/monitoring/daemons-manager.js:96
 msgid "Command result"
 msgstr "Komennon tulos"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:108
+#: static/monitoring/daemons-manager.js:99
 msgid "Close"
 msgstr "Sulje"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:137
+#: static/monitoring/daemons-manager.js:135
 msgid "running"
 msgstr "käynnissä"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:139
+#: static/monitoring/daemons-manager.js:137
 msgid "not running"
 msgstr "ei käynnissä"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:144
-msgid "Click to enter password"
-msgstr "Syötä salasana napsauttamalla"
+#: static/monitoring/daemons-manager.js:140
+msgid "The status cannot be checked because this daemon is run by another system user."
+msgstr "Tilaa ei voi tarkistaa, koska tätä palvelinta käyttää toinen järjestelmän käyttäjä."
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:145
-msgid "need password"
-msgstr "tarvitsen salasanan"
+#: static/monitoring/daemons-manager.js:141
+msgid "unknown"
+msgstr "tuntematon"
 
 # Translated by DeepL.
-#: static/monitoring/pwd-manager.js:35
-msgid "Password:"
-msgstr "Salasana:"
+#~ msgid "Click to enter password"
+#~ msgstr "Syötä salasana napsauttamalla"
 
 # Translated by DeepL.
-#: static/monitoring/pwd-manager.js:37
-msgid "Send"
-msgstr "Lähetä"
+#~ msgid "need password"
+#~ msgstr "tarvitsen salasanan"
 
 # Translated by DeepL.
-#: static/monitoring/pwd-manager.js:44
-msgid "Authenticating"
-msgstr "Todentaminen"
+#~ msgid "Password:"
+#~ msgstr "Salasana:"
 
 # Translated by DeepL.
-#: static/monitoring/pwd-manager.js:139
-msgid "Enter password"
-msgstr "Anna salasana"
+#~ msgid "Send"
+#~ msgstr "Lähetä"
+
+# Translated by DeepL.
+#~ msgid "Authenticating"
+#~ msgstr "Todentaminen"
+
+# Translated by DeepL.
+#~ msgid "Enter password"
+#~ msgstr "Anna salasana"

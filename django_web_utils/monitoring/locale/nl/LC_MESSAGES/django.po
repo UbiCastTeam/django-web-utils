@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-09 14:36+0000\n"
+"POT-Creation-Date: 2024-05-23 13:42+0000\n"
 "PO-Revision-Date: 2021-12-24 14:34+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -188,8 +188,8 @@ msgstr "Configuratie overschrijven"
 msgid "Configuration file size:"
 msgstr "Grootte configuratiebestand:"
 
-#: templates/monitoring/config.html:25 templates/monitoring/log.html:25
-#: templates/monitoring/log.html:63
+#: templates/monitoring/config.html:25 templates/monitoring/daemon.html:33
+#: templates/monitoring/log.html:25 templates/monitoring/log.html:63
 msgid "Last modification:"
 msgstr "Laatste wijziging:"
 
@@ -206,59 +206,72 @@ msgstr "Bestand terugzetten"
 msgid "Apply modifications"
 msgstr "Wijzigingen doorvoeren"
 
-#: templates/monitoring/daemon.html:12 templates/monitoring/panel.html:11
+#: templates/monitoring/daemon.html:13 templates/monitoring/daemon.html:51
+#: templates/monitoring/panel.html:11
 msgid "Status"
 msgstr "Status"
 
-#: templates/monitoring/daemon.html:13 templates/monitoring/panel.html:49
-msgid "Loading"
-msgstr "Wordt geladen"
-
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:17 templates/monitoring/panel.html:15
+#: templates/monitoring/daemon.html:15 templates/monitoring/daemon.html:56
+#: templates/monitoring/panel.html:15
 msgid "Commands"
 msgstr "Opdrachten"
 
-#: templates/monitoring/daemon.html:19 templates/monitoring/panel.html:67
+# Translated by DeepL.
+#: templates/monitoring/daemon.html:18 templates/monitoring/daemon.html:65
+#: templates/monitoring/panel.html:12
+msgid "Log file"
+msgstr "Logbestand"
+
+#: templates/monitoring/daemon.html:23 templates/monitoring/daemon.html:52
+#: templates/monitoring/panel.html:49
+msgid "Loading"
+msgstr "Wordt geladen"
+
+#: templates/monitoring/daemon.html:27 templates/monitoring/daemon.html:58
+#: templates/monitoring/panel.html:67
 msgid "Stop"
 msgstr "Stoppen"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:20
+#: templates/monitoring/daemon.html:28 templates/monitoring/daemon.html:59
 msgid "Configure"
 msgstr "Configureer"
 
-# Translated by DeepL.
-#: templates/monitoring/daemon.html:25 templates/monitoring/panel.html:12
-msgid "Log file"
-msgstr "Logbestand"
+#: templates/monitoring/daemon.html:36 templates/monitoring/log.html:21
+#: templates/monitoring/log.html:59
+msgid "File size:"
+msgstr "Bestandsgrootte:"
 
-# Translated by DeepL.
-#: templates/monitoring/daemon.html:28 templates/monitoring/panel.html:26
-msgid "Last modification"
-msgstr "Laatste wijziging"
-
-#: templates/monitoring/daemon.html:32 templates/monitoring/panel.html:27
-msgid "File size"
-msgstr "Bestandsgrootte"
-
-#: templates/monitoring/daemon.html:36 templates/monitoring/panel.html:34
-msgid "Actions"
-msgstr "Acties"
-
-#: templates/monitoring/daemon.html:38 templates/monitoring/panel.html:54
+#: templates/monitoring/daemon.html:39 templates/monitoring/daemon.html:78
+#: templates/monitoring/panel.html:54
 msgid "See"
 msgstr "Bekijken"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:39 templates/monitoring/panel.html:55
+#: templates/monitoring/daemon.html:40 templates/monitoring/daemon.html:79
+#: templates/monitoring/panel.html:55
 msgid "See tail"
 msgstr "Zie staart"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:41 templates/monitoring/panel.html:57
+#: templates/monitoring/daemon.html:42 templates/monitoring/daemon.html:81
+#: templates/monitoring/panel.html:57
 msgid "Clear log"
 msgstr "Logboek wissen"
+
+# Translated by DeepL.
+#: templates/monitoring/daemon.html:68 templates/monitoring/panel.html:26
+msgid "Last modification"
+msgstr "Laatste wijziging"
+
+#: templates/monitoring/daemon.html:72 templates/monitoring/panel.html:27
+msgid "File size"
+msgstr "Bestandsgrootte"
+
+#: templates/monitoring/daemon.html:76 templates/monitoring/panel.html:34
+msgid "Actions"
+msgstr "Acties"
 
 # Translated by DeepL.
 #: templates/monitoring/log.html:8 templates/monitoring/log.html:46
@@ -270,10 +283,6 @@ msgstr "Duidelijk"
 #: templates/monitoring/panel.html:13
 msgid "Hostname:"
 msgstr "Hostnaam:"
-
-#: templates/monitoring/log.html:21 templates/monitoring/log.html:59
-msgid "File size:"
-msgstr "Bestandsgrootte:"
 
 # Translated by DeepL.
 #: templates/monitoring/log.html:28 templates/monitoring/log.html:66
@@ -311,7 +320,7 @@ msgid "Clear all logs"
 msgstr "Wis alle logs"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:44 views.py:167
+#: templates/monitoring/panel.html:44 views.py:170
 msgid "log file"
 msgstr "logbestand"
 
@@ -335,32 +344,37 @@ msgid "Edit configuration"
 msgstr "Configuratie wijzigen"
 
 # Translated by DeepL.
-#: utils.py:26
+#: utils.py:23
+msgid "The log file is already empty."
+msgstr "Het logbestand is al leeg."
+
+# Translated by DeepL.
+#: utils.py:28
 msgid "Log file cleared."
 msgstr "Logbestand gewist."
 
 # Translated by DeepL.
-#: utils.py:31
+#: utils.py:33
 msgid "Invalid command."
 msgstr "Ongeldig commando."
 
 # Translated by DeepL.
-#: utils.py:34
+#: utils.py:36
 msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
 msgstr "Gegeven daemon klasse is niet een subklasse van Django web utils BaseDaemon."
 
 # Translated by DeepL.
-#: utils.py:42 utils.py:45
+#: utils.py:44 utils.py:47
 msgid "No valid target for command."
 msgstr "Geen geldig doelwit voor commando."
 
 # Translated by DeepL.
-#: utils.py:53
+#: utils.py:55
 msgid "The daemon script cannot be found."
 msgstr "Het daemon script kan niet worden gevonden."
 
 # Translated by DeepL.
-#: utils.py:145
+#: utils.py:147
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -371,35 +385,34 @@ msgstr ""
 "Alleen file tail en raw file zijn toegankelijk.\n"
 "Waarschuwing: het ophalen van het onbewerkte bestand kan het systeemgeheugen verzadigen."
 
-#: utils.py:154
+#: utils.py:156
 msgid "Unable to display log file."
 msgstr "Kon logbestand niet weergeven."
 
-#: utils.py:154 utils.py:181 utils.py:185 utils.py:192 utils.py:220
-#: utils.py:240
+#: utils.py:156 utils.py:187 utils.py:196 utils.py:224 utils.py:244
 msgid "Error:"
 msgstr "Fout:"
 
-#: utils.py:181 utils.py:185
+# Translated by DeepL.
+#: utils.py:179
+msgid "This daemon has no configuration file."
+msgstr "Deze daemon heeft geen configuratiebestand."
+
+#: utils.py:187 utils.py:196
 msgid "Unable to write configuration file."
 msgstr "Kon het configuratiebestand niet schrijven."
 
-#: utils.py:187
+#: utils.py:189
 msgid "Configuration file updated."
 msgstr "Configuratiebestand bijgewerkt."
 
 # Translated by DeepL.
-#: utils.py:192
-msgid "Unable to delete configuration file."
-msgstr "Kan configuratiebestand niet verwijderen."
+#: utils.py:198
+msgid "Configuration file cleared."
+msgstr "Configuratiebestand gewist."
 
 # Translated by DeepL.
-#: utils.py:194
-msgid "Configuration file deleted."
-msgstr "Configuratiebestand verwijderd."
-
-# Translated by DeepL.
-#: utils.py:212
+#: utils.py:216
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -411,12 +424,12 @@ msgstr ""
 "Waarschuwing: het ophalen van het onbewerkte bestand kan het systeemgeheugen verzadigen."
 
 # Translated by DeepL.
-#: utils.py:220
+#: utils.py:224
 msgid "Unable to display configuration file."
 msgstr "Kan configuratiebestand niet weergeven."
 
 # Translated by DeepL.
-#: utils.py:240
+#: utils.py:244
 msgid "Unable to read default configuration file."
 msgstr "Kan standaard configuratiebestand niet lezen."
 
@@ -453,10 +466,14 @@ msgid "The command \"%(cmd)s\" on \"%(name)s\" has failed."
 msgstr "De opdracht \"%(cmd)s\" op \"%(name)s\" is mislukt."
 
 # Translated by DeepL.
-#: views.py:212
+#: views.py:215
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Bewerk configuratiebestand: %s"
+
+# Translated by DeepL.
+#~ msgid "Unable to delete configuration file."
+#~ msgstr "Kan configuratiebestand niet verwijderen."
 
 # Translated by DeepL.
 #~ msgid "Invalid daemon name:"

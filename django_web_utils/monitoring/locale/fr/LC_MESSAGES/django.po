@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-09 14:36+0000\n"
-"PO-Revision-Date: 2023-04-04 09:56+0200\n"
+"POT-Creation-Date: 2024-05-23 13:42+0000\n"
+"PO-Revision-Date: 2024-05-23 15:38+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: sysinfo.py:61
 msgid "Version"
@@ -162,8 +162,8 @@ msgstr "Outrepassement de la configuration"
 msgid "Configuration file size:"
 msgstr "Taille du fichier de configuration :"
 
-#: templates/monitoring/config.html:25 templates/monitoring/log.html:25
-#: templates/monitoring/log.html:63
+#: templates/monitoring/config.html:25 templates/monitoring/daemon.html:33
+#: templates/monitoring/log.html:25 templates/monitoring/log.html:63
 msgid "Last modification:"
 msgstr "Dernière modification :"
 
@@ -179,53 +179,66 @@ msgstr "Réinitialiser le fichier"
 msgid "Apply modifications"
 msgstr "Appliquer les modifications"
 
-#: templates/monitoring/daemon.html:12 templates/monitoring/panel.html:11
+#: templates/monitoring/daemon.html:13 templates/monitoring/daemon.html:51
+#: templates/monitoring/panel.html:11
 msgid "Status"
 msgstr "Statut"
 
-#: templates/monitoring/daemon.html:13 templates/monitoring/panel.html:49
-msgid "Loading"
-msgstr "Chargement"
-
-#: templates/monitoring/daemon.html:17 templates/monitoring/panel.html:15
+#: templates/monitoring/daemon.html:15 templates/monitoring/daemon.html:56
+#: templates/monitoring/panel.html:15
 msgid "Commands"
 msgstr "Commandes"
 
-#: templates/monitoring/daemon.html:19 templates/monitoring/panel.html:67
-msgid "Stop"
-msgstr "Arrêter"
-
-#: templates/monitoring/daemon.html:20
-msgid "Configure"
-msgstr "Configurer"
-
-#: templates/monitoring/daemon.html:25 templates/monitoring/panel.html:12
+#: templates/monitoring/daemon.html:18 templates/monitoring/daemon.html:65
+#: templates/monitoring/panel.html:12
 msgid "Log file"
 msgstr "Fichier de journalisation"
 
-#: templates/monitoring/daemon.html:28 templates/monitoring/panel.html:26
-msgid "Last modification"
-msgstr "Dernière modification"
+#: templates/monitoring/daemon.html:23 templates/monitoring/daemon.html:52
+#: templates/monitoring/panel.html:49
+msgid "Loading"
+msgstr "Chargement"
 
-#: templates/monitoring/daemon.html:32 templates/monitoring/panel.html:27
-msgid "File size"
-msgstr "Taille du fichier"
+#: templates/monitoring/daemon.html:27 templates/monitoring/daemon.html:58
+#: templates/monitoring/panel.html:67
+msgid "Stop"
+msgstr "Arrêter"
 
-#: templates/monitoring/daemon.html:36 templates/monitoring/panel.html:34
-msgid "Actions"
-msgstr "Actions"
+#: templates/monitoring/daemon.html:28 templates/monitoring/daemon.html:59
+msgid "Configure"
+msgstr "Configurer"
 
-#: templates/monitoring/daemon.html:38 templates/monitoring/panel.html:54
+#: templates/monitoring/daemon.html:36 templates/monitoring/log.html:21
+#: templates/monitoring/log.html:59
+msgid "File size:"
+msgstr "Taille du fichier :"
+
+#: templates/monitoring/daemon.html:39 templates/monitoring/daemon.html:78
+#: templates/monitoring/panel.html:54
 msgid "See"
 msgstr "Voir"
 
-#: templates/monitoring/daemon.html:39 templates/monitoring/panel.html:55
+#: templates/monitoring/daemon.html:40 templates/monitoring/daemon.html:79
+#: templates/monitoring/panel.html:55
 msgid "See tail"
 msgstr "Voir la fin"
 
-#: templates/monitoring/daemon.html:41 templates/monitoring/panel.html:57
+#: templates/monitoring/daemon.html:42 templates/monitoring/daemon.html:81
+#: templates/monitoring/panel.html:57
 msgid "Clear log"
 msgstr "Nettoyer le journal"
+
+#: templates/monitoring/daemon.html:68 templates/monitoring/panel.html:26
+msgid "Last modification"
+msgstr "Dernière modification"
+
+#: templates/monitoring/daemon.html:72 templates/monitoring/panel.html:27
+msgid "File size"
+msgstr "Taille du fichier"
+
+#: templates/monitoring/daemon.html:76 templates/monitoring/panel.html:34
+msgid "Actions"
+msgstr "Actions"
 
 #: templates/monitoring/log.html:8 templates/monitoring/log.html:46
 msgid "Clear"
@@ -235,10 +248,6 @@ msgstr "Nettoyer"
 #: templates/monitoring/panel.html:13
 msgid "Hostname:"
 msgstr "Nom d'hôte :"
-
-#: templates/monitoring/log.html:21 templates/monitoring/log.html:59
-msgid "File size:"
-msgstr "Taille du fichier :"
 
 #: templates/monitoring/log.html:28 templates/monitoring/log.html:66
 msgid "See complete file"
@@ -268,7 +277,7 @@ msgstr "Tout redémarrer"
 msgid "Clear all logs"
 msgstr "Nettoyer tous les journaux"
 
-#: templates/monitoring/panel.html:44 views.py:167
+#: templates/monitoring/panel.html:44 views.py:170
 msgid "log file"
 msgstr "fichier de journalisation"
 
@@ -288,27 +297,31 @@ msgstr "Redémarrer"
 msgid "Edit configuration"
 msgstr "Modifier la configuration"
 
-#: utils.py:26
+#: utils.py:23
+msgid "The log file is already empty."
+msgstr "Le fichier de journalisation est déjà vide."
+
+#: utils.py:28
 msgid "Log file cleared."
 msgstr "Fichier de journalisation vidé."
 
-#: utils.py:31
+#: utils.py:33
 msgid "Invalid command."
 msgstr "Commande invalide."
 
-#: utils.py:34
+#: utils.py:36
 msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
 msgstr "La classe donnée n'est pas une sous classe de BaseDaemon de Django web utils."
 
-#: utils.py:42 utils.py:45
+#: utils.py:44 utils.py:47
 msgid "No valid target for command."
 msgstr "Aucune cible valide pour la commande."
 
-#: utils.py:53
+#: utils.py:55
 msgid "The daemon script cannot be found."
 msgstr "Le script du démon est introuvable."
 
-#: utils.py:145
+#: utils.py:147
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -319,32 +332,31 @@ msgstr ""
 "Seul la fin du fichier et le fichier brut sont accessibles.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:154
+#: utils.py:156
 msgid "Unable to display log file."
 msgstr "Impossible d'afficher le fichier de journalisation."
 
-#: utils.py:154 utils.py:181 utils.py:185 utils.py:192 utils.py:220
-#: utils.py:240
+#: utils.py:156 utils.py:187 utils.py:196 utils.py:224 utils.py:244
 msgid "Error:"
 msgstr "Erreur :"
 
-#: utils.py:181 utils.py:185
+#: utils.py:179
+msgid "This daemon has no configuration file."
+msgstr "Ce démon n'a pas de fichier de configuration."
+
+#: utils.py:187 utils.py:196
 msgid "Unable to write configuration file."
 msgstr "Impossible d'écrire le fichier de configuration."
 
-#: utils.py:187
+#: utils.py:189
 msgid "Configuration file updated."
 msgstr "Fichier de configuration mis à jour."
 
-#: utils.py:192
-msgid "Unable to delete configuration file."
-msgstr "Impossible de supprimer le fichier de configuration."
+#: utils.py:198
+msgid "Configuration file cleared."
+msgstr "Fichier de configuration vidé."
 
-#: utils.py:194
-msgid "Configuration file deleted."
-msgstr "Fichier de configuration supprimé."
-
-#: utils.py:212
+#: utils.py:216
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -355,11 +367,11 @@ msgstr ""
 "Seul le fichier brut est accessible.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:220
+#: utils.py:224
 msgid "Unable to display configuration file."
 msgstr "Impossible d'afficher le fichier de configuration."
 
-#: utils.py:240
+#: utils.py:244
 msgid "Unable to read default configuration file."
 msgstr "Impossible de lire le fichier de configuration par défaut."
 
@@ -389,10 +401,13 @@ msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a été exécutée avec succès
 msgid "The command \"%(cmd)s\" on \"%(name)s\" has failed."
 msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
 
-#: views.py:212
+#: views.py:215
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Éditer le fichier de configuration : %s"
+
+#~ msgid "Unable to delete configuration file."
+#~ msgstr "Impossible de supprimer le fichier de configuration."
 
 #~ msgid "Invalid daemon name:"
 #~ msgstr "Nom de démon invalide :"

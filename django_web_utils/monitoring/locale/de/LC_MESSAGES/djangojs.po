@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-04 07:56+0000\n"
+"POT-Creation-Date: 2024-05-23 13:37+0000\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -19,58 +19,62 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:90
+#: static/monitoring/daemons-manager.js:77
 msgid "No messages have been returned."
 msgstr "Es wurden keine Nachrichten zurückgeschickt."
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:98
+#: static/monitoring/daemons-manager.js:86
 msgid "Command output:"
 msgstr "Befehlsausgabe:"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:105
+#: static/monitoring/daemons-manager.js:96
 msgid "Command result"
 msgstr "Befehl Ergebnis"
 
-#: static/monitoring/daemons-manager.js:108
+#: static/monitoring/daemons-manager.js:99
 msgid "Close"
 msgstr "Schließen"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:137
+#: static/monitoring/daemons-manager.js:135
 msgid "running"
 msgstr "läuft"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:139
+#: static/monitoring/daemons-manager.js:137
 msgid "not running"
 msgstr "läuft nicht"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:144
-msgid "Click to enter password"
-msgstr "Klicken Sie, um das Passwort einzugeben"
+#: static/monitoring/daemons-manager.js:140
+msgid "The status cannot be checked because this daemon is run by another system user."
+msgstr "Der Status kann nicht überprüft werden, da dieser Daemon von einem anderen Systembenutzer ausgeführt wird."
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:145
-msgid "need password"
-msgstr "Passwort erforderlich"
-
-#: static/monitoring/pwd-manager.js:35
-msgid "Password:"
-msgstr "Passwort:"
-
-#: static/monitoring/pwd-manager.js:37
-msgid "Send"
-msgstr "Senden"
+#: static/monitoring/daemons-manager.js:141
+msgid "unknown"
+msgstr "unbekannt"
 
 # Translated by DeepL.
-#: static/monitoring/pwd-manager.js:44
-msgid "Authenticating"
-msgstr "Authentifizierung"
+#~ msgid "Click to enter password"
+#~ msgstr "Klicken Sie, um das Passwort einzugeben"
 
 # Translated by DeepL.
-#: static/monitoring/pwd-manager.js:139
-msgid "Enter password"
-msgstr "Passwort eingeben"
+#~ msgid "need password"
+#~ msgstr "Passwort erforderlich"
+
+#~ msgid "Password:"
+#~ msgstr "Passwort:"
+
+#~ msgid "Send"
+#~ msgstr "Senden"
+
+# Translated by DeepL.
+#~ msgid "Authenticating"
+#~ msgstr "Authentifizierung"
+
+# Translated by DeepL.
+#~ msgid "Enter password"
+#~ msgstr "Passwort eingeben"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-09 14:34+0000\n"
+"POT-Creation-Date: 2024-05-23 13:37+0000\n"
 "PO-Revision-Date: 2021-12-24 14:32+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -212,6 +212,62 @@ msgstr "Fehler beim Versuch, Gruppen zu erhalten."
 msgid "No groups found."
 msgstr "Keine Gruppen gefunden."
 
+# Translated by DeepL.
+#: magic_login/forms.py:11
+msgid "Email address"
+msgstr "E-Mail Adresse"
+
+# Translated by DeepL.
+#: magic_login/forms.py:16
+msgid "Invalid email address."
+msgstr "Ungültige E-Mail Adresse."
+
+# Translated by DeepL.
+#: magic_login/views.py:115
+msgid "The submitted form is incorrect. Please correct all errors and send it again."
+msgstr "Das eingereichte Formular ist fehlerhaft. Bitte korrigieren Sie alle Fehler und senden Sie es erneut ab."
+
+# Translated by DeepL.
+#: magic_login/views.py:128
+msgid "The requested email address is not allowed."
+msgstr "Die angeforderte E-Mail-Adresse ist nicht zulässig."
+
+# Translated by DeepL.
+#: magic_login/views.py:137
+#, python-format
+msgid "Link to authenticate on %s"
+msgstr "Link zur Authentifizierung auf %s"
+
+# Translated by DeepL.
+#: magic_login/views.py:148
+msgid "Here is the link to log in on the site:"
+msgstr "Hier ist der Link zum Einloggen auf der Website:"
+
+# Translated by DeepL.
+#: magic_login/views.py:149
+msgid "If you did not request this link, ignore this email."
+msgstr "Wenn Sie diesen Link nicht angefordert haben, ignorieren Sie diese E-Mail."
+
+# Translated by DeepL.
+#: magic_login/views.py:162
+msgid "Failed to send the email:"
+msgstr "Die E-Mail konnte nicht gesendet werden:"
+
+# Translated by DeepL.
+#: magic_login/views.py:164
+msgid "An email has been sent to you with the link to log in."
+msgstr "Sie haben eine E-Mail mit dem Link zum Einloggen erhalten."
+
+# Translated by DeepL.
+#: magic_login/views.py:169
+msgid "Your session has expired, please get a new link to retry."
+msgstr "Ihre Sitzung ist abgelaufen. Bitte erhalten Sie einen neuen Link, um es erneut zu versuchen."
+
+# Translated by DeepL.
+#: magic_login/views.py:173
+msgid "Your request is invalid."
+msgstr "Ihre Anfrage ist ungültig."
+
 #: settings_store/forms.py:81 settings_utils.py:64 settings_utils.py:125
 msgid "No changes to save."
 msgstr "Keine zu speichernden Änderungen."
@@ -254,7 +310,8 @@ msgid "Command exited with code %s."
 msgstr "Der Befehl wurde mit dem Code %s beendet."
 
 # Translated by DeepL.
-#: system_utils.py:134 system_utils.py:137 system_utils.py:143 system_utils.py:163
+#: system_utils.py:134 system_utils.py:137 system_utils.py:143
+#: system_utils.py:163
 msgid "Unable to write file."
 msgstr "Datei kann nicht geschrieben werden."
 
@@ -288,7 +345,8 @@ msgstr "Datei aktualisiert."
 msgid "Hide value"
 msgstr "Wert ausblenden"
 
-#: templates/forms_utils/password_toggle_input.html:5 templates/forms_utils/password_toggle_input.html:7
+#: templates/forms_utils/password_toggle_input.html:5
+#: templates/forms_utils/password_toggle_input.html:7
 msgid "Edit value"
 msgstr "Wert bearbeiten"
 

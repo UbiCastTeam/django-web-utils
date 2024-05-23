@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-04 07:56+0000\n"
-"PO-Revision-Date: 2021-12-23 16:55+0100\n"
+"POT-Creation-Date: 2024-05-23 13:37+0000\n"
+"PO-Revision-Date: 2024-05-23 15:38+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -16,52 +16,54 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
-#: static/monitoring/daemons-manager.js:90
+#: static/monitoring/daemons-manager.js:77
 msgid "No messages have been returned."
 msgstr "Aucun message n'a été renvoyé."
 
-#: static/monitoring/daemons-manager.js:98
+#: static/monitoring/daemons-manager.js:86
 msgid "Command output:"
 msgstr "Sortie de la commande :"
 
-#: static/monitoring/daemons-manager.js:105
+#: static/monitoring/daemons-manager.js:96
 msgid "Command result"
 msgstr "Résultat de la commande"
 
-#: static/monitoring/daemons-manager.js:108
+#: static/monitoring/daemons-manager.js:99
 msgid "Close"
 msgstr "Fermer"
 
-#: static/monitoring/daemons-manager.js:137
+#: static/monitoring/daemons-manager.js:135
 msgid "running"
 msgstr "en cours"
 
-#: static/monitoring/daemons-manager.js:139
+#: static/monitoring/daemons-manager.js:137
 msgid "not running"
 msgstr "arrêté"
 
-#: static/monitoring/daemons-manager.js:144
-msgid "Click to enter password"
-msgstr "Cliquez pour entrer le mot de passe"
+#: static/monitoring/daemons-manager.js:140
+msgid "The status cannot be checked because this daemon is run by another system user."
+msgstr "L'état ne peut pas être vérifié car ce démon est exécuté par un autre utilisateur du système."
 
-#: static/monitoring/daemons-manager.js:145
-msgid "need password"
-msgstr "mot de passe requis"
+#: static/monitoring/daemons-manager.js:141
+msgid "unknown"
+msgstr "inconnu"
 
-#: static/monitoring/pwd-manager.js:35
-msgid "Password:"
-msgstr "Mot de passe :"
+#~ msgid "Click to enter password"
+#~ msgstr "Cliquez pour entrer le mot de passe"
 
-#: static/monitoring/pwd-manager.js:37
-msgid "Send"
-msgstr "Envoyer"
+#~ msgid "need password"
+#~ msgstr "mot de passe requis"
 
-#: static/monitoring/pwd-manager.js:44
-msgid "Authenticating"
-msgstr "Authentification"
+#~ msgid "Password:"
+#~ msgstr "Mot de passe :"
 
-#: static/monitoring/pwd-manager.js:139
-msgid "Enter password"
-msgstr "Entrer le mot de passe"
+#~ msgid "Send"
+#~ msgstr "Envoyer"
+
+#~ msgid "Authenticating"
+#~ msgstr "Authentification"
+
+#~ msgid "Enter password"
+#~ msgstr "Entrer le mot de passe"
