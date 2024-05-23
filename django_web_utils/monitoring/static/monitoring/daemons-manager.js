@@ -6,7 +6,6 @@
 /* global jsu */
 /* global OverlayDisplayManager */
 /* global PollingManager */
-/* global PwdManager */
 
 function DaemonsManager (options) {
     // params
@@ -27,7 +26,6 @@ function DaemonsManager (options) {
     ]);
 
     this.overlay = new OverlayDisplayManager();
-    this.pwdMan = new PwdManager({ url: this.pwdURL });
 
     jsu.onDOMLoad(this.init.bind(this));
 }
@@ -59,15 +57,7 @@ DaemonsManager.prototype.sendDaemonCommand = function (daemon, cmd) {
     if (!daemon.name) {
         return console.log('Invalid daemon given to sendDaemonCommand function.');
     }
-    if (daemon.isRoot) {
-        this.pwdMan.checkPassword(function (success, data) {
-            if (success) {
-                data.obj._sendDaemonCommand(data.daemon, data.cmd);
-            }
-        }, { obj: this, daemon: daemon, cmd: cmd });
-    } else {
-        this._sendDaemonCommand(daemon, cmd);
-    }
+    this._sendDaemonCommand(daemon, cmd);
 };
 DaemonsManager.prototype._sendDaemonCommand = function (daemon, cmd) {
     const obj = this;
@@ -78,28 +68,33 @@ DaemonsManager.prototype._sendDaemonCommand = function (daemon, cmd) {
         json: true,
         callback: function (req, response) {
             const msgEle = document.createElement('div');
+            msgEle.className = 'messages';
             if (req.status != 200) {
-                msgEle.setAttribute('class', 'message error');
+                msgEle.className = 'message error';
                 msgEle.textContent = response.error || response;
             } else if (!response.messages) {
-                msgEle.setAttribute('class', 'message warning');
+                msgEle.className = 'message warning';
                 msgEle.textContent = gettext('No messages have been returned.');
             } else {
                 for (let i = 0; i < response.messages.length; i++) {
                     const msg = response.messages[i];
                     const entryEle = document.createElement('div');
-                    entryEle.setAttribute('class', 'message ' + msg.level);
+                    entryEle.className = 'message ' + msg.level;
                     entryEle.innerHTML = jsu.escapeHTML(msg.text);
                     if (msg.out) {
-                        entryEle.innerHTML += '\n<div>' + jsu.escapeHTML(gettext('Command output:')) + '<br/>\n';
-                        entryEle.innerHTML += '<pre>' + jsu.escapeHTML(msg.out) + '</pre></div>';
+                        entryEle.innerHTML += '\n<div>' +
+                            '<p>' + jsu.escapeHTML(gettext('Command output:')) + '</p>\n' +
+                            '<pre>' + jsu.escapeHTML(msg.out) + '</pre>' +
+                        '</div>';
                     }
                     msgEle.appendChild(entryEle);
                 }
             }
+            const overlayEle = document.createElement('div');
+            overlayEle.appendChild(msgEle);
             obj.overlay.show({
                 title: gettext('Command result'),
-                html: msgEle,
+                html: overlayEle,
                 buttons: [
                     { label: gettext('Close'), close: true }
                 ]
@@ -141,25 +136,25 @@ DaemonsManager.prototype.updateDaemonData = function (name, data) {
         } else if (running === false) {
             statusEle.innerHTML = '<span class="red">' + jsu.escapeHTML(gettext('not running')) + '</span>';
         } else {
-            statusEle.innerHTML = '<span class="yellow"> ? </span>';
-            const btnEle = document.createElement('button');
-            btnEle.setAttribute('type', 'button');
-            btnEle.setAttribute('title', gettext('Click to enter password'));
-            btnEle.innerHTML = jsu.escapeHTML(gettext('need password'));
-            btnEle.addEventListener('click', this.pwdMan.checkPassword);
-            statusEle.appendChild(btnEle);
+            statusEle.innerHTML = '<span class="yellow" ' +
+                'title="' + jsu.escapeAttribute(gettext('The status cannot be checked because this daemon is run by another system user.')) + '">' +
+                jsu.escapeHTML(gettext('unknown')) + '</span>';
         }
     }
     const logMTime = data.log_mtime;
     if (logMTime !== stored.logMTime) {
         stored.logMTime = logMTime;
         const mTimeEle = document.querySelector('.daemon-' + name + ' .daemon-log-mtime');
-        mTimeEle.textContent = logMTime ? logMTime : '-';
+        if (mTimeEle) {
+            mTimeEle.textContent = logMTime ? logMTime : '-';
+        }
     }
     const logSize = data.log_size;
     if (logSize !== stored.logSize) {
         stored.logSize = logSize;
         const sizeEle = document.querySelector('.daemon-' + name + ' .daemon-log-size');
-        sizeEle.textContent = logSize ? logSize : '-';
+        if (sizeEle) {
+            sizeEle.textContent = logSize ? logSize : '-';
+        }
     }
 };

@@ -3,7 +3,7 @@
 {% if content %}
     <div class="top-bar">
         {% if can_control %}
-            <form class="right" action="{% if query_string %}?{{ query_string }}{% else %}.{% endif %}" method="post" {% if owner != "self" %}onsubmit="javascript: return pwdMan.onSubmit(this);"{% endif %}>{% csrf_token %}
+            <form class="right" action="{% if query_string %}?{{ query_string }}{% else %}.{% endif %}" method="post">{% csrf_token %}
                 <input type="hidden" name="submitted_form" value="clear_log"/>
                 <button type="submit" class="std-btn danger">{% trans "Clear" %}</button>
             </form>
@@ -41,7 +41,7 @@
     {% if bottom_bar %}
         <div class="bottom-bar">
             {% if can_control %}
-                <form class="right" action="{% if query_string %}?{{ query_string }}{% else %}.{% endif %}" method="post" {% if owner != "self" %}onsubmit="javascript: return pwdMan.onSubmit(this);"{% endif %}>{% csrf_token %}
+                <form class="right" action="{% if query_string %}?{{ query_string }}{% else %}.{% endif %}" method="post">{% csrf_token %}
                     <input type="hidden" name="submitted_form" value="clear_log"/>
                     <button type="submit" class="std-btn danger">{% trans "Clear" %}</button>
                 </form>
@@ -86,13 +86,4 @@
             <div class="message info">{% trans "Log file is empty." %}</div>
         </div>
     </div>
-{% endif %}
-
-{% if owner != "self" %}
-    <script type="text/javascript" src="{% static 'monitoring/pwd-manager.js' %}?_=3"></script>
-    <script type="text/javascript">
-        var pwdMan = new PwdManager({
-            url: "{% url monitoring_namespace|add:':monitoring-check_password' %}"
-        });
-    </script>
 {% endif %}

@@ -147,7 +147,10 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
         can_control = config.can_control_daemon(daemon, request)
         if request.method == 'POST' and not can_control:
             raise PermissionDenied()
-        path = daemon['log_path'] if daemon.get('log_path') else (daemon['cls'].LOG_DIR / f'{name}.log')
+        if daemon.get('cls'):
+            path = daemon['cls'].LOG_DIR / f'{name}.log'
+        else:
+            path = daemon.get('log_path')
         label = daemon.get('label')
         if daemon.get('is_root'):
             owner = 'root'

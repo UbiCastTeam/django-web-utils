@@ -21,11 +21,11 @@ def _handle_request(request):
         return {'form': form.as_p()}
 
 
-def test_upload(request):
+def view_upload(request):
     return HttpResponse(str(_handle_request(request)))
 
 
-def test_forms(request):
+def view_forms(request):
     if request.method == 'POST':
         form = SettingsFileForm(request.POST)
         if not form.is_valid():
@@ -50,7 +50,11 @@ def test_forms(request):
     })
 
 
-def test_csv(request):
+def view_monitoring_widget(request):
+    return render(request, 'monitoring_widget.html')
+
+
+def view_csv(request):
     def csv_generator():
         yield ['Header Col1 ø', 'Header Col2 |', 'Header Col3 é']
         yield ['Row1 Col1 ,', 'Row1 Col2\n,;\'', 'Row1 Col3 à']
@@ -63,7 +67,7 @@ def test_csv(request):
 
 
 @json_utils.json_view
-def test_upload_json(request):
+def view_upload_json(request):
     return JsonResponse(_handle_request(request))
 
 
