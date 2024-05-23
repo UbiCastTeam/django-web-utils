@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% load static %}
+
+{% block title %}Monitoring widget{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'monitoring/odm/odm.min.css' %}?_=1"/>
+    <script type="text/javascript" src="{% static 'monitoring/jsu.min.js' %}?_=1"></script>
+    <script type="text/javascript" src="{% static 'monitoring/odm/odm.min.js' %}?_=1"></script>
+{% endblock %}
+
+{% block main %}
+    <fieldset>
+        <legend>Widget as table</legend>
+        {% include "monitoring/daemon.html" with daemon='dummy' namespace='monitoring' show_controls=user.is_superuser show_log=True %}
+    </fieldset>
+    <br/>
+    <fieldset>
+        <legend>Widget as row</legend>
+        {% include "monitoring/daemon.html" with daemon='hosts' namespace='monitoring' show_controls=user.is_superuser as_row=True %}
+    </fieldset>
+{% endblock %}

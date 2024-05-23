@@ -13,10 +13,11 @@ testpatterns = (
     [
         path('', TemplateView.as_view(template_name='home.html'), name='home'),
         path('magic/', views.CustomMagicLoginView.as_view(), name='magic_login'),
-        path('upload/', views.test_upload, name='upload'),
-        path('upload/json/', views.test_upload_json, name='upload_json'),
-        path('forms/', views.test_forms, name='forms'),
-        path('csv/', views.test_csv, name='csv'),
+        path('upload/', views.view_upload, name='upload'),
+        path('upload/json/', views.view_upload_json, name='upload_json'),
+        path('monitoring-widget/', views.view_monitoring_widget, name='monitoring_widget'),
+        path('forms/', views.view_forms, name='forms'),
+        path('csv/', views.view_csv, name='csv'),
         re_path(r'^storage/(?P<path>.*)$', serve, {
             'document_root': settings.FILE_BROWSER_DIRS['storage'][0],
             'show_indexes': settings.DEBUG

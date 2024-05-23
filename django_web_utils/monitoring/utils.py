@@ -7,7 +7,7 @@ from pathlib import Path
 from django.contrib import messages
 from django.http import FileResponse, HttpResponseRedirect
 from django.utils.http import http_date
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 from django_web_utils import files_utils
 from django_web_utils import system_utils
@@ -18,20 +18,22 @@ logger = logging.getLogger('djwutils.monitoring.utils')
 FILE_SIZE_LIMIT = 524288000  # 500 MB
 
 
-def clear_log(request, path, owner='self'):
-    if path.exists():
-        success, msg = system_utils.write_file_as(request, '', path, owner)
-        if not success:
-            return success, msg
-    return True, str(_('Log file cleared.'))
+def clear_log(path):
+    if not path or not path.exists():
+        return True, _('The log file is already empty.')
+    try:
+        path.write_bytes(b'')
+    except OSError as err:
+        return False, str(err)
+    return True, _('Log file cleared.')
 
 
 def execute_daemon_command(request, daemon, command):
     if command not in ('start', 'restart', 'stop', 'clear_log'):
-        return False, str(_('Invalid command.'))
+        return False, _('Invalid command.')
     cls = daemon.get('cls')
     if cls and not issubclass(cls, BaseDaemon):
-        return False, str(_('Given daemon class is not a subclass of Django web utils BaseDaemon.'))
+        return False, _('Given daemon class is not a subclass of Django web utils BaseDaemon.')
 
     is_root = daemon.get('is_root')
     if command == 'clear_log':
@@ -39,10 +41,10 @@ def execute_daemon_command(request, daemon, command):
         if not log_path and cls:
             log_path = cls.get_log_path()
         if not log_path:
-            return False, str(_('No valid target for command.'))
-        return clear_log(request, log_path, 'root' if is_root else 'self')
+            return False, _('No valid target for command.')
+        return clear_log(log_path)
     elif not cls:
-        return False, str(_('No valid target for command.'))
+        return False, _('No valid target for command.')
 
     path = sys.modules[cls.__module__].__file__
     if path.endswith('pyc'):
@@ -50,7 +52,7 @@ def execute_daemon_command(request, daemon, command):
     path = Path(path)
     if not path.is_file():
         logger.error('The daemon script cannot be found. Path: %s', path)
-        return False, str(_('The daemon script cannot be found.'))
+        return False, _('The daemon script cannot be found.')
 
     cmd = f'python3 "{path}" {command}'
     success, output = system_utils.execute_command(cmd, user='root' if is_root else 'self', request=request)
@@ -106,7 +108,7 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
 def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
     # Clear log
     if request.method == 'POST' and request.POST.get('submitted_form') == 'clear_log':
-        success, message = clear_log(request, path, owner)
+        success, message = clear_log(path)
         if success:
             messages.success(request, message)
         else:
@@ -117,7 +119,7 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
     content = size = mtime = ''
     lines = 0
     tail_only = 'tail' in request.GET if tail is None else tail
-    if path.exists():
+    if path and path.exists():
         try:
             statobj = path.stat()
             if 'raw' in request.GET:
@@ -142,7 +144,7 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
                 content = content.decode('utf-8')
             else:
                 if statobj.st_size > FILE_SIZE_LIMIT:
-                    content = str(_('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size)
+                    content = _('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size
                 else:
                     content = path.read_text()
                     lines = content.count('\n')
@@ -173,26 +175,28 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
     content = ''
     # Change configuration
     if request.method == 'POST' and request.POST.get('submitted_form') == 'change_conf':
-        content = request.POST.get('conf_content')
-        if content:
-            try:
-                path.parent.mkdir(parents=True, exist_ok=True)
-            except Exception as e:
-                messages.error(request, '%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), e))
-                return HttpResponseRedirect(request.get_full_path())
-            success, msg = system_utils.write_file_as(request, content, path, owner)
-            if not success:
-                messages.error(request, '%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), msg))
-            else:
+        if not path:
+            messages.error(request, _('This daemon has no configuration file.'))
+        else:
+            content = request.POST.get('conf_content')
+            if content:
+                try:
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(content)
+                except OSError as err:
+                    messages.error(request, '%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), err))
+                    return HttpResponseRedirect(request.get_full_path())
                 messages.success(request, _('Configuration file updated.'))
                 return HttpResponseRedirect(request.get_full_path())
-        else:
-            success, msg = system_utils.write_file_as(request, '', path, owner)
-            if not success:
-                messages.error(request, '%s %s\n%s' % (_('Unable to delete configuration file.'), _('Error:'), msg))
             else:
-                messages.success(request, _('Configuration file deleted.'))
-            return HttpResponseRedirect(request.get_full_path())
+                if path.exists():
+                    try:
+                        path.write_bytes(b'')
+                    except OSError as err:
+                        messages.error(request, '%s %s\n%s' % (_('Unable to write configuration file.'), _('Error:'), err))
+                        return HttpResponseRedirect(request.get_full_path())
+                messages.success(request, _('Configuration file cleared.'))
+                return HttpResponseRedirect(request.get_full_path())
 
     # Prepare display
     size = mtime = ''
@@ -209,7 +213,7 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
             size = files_utils.get_size_display(statobj.st_size)
             if not content:
                 if statobj.st_size > FILE_SIZE_LIMIT:
-                    content = str(_('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size)
+                    content = _('File too large: %s.\nOnly the raw file is accessible.\nWarning: getting the raw file can saturate system memory.') % size
                 else:
                     content = path.read_text()
             mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)

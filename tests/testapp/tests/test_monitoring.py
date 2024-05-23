@@ -87,7 +87,12 @@ def test_logged(client):
     assert response['Content-Type'] == 'application/json'
     content = json.loads(response.content.decode('utf-8'))
     assert content == {'messages': [
-        {'level': 'success', 'name': 'fake', 'out': 'Log file cleared.', 'text': 'The command "clear_log" on "fake" was successfully executed.'}
+        {
+            'level': 'success',
+            'name': 'fake',
+            'out': 'The log file is already empty.',
+            'text': 'The command "clear_log" on "fake" was successfully executed.'
+        }
     ]}
 
 
@@ -106,4 +111,5 @@ def test_sysinfo():
         'info_cpu',
         'info_gpu',
         'info_memory',
-        'info_network']
+        'info_network'
+    ]

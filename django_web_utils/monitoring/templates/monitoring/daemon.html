@@ -7,10 +7,49 @@ Required arguments:
     namespace: The monitoring app namespace.
     show_controls: Boolean to indicate if controls should be displayed.
 {% endcomment %}
+{% if as_row %}
 <table class="even-odd daemon-{{ daemon }}">
-    <tr class="daemon-all">
+    <tr>
         <th>{% trans "Status" %}</th>
-        <td style="width: 170px;"><span class="daemon-status">{% trans "Loading" %}...</span></td>
+        {% if show_controls %}
+        <th>{% trans "Commands" %}</th>
+        {% endif %}
+        {% if show_log %}
+        <th colspan="3" class="center">{% trans "Log file" %}</th>
+        {% endif %}
+    </tr>
+    <tr>
+        <td class="nowrap">
+            <span class="daemon-status">{% trans "Loading" %}...</span>
+        </td>
+        {% if show_controls %}
+        <td class="nowrap">
+            <button type="button" class="daemon-stop">{% trans "Stop" %}</button>
+            <a class="button" href="{% url namespace|add:':monitoring-config' daemon %}">{% trans "Configure" %}</a>
+        </td>
+        {% endif %}
+        {% if show_log %}
+        <td class="nowrap">
+            {% trans "Last modification:" %} <span class="daemon-log-mtime mono"></span>
+        </td>
+        <td class="nowrap">
+            {% trans "File size:" %} <span class="daemon-log-size mono"></span>
+        </td>
+        <td class="nowrap">
+            <a href="{% url namespace|add:':monitoring-log' daemon %}">{% trans "See" %}</a>
+            <a class="marged" href="{% url namespace|add:':monitoring-log' daemon %}?tail">{% trans "See tail" %}</a>
+            {% if show_controls %}
+            <button type="button" class="marged daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
+            {% endif %}
+        </td>
+        {% endif %}
+    </tr>
+</table>
+{% else %}
+<table class="even-odd daemon-{{ daemon }}">
+    <tr>
+        <th>{% trans "Status" %}</th>
+        <td class="nowrap"><span class="daemon-status">{% trans "Loading" %}...</span></td>
     </tr>
     {% if show_controls %}
     <tr>
@@ -21,6 +60,7 @@ Required arguments:
         </td>
     </tr>
     {% endif %}
+    {% if show_log %}
     <tr>
         <th colspan="2" class="center">{% trans "Log file" %}</th>
     </tr>
@@ -38,13 +78,14 @@ Required arguments:
             <a href="{% url namespace|add:':monitoring-log' daemon %}">{% trans "See" %}</a>
             <a class="marged" href="{% url namespace|add:':monitoring-log' daemon %}?tail">{% trans "See tail" %}</a>
             {% if show_controls %}
-                <button type="button" class="marged daemon-log-clear" title="{% trans 'Clear log' %}"><i class="fa fa-trash"></i></button>
+            <button type="button" class="marged daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
             {% endif %}
         </td>
     </tr>
+    {% endif %}
 </table>
+{% endif %}
 <script type="text/javascript" src="{% url namespace|add:':monitoring-jsi18n' %}"></script>
-<script type="text/javascript" src="{% static 'monitoring/pwd-manager.js' %}?_=3"></script>
 <script type="text/javascript" src="{% static 'monitoring/daemons-manager.js' %}?_=5"></script>
 <script type="text/javascript">
     var dman = new DaemonsManager({
