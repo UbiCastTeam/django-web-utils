@@ -27,13 +27,13 @@ if root_dir != '':
 
 
 def get_version():
-    init_file = os.path.join('django_web_utils', '__init__.py')
-    if os.path.exists(init_file):
-        with open(init_file) as fo:
+    try:
+        with open(os.path.join('django_web_utils', '__init__.py')) as fo:
             version_file = fo.read()
-        version = re.search(r'^__version__ = [\'"]([\d\.]+)[\'"]', version_file, re.M).group(1)
+    except FileNotFoundError:
+        version = '1.0'
     else:
-        version = '?'
+        version = re.search(r'^__version__ = [\'"]([\d\.]+)[\'"]', version_file, re.M).group(1)
     return version
 
 
@@ -76,8 +76,7 @@ setup(
     name='django_web_utils',
     version=get_version(),
     description='A collection of utilities for web projects based on Django.',
-    author='Stéphane Diemer',
-    author_email='stephane.diemer@ubicast.eu',
+    author='UbiCastTeam',
     url='https://github.com/UbiCastTeam/django-web-utils',
     license='LGPLv3',
     packages=packages,
