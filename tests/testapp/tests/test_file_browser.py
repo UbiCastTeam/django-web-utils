@@ -37,14 +37,52 @@ def test_logged(staff_client):
     assert response.status_code == 200
     assert response['Content-Type'] == 'application/json'
     content = json.loads(response.content.decode('utf-8'))
-    assert content == {'dirs': [{'dir_name': 'Root folder', 'sub_dirs': [{'dir_name': 'a dir', 'sub_dirs': []}]}]}
+    assert content == {
+        'dirs': [
+            {
+                'dir_name': 'Root folder',
+                'sub_dirs': [
+                    {
+                        'dir_name': 'a dir',
+                        'sub_dirs': []
+                    }
+                ]
+            }
+        ]
+    }
 
     response = staff_client.get(reverse('storage:file_browser_content'), {'path': '/'})
     assert response.status_code == 200
     assert response['Content-Type'] == 'application/json'
     content = json.loads(response.content.decode('utf-8'))
     content['files'][1]['mdate'] = 'test'
-    assert content == {'files': [{'name': 'a dir', 'size': 3, 'size_h': '3 B', 'is_dir': True, 'nb_files': 1, 'nb_dirs': 0}, {'name': 'image.png', 'size': 103, 'size_h': '103 B', 'is_dir': False, 'nb_files': 0, 'nb_dirs': 0, 'ext': 'png', 'preview': True, 'mdate': 'test'}], 'path': '/', 'total_size': '106 B', 'total_nb_dirs': 1, 'total_nb_files': 2}
+    assert content == {
+        'files': [
+            {
+                'name': 'a dir',
+                'size': 2069,
+                'size_h': '2.1 kB',
+                'is_dir': True,
+                'nb_files': 2,
+                'nb_dirs': 0
+            },
+            {
+                'name': 'image.png',
+                'size': 103,
+                'size_h': '103 B',
+                'is_dir': False,
+                'nb_files': 0,
+                'nb_dirs': 0,
+                'ext': 'png',
+                'preview': True,
+                'mdate': 'test'
+            }
+        ],
+        'path': '/',
+        'total_size': '2.2 kB',
+        'total_nb_dirs': 1,
+        'total_nb_files': 3
+    }
 
     response = staff_client.get(reverse('storage:file_browser_img_preview'), {'path': '/image.png'})
     assert response.status_code == 200

@@ -5,7 +5,7 @@ import datetime
 import os
 import subprocess
 from pathlib import Path
-from typing import Optional
+from typing import Iterator, Optional
 
 try:
     from django.utils.translation import gettext as _
@@ -14,7 +14,7 @@ except ImportError:
         return text
 
 
-def get_size(path, ignore_du_errors=True):
+def get_size(path: str | Path, ignore_du_errors: bool = True) -> int:
     """
     Function to get the size of a file or a dir.
     Dir size is retrieved using the "du" command (faster than Python).
@@ -41,31 +41,32 @@ def get_size(path, ignore_du_errors=True):
         return 0
 
 
-def get_size_display(size=0, path=None):
+def get_size_repr(size: int) -> str:
+    """
+    Return human-readable size with automatic suffix.
+    """
+    unit = 'Y'
+    for val in ('', 'k', 'M', 'G', 'T', 'P', 'E', 'Z'):
+        if abs(size) < 1000:
+            unit = val
+            break
+        size /= 1000
+    return f'{round(size, 1)} {unit}B'
+
+
+def get_size_display(size: int = 0, path: str | Path | None = None) -> str:
+    """
+    Return human-readable size with automatic suffix (translated unit).
+    """
     if path is not None:
         size = get_size(path)
-    if abs(size) <= 1000:
-        unit = _('B')
-    else:
-        size /= 1000.0
-        if abs(size) <= 1000:
-            unit = _('kB')
-        else:
-            size /= 1000.0
-            if abs(size) <= 1000:
-                unit = _('MB')
-            else:
-                size /= 1000.0
-                if abs(size) <= 1000:
-                    unit = _('GB')
-                else:
-                    size /= 1000.0
-                    unit = _('TB')
-    size = round(size, 1)
-    return f'{size} {unit}'
+    return get_size_repr(size)[:-1] + _('B')
 
 
-def get_new_path(path, new_extension=None):
+def get_new_path(path: str | Path, new_extension: str | None = None) -> Path:
+    """
+    Return a new name for an existing file.
+    """
     path = Path(path)
     fdir = path.parent
     fname = path.name.lower().strip('.')
@@ -95,7 +96,7 @@ def get_new_path(path, new_extension=None):
     return dest
 
 
-def reverse_read(path, buf_size=8192):
+def reverse_read(path: str | Path, buf_size: int = 8192) -> Iterator:
     """
     Function to read a file starting from its end without loading it competely.
     UTF-8 decoding is not made in this function to avoid splitting unicode characters.
