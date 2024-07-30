@@ -4,14 +4,17 @@ from django_web_utils import html_utils
 
 @pytest.mark.parametrize('value,allow_iframes,expected', [
     pytest.param(
-        '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg=="></iframe>', False,
-        '&lt;iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg=="&gt;&lt;/iframe&gt;', id='escape_iframe'),
+        '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"></iframe>', False,
+        '&lt;iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"&gt;&lt;/iframe&gt;', id='escape_iframe'),
     pytest.param(
-        '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg=="></iframe>', True,
-        '<iframe></iframe>', id='escape_iframe_src'),
+        '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"></iframe>', True,
+        '<iframe allow="autoplay"></iframe>', id='escape_iframe_src'),
     pytest.param(
-        '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg=="></iframe><img src="data:image/png;base64,ABCD"><a href="http://google.com"></a>', True,
-        '<iframe></iframe><img src="data:image/png;base64,ABCD"><a href="http://google.com"></a>', id='escape_multiple'),
+        '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"></iframe><img src="data:image/png;base64,ABCD"><a href="http://google.com"></a>', True,
+        '<iframe allow="autoplay"></iframe><img src="data:image/png;base64,ABCD"><a href="http://google.com"></a>', id='escape_multiple'),
+    pytest.param(
+        '<iframe src="https://localhost/test" allow="autoplay" nope="test"></iframe>', True,
+        '<iframe src="https://localhost/test" allow="autoplay"></iframe>', id='https_iframe_src'),
     pytest.param(
         '<img src="data:image/png;base64,ABCD" style="width: 50%">', False,
         '<img src="data:image/png;base64,ABCD" style="width: 50%;">', id='conserve_base64_image'),
