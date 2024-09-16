@@ -99,5 +99,24 @@ def test_backup_file(tmp_dir):
     ]
 
 
+@pytest.mark.parametrize('mode', [
+    pytest.param(0o644, id='644'),
+    pytest.param(0o400, id='400'),
+])
+def test_backup_file__mode(tmp_dir, mode):
+    path = tmp_dir / 'test.file'
+    path.touch()
+    path.chmod(mode)
+    os.utime(path, (1602179630, 1602179630))
+
+    # Make a backup
+    assert files_utils.backup_file(path).name == 'test.file.backup_2020-10-08.file'
+    assert sorted(p.name for p in tmp_dir.iterdir()) == [
+        'test.file', 'test.file.backup_2020-10-08.file'
+    ]
+    assert str(oct((tmp_dir / 'test.file').stat().st_mode - 0o100000)) == str(oct(mode))
+    assert str(oct((tmp_dir / 'test.file.backup_2020-10-08.file').stat().st_mode - 0o100000)) == str(oct(mode))
+
+
 def test_backup_file__inexistent():
     assert files_utils.backup_file(Path('/nope')) is None

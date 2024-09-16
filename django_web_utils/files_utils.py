@@ -141,4 +141,5 @@ def backup_file(file_path: Path, max_backups: int = 10) -> Optional[Path]:
 
     current = file_path.read_bytes()
     backup_path.write_bytes(current)
+    backup_path.chmod(file_path.stat().st_mode)
     return backup_path
