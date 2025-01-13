@@ -43,7 +43,7 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
     Function to remove all non allowed tags and attributes from the given HTML content.
     """
     def iframe_attrs_check(tag, name, value):
-        if name in ('name', 'height', 'width', 'scrolling', 'allowfullscreen', 'class', 'style', 'allow'):
+        if name in ('class', 'style', 'width', 'height', 'scrolling', 'allow', 'allowfullscreen', 'frameborder'):
             return True
         if name == 'src' and value.startswith('https://'):
             return True

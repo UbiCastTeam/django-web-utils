@@ -26,8 +26,7 @@ from django_web_utils import html_utils
         '<a href="http://google.com" style="font-size: 75%;"></a>', id='conserve_a_http_href'),
 ])
 def test_clean_html_tags(value, allow_iframes, expected):
-    iframe = html_utils.clean_html_tags(value, allow_iframes=allow_iframes)
-    assert iframe == expected
+    assert html_utils.clean_html_tags(value, allow_iframes=allow_iframes) == expected
     assert sorted(html_utils.ALLOWED_TAGS) == [
         'a',
         'b',
@@ -74,8 +73,7 @@ def test_clean_html_tags(value, allow_iframes, expected):
         '<div data-name="the name">Sample</div>', id='allow_data_name_attr'),
 ])
 def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
-    iframe = html_utils.clean_html_tags(value, extra_allowed_attrs=extra_allowed_attrs)
-    assert iframe == expected
+    assert html_utils.clean_html_tags(value, extra_allowed_attrs=extra_allowed_attrs) == expected
     assert sorted(html_utils.ALLOWED_ATTRS.keys()) == ['*', 'a', 'img', 'source', 'td', 'th', 'video']
 
 
@@ -91,5 +89,4 @@ def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
         '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>Lorem ipsum dolor ...</p>', id='short_long_string'),
 ])
 def test_get_short_text(value, max_length, margin, expected):
-    short_html = html_utils.get_short_text(value, max_length=max_length, margin=margin)
-    assert short_html == expected
+    assert html_utils.get_short_text(value, max_length=max_length, margin=margin) == expected
