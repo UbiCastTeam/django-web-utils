@@ -46,8 +46,10 @@ def test_get_size_display__file():
 
 
 def test_get_size_display__dir():
-    assert files_utils.get_size_display(path=storage_dir) == '10.4 kB'
-    assert files_utils.get_size_display(path=str(storage_dir)) == '10.4 kB'
+    # Github CI: 2.2 kB (dir size = 0)
+    # Local: 10.4 kB (dir size = 4096 B)
+    assert files_utils.get_size_display(path=storage_dir) in ['2.2 kB', '10.4 kB']
+    assert files_utils.get_size_display(path=str(storage_dir)) in ['2.2 kB', '10.4 kB']
 
 
 def test_get_new_path():
