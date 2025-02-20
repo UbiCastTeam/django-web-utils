@@ -138,7 +138,7 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
                         break
                     content = segment + content
                     lines += segment.count(b'\n')
-                    if lines > 50:
+                    if lines > 250:
                         content = b'...%s' % content[content.index(b'\n'):]
                         break
                 content = content.decode('utf-8')
