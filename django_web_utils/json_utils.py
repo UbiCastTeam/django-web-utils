@@ -5,7 +5,7 @@ import datetime
 import traceback
 import logging
 # Django
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import BadRequest, PermissionDenied
 from django.http import JsonResponse, Http404
 from django.utils.translation import gettext_lazy as _
 # Django web utils
@@ -121,7 +121,9 @@ class JsonErrorResponseMiddleware:
 
     def process_exception(self, request, exception):
         if getattr(request, 'is_json_request', False):
-            if isinstance(exception, PermissionDenied):
+            if isinstance(exception, BadRequest):
+                return JsonResponse({'error': '%s (400)\n%s' % (_('Bad request'), exception)}, status=400)
+            elif isinstance(exception, PermissionDenied):
                 return JsonResponse({'error': '%s (403)\n%s' % (_('Access denied'), exception)}, status=403)
             elif isinstance(exception, Http404):
                 return JsonResponse({'error': '%s (404)\n%s' % (_('Page not found'), exception)}, status=404)
@@ -133,7 +135,11 @@ class JsonErrorResponseMiddleware:
             else:
                 # Trigger Django error log then return a json response.
                 logger = logging.getLogger('django.request')
-                logger.error('Internal server error: %s', request.get_full_path(), exc_info=traceback.extract_stack(), extra={'status_code': 500, 'request': request})
+                logger.error(
+                    'Internal server error: %s', request.get_full_path(),
+                    exc_info=traceback.extract_stack(),
+                    extra={'status_code': 500, 'request': request}
+                )
                 response = JsonResponse({'error': '%s (500)' % _('Internal server error')}, status=500)
                 response._has_been_logged = True
                 return response
