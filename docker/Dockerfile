@@ -19,7 +19,7 @@ RUN apt-get -q update && apt-get -qy install --no-install-recommends \
 # Python venv
 RUN python3 -m venv /opt/venv --system-site-packages
 ENV PATH="/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip setuptools wheel packaging
 COPY setup.py setup.py
 RUN pip install --no-cache-dir -e '.[dev]'
 RUN rm setup.py
