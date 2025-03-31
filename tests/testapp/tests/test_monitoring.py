@@ -1,5 +1,3 @@
-import json
-
 import pytest
 from django.urls import reverse
 
@@ -11,9 +9,6 @@ pytestmark = pytest.mark.django_db
 
 def test_anonymous(client):
     response = client.get(reverse('monitoring:monitoring-panel'))
-    assert response.status_code == 302
-
-    response = client.get(reverse('monitoring:monitoring-check_password'))
     assert response.status_code == 302
 
     response = client.get(reverse('monitoring:monitoring-status'))
@@ -44,35 +39,36 @@ def test_logged(client):
     assert response.status_code == 200
     assert response['Content-Type'] == 'text/html; charset=utf-8'
 
-    response = client.get(reverse('monitoring:monitoring-check_password'))
-    assert response.status_code == 200
-    assert response['Content-Type'] == 'application/json'
-    content = json.loads(response.content.decode('utf-8'))
-    assert content == {'pwd_ok': False}
-
     response = client.get(reverse('monitoring:monitoring-status'))
-    assert response.status_code == 200
+    content = response.json()
+    assert response.status_code == 200, content
     assert response['Content-Type'] == 'application/json'
-    content = json.loads(response.content.decode('utf-8'))
-    content['hosts']['log_mtime'] = 'test'
-    content['hosts']['log_size'] = 'test'
+    content['apt']['log_mtime'] = '<val>'
+    content['apt']['log_size'] = '<val>'
+    content['hosts']['log_mtime'] = '<val>'
+    content['hosts']['log_size'] = '<val>'
     assert content == {
-        'hosts': {'running': None, 'need_password': False, 'log_size': 'test', 'log_mtime': 'test'},
-        'fake': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''},
-        'dummy': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''},
+        'apt': {'running': None, 'log_size': '<val>', 'log_mtime': '<val>'},
+        'hosts': {'running': None, 'log_size': '<val>', 'log_mtime': '<val>'},
+        'fake': {'running': False, 'log_size': '', 'log_mtime': ''},
+        'dummy': {'running': False, 'log_size': '', 'log_mtime': ''},
     }
 
     response = client.get(reverse('monitoring:monitoring-status'), {'name': 'fake'})
-    assert response.status_code == 200
+    content = response.json()
+    assert response.status_code == 200, content
     assert response['Content-Type'] == 'application/json'
-    content = json.loads(response.content.decode('utf-8'))
-    assert content == {'fake': {'running': False, 'need_password': False, 'log_size': '', 'log_mtime': ''}}
+    assert content == {'fake': {'running': False, 'log_size': '', 'log_mtime': ''}}
 
     response = client.get(reverse('monitoring:monitoring-config', args=['hosts']))
     assert response.status_code == 200
     assert response['Content-Type'] == 'text/html; charset=utf-8'
 
-    response = client.get(reverse('monitoring:monitoring-log', args=['fake']))
+    response = client.get(reverse('monitoring:monitoring-log', args=['apt']))
+    assert response.status_code == 200
+    assert response['Content-Type'] == 'text/html; charset=utf-8'
+
+    response = client.get(reverse('monitoring:monitoring-log', args=['dummy']))
     assert response.status_code == 200
     assert response['Content-Type'] == 'text/html; charset=utf-8'
 
@@ -82,16 +78,29 @@ def test_logged(client):
     response = client.post(reverse('monitoring:monitoring-command'), {})
     assert response.status_code == 404
 
-    response = client.post(reverse('monitoring:monitoring-command'), {'daemon': 'fake', 'cmd': 'clear_log'})
-    assert response.status_code == 200
+    response = client.post(reverse('monitoring:monitoring-command'), {'daemon': 'fake', 'cmd': 'start'})
+    content = response.json()
+    assert response.status_code == 200, content
     assert response['Content-Type'] == 'application/json'
-    content = json.loads(response.content.decode('utf-8'))
+    assert content == {'messages': [
+        {
+            'level': 'error',
+            'name': 'fake',
+            'out': 'The daemon name is invalid: "fake"',
+            'text': 'The command "start" on "fake" has failed.'
+        }
+    ]}
+
+    response = client.post(reverse('monitoring:monitoring-command'), {'daemon': 'dummy', 'cmd': 'stop'})
+    content = response.json()
+    assert response.status_code == 200, content
+    assert response['Content-Type'] == 'application/json'
     assert content == {'messages': [
         {
             'level': 'success',
-            'name': 'fake',
-            'out': 'The log file is already empty.',
-            'text': 'The command "clear_log" on "fake" was successfully executed.'
+            'name': 'dummy',
+            'out': 'No output from command.',
+            'text': 'The command "stop" on "dummy" was successfully executed.'
         }
     ]}
 

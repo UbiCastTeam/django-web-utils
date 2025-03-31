@@ -32,10 +32,6 @@ function DaemonsManager (options) {
 
 DaemonsManager.prototype.init = function () {
     for (const daemon of this.daemons) {
-        const clearBtn = document.querySelector('.daemon-' + daemon.name + ' .daemon-log-clear');
-        if (clearBtn) {
-            clearBtn.addEventListener('click', this.sendDaemonCommand.bind(this, daemon, 'clear_log'));
-        }
         const startBtn = document.querySelector('.daemon-' + daemon.name + ' .daemon-start');
         if (startBtn) {
             startBtn.addEventListener('click', this.sendDaemonCommand.bind(this, daemon, 'start'));

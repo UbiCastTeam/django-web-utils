@@ -16,6 +16,7 @@ testpatterns = (
         path('upload/', views.view_upload, name='upload'),
         path('upload/json/', views.view_upload_json, name='upload_json'),
         path('monitoring-widget/', views.view_monitoring_widget, name='monitoring_widget'),
+        path('system-info/', views.view_system_info, name='system_info'),
         path('forms/', views.view_forms, name='forms'),
         path('csv/', views.view_csv, name='csv'),
         re_path(r'^storage/(?P<path>.*)$', serve, {

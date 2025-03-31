@@ -18,33 +18,14 @@ logger = logging.getLogger('djwutils.monitoring.utils')
 FILE_SIZE_LIMIT = 524288000  # 500 MB
 
 
-def clear_log(path):
-    if not path or not path.exists():
-        return True, _('The log file is already empty.')
-    try:
-        path.write_bytes(b'')
-    except OSError as err:
-        return False, str(err)
-    return True, _('Log file cleared.')
-
-
 def execute_daemon_command(request, daemon, command):
-    if command not in ('start', 'restart', 'stop', 'clear_log'):
+    if command not in ('start', 'restart', 'stop'):
         return False, _('Invalid command.')
     cls = daemon.get('cls')
+    if not cls:
+        return False, _('No valid target for command.')
     if cls and not issubclass(cls, BaseDaemon):
         return False, _('Given daemon class is not a subclass of Django web utils BaseDaemon.')
-
-    is_root = daemon.get('is_root')
-    if command == 'clear_log':
-        log_path = daemon.get('log_path')
-        if not log_path and cls:
-            log_path = cls.get_log_path()
-        if not log_path:
-            return False, _('No valid target for command.')
-        return clear_log(log_path)
-    elif not cls:
-        return False, _('No valid target for command.')
 
     path = sys.modules[cls.__module__].__file__
     if path.endswith('pyc'):
@@ -55,7 +36,7 @@ def execute_daemon_command(request, daemon, command):
         return False, _('The daemon script cannot be found.')
 
     cmd = f'python3 "{path}" {command}'
-    success, output = system_utils.execute_command(cmd, user='root' if is_root else 'self', request=request)
+    success, output = system_utils.execute_command(cmd, user='self', request=request)
     if not output:
         output = 'No output from command.'
     return success, output
@@ -70,22 +51,9 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
         log_path = daemon.get('log_path')
     if not log_path and daemon.get('only_conf'):
         log_path = daemon.get('conf_path')
-    is_root = daemon.get('is_root')
     # Check if daemon is launched
-    need_password = False
     if pid_path:
-        if system_utils.is_pid_running(pid_path, user='self', request=request):
-            running = True
-        elif not is_root:
-            running = False
-        else:
-            if not request.session.get('pwd'):
-                running = None
-                need_password = True
-            elif system_utils.is_pid_running(pid_path, user='root', request=request):
-                running = True
-            else:
-                running = False
+        running = system_utils.is_pid_running(pid_path, user='self', request=request)
     else:
         running = None
     # Get log file properties
@@ -99,22 +67,12 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
         mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
     return dict(
         running=running,
-        need_password=need_password,
         log_size=size,
         log_mtime=mtime,
     )
 
 
-def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
-    # Clear log
-    if request.method == 'POST' and request.POST.get('submitted_form') == 'clear_log':
-        success, message = clear_log(path)
-        if success:
-            messages.success(request, message)
-        else:
-            messages.error(request, message)
-        return HttpResponseRedirect(request.get_full_path())
-
+def log_view(request, path=None, tail=None, date_adjust_fct=None):
     # Prepare display
     content = size = mtime = ''
     lines = 0
@@ -164,14 +122,13 @@ def log_view(request, path=None, tail=None, owner='user', date_adjust_fct=None):
         'size': size,
         'mtime': mtime,
         'path': path,
-        'owner': owner,
         'bottom_bar': bottom_bar,
         'tail': tail_only,
         'query_string': query_string,
     }
 
 
-def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None, owner='user', date_adjust_fct=None):
+def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None, date_adjust_fct=None):
     content = ''
     # Change configuration
     if request.method == 'POST' and request.POST.get('submitted_form') == 'change_conf':
@@ -251,7 +208,6 @@ def edit_conf_view(request, path=None, default_conf_path=None, default_conf=None
         'size': size,
         'mtime': mtime,
         'path': path,
-        'owner': owner,
         'default_conf_content': default_conf_content,
         'default_conf_path': default_conf_path,
         'query_string': query_string,

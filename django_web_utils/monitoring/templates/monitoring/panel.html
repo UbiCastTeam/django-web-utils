@@ -6,34 +6,30 @@
 {% endif %}
 {% csrf_token %}
 <table class="daemon-list">
-    <tr class="center daemon-all">
-        <th rowspan="2"></th>
-        <th rowspan="2">{% trans "Status" %}</th>
-        <th colspan="3">{% trans "Log file" %}
-            <span style="float: right;">({% trans "Hostname:" %} {{ hostname }})</span>
-        </th>
-        <th rowspan="2">{% trans "Commands" %}
-           {% if show_top_controls %}
-                <div class="bottom-bar center">
-                    <button type="button" class="daemon-start" title="{% trans 'Start all' %}">▷</button>
-                    <button type="button" class="daemon-stop" title="{% trans 'Stop all' %}">□</button>
-                    <button type="button" class="daemon-restart" title="{% trans 'Restart all' %}">↻</button>
-                </div>
-            {% endif %}
-        </th>
-    </tr>
-    <tr class="center daemon-all">
-        <th>{% trans "Last modification" %}</th>
-        <th>{% trans "File size" %}</th>
-        <th>
-            {% if show_top_controls %}
-                <span class="right">
-                    <button class="daemon-log-clear" title="{% trans 'Clear all logs' %}">✖</button>
-                </span>
-            {% endif %}
-            {% trans "Actions" %}
-        </th>
-    </tr>
+    <thead>
+        <tr class="center daemon-all">
+            <th rowspan="2"></th>
+            <th rowspan="2">{% trans "Status" %}</th>
+            <th colspan="3">{% trans "Log file" %}
+                <span style="float: right;">({% trans "Hostname:" %} {{ hostname }})</span>
+            </th>
+            <th rowspan="2">{% trans "Commands" %}
+               {% if show_top_controls %}
+                    <div class="bottom-bar center">
+                        <button type="button" class="daemon-start" title="{% trans 'Start all' %}">▷</button>
+                        <button type="button" class="daemon-stop" title="{% trans 'Stop all' %}">□</button>
+                        <button type="button" class="daemon-restart" title="{% trans 'Restart all' %}">↻</button>
+                    </div>
+                {% endif %}
+            </th>
+        </tr>
+        <tr class="center daemon-all">
+            <th>{% trans "Last modification" %}</th>
+            <th>{% trans "File size" %}</th>
+            <th>{% trans "Actions" %}</th>
+        </tr>
+    </thead>
+    <tbody>
     {% for group in daemons_groups %}
         {% for daemon in group.daemons %}
             <tr class="{% cycle 'even' 'odd' %}">
@@ -51,11 +47,8 @@
                 <td><span class="daemon-log-size"></span></td>
                 <td class="nowrap">
                     {% if not daemon.only_conf %}
-                        <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}"><button type="button">{% trans "See" %}</button></a>
-                        <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}?tail"><button type="button">{% trans "See tail" %}</button></a>
-                        {% if daemon.show_controls %}
-                            <button type="button" class="daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
-                        {% endif %}
+                        <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}">{% trans "See" %}</a>
+                        <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}?tail">{% trans "See tail" %}</a>
                     {% endif %}
                 </td>
                 <td class="nowrap">
@@ -77,12 +70,13 @@
             </tr>
         {% endfor %}
     {% endfor %}
+    </tbody>
 </table>
 
 <script type="text/javascript" src="{% url monitoring_namespace|add:':monitoring-jsi18n' %}?_=1"></script>
 <script type="text/javascript" src="{% static 'monitoring/daemons-manager.js' %}?_=6"></script>
 <script type="text/javascript">
-    var dman = new DaemonsManager({
+    new DaemonsManager({
         daemons: [
         {% for group in daemons_groups %}
             {% for daemon in group.daemons %}
@@ -92,7 +86,6 @@
             { name: "all" }
         ],
         commandsURL: "{% url monitoring_namespace|add:':monitoring-command' %}",
-        statusURL: "{% url monitoring_namespace|add:':monitoring-status' %}",
-        pwdURL: "{% url monitoring_namespace|add:':monitoring-check_password' %}"
+        statusURL: "{% url monitoring_namespace|add:':monitoring-status' %}"
     });
 </script>

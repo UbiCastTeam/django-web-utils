@@ -5,9 +5,11 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 
+import django_web_utils
 from django_web_utils import json_utils
 from django_web_utils.csv_utils import csv_streaming_response
 from django_web_utils.magic_login.views import MagicLoginView
+from django_web_utils.monitoring.sysinfo import get_system_info
 
 from .forms import FileForm, SettingsFileForm
 
@@ -52,6 +54,11 @@ def view_forms(request):
 
 def view_monitoring_widget(request):
     return render(request, 'monitoring_widget.html')
+
+
+def view_system_info(request):
+    info = get_system_info(module=django_web_utils)
+    return render(request, 'system_info.html', info)
 
 
 def view_csv(request):

@@ -58,8 +58,8 @@ def _get_soft_info(package, module):
             time_zone = None
         # Prepare rendering
         _soft_info = [
-            {'label': _('Version'), 'value': version},
-            {'label': _('Revision'), 'value': revision},
+            {'label': _('Application version'), 'value': version},
+            {'label': _('Application revision'), 'value': revision},
             {'label': _('Python version'), 'value': sys.version},
             {'label': _('Django version'), 'value': dj_version},
         ]

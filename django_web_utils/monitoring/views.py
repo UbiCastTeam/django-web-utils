@@ -9,31 +9,9 @@ from django.shortcuts import render
 from django.utils.translation import gettext as _
 
 from django_web_utils import json_utils
-from django_web_utils import system_utils
 from django_web_utils.monitoring import config, utils
 
 logger = logging.getLogger('djwutils.monitoring.views')
-
-
-@json_utils.json_view
-@login_required
-def check_password(request):
-    if not request.user.is_superuser:
-        return JsonResponse(error=_('You don\'t have the permission to access this url.'), code='perm', status=403)
-    if request.method == 'POST':
-        # Check that password is OK
-        pwd = request.POST.get('data')
-        if not pwd:
-            return JsonResponse(dict(error=_('Please enter password.'), code='nopwd'), status=400)
-        success, output = system_utils.execute_command('echo \'test\'', user='root', pwd=pwd)
-        if success:
-            request.session['pwd'] = pwd
-            return JsonResponse(dict(pwd_ok=True))
-        else:
-            return JsonResponse(dict(error=_('Invalid password.'), code='wpwd'), status=400)
-    else:
-        pwd = request.session.get('pwd')
-        return JsonResponse(dict(pwd_ok=bool(pwd)))
 
 
 @login_required
@@ -110,11 +88,11 @@ def monitoring_command(request):
         daemon = info.DAEMONS.get(name)
         if not config.can_control_daemon(daemon, request):
             raise PermissionDenied()
-        if not daemon or (not daemon.get('cls') and (command != 'clear_log' or not daemon.get('log_path'))):
+        if not daemon or not daemon.get('cls'):
             if all_daemons:
                 continue
             success = False
-            out = '%s %s' % (_('The daemon name is invalid:'), name)
+            out = '%s "%s"' % (_('The daemon name is invalid:'), name)
         else:
             if command in ('start', 'restart') and daemon.get('only_stop'):
                 continue
@@ -134,7 +112,7 @@ def monitoring_command(request):
 
 
 @login_required
-def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
+def monitoring_log(request, name=None, path=None, back_url=None):
     label = None
     can_control = True
     if not path:
@@ -152,13 +130,11 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
         else:
             path = daemon.get('log_path')
         label = daemon.get('label')
-        if daemon.get('is_root'):
-            owner = 'root'
     if not label:
         label = path.name
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
-    result = utils.log_view(request, path=path, owner=owner, date_adjust_fct=date_adjust_fct)
+    result = utils.log_view(request, path=path, date_adjust_fct=date_adjust_fct)
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
@@ -177,7 +153,7 @@ def monitoring_log(request, name=None, path=None, owner='self', back_url=None):
 
 
 @login_required
-def monitoring_config(request, name=None, path=None, owner='self', back_url=None):
+def monitoring_config(request, name=None, path=None, back_url=None):
     default_conf = None
     if not path:
         info = config.get_daemons_info()
@@ -195,15 +171,13 @@ def monitoring_config(request, name=None, path=None, owner='self', back_url=None
                 default_conf['LOGGING_LEVEL'] = 'INFO'
         else:
             path = daemon.get('conf_path')
-        if daemon.get('is_root'):
-            owner = 'root'
     if not path:
         raise Exception('No configuration path given.')
     if not name:
         name = path.name
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
-    result = utils.edit_conf_view(request, path=path, default_conf=default_conf, owner=owner, date_adjust_fct=date_adjust_fct)
+    result = utils.edit_conf_view(request, path=path, default_conf=default_conf, date_adjust_fct=date_adjust_fct)
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'

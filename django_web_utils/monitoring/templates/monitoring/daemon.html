@@ -38,9 +38,6 @@ Required arguments:
         <td class="nowrap">
             <a href="{% url namespace|add:':monitoring-log' daemon %}">{% trans "See" %}</a>
             <a class="marged" href="{% url namespace|add:':monitoring-log' daemon %}?tail">{% trans "See tail" %}</a>
-            {% if show_controls %}
-            <button type="button" class="marged daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
-            {% endif %}
         </td>
         {% endif %}
     </tr>
@@ -77,9 +74,6 @@ Required arguments:
         <td class="nowrap">
             <a href="{% url namespace|add:':monitoring-log' daemon %}">{% trans "See" %}</a>
             <a class="marged" href="{% url namespace|add:':monitoring-log' daemon %}?tail">{% trans "See tail" %}</a>
-            {% if show_controls %}
-            <button type="button" class="marged daemon-log-clear" title="{% trans 'Clear log' %}">✖</button>
-            {% endif %}
         </td>
     </tr>
     {% endif %}
@@ -88,7 +82,7 @@ Required arguments:
 <script type="text/javascript" src="{% url namespace|add:':monitoring-jsi18n' %}?_=1"></script>
 <script type="text/javascript" src="{% static 'monitoring/daemons-manager.js' %}?_=6"></script>
 <script type="text/javascript">
-    var dman = new DaemonsManager({
+    new DaemonsManager({
         daemons: [{name: "{{ daemon }}"}],
         commandsURL: "{% url namespace|add:':monitoring-command' %}",
         statusURL: "{% url namespace|add:':monitoring-status' %}?name={{ daemon }}"
