@@ -1,75 +1,23 @@
 {% load i18n %}{% load static %}
 
-{% if content %}
-    <div class="top-bar">
-        {% if back_url %}
-            <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
-        {% endif %}
+<div class="top-bar">
+    {% include "monitoring/log_bar.html" %}
+</div>
 
-        <span {% if back_url %}class="marged"{% endif %}><button type="button" onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
-
-        <span class="marged"><b>{% trans "Hostname:" %}</b> {{ hostname }}</span>
-
-        {% if size %}
-            <span class="marged"><b>{% trans "File size:" %}</b> {{ size }}</span>
-        {% endif %}
-
-        {% if mtime %}
-            <span class="marged"><b>{% trans "Last modification:" %}</b> {{ mtime|safe }}</span>
-        {% endif %}
-
-        <span class="marged"><a href="{% if query_string %}{% if tail %}?{{ query_string }}{% else %}?{{ query_string }}&tail{% endif %}{% else %}{% if tail %}.{% else %}?tail{% endif %}{% endif %}">{% if tail %}{% trans "See complete file" %}{% else %}{% trans "See only end" %}{% endif %}</a></span>
-
-        {% if content %}
-            <span class="marged"><a href="{% if query_string %}?{{ query_string }}&raw{% else %}?raw{% endif %}">{% trans "See raw content" %}</a></span>
-        {% endif %}
-
-        <div style="clear: both;"></div>
-    </div>
-
-    <div>
-        <pre class="log-block">{{ content }}</pre>
-    </div>
-
-    {% if bottom_bar %}
-        <div class="bottom-bar">
-            {% if back_url %}
-                <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
-            {% endif %}
-
-            <span class="marged"><b>{% trans "Hostname:" %}</b> {{ hostname }}</span>
-
-            <span {% if back_url %}class="marged"{% endif %}><button type="button" onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
-
-            {% if size %}
-                <span class="marged"><b>{% trans "File size:" %}</b> {{ size }}</span>
-            {% endif %}
-
-            {% if mtime %}
-                <span class="marged"><b>{% trans "Last modification:" %}</b> {{ mtime|safe }}</span>
-            {% endif %}
-
-            <span class="marged"><a href="{% if query_string %}{% if tail %}?{{ query_string }}{% else %}?{{ query_string }}&tail{% endif %}{% else %}{% if tail %}.{% else %}?tail{% endif %}{% endif %}">{% if tail %}{% trans "See complete file" %}{% else %}{% trans "See only end" %}{% endif %}</a></span>
-
-            {% if content %}
-                <span class="marged"><a href="{% if query_string %}?{{ query_string }}&raw{% else %}?raw{% endif %}">{% trans "See raw content" %}</a></span>
-            {% endif %}
-
-            <div style="clear: both;"></div>
+<div>
+    {% if file_content %}
+        <pre class="log-block">{{ file_content }}</pre>
+    {% else %}
+        <div class="margin-32">
+            <div class="messages">
+                <div class="message info">{% trans "Log file is empty." %}</div>
+            </div>
         </div>
     {% endif %}
-{% else %}
-    <div class="top-bar">
-        {% if back_url %}
-            <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
-        {% endif %}
+</div>
 
-        <span {% if back_url %}class="marged"{% endif %}><button type="button" onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
-    </div>
-
-    <div class="margin-32">
-        <div class="messages">
-            <div class="message info">{% trans "Log file is empty." %}</div>
-        </div>
+{% if bottom_bar %}
+    <div class="bottom-bar">
+        {% include "monitoring/log_bar.html" %}
     </div>
 {% endif %}

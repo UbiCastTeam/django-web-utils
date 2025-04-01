@@ -130,11 +130,13 @@ def monitoring_log(request, name=None, path=None, back_url=None):
         else:
             path = daemon.get('log_path')
         label = daemon.get('label')
+    if not path:
+        raise Http404()
     if not label:
         label = path.name
 
     date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
-    result = utils.log_view(request, path=path, date_adjust_fct=date_adjust_fct)
+    result = utils.log_view(request, path=path, rotated_access=True, date_adjust_fct=date_adjust_fct)
     if not isinstance(result, dict):
         return result
     tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'

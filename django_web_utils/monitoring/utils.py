@@ -1,5 +1,7 @@
 import datetime
+import gzip
 import logging
+import re
 import stat
 import sys
 from pathlib import Path
@@ -15,7 +17,18 @@ from django_web_utils.daemon.base import BaseDaemon
 
 logger = logging.getLogger('djwutils.monitoring.utils')
 
-FILE_SIZE_LIMIT = 524288000  # 500 MB
+FILE_SIZE_LIMIT = 524_288_000  # 500 MiB
+FILE_SIZE_LIMIT_GZ = 104_857_600  # 100 MiB
+
+
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    '''
+    return [
+        (int(val) if val.isdigit() else val)
+        for val in re.split(r'(\d+)', text)
+    ]
 
 
 def execute_daemon_command(request, daemon, command):
@@ -72,59 +85,83 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
     )
 
 
-def log_view(request, path=None, tail=None, date_adjust_fct=None):
+def log_view(request, path, tail=None, rotated_access=False, date_adjust_fct=None):
     # Prepare display
     content = size = mtime = ''
     lines = 0
     tail_only = 'tail' in request.GET if tail is None else tail
-    if path and path.exists():
+    name = path.name
+    paths = {'': path}
+    if rotated_access:
+        paths.update({
+            p.name.removeprefix(name): p
+            for p in path.parent.glob(f'{name}*')
+            if p.name != name
+        })
+    suffix = request.GET.get('suffix', '') if rotated_access else ''
+    if suffix and suffix not in paths:
+        messages.error(request, _('The requested suffix does not exist.'))
+        suffix = ''
+    picked_path = paths[suffix] if suffix else path
+    is_gz = picked_path.name.endswith('.gz')
+    if picked_path.exists():
         try:
-            statobj = path.stat()
+            statobj = picked_path.stat()
             if 'raw' in request.GET:
                 # Get raw content
-                response = FileResponse(open(path, 'rb'), content_type='text/plain; charset=utf-8')
+                ctype = 'text/plain+gzip' if is_gz else 'text/plain'
+                response = FileResponse(open(picked_path, 'rb'), content_type=f'{ctype}; charset=utf-8')
                 response['Last-Modified'] = http_date(statobj.st_mtime)
                 if stat.S_ISREG(statobj.st_mode):
                     response['Content-Length'] = statobj.st_size
+                if is_gz:
+                    response['Content-Encoding'] = 'gzip'
                 return response
             size = files_utils.get_size_display(statobj.st_size)
-            if tail_only:
-                # Read only file end
-                content = b''
-                for segment in files_utils.reverse_read(path):
-                    if segment is None:
-                        break
-                    content = segment + content
-                    lines += segment.count(b'\n')
-                    if lines > 250:
-                        content = b'...%s' % content[content.index(b'\n'):]
-                        break
-                content = content.decode('utf-8')
-            else:
-                if statobj.st_size > FILE_SIZE_LIMIT:
-                    content = _('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size
-                else:
-                    content = path.read_text()
-                    lines = content.count('\n')
             mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)
             if date_adjust_fct:
                 mtime = date_adjust_fct(mtime)
             mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
+            if tail_only:
+                # Read only file end
+                if is_gz:
+                    content = _('Partial read of gzip files is not supported. Please get the complete file to read its content.')
+                else:
+                    content = b''
+                    for segment in files_utils.reverse_read(picked_path):
+                        if segment is None:
+                            break
+                        content = segment + content
+                        lines += segment.count(b'\n')
+                        if lines > 250:
+                            content = b'...%s' % content[content.index(b'\n'):]
+                            break
+                    content = content.decode('utf-8')
+            elif (
+                (not is_gz and statobj.st_size > FILE_SIZE_LIMIT)
+                or (is_gz and statobj.st_size > FILE_SIZE_LIMIT_GZ)
+            ):
+                content = _('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size
+            else:
+                content = picked_path.read_bytes()
+                if is_gz:
+                    content = gzip.decompress(content)
+                content = content.decode('utf-8')
+                lines = content.count('\n')
         except Exception as e:
             messages.error(request, '%s %s\n%s' % (_('Unable to display log file.'), _('Error:'), e))
     bottom_bar = lines > 20
 
-    query_string = request.META.get('QUERY_STRING')
-    if query_string and 'tail' in query_string:
-        query_string = query_string.replace('&tail', '').replace('tail', '')
     return {
-        'content': content,
-        'size': size,
-        'mtime': mtime,
-        'path': path,
+        'file_content': content,
+        'file_size': size,
+        'file_mtime': mtime,
+        'file_name': name,
+        'file_is_gz': is_gz,
+        'suffix': suffix,
+        'suffixes': sorted(paths.keys(), key=natural_keys),
         'bottom_bar': bottom_bar,
         'tail': tail_only,
-        'query_string': query_string,
     }
 
 

@@ -45,7 +45,11 @@ def test_logged(staff_client):
                     {
                         'dir_name': 'a dir',
                         'sub_dirs': []
-                    }
+                    },
+                    {
+                        'dir_name': 'logs',
+                        'sub_dirs': [],
+                    },
                 ]
             }
         ]
@@ -55,7 +59,7 @@ def test_logged(staff_client):
     assert response.status_code == 200
     assert response['Content-Type'] == 'application/json'
     content = json.loads(response.content.decode('utf-8'))
-    content['files'][1]['mdate'] = 'test'
+    content['files'][2]['mdate'] = 'test'
     assert content == {
         'files': [
             {
@@ -65,6 +69,14 @@ def test_logged(staff_client):
                 'is_dir': True,
                 'nb_files': 2,
                 'nb_dirs': 0
+            },
+            {
+                'name': 'logs',
+                'size': 873,
+                'size_h': '873 B',
+                'is_dir': True,
+                'nb_files': 3,
+                'nb_dirs': 0,
             },
             {
                 'name': 'image.png',
@@ -79,9 +91,9 @@ def test_logged(staff_client):
             }
         ],
         'path': '/',
-        'total_size': '2.2 kB',
-        'total_nb_dirs': 1,
-        'total_nb_files': 3
+        'total_size': '3.0 kB',
+        'total_nb_dirs': 2,
+        'total_nb_files': 6
     }
 
     response = staff_client.get(reverse('storage:file_browser_img_preview'), {'path': '/image.png'})

@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from django_web_utils.daemon.base import BaseDaemon
@@ -24,9 +25,9 @@ DAEMONS = [
         help_text=_('Local hosts definitions.')
     ),
     dict(
-        group='base', name='apt', label=_('APT history'),
-        log_path=Path('/var/log/apt/history.log'),
-        help_text=_('APT history log.')
+        group='base', name='sample', label=_('Sample log'), only_log=True,
+        log_path=Path(settings.BASE_DIR, 'storage/logs/sample.log'),
+        help_text=_('Sample log file.')
     ),
     dict(
         group='test', name='fake', label=_('Fake daemon'),

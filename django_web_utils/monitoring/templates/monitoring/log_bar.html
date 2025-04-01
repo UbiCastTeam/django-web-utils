@@ -1,0 +1,34 @@
+{% load i18n %}{% load static %}
+
+{% if back_url %}
+    <span><a href="{{ back_url }}">← {% trans "Back" %}</a></span>
+{% endif %}
+
+<span class="marged"><b>{% trans "Hostname:" %}</b> {{ hostname }}</span>
+
+<span class="marged">
+    <b>{% trans "File:" %}</b>
+    {% for sfx in suffixes %}
+        <a href="?suffix={{ sfx }}{% if tail %}&tail{% endif %}" class="mono">{% if suffix == sfx %}<b style="font-size: 1.1em;">{{ sfx|default:file_name }}</b>{% else %}{{ sfx|default:file_name }}{% endif %}</a>
+    {% endfor %}
+</span>
+
+<br/>
+
+<span><button type="button" onclick="javascript: window.location.reload();">{% trans "Refresh" %}</button></span>
+
+{% if file_size %}
+    <span class="marged"><b>{% trans "Size:" %}</b> {{ file_size }} {% if file_is_gz %}(gz){% endif %}</span>
+{% endif %}
+
+{% if file_mtime %}
+    <span class="marged"><b>{% trans "Last modification:" %}</b> {{ file_mtime }}</span>
+{% endif %}
+
+{% if file_content %}
+    <span class="marged"><a href="?suffix={{ suffix }}{% if not tail %}&tail{% endif %}">{% if tail %}{% trans "See complete file" %}{% else %}{% trans "See only end" %}{% endif %}</a></span>
+{% endif %}
+
+<span class="marged"><a href="?suffix={{ suffix }}&raw">{% trans "See raw content" %}</a></span>
+
+<div style="clear: both;"></div>

@@ -37,7 +37,7 @@ deadcode_local:
 
 run:
 	# Run Django test server on http://127.0.0.1:8200
-	${DOCKER_COMPOSE} up --abort-on-container-exit
+	${DOCKER_COMPOSE} up
 
 stop:
 	${DOCKER_COMPOSE} stop && ${DOCKER_COMPOSE} rm -f

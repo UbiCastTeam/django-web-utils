@@ -12,7 +12,6 @@ function DaemonsManager (options) {
     this.daemons = []; // list of dict with at least a name attr
     this.commandsURL = '';
     this.statusURL = '';
-    this.pwdURL = '';
     // vars
     this.daemons = {};
     this.refreshDelay = 5000;
@@ -21,8 +20,7 @@ function DaemonsManager (options) {
         // allowed options
         'daemons',
         'commandsURL',
-        'statusURL',
-        'pwdURL'
+        'statusURL'
     ]);
 
     this.overlay = new OverlayDisplayManager();
@@ -53,7 +51,16 @@ DaemonsManager.prototype.sendDaemonCommand = function (daemon, cmd) {
     if (!daemon.name) {
         return console.log('Invalid daemon given to sendDaemonCommand function.');
     }
-    this._sendDaemonCommand(daemon, cmd);
+    const overlayEle = document.createElement('div');
+    overlayEle.textContent = gettext('Please confirm the sending of the command:') + ' ' + cmd + ' ' + daemon.name;
+    this.overlay.show({
+        title: gettext('Send a command'),
+        html: overlayEle,
+        buttons: [
+            { label: gettext('Cancel'), close: true },
+            { label: gettext('Confirm'), callback: this._sendDaemonCommand.bind(this, daemon, cmd) },
+        ]
+    });
 };
 DaemonsManager.prototype._sendDaemonCommand = function (daemon, cmd) {
     const obj = this;
@@ -127,14 +134,14 @@ DaemonsManager.prototype.updateDaemonData = function (name, data) {
     if (running !== stored.running) {
         stored.running = running;
         const statusEle = document.querySelector('.daemon-' + name + ' .daemon-status');
-        if (running === true) {
-            statusEle.innerHTML = '<span class="green">' + jsu.escapeHTML(gettext('running')) + '</span>';
-        } else if (running === false) {
-            statusEle.innerHTML = '<span class="red">' + jsu.escapeHTML(gettext('not running')) + '</span>';
-        } else {
-            statusEle.innerHTML = '<span class="yellow" ' +
-                'title="' + jsu.escapeAttribute(gettext('The status cannot be checked because this daemon is run by another system user.')) + '">' +
-                jsu.escapeHTML(gettext('unknown')) + '</span>';
+        if (statusEle) {
+            if (running === true) {
+                statusEle.innerHTML = '<span class="green">' + jsu.escapeHTML(gettext('running')) + '</span>';
+            } else if (running === false) {
+                statusEle.innerHTML = '<span class="red">' + jsu.escapeHTML(gettext('not running')) + '</span>';
+            } else {
+                statusEle.innerHTML = '<span class="yellow">' + jsu.escapeHTML(gettext('unknown')) + '</span>';
+            }
         }
     }
     const logMTime = data.log_mtime;

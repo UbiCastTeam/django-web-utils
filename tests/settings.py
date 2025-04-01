@@ -19,7 +19,7 @@ warnings.simplefilter('always')
 os.environ['PYTHONWARNINGS'] = 'always'  # Also affect subprocesses
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 OVERRIDE_PATH = '/tmp/djwutils_override.py'
 
@@ -160,7 +160,7 @@ MANAGERS = ADMINS
 
 MONITORING_DAEMONS_INFO = 'testapp.daemons'
 
-FILE_BROWSER_DIRS = {'storage': (os.path.join(BASE_DIR, 'tests', 'storage'), '/storage')}
+FILE_BROWSER_DIRS = {'storage': (os.path.join(BASE_DIR, 'storage'), '/storage')}
 
 # For reload_settings tests
 TIME_NOW = time.perf_counter_ns()
