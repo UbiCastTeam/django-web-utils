@@ -4,7 +4,6 @@ Useful to create daemons which can use Django easily.
 """
 import argparse
 import datetime
-import importlib.util
 import logging
 import logging.config
 import os
@@ -30,7 +29,6 @@ class BaseDaemon:
     PID file is located in `PID_DIR/<daemon_file_name>.pid`.
     """
 
-    CONF_DIR = Path('/tmp/djwutils-daemon')
     LOG_DIR = Path('/tmp/djwutils-daemon')
     PID_DIR = Path('/tmp/djwutils-daemon')
     WORK_DIR = Path('/')
@@ -49,10 +47,6 @@ class BaseDaemon:
         os.environ['LC_ALL'] = 'C.UTF-8'
         os.chdir(self.WORK_DIR)
 
-        # Get config
-        self.config = {}
-        self.load_config()
-
         # Parse args
         parser = argparse.ArgumentParser(
             description=(self.__class__.__doc__ or 'Daemon').strip(),
@@ -67,6 +61,9 @@ class BaseDaemon:
             '-l', '--log', action='store_true',
             help='Force log to file and not the standard output.')
         parser.add_argument(
+            '-v', '--verbose', action='store_true',
+            help='Set logging level to debug.')
+        parser.add_argument(
             'action', choices=['start', 'stop', 'restart', 'clear_log'],
             help='Action to run.')
         parser.add_argument(
@@ -77,6 +74,7 @@ class BaseDaemon:
         self._should_daemonize = not args.foreground
         self._simultaneous = args.simultaneous
         self._log_in_file = self._should_daemonize or args.log
+        self._verbose = args.verbose
         self._extra_args = args.extra
 
         # Run command
@@ -107,27 +105,6 @@ class BaseDaemon:
         if not hasattr(cls, '_log_path'):
             cls._log_path = cls.LOG_DIR / f'{cls.get_name()}.log'
         return cls._log_path
-
-    @classmethod
-    def get_conf_path(cls):
-        if not hasattr(cls, '_conf_path'):
-            cls._conf_path = cls.CONF_DIR / f'{cls.get_name()}.py'
-        return cls._conf_path
-
-    def get_config(self, option, default=None):
-        return self.config.get(option, default)
-
-    def load_config(self):
-        self.config = dict(self.DEFAULTS)
-        if not self.get_conf_path().exists():
-            return False
-        spec = importlib.util.spec_from_file_location('cfg', str(self.get_conf_path()))
-        cfg = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(cfg)
-        for key in list(cfg.__dict__.keys()):
-            if not key.startswith('__'):
-                self.config[key] = cfg.__dict__[key]
-        return True
 
     def _run_command(self, command):
         if command in ('restart', 'stop'):
@@ -240,7 +217,7 @@ class BaseDaemon:
             },
             'root': {
                 'handlers': ['log_file' if self._log_in_file else 'console'],
-                'level': self.config.get('LOGGING_LEVEL', 'INFO'),
+                'level': 'DEBUG' if self._verbose else 'INFO',
                 'propagate': False,
             }
         }

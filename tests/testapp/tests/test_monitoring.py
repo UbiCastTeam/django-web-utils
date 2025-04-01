@@ -32,9 +32,6 @@ def test_anonymous(client):
     response = client.get(reverse('monitoring:monitoring-status'))
     assert response.status_code == 302
 
-    response = client.get(reverse('monitoring:monitoring-config', args=['hosts']))
-    assert response.status_code == 302
-
     response = client.get(reverse('monitoring:monitoring-log', args=['fake']))
     assert response.status_code == 302
 
@@ -72,10 +69,6 @@ def test_authentified(logged_client):
     assert response.status_code == 200, content
     assert response['Content-Type'] == 'application/json'
     assert content == {'fake': {'running': False, 'log_size': '', 'log_mtime': ''}}
-
-    response = client.get(reverse('monitoring:monitoring-config', args=['hosts']))
-    assert response.status_code == 200
-    assert response['Content-Type'] == 'text/html; charset=utf-8'
 
     response = client.get(reverse('monitoring:monitoring-log', args=['dummy']))
     assert response.status_code == 200

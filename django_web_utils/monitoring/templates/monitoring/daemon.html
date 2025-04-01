@@ -25,7 +25,6 @@ Required arguments:
         {% if show_controls %}
         <td class="nowrap">
             <button type="button" class="daemon-stop">{% trans "Stop" %}</button>
-            <a class="button" href="{% url namespace|add:':monitoring-config' daemon %}">{% trans "Configure" %}</a>
         </td>
         {% endif %}
         {% if show_log %}
@@ -53,7 +52,6 @@ Required arguments:
         <th>{% trans "Commands" %}</th>
         <td class="nowrap">
             <button type="button" class="daemon-stop">{% trans "Stop" %}</button>
-            <a class="button" href="{% url namespace|add:':monitoring-config' daemon %}">{% trans "Configure" %}</a>
         </td>
     </tr>
     {% endif %}

@@ -3,9 +3,9 @@ import socket
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.urls import reverse
 from django.http import JsonResponse, Http404
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from django_web_utils import json_utils
@@ -149,47 +149,6 @@ def monitoring_log(request, name=None, path=None, back_url=None):
         back_url=back_url or reverse(config.NAMESPACE + ':monitoring-panel'),
         can_control=can_control,
         hostname=socket.gethostname(),
-        **result
-    ))
-    return render(request, tplt, tplt_data)
-
-
-@login_required
-def monitoring_config(request, name=None, path=None, back_url=None):
-    default_conf = None
-    if not path:
-        info = config.get_daemons_info()
-        if name not in info.DAEMONS:
-            raise Http404()
-        daemon = info.DAEMONS[name]
-        if not config.can_access_daemon(daemon, request):
-            raise PermissionDenied()
-        if request.method == 'POST' and not config.can_control_daemon(daemon, request):
-            raise PermissionDenied()
-        if daemon.get('cls'):
-            path = daemon['cls'].get_conf_path()
-            default_conf = daemon['cls'].DEFAULTS
-            if 'LOGGING_LEVEL' not in default_conf:
-                default_conf['LOGGING_LEVEL'] = 'INFO'
-        else:
-            path = daemon.get('conf_path')
-    if not path:
-        raise Exception('No configuration path given.')
-    if not name:
-        name = path.name
-
-    date_adjust_fct = config.DATE_ADJUST_FCT(request) if config.DATE_ADJUST_FCT else None
-    result = utils.edit_conf_view(request, path=path, default_conf=default_conf, date_adjust_fct=date_adjust_fct)
-    if not isinstance(result, dict):
-        return result
-    tplt = config.BASE_TEMPLATE if config.BASE_TEMPLATE else 'monitoring/base.html'
-    tplt_data = dict(config.TEMPLATE_DATA) if config.TEMPLATE_DATA else {}
-    tplt_data.update(dict(
-        monitoring_page='config',
-        monitoring_body='monitoring/config.html',
-        monitoring_namespace=config.NAMESPACE,
-        title=_('Edit configuration file: %s') % name,
-        back_url=back_url or reverse(config.NAMESPACE + ':monitoring-panel'),
         **result
     ))
     return render(request, tplt, tplt_data)

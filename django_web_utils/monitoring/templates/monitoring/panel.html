@@ -47,24 +47,15 @@
                 <td class="daemon-status-cell">
                     {% if daemon.only_log %}
                         <i>{% trans "log file" %}</i>
-                    {% elif daemon.only_conf %}
-                        <i>{% trans "config file" %}</i>
                     {% else %}
                         <span class="daemon-status">{% trans "Loading" %}...</span>
                     {% endif %}
                 </td>
                 <td><span class="daemon-log-mtime"></span></td>
                 <td><span class="daemon-log-size"></span></td>
-                <td class="daemon-links">{% spaceless %}
-                    {% if not daemon.only_conf %}
-                        <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}?tail">{% trans "See log" %}</a>
-                    {% endif %}
-                    {% if daemon.show_controls %}
-                        {% if daemon.conf_path %}
-                            <a href="{% url monitoring_namespace|add:':monitoring-config' daemon.name %}">{% trans "Configure" %}</a>
-                        {% endif %}
-                    {% endif %}
-                {% endspaceless %}</td>
+                <td class="daemon-links">
+                    <a href="{% url monitoring_namespace|add:':monitoring-log' daemon.name %}?tail">{% trans "See log" %}</a>
+                </td>
                 <td class="daemon-actions">{% spaceless %}
                     {% if daemon.show_controls and not daemon.no_commands %}
                         {% if not daemon.only_stop %}

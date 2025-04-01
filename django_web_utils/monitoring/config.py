@@ -39,7 +39,6 @@ def get_daemons_info():
                 cleaned_info.DAEMONS[daemon['name']] = daemon
                 if daemon.get('cls'):
                     daemon['cls'] = import_module_by_python_path(daemon['cls'])
-                    daemon['conf_path'] = daemon['cls'].get_conf_path()
                     daemon['log_path'] = daemon['cls'].get_log_path()
                 if daemon.get('can_access') is None:
                     daemon['can_access'] = getattr(info_module, 'CAN_ACCESS', lambda request: request.user.is_superuser)
