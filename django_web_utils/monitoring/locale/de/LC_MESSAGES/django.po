@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-23 13:42+0000\n"
+"POT-Creation-Date: 2025-04-01 08:20+0000\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -18,14 +18,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.2.1\n"
 
-#: sysinfo.py:61
-msgid "Version"
-msgstr "Version"
-
 # Translated by DeepL.
+#: sysinfo.py:61
+msgid "Application version"
+msgstr "Version der Anwendung"
+
 #: sysinfo.py:62
-msgid "Revision"
-msgstr "Revision"
+msgid "Application revision"
+msgstr "Überarbeitung der Anwendung"
 
 # Translated by DeepL.
 #: sysinfo.py:63
@@ -160,20 +160,18 @@ msgid "Daemons monitoring"
 msgstr "Überwachung von Dämonen"
 
 #: templates/monitoring/config.html:5 templates/monitoring/config.html:41
-#: templates/monitoring/log.html:13 templates/monitoring/log.html:51
-#: templates/monitoring/log.html:78 templates/monitoring/panel.html:4
+#: templates/monitoring/log_bar.html:4 templates/monitoring/panel.html:13
 msgid "Back"
 msgstr "Zurück"
 
 #: templates/monitoring/config.html:8 templates/monitoring/config.html:43
-#: templates/monitoring/log.html:16 templates/monitoring/log.html:56
-#: templates/monitoring/log.html:81
+#: templates/monitoring/log_bar.html:18
 msgid "Refresh"
 msgstr "Aktualisieren"
 
 # Translated by DeepL.
 #: templates/monitoring/config.html:11 templates/monitoring/config.html:45
-#: templates/monitoring/log.html:31 templates/monitoring/log.html:69
+#: templates/monitoring/log_bar.html:32
 msgid "See raw content"
 msgstr "Siehe Rohinhalt"
 
@@ -190,7 +188,7 @@ msgid "Configuration file size:"
 msgstr "Konfiguration – Dateigröße:"
 
 #: templates/monitoring/config.html:25 templates/monitoring/daemon.html:33
-#: templates/monitoring/log.html:25 templates/monitoring/log.html:63
+#: templates/monitoring/log_bar.html:25
 msgid "Last modification:"
 msgstr "Letzte Änderung:"
 
@@ -207,176 +205,181 @@ msgstr "Datei zurücksetzen"
 msgid "Apply modifications"
 msgstr "Änderungen anwenden"
 
-#: templates/monitoring/daemon.html:13 templates/monitoring/daemon.html:51
-#: templates/monitoring/panel.html:11
+#: templates/monitoring/daemon.html:13 templates/monitoring/daemon.html:48
+#: templates/monitoring/panel.html:21
 msgid "Status"
 msgstr "Status"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:15 templates/monitoring/daemon.html:56
-#: templates/monitoring/panel.html:15
+#: templates/monitoring/daemon.html:15 templates/monitoring/daemon.html:53
 msgid "Commands"
 msgstr "Befehle"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:18 templates/monitoring/daemon.html:65
-#: templates/monitoring/panel.html:12
+#: templates/monitoring/daemon.html:18 templates/monitoring/daemon.html:62
 msgid "Log file"
 msgstr "Log-Datei"
 
-#: templates/monitoring/daemon.html:23 templates/monitoring/daemon.html:52
-#: templates/monitoring/panel.html:49
+#: templates/monitoring/daemon.html:23 templates/monitoring/daemon.html:49
+#: templates/monitoring/panel.html:53
 msgid "Loading"
 msgstr "Lädt"
 
-#: templates/monitoring/daemon.html:27 templates/monitoring/daemon.html:58
-#: templates/monitoring/panel.html:67
+#: templates/monitoring/daemon.html:27 templates/monitoring/daemon.html:55
+#: templates/monitoring/panel.html:73
 msgid "Stop"
 msgstr "Stopp"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:28 templates/monitoring/daemon.html:59
+#: templates/monitoring/daemon.html:28 templates/monitoring/daemon.html:56
+#: templates/monitoring/panel.html:64
 msgid "Configure"
 msgstr "Konfigurieren Sie"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:36 templates/monitoring/log.html:21
-#: templates/monitoring/log.html:59
+#: templates/monitoring/daemon.html:36
 msgid "File size:"
 msgstr "Größe der Datei:"
 
-#: templates/monitoring/daemon.html:39 templates/monitoring/daemon.html:78
-#: templates/monitoring/panel.html:54
+#: templates/monitoring/daemon.html:39 templates/monitoring/daemon.html:75
 msgid "See"
 msgstr "Anzeigen"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:40 templates/monitoring/daemon.html:79
-#: templates/monitoring/panel.html:55
+#: templates/monitoring/daemon.html:40 templates/monitoring/daemon.html:76
 msgid "See tail"
 msgstr "Siehe Schwanz"
 
 # Translated by DeepL.
-#: templates/monitoring/daemon.html:42 templates/monitoring/daemon.html:81
-#: templates/monitoring/panel.html:57
-msgid "Clear log"
-msgstr "Protokoll löschen"
-
-# Translated by DeepL.
-#: templates/monitoring/daemon.html:68 templates/monitoring/panel.html:26
+#: templates/monitoring/daemon.html:65
 msgid "Last modification"
 msgstr "Letzte Änderung"
 
-#: templates/monitoring/daemon.html:72 templates/monitoring/panel.html:27
+#: templates/monitoring/daemon.html:69
 msgid "File size"
 msgstr "Dateigröße"
 
-#: templates/monitoring/daemon.html:76 templates/monitoring/panel.html:34
+#: templates/monitoring/daemon.html:73 templates/monitoring/panel.html:24
 msgid "Actions"
 msgstr "Aktionen"
 
 # Translated by DeepL.
-#: templates/monitoring/log.html:8 templates/monitoring/log.html:46
-msgid "Clear"
-msgstr "Klar"
-
-# Translated by DeepL.
-#: templates/monitoring/log.html:18 templates/monitoring/log.html:54
-#: templates/monitoring/panel.html:13
-msgid "Hostname:"
-msgstr "Hostname:"
-
-# Translated by DeepL.
-#: templates/monitoring/log.html:28 templates/monitoring/log.html:66
-msgid "See complete file"
-msgstr "Vollständige Datei anzeigen"
-
-# Translated by DeepL.
-#: templates/monitoring/log.html:28 templates/monitoring/log.html:66
-msgid "See only end"
-msgstr "Siehe nur Ende"
-
-# Translated by DeepL.
-#: templates/monitoring/log.html:86
+#: templates/monitoring/log.html:13
 msgid "Log file is empty."
 msgstr "Die Protokolldatei ist leer."
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:18
+#: templates/monitoring/log_bar.html:7
+msgid "Hostname:"
+msgstr "Hostname:"
+
+# Translated by DeepL.
+#: templates/monitoring/log_bar.html:10
+msgid "File:"
+msgstr "Datei:"
+
+#: templates/monitoring/log_bar.html:21
+msgid "Size:"
+msgstr "Größe:"
+
+# Translated by DeepL.
+#: templates/monitoring/log_bar.html:29
+msgid "See complete file"
+msgstr "Vollständige Datei anzeigen"
+
+# Translated by DeepL.
+#: templates/monitoring/log_bar.html:29
+msgid "See only end"
+msgstr "Siehe nur Ende"
+
+#: templates/monitoring/panel.html:21
+msgid "Name"
+msgstr "Name"
+
+# Translated by DeepL.
+#: templates/monitoring/panel.html:21
+msgid "Host:"
+msgstr "Gastgeber:"
+
+# Translated by DeepL.
+#: templates/monitoring/panel.html:22
+msgid "Last log modification"
+msgstr "Letzte Protokolländerung"
+
+# Translated by DeepL.
+#: templates/monitoring/panel.html:23
+msgid "Log file size"
+msgstr "Größe der Protokolldatei"
+
+# Translated by DeepL.
+#: templates/monitoring/panel.html:27
 msgid "Start all"
 msgstr "Alle starten"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:19
+#: templates/monitoring/panel.html:28
 msgid "Stop all"
 msgstr "Alle anhalten"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:20
+#: templates/monitoring/panel.html:29
 msgid "Restart all"
 msgstr "Alle neu starten"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:31
-msgid "Clear all logs"
-msgstr "Alle Protokolle löschen"
-
-# Translated by DeepL.
-#: templates/monitoring/panel.html:44 views.py:170
+#: templates/monitoring/panel.html:49 views.py:148
 msgid "log file"
 msgstr "Protokolldatei"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:44
+#: templates/monitoring/panel.html:51
 msgid "config file"
 msgstr "Konfigurationsdatei"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:65
+#: templates/monitoring/panel.html:60
+msgid "See log"
+msgstr "Siehe Protokoll"
+
+# Translated by DeepL.
+#: templates/monitoring/panel.html:71
 msgid "Start"
 msgstr "Start"
 
-#: templates/monitoring/panel.html:69
+#: templates/monitoring/panel.html:75
 msgid "Restart"
 msgstr "Neustart"
 
 # Translated by DeepL.
-#: templates/monitoring/panel.html:73
-msgid "Edit configuration"
-msgstr "Konfiguration bearbeiten"
-
-# Translated by DeepL.
-#: utils.py:23
-msgid "The log file is already empty."
-msgstr "Die Protokolldatei ist bereits leer."
-
-# Translated by DeepL.
-#: utils.py:28
-msgid "Log file cleared."
-msgstr "Die Logdatei wurde gelöscht."
-
-# Translated by DeepL.
-#: utils.py:33
+#: utils.py:36
 msgid "Invalid command."
 msgstr "Ungültiger Befehl."
 
 # Translated by DeepL.
-#: utils.py:36
-msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
-msgstr "Die gegebene Daemon-Klasse ist keine Unterklasse von Django web utils BaseDaemon."
-
-# Translated by DeepL.
-#: utils.py:44 utils.py:47
+#: utils.py:39
 msgid "No valid target for command."
 msgstr "Kein gültiges Ziel für den Befehl."
 
 # Translated by DeepL.
-#: utils.py:55
+#: utils.py:41
+msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
+msgstr "Die gegebene Daemon-Klasse ist keine Unterklasse von Django web utils BaseDaemon."
+
+# Translated by DeepL.
+#: utils.py:49
 msgid "The daemon script cannot be found."
 msgstr "Das Daemon-Skript kann nicht gefunden werden."
 
+#: utils.py:103
+msgid "The requested suffix does not exist."
+msgstr "Das angeforderte Suffix existiert nicht."
+
+#: utils.py:128
+msgid "Partial read of gzip files is not supported. Please get the complete file to read its content."
+msgstr "Das partielle Lesen von gzip-Dateien wird nicht unterstützt. Bitte holen Sie sich die komplette Datei, um ihren Inhalt zu lesen."
+
 # Translated by DeepL.
-#: utils.py:147
+#: utils.py:144
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -387,34 +390,34 @@ msgstr ""
 "Nur Dateischwanz und Rohdatei sind zugänglich.\n"
 "Warnung: Das Abrufen der Rohdatei kann den Systemspeicher sättigen."
 
-#: utils.py:156
+#: utils.py:152
 msgid "Unable to display log file."
 msgstr "Protokolldatei kann nicht angezeigt werden."
 
-#: utils.py:156 utils.py:187 utils.py:196 utils.py:224 utils.py:244
+#: utils.py:152 utils.py:181 utils.py:190 utils.py:218 utils.py:238
 msgid "Error:"
 msgstr "Fehler:"
 
 # Translated by DeepL.
-#: utils.py:179
+#: utils.py:173
 msgid "This daemon has no configuration file."
 msgstr "Dieser Daemon hat keine Konfigurationsdatei."
 
-#: utils.py:187 utils.py:196
+#: utils.py:181 utils.py:190
 msgid "Unable to write configuration file."
 msgstr "Konfigurationsdatei kann nicht geschrieben werden."
 
-#: utils.py:189
+#: utils.py:183
 msgid "Configuration file updated."
 msgstr "Konfigurationsdatei aktualisiert."
 
 # Translated by DeepL.
-#: utils.py:198
+#: utils.py:192
 msgid "Configuration file cleared."
 msgstr "Die Konfigurationsdatei wurde gelöscht."
 
 # Translated by DeepL.
-#: utils.py:216
+#: utils.py:210
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -426,57 +429,34 @@ msgstr ""
 "Warnung: Das Abrufen der Rohdatei kann den Systemspeicher sättigen."
 
 # Translated by DeepL.
-#: utils.py:224
+#: utils.py:218
 msgid "Unable to display configuration file."
 msgstr "Die Konfigurationsdatei kann nicht angezeigt werden."
 
 # Translated by DeepL.
-#: utils.py:244
+#: utils.py:238
 msgid "Unable to read default configuration file."
 msgstr "Die Standardkonfigurationsdatei kann nicht gelesen werden."
 
 # Translated by DeepL.
-#: views.py:22
-msgid "You don't have the permission to access this url."
-msgstr "Sie haben keine Berechtigung für den Zugriff auf diese URL."
-
-# Translated by DeepL.
-#: views.py:27
-msgid "Please enter password."
-msgstr "Bitte Passwort eingeben."
-
-# Translated by DeepL.
-#: views.py:33
-msgid "Invalid password."
-msgstr "Ungültiges Passwort."
-
-# Translated by DeepL.
-#: views.py:117
+#: views.py:95
 msgid "The daemon name is invalid:"
 msgstr "Der Name des Daemons ist ungültig:"
 
 # Translated by DeepL.
-#: views.py:124
+#: views.py:102
 #, python-format
 msgid "The command \"%(cmd)s\" on \"%(name)s\" was successfully executed."
 msgstr "Der Befehl \"%(cmd)s\" auf \"%(name)s\" wurde erfolgreich ausgeführt."
 
 # Translated by DeepL.
-#: views.py:126
+#: views.py:104
 #, python-format
 msgid "The command \"%(cmd)s\" on \"%(name)s\" has failed."
 msgstr "Der Befehl \"%(cmd)s\" auf \"%(name)s\" ist fehlgeschlagen."
 
 # Translated by DeepL.
-#: views.py:215
+#: views.py:191
 #, python-format
 msgid "Edit configuration file: %s"
 msgstr "Konfigurationsdatei bearbeiten: %s"
-
-# Translated by DeepL.
-#~ msgid "Unable to delete configuration file."
-#~ msgstr "Konfigurationsdatei kann nicht gelöscht werden."
-
-# Translated by DeepL.
-#~ msgid "Invalid daemon name:"
-#~ msgstr "Ungültiger Daemon-Name:"

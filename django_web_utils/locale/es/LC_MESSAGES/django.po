@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-23 13:37+0000\n"
+"POT-Creation-Date: 2025-03-31 16:05+0000\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -86,25 +86,9 @@ msgstr "Autenticación de acceso"
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
 msgstr "La contraseña debe contener al menos 3 tipos de caracteres (los tipos son letras minúsculas, letras mayúsculas, dígitos y caracteres especiales)."
 
-#: files_utils.py:48
+#: files_utils.py:63
 msgid "B"
 msgstr "B"
-
-#: files_utils.py:52
-msgid "kB"
-msgstr "kB"
-
-#: files_utils.py:56
-msgid "MB"
-msgstr "MB"
-
-#: files_utils.py:60
-msgid "GB"
-msgstr "GB"
-
-#: files_utils.py:63
-msgid "TB"
-msgstr "TB"
 
 #: forms_utils.py:119 settings_store/forms.py:48
 msgid "Yes"
@@ -124,22 +108,27 @@ msgstr "Método de solicitud no válido"
 msgid "Authentication required"
 msgstr "Se requiere autenticación"
 
+# Translated by DeepL.
 #: json_utils.py:125
+msgid "Bad request"
+msgstr "Mala petición"
+
+#: json_utils.py:127
 msgid "Access denied"
 msgstr "Acceso denegado"
 
 # Translated by DeepL.
-#: json_utils.py:127
+#: json_utils.py:129
 msgid "Page not found"
 msgstr "Página no encontrada"
 
 # Translated by DeepL.
-#: json_utils.py:132
+#: json_utils.py:134
 msgid "Infected file detected"
 msgstr "Archivo infectado detectado"
 
 # Translated by DeepL.
-#: json_utils.py:137
+#: json_utils.py:143
 msgid "Internal server error"
 msgstr "Error interno del servidor"
 
@@ -349,15 +338,3 @@ msgstr "Ocultar valor"
 #: templates/forms_utils/password_toggle_input.html:7
 msgid "Edit value"
 msgstr "Editar valor"
-
-# Translated by DeepL.
-#~ msgid "Failed to backup settings:"
-#~ msgstr "Fallo en la copia de seguridad de la configuración:"
-
-# Translated by DeepL.
-#~ msgid "Your changes will be active after the service restart."
-#~ msgstr "Sus cambios se activarán tras el reinicio del servicio."
-
-# Translated by DeepL.
-#~ msgid "The service will be restarted in 2 seconds."
-#~ msgstr "El servicio se reiniciará en 2 segundos."

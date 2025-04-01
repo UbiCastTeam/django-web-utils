@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-23 13:37+0000\n"
+"POT-Creation-Date: 2025-04-01 08:20+0000\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -18,63 +18,52 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.2.1\n"
 
+#: static/monitoring/daemons-manager.js:55
+msgid "Please confirm the sending of the command:"
+msgstr "Bitte bestätigen Sie das Senden des Befehls:"
+
+#: static/monitoring/daemons-manager.js:57
+msgid "Send a command"
+msgstr "Einen Befehl senden"
+
+#: static/monitoring/daemons-manager.js:60
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: static/monitoring/daemons-manager.js:61
+msgid "Confirm"
+msgstr "Bestätigen Sie"
+
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:77
+#: static/monitoring/daemons-manager.js:80
 msgid "No messages have been returned."
 msgstr "Es wurden keine Nachrichten zurückgeschickt."
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:86
+#: static/monitoring/daemons-manager.js:89
 msgid "Command output:"
 msgstr "Befehlsausgabe:"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:96
+#: static/monitoring/daemons-manager.js:99
 msgid "Command result"
 msgstr "Befehl Ergebnis"
 
-#: static/monitoring/daemons-manager.js:99
+#: static/monitoring/daemons-manager.js:102
 msgid "Close"
 msgstr "Schließen"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:135
+#: static/monitoring/daemons-manager.js:139
 msgid "running"
 msgstr "läuft"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:137
+#: static/monitoring/daemons-manager.js:141
 msgid "not running"
 msgstr "läuft nicht"
 
 # Translated by DeepL.
-#: static/monitoring/daemons-manager.js:140
-msgid "The status cannot be checked because this daemon is run by another system user."
-msgstr "Der Status kann nicht überprüft werden, da dieser Daemon von einem anderen Systembenutzer ausgeführt wird."
-
-# Translated by DeepL.
-#: static/monitoring/daemons-manager.js:141
+#: static/monitoring/daemons-manager.js:143
 msgid "unknown"
 msgstr "unbekannt"
-
-# Translated by DeepL.
-#~ msgid "Click to enter password"
-#~ msgstr "Klicken Sie, um das Passwort einzugeben"
-
-# Translated by DeepL.
-#~ msgid "need password"
-#~ msgstr "Passwort erforderlich"
-
-#~ msgid "Password:"
-#~ msgstr "Passwort:"
-
-#~ msgid "Send"
-#~ msgstr "Senden"
-
-# Translated by DeepL.
-#~ msgid "Authenticating"
-#~ msgstr "Authentifizierung"
-
-# Translated by DeepL.
-#~ msgid "Enter password"
-#~ msgstr "Passwort eingeben"

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-23 13:37+0000\n"
-"PO-Revision-Date: 2024-05-23 15:42+0200\n"
+"POT-Creation-Date: 2025-03-31 16:04+0000\n"
+"PO-Revision-Date: 2025-03-31 18:05+0200\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: UbiCast <support@ubicast.eu>\n"
 "Language: fr_FR\n"
@@ -73,25 +73,9 @@ msgstr "Authentification d'accès"
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
 msgstr "Le mot de passe doit contenir au minimum 3 types de caractères (les types sont : lettres minuscules, lettres majuscules, chiffres et caractères spéciaux)."
 
-#: files_utils.py:48
+#: files_utils.py:63
 msgid "B"
 msgstr "o"
-
-#: files_utils.py:52
-msgid "kB"
-msgstr "ko"
-
-#: files_utils.py:56
-msgid "MB"
-msgstr "Mo"
-
-#: files_utils.py:60
-msgid "GB"
-msgstr "Go"
-
-#: files_utils.py:63
-msgid "TB"
-msgstr "To"
 
 #: forms_utils.py:119 settings_store/forms.py:48
 msgid "Yes"
@@ -110,18 +94,22 @@ msgid "Authentication required"
 msgstr "Authentification requise"
 
 #: json_utils.py:125
+msgid "Bad request"
+msgstr "Requête invalide"
+
+#: json_utils.py:127
 msgid "Access denied"
 msgstr "Accès refusé"
 
-#: json_utils.py:127
+#: json_utils.py:129
 msgid "Page not found"
 msgstr "Page introuvable"
 
-#: json_utils.py:132
+#: json_utils.py:134
 msgid "Infected file detected"
 msgstr "Fichier infecté détecté"
 
-#: json_utils.py:137
+#: json_utils.py:143
 msgid "Internal server error"
 msgstr "Erreur interne au serveur"
 
@@ -295,12 +283,3 @@ msgstr "Cacher la valeur"
 #: templates/forms_utils/password_toggle_input.html:7
 msgid "Edit value"
 msgstr "Éditer la valeur"
-
-#~ msgid "Failed to backup settings:"
-#~ msgstr "Échec de la création d'un point de sauvegarde des paramètres :"
-
-#~ msgid "Your changes will be active after the service restart."
-#~ msgstr "Vos modifications seront actives après le redémarrage du service."
-
-#~ msgid "The service will be restarted in 2 seconds."
-#~ msgstr "Le service sera redémarré dans 2 secondes."

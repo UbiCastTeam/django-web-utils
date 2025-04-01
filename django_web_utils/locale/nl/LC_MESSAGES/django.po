@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-23 13:37+0000\n"
+"POT-Creation-Date: 2025-03-31 16:05+0000\n"
 "PO-Revision-Date: 2021-12-24 14:33+0100\n"
 "Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
@@ -86,25 +86,9 @@ msgstr "Toegangsverificatie"
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
 msgstr "Het wachtwoord moet ten minste 3 soorten tekens bevatten (de soorten zijn kleine letters, hoofdletters, cijfers en speciale tekens)."
 
-#: files_utils.py:48
+#: files_utils.py:63
 msgid "B"
 msgstr "B"
-
-#: files_utils.py:52
-msgid "kB"
-msgstr "kB"
-
-#: files_utils.py:56
-msgid "MB"
-msgstr "MB"
-
-#: files_utils.py:60
-msgid "GB"
-msgstr "GB"
-
-#: files_utils.py:63
-msgid "TB"
-msgstr "TB"
 
 #: forms_utils.py:119 settings_store/forms.py:48
 msgid "Yes"
@@ -124,22 +108,27 @@ msgstr "Ongeldige verzoekmethode"
 msgid "Authentication required"
 msgstr "Authenticatie is vereist"
 
+# Translated by DeepL.
 #: json_utils.py:125
+msgid "Bad request"
+msgstr "Slecht verzoek"
+
+#: json_utils.py:127
 msgid "Access denied"
 msgstr "Toegang geweigerd"
 
 # Translated by DeepL.
-#: json_utils.py:127
+#: json_utils.py:129
 msgid "Page not found"
 msgstr "Pagina niet gevonden"
 
 # Translated by DeepL.
-#: json_utils.py:132
+#: json_utils.py:134
 msgid "Infected file detected"
 msgstr "Geïnfecteerd bestand gedetecteerd"
 
 # Translated by DeepL.
-#: json_utils.py:137
+#: json_utils.py:143
 msgid "Internal server error"
 msgstr "Interne serverfout"
 
@@ -349,15 +338,3 @@ msgstr "Waarde verbergen"
 #: templates/forms_utils/password_toggle_input.html:7
 msgid "Edit value"
 msgstr "Waarde bewerken"
-
-# Translated by DeepL.
-#~ msgid "Failed to backup settings:"
-#~ msgstr "De back-up van de instellingen is mislukt:"
-
-# Translated by DeepL.
-#~ msgid "Your changes will be active after the service restart."
-#~ msgstr "Uw wijzigingen zullen actief zijn na de herstart van de service."
-
-# Translated by DeepL.
-#~ msgid "The service will be restarted in 2 seconds."
-#~ msgstr "De dienst wordt binnen 2 seconden opnieuw opgestart."
