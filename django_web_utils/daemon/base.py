@@ -227,7 +227,7 @@ class BaseDaemon:
         # reset all loggers config
         for key, lg in loggers.items():
             lg.handlers = []
-            lg.propagate = 1
+            lg.propagate = True
         logger.debug('Logging configured.')
 
     def _look_for_existing_process(self):
