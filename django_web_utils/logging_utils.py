@@ -2,6 +2,10 @@ import logging
 import re
 import traceback
 
+from django.conf import settings
+from django.utils.log import AdminEmailHandler
+from django.core.cache import cache
+
 try:
     import pygments
     from pygments.lexers import SqlLexer
@@ -14,6 +18,41 @@ except ImportError:
     sqlparse = None
 
 logger = logging.getLogger('djwutils.logging_utils')
+
+
+class ThrottledAdminEmailHandler(AdminEmailHandler):
+    """
+    Modification of Django builtin class AdminEmailHandler
+    to add a rate limit for sending emails.
+    """
+    PERIOD_LENGTH_IN_SECONDS = getattr(settings, 'ADMIN_EMAIL_THROTTLING_PERIOD_LENGTH', 24 * 3600)
+    MAX_EMAILS_IN_PERIOD = getattr(settings, 'ADMIN_EMAIL_THROTTLING_MAX_EMAILS', 10)
+    COUNTER_CACHE_KEY = getattr(settings, 'ADMIN_EMAIL_THROTTLING_CACHE_KEY', 'email_admin_counter')
+
+    def increment_counter(self):
+        try:
+            value = cache.incr(self.COUNTER_CACHE_KEY)
+        except ValueError:
+            cache.set(self.COUNTER_CACHE_KEY, 1, timeout=self.PERIOD_LENGTH_IN_SECONDS)
+            value = 1
+        return value
+
+    def emit(self, record):
+        try:
+            counter = self.increment_counter()
+        except Exception as err:
+            logger.error(
+                'Failed to increment counter of error report emails, no email will be sent. Details: %s',
+                err
+            )
+        else:
+            if counter > self.MAX_EMAILS_IN_PERIOD:
+                logger.warning(
+                    'Error report emails reached limit (%s emails in %s seconds), no email will be sent.',
+                    self.MAX_EMAILS_IN_PERIOD, self.PERIOD_LENGTH_IN_SECONDS
+                )
+                return
+            super().emit(record)
 
 
 class IgnoreTimeoutErrors(logging.Filter):
