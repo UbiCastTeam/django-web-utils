@@ -32,8 +32,6 @@ class BaseDaemon:
     LOG_DIR = Path('/tmp/djwutils-daemon')
     PID_DIR = Path('/tmp/djwutils-daemon')
     WORK_DIR = Path('/')
-    # Dir to append in `sys.path`. Ignored if set to `None`.
-    SERVER_DIR = None
     # Django settings module (for example: `'myproject.settings'`). Django is not loaded if set to `None`.
     SETTINGS_MODULE = None
 
@@ -143,7 +141,6 @@ class BaseDaemon:
                     daemonize(redirect_to=str(self.get_log_path()) if self._log_in_file else None)
                 if not self._simultaneous:
                     self._write_pid()
-                self._setup_sys_path()
                 if self.SETTINGS_MODULE:
                     self._setup_django()
                 self._setup_logging()
@@ -151,16 +148,6 @@ class BaseDaemon:
                 self._exit_with_error(f'Error when starting {self.get_name()}.', code=134)
         else:
             self.exit(0)
-
-    def _setup_sys_path(self):
-        if self.SERVER_DIR and self.SERVER_DIR.is_dir():
-            # Remove current file directory from sys.path to avoid incorrect imports
-            if '.' in sys.path:
-                sys.path.remove('.')
-            if '' in sys.path:
-                sys.path.remove('')
-            if str(self.SERVER_DIR) not in sys.path:
-                sys.path.append(str(self.SERVER_DIR))
 
     def _setup_django(self):
         # set django settings, so that django modules can be imported

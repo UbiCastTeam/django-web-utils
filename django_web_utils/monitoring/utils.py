@@ -3,6 +3,7 @@ import gzip
 import logging
 import re
 import stat
+import subprocess
 import sys
 from pathlib import Path
 
@@ -12,7 +13,6 @@ from django.utils.http import http_date
 from django.utils.translation import gettext as _
 
 from django_web_utils import files_utils
-from django_web_utils import system_utils
 from django_web_utils.daemon.base import BaseDaemon
 
 logger = logging.getLogger('djwutils.monitoring.utils')
@@ -48,10 +48,12 @@ def execute_daemon_command(request, daemon, command):
         logger.error('The daemon script cannot be found. Path: %s', path)
         return False, _('The daemon script cannot be found.')
 
-    cmd = f'python3 "{path}" {command}'
-    success, output = system_utils.execute_command(cmd, user='self', request=request)
-    if not output:
-        output = 'No output from command.'
+    p = subprocess.run(
+        ['python3', str(path), command], encoding='utf-8',
+        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
+    success = p.returncode == 0
+    output = p.stdout.strip()
     return success, output
 
 
@@ -65,10 +67,18 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
     if not log_path and daemon.get('only_conf'):
         log_path = daemon.get('conf_path')
     # Check if daemon is launched
-    if pid_path:
-        running = system_utils.is_pid_running(pid_path, user='self', request=request)
+    try:
+        pid_value = int(Path(pid_path).read_text())
+    except (FileNotFoundError, ValueError, TypeError):
+        pid_value = 0
+    if pid_value > 0:
+        p = subprocess.run(
+            ['ps', '-p', str(pid_value)],
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        running = p.returncode == 0
     else:
-        running = None
+        running = False
     # Get log file properties
     size = mtime = ''
     if log_path and log_path.exists():
