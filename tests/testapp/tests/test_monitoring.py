@@ -58,8 +58,8 @@ def test_authentified(logged_client):
     content['hosts']['log_mtime'] = '<val>'
     content['hosts']['log_size'] = '<val>'
     assert content == {
-        'sample': {'running': None, 'log_size': '<val>', 'log_mtime': '<val>'},
-        'hosts': {'running': None, 'log_size': '<val>', 'log_mtime': '<val>'},
+        'sample': {'running': False, 'log_size': '<val>', 'log_mtime': '<val>'},
+        'hosts': {'running': False, 'log_size': '<val>', 'log_mtime': '<val>'},
         'fake': {'running': False, 'log_size': '', 'log_mtime': ''},
         'dummy': {'running': False, 'log_size': '', 'log_mtime': ''},
     }
@@ -104,7 +104,7 @@ def test_authentified(logged_client):
         {
             'level': 'success',
             'name': 'dummy',
-            'out': 'No output from command.',
+            'out': '',
             'text': 'The command "stop" on "dummy" was successfully executed.'
         }
     ]}
