@@ -1,7 +1,7 @@
 from django import forms as dj_forms
 
 from django_web_utils.antivirus_utils import antivirus_stream_validator
-from django_web_utils.forms_utils import FileSettingsForm
+from django_web_utils.forms_utils import FileSettingsForm, PasswordToggleInput
 from django_web_utils.settings_store.forms import SettingsStoreForm
 from testapp.models import SettingsStore
 
@@ -15,6 +15,7 @@ class SettingsFileForm(FileSettingsForm):
     float_val = dj_forms.FloatField(label='Float value', min_value=0, required=False)
     bool_val = dj_forms.BooleanField(label='Boolean value', required=False)
     str_val = dj_forms.CharField(label='From file value', required=False, widget=dj_forms.Textarea())
+    pwd_val = dj_forms.CharField(label='A secret value', required=False, widget=PasswordToggleInput())
 
     class Meta(FileSettingsForm.Meta):
         SETTINGS_MAPPING = {
@@ -22,6 +23,7 @@ class SettingsFileForm(FileSettingsForm):
             'float_val': {'setting': 'FLOAT_VAL', 'default': 1.5},
             'bool_val': {'setting': 'BOOL_VAL', 'default': None},
             'str_val': {'setting': 'STR_VAL', 'default': None},
+            'pwd_val': {'setting': 'PWD_VAL', 'default': 'The default secret'},
         }
         default_values = FileSettingsForm.Meta.get_default_values(SETTINGS_MAPPING)
 

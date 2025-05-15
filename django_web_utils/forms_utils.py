@@ -43,7 +43,7 @@ class PasswordToggleInput(dj_forms.TextInput):
         data = super().get_context(name, value, attrs)
         data['widget']['orig_template_name'] = self.orig_template_name
         data['widget']['type'] = 'hidden'
-        data['widget']['hidden_value'] = '●' * len(value)
+        data['widget']['hidden_value'] = ('●' * len(value)) if value else ''
         return data
 
 
