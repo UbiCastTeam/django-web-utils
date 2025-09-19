@@ -1,76 +1,60 @@
 """
 Zip utility functions
 """
-import os
 import zipfile
+from pathlib import Path
 
 
 def _add_to_zip(zip_file, path, ignored=None, path_in_zip=None):
-    for name in os.listdir(path):
-        if ignored and name in ignored:
+    for picked_path in Path(path).iterdir():
+        if ignored and picked_path.name in ignored:
             continue
-        picked_path = os.path.join(path, name)
-        picked_path_in_zip = path_in_zip + '/' + name if path_in_zip else name
-        if os.path.isfile(picked_path):
+        picked_path_in_zip = path_in_zip + '/' + picked_path.name if path_in_zip else picked_path.name
+        if picked_path.is_file():
             zip_file.write(picked_path, picked_path_in_zip)
-        elif os.path.isdir(picked_path):
+        elif picked_path.is_dir():
             _add_to_zip(zip_file, picked_path, ignored, picked_path_in_zip)
 
 
 def add_to_zip(path, zip_path, ignored=None, prefix=None, append=True):
-    os.makedirs(os.path.dirname(zip_path), exist_ok=True)
-
-    if append and os.path.exists(zip_path):
-        zip_file = zipfile.ZipFile(zip_path, 'a')
-    else:
-        zip_file = zipfile.ZipFile(zip_path, 'w')
-    try:
+    zip_path = Path(zip_path)
+    zip_path.parent.mkdir(parents=True, exist_ok=True)
+    mode = 'a' if append and zip_path.exists() else 'w'
+    with zipfile.ZipFile(zip_path, mode) as zip_file:
         _add_to_zip(zip_file, path, ignored, path_in_zip=prefix)
-    except Exception:
-        zip_file.close()
-        if os.path.exists(zip_path):
-            os.remove(zip_path)
-        raise
-    else:
-        zip_file.close()
 
 
 def create_zip(path, zip_path, ignored=None, prefix=None):
     return add_to_zip(path, zip_path, ignored, prefix, append=False)
 
 
-def unzip(path, zip_path=None, zip_file=None):
-    if zip_file:
-        used_zip_file = zip_file
-    else:
-        # open zip file
-        if not zip_path:
-            return False, 'No zip file specified.'
-        try:
-            used_zip_file = zipfile.ZipFile(zip_path, 'r')
-        except Exception as e:
-            return False, 'Cannot open zip file (%s). Error: %s.' % (zip_path, e)
-    try:
-        # CRC test
-        zip_test = used_zip_file.testzip()
+def get_zip_content_size(zip_path, extensions_filter=None):
+    size = 0
+    with zipfile.ZipFile(zip_path, 'r') as zip_file:
+        zip_test = zip_file.testzip()
         if zip_test:
-            return False, 'CRC error on zip file. Error detected on: %s' % zip_test
-        # create destination path
-        try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-        except Exception as e:
-            return False, 'Cannot create folder "%s". Error is: %s' % (path, e)
-        # extract files
-        used_zip_file.extractall(path)
-        return True, ''
-    except AttributeError:
-        # for python 2.5
-        retcode = os.system('unzip -d %s %s' % (path, zip_path))
-        if retcode != 0:
-            return False, 'Unable to unzip file. The "unzip" command returned code %s.' % retcode
-        return True, ''
-    except Exception:
-        return False, 'File is not a valid zip.'
-    finally:
-        if not zip_file:
-            used_zip_file.close()
+            raise zipfile.BadZipFile(f'CRC error on zip file: "{zip_test}"')
+
+        for info in zip_file.infolist():
+            if extensions_filter is None or Path(info.filename).suffix.lower() in extensions_filter:
+                size += info.file_size
+    return size
+
+
+def unzip(path, zip_path, extensions_filter=None):
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(zip_path, 'r') as zip_file:
+        zip_test = zip_file.testzip()
+        if zip_test:
+            raise zipfile.BadZipFile(f'CRC error on zip file: "{zip_test}"')
+
+        members = None
+        if extensions_filter:
+            members = []
+            for name in zip_file.namelist():
+                ext = Path(name).suffix.lower()
+                if ext in extensions_filter:
+                    members.append(name)
+
+        if members is None or members:
+            zip_file.extractall(path=path, members=members)
