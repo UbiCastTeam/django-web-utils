@@ -48,13 +48,24 @@ shell:
 test:
 	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test_local
 
-test_local:PYTEST_ARGS := $(or ${PYTEST_ARGS},--cov=django_web_utils --cov-report html --cov-report term tests/testapp/tests)
+test_local:PYTEST_ARGS := $(or ${PYTEST_ARGS},--cov --cov-report html --cov-report term tests/testapp/tests)
 test_local:
 	pytest --reuse-db ${PYTEST_ARGS}
 
+test_install:
+	docker run --rm -it -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} -v ${CURDIR}:/opt/src ${DOCKER_IMG} make test_install_local
+
+test_install_local:
+	# List files that will be installed
+	sudo make clean
+	sudo rm /opt/venv/lib/python3.11/site-packages/django_web_utils
+	sudo cp -a /opt/src /tmp/src
+	cd /tmp/src && sudo /opt/venv/bin/pip install .
+	cd /tmp/src && sudo /opt/venv/bin/pip show -f django-web-utils
+
 generate_po:
 	# Generate po files from source
-	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_po_local
+	docker run --rm -it -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_po_local
 
 generate_po_local:
 	cd django_web_utils \
@@ -68,7 +79,7 @@ generate_po_local:
 
 generate_mo:
 	# Generate mo files from po files
-	docker run --rm -it -e DOCKER_TEST=1 -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_mo_local
+	docker run --rm -it -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_mo_local
 
 generate_mo_local:
 	cd django_web_utils \
@@ -97,5 +108,6 @@ translate:
 
 clean:
 	# Remove compiled Python files
+	rm -rf build django_web_utils.egg-info
 	find . -name '*.pyc' -delete
 	find . -name __pycache__ -type d -delete
