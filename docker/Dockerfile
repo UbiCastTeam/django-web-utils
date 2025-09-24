@@ -19,10 +19,12 @@ RUN apt-get -q update && apt-get -qy install --no-install-recommends \
 # Python venv
 RUN python3 -m venv /opt/venv --system-site-packages
 ENV PATH="/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-RUN pip install --upgrade pip setuptools wheel packaging
-COPY setup.py setup.py
-RUN pip install --no-cache-dir -e '.[dev]'
-RUN rm setup.py
+RUN pip install --upgrade pip setuptools wheel packaging uv
+# Install dependencies from pyproject.toml file using uv
+# (see issue https://github.com/pypa/pip/issues/11440)
+COPY pyproject.toml pyproject.toml
+RUN uv pip install -r pyproject.toml --extra dev
+RUN rm pyproject.toml
 RUN ln -sf /opt/src/django_web_utils /opt/venv/lib/python3.11/site-packages/django_web_utils
 
 RUN mkdir -p /opt/src
