@@ -23,6 +23,7 @@ requires-python = ">=3.11"
 dependencies = [
   "bleach[css] >= 6.0, < 7.0",
   "pillow >= 11",
+  "pytz",
 ]
 
 [project.optional-dependencies]
