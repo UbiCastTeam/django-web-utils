@@ -54,7 +54,7 @@ FileBrowser.prototype.init = function () {
     this.filesCountElement = document.getElementById('fm_total_nb_files');
     this.dropZoneElement = document.getElementById('fm_drop_zone');
     // load folder content
-    this.ordering = jsu.getCookie('browser-ordering', this.ordering);
+    this.ordering = window.localStorage.getItem('file-browser-ordering', this.ordering);
     if (this.ordering != 'name-asc') {
         document.getElementById('fm_files_ordering').value = this.ordering;
     }
@@ -138,9 +138,9 @@ FileBrowser.prototype.parseDirsResponse = function (xhr, response) {
     }
     this.flatTree = flatTree; // used for move function
     // open trees
-    const stored = jsu.getCookie('browser-tree');
+    const stored = window.localStorage.getItem('file-browser-tree');
     if (stored) {
-        this.opened = stored.split('→');
+        this.opened = stored.split('/');
     }
     for (let i = 0; i < this.opened.length; i++) {
         if (this.opened[i] in this.menuElements) {
@@ -330,7 +330,7 @@ FileBrowser.prototype.refresh = function () {
 FileBrowser.prototype.changeOrdering = function (order) {
     this.ordering = order;
     this.loadContent();
-    jsu.setCookie('browser-ordering', this.ordering);
+    window.localStorage.setItem('file-browser-ordering', this.ordering);
 };
 FileBrowser.prototype.onFileClick = function (file, evt) {
     // file or dir
@@ -877,7 +877,7 @@ FileBrowser.prototype.openTree = function (path) {
             if (!this.menuElements[current].classList.contains('opened')) {
                 this.menuElements[current].classList.add('opened');
                 this.opened.push(current);
-                jsu.setCookie('browser-tree', this.opened.join('→'));
+                window.localStorage.setItem('file-browser-tree', this.opened.join('/'));
             }
         } else {
             console.log('Error: no menu element for path: ' + current);
@@ -902,7 +902,7 @@ FileBrowser.prototype.closeTree = function (path) {
                 const tmp = this.opened.pop();
                 this.opened[i] = tmp;
             }
-            jsu.setCookie('browser-tree', this.opened.join('→'));
+            window.localStorage.setItem('file-browser-tree', this.opened.join('/'));
             break;
         }
     }
