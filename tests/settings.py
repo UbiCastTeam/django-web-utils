@@ -131,7 +131,7 @@ LOGGING = {
     'formatters': {
         'verbose': {
             '()': 'django.utils.log.ServerFormatter',
-            'format': '%(asctime)s.%(msecs)03d %(name)s %(levelname)s %(message)s',
+            'format': '%(asctime)s.%(msecs)03d pid:%(process)d %(name)s %(levelname)s %(message)s',
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
     },

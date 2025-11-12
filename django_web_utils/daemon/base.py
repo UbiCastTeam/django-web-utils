@@ -176,7 +176,8 @@ class BaseDaemon:
             'disable_existing_loggers': False,
             'formatters': {
                 'verbose': {
-                    'format': '%(asctime)s %(name)s %(levelname)s %(message)s',
+                    'format': '%(asctime)s.%(msecs)03d pid:%(process)d %(name)s %(levelname)s %(message)s',
+                    'datefmt': '%Y-%m-%d %H:%M:%S',
                 },
             },
             'handlers': {
