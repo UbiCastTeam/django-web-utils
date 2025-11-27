@@ -29,7 +29,8 @@ ALLOWED_ATTRS = {
     'td': {'rowspan', 'colspan'},
     'th': {'rowspan', 'colspan'},
     'source': {'src', 'type'},
-    'video': {'src', 'poster', 'loop', 'autoplay', 'muted', 'controls', 'playsinline', 'preload'}
+    'video': {'src', 'poster', 'loop', 'autoplay', 'muted', 'controls', 'playsinline', 'preload'},
+    'iframe': {'src', 'width', 'height', 'scrolling', 'allow', 'allowfullscreen', 'frameborder'}
 }
 ALLOWED_CSS = {
     'margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight',
@@ -42,8 +43,19 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
     """
     Function to remove all non allowed tags and attributes from the given HTML content.
     """
+    for key in ALLOWED_ATTRS.keys():
+        if key != '*':
+            ALLOWED_ATTRS[key] |= ALLOWED_ATTRS['*']
+
+    if extra_allowed_attrs:
+        for key in extra_allowed_attrs.keys():
+            if not ALLOWED_ATTRS.get(key):
+                ALLOWED_ATTRS[key] = extra_allowed_attrs[key]
+            else:
+                ALLOWED_ATTRS[key] |= extra_allowed_attrs[key]
+
     def iframe_attrs_check(tag, name, value):
-        if name in ('class', 'style', 'width', 'height', 'scrolling', 'allow', 'allowfullscreen', 'frameborder'):
+        if name != 'src' and name in ALLOWED_ATTRS['iframe']:
             return True
         if name == 'src' and value.startswith('https://'):
             return True
@@ -56,7 +68,7 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
                 if value.startswith(protocol):
                     return True
             return False
-        if name in ALLOWED_ATTRS['*'] or name in ALLOWED_ATTRS['img']:
+        if name in ALLOWED_ATTRS['img']:
             return True
         return False
 
@@ -66,22 +78,18 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
                 if value.startswith(protocol):
                     return True
             return False
-        if name in ALLOWED_ATTRS['*'] or name in ALLOWED_ATTRS['a']:
+        if name in ALLOWED_ATTRS['a']:
             return True
         return False
 
     allowed_attrs = deepcopy(ALLOWED_ATTRS)
-    for key in ALLOWED_ATTRS.keys():
-        if key != '*':
-            allowed_attrs[key] |= ALLOWED_ATTRS['*']
     tags = set(ALLOWED_TAGS)
     if allow_iframes:
         allowed_attrs['iframe'] = iframe_attrs_check
         tags |= {'iframe'}
     allowed_attrs['img'] = img_attrs_check
     allowed_attrs['a'] = a_attrs_check
-    if extra_allowed_attrs:
-        allowed_attrs.update(extra_allowed_attrs)
+
     css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_CSS)
     protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data'}
     return bleach.clean(html, tags=tags, attributes=allowed_attrs, css_sanitizer=css_sanitizer, protocols=protocols)
