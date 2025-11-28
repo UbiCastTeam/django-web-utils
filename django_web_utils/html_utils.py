@@ -23,9 +23,12 @@ ALLOWED_TAGS = {
     'pre', 'code', 'blockquote', 'video', 'source'
 }
 ALLOWED_ATTRS = {
-    '*': {'class', 'style'},
-    'a': {'href', 'target', 'title'},
-    'img': {'alt', 'src', 'title'},
+    '*': {
+        'class', 'style', 'title', 'aria-label', 'aria-live',
+        'role', 'aria-describedby', 'aria-description'
+    },
+    'a': {'href', 'target'},
+    'img': {'alt', 'src'},
     'td': {'rowspan', 'colspan'},
     'th': {'rowspan', 'colspan'},
     'source': {'src', 'type'},
