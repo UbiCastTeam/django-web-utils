@@ -91,7 +91,7 @@ def test_clean_html_tags(value, allow_iframes, expected):
 ])
 def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
     assert html_utils.clean_html_tags(value, extra_allowed_attrs=extra_allowed_attrs) == expected
-    assert sorted(html_utils.ALLOWED_ATTRS.keys()) == ['*', 'a', 'div', 'iframe', 'img', 'source', 'td', 'th', 'video']
+    assert sorted(html_utils.ALLOWED_ATTRS.keys()) == ['*', 'a', 'iframe', 'img', 'source', 'td', 'th', 'video']
 
 
 @pytest.mark.parametrize('value,max_length,margin,expected', [
