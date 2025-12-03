@@ -28,7 +28,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "django >= 4.2",
+  "django >= 5.2, < 6.0",
   "flake8",
   "psycopg[binary] >= 3.2",
   "pytest",
