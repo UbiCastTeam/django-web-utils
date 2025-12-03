@@ -14,7 +14,13 @@ from django_web_utils import html_utils
         '<iframe allow="autoplay"></iframe><img src="data:image/png;base64,ABCD"><a href="http://google.com"></a>', id='escape_multiple'),
     pytest.param(
         '<iframe src="https://localhost/test" allow="autoplay" nope="test"></iframe>', True,
-        '<iframe src="https://localhost/test" allow="autoplay"></iframe>', id='https_iframe_src'),
+        '<iframe src="https://localhost/test" allow="autoplay"></iframe>', id='iframe_https_src_allowed'),
+    pytest.param(
+        '<iframe src="http://localhost/test" allow="autoplay" nope="test"></iframe>', True,
+        '<iframe allow="autoplay"></iframe>', id='iframe_http_src_denied'),
+    pytest.param(
+        '<iframe src="/test" allow="autoplay" nope="test"></iframe>', True,
+        '<iframe src="/test" allow="autoplay"></iframe>', id='iframe_site_src_denied'),
     pytest.param(
         '<img src="data:image/png;base64,ABCD" style="width: 50%">', False,
         '<img src="data:image/png;base64,ABCD" style="width: 50%;">', id='conserve_base64_image'),

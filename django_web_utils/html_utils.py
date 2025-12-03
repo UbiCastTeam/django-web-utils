@@ -59,9 +59,9 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
                 allowed_attrs[key] |= extra_allowed_attrs[key]
 
     def iframe_attrs_check(tag, name, value):
-        if name != 'src' and name in allowed_attrs['iframe']:
-            return True
-        if name == 'src' and value.startswith('https://'):
+        if name == 'src':
+            return value.startswith(('https://', '/'))
+        if name in allowed_attrs['iframe']:
             return True
         return False
 
@@ -96,7 +96,13 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
 
     css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_CSS)
     protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data'}
-    return bleach.clean(html, tags=tags, attributes=callable_allowed_attrs, css_sanitizer=css_sanitizer, protocols=protocols)
+    return bleach.clean(
+        html,
+        tags=tags,
+        attributes=callable_allowed_attrs,
+        css_sanitizer=css_sanitizer,
+        protocols=protocols
+    )
 
 
 def strip_html_tags(html):
