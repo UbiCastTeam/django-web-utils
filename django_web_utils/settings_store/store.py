@@ -164,7 +164,7 @@ class SettingsStoreBase(Mapping):
         return f'{super().__repr__()}: {str(self)}'
 
     def __str__(self):
-        return str(self._mapping)
+        return str({key: type(value).__name__ for key, value in self._mapping.items()})
 
     # DEFAULTS
     @classmethod

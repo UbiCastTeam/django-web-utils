@@ -15,6 +15,12 @@ def get_new_setting_store(*args, **kwargs):
     return settings_store
 
 
+def test_settings_store__str():
+    settings_store = get_new_setting_store()
+    store_str = str(settings_store)
+    assert store_str == "{'STR_VAL': 'str', 'FLOAT_VAL': 'float', 'DICT_VAL': 'dict', 'LIST_VAL': 'list'}"
+
+
 def test_settings_store__subclassing__bad(django_assert_num_queries):
     with django_assert_num_queries(0):
         def subclass():
