@@ -36,13 +36,18 @@ ALLOWED_ATTRS = {
     'iframe': {'src', 'width', 'height', 'scrolling', 'allow', 'allowfullscreen', 'frameborder'}
 }
 ALLOWED_CSS = {
-    'margin', 'padding', 'color', 'background', 'vertical-align', 'font-weight',
-    'font-size', 'font-style', 'text-decoration', 'text-align', 'text-shadow',
-    'border', 'border-radius', 'box-shadow', 'width', 'height', 'overflow'
+    'margin-bottom', 'margin-left', 'margin-right', 'margin-top', 'margin',
+    'padding-bottom', 'padding-left', 'padding-right', 'padding-top', 'padding',
+    'color', 'background-image', 'background-color', 'background',
+    'font-weight', 'font-size', 'font-style',
+    'text-decoration', 'text-align', 'text-shadow',
+    'border-bottom', 'border-left', 'border-right', 'border-top', 'border',
+    'border-radius-bottom-left', 'border-radius-bottom-right', 'border-radius-top-left', 'border-radius-top-right', 'border-radius',
+    'box-shadow', 'width', 'height', 'overflow', 'vertical-align'
 }
 
 
-def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
+def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs={}, extra_allowed_css=set()):
     """
     Function to remove all non allowed tags and attributes from the given HTML content.
     """
@@ -51,12 +56,11 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
         if key != '*':
             allowed_attrs[key] |= allowed_attrs['*']
 
-    if extra_allowed_attrs:
-        for key in extra_allowed_attrs.keys():
-            if not allowed_attrs.get(key):
-                allowed_attrs[key] = extra_allowed_attrs[key]
-            else:
-                allowed_attrs[key] |= extra_allowed_attrs[key]
+    for key in extra_allowed_attrs.keys():
+        if not allowed_attrs.get(key):
+            allowed_attrs[key] = extra_allowed_attrs[key]
+        else:
+            allowed_attrs[key] |= extra_allowed_attrs[key]
 
     def iframe_attrs_check(tag, name, value):
         if name == 'src':
@@ -93,8 +97,8 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None):
         tags |= {'iframe'}
     callable_allowed_attrs['img'] = img_attrs_check
     callable_allowed_attrs['a'] = a_attrs_check
-
-    css_sanitizer = CSSSanitizer(allowed_css_properties=ALLOWED_CSS)
+    allowed_css = bleach.css_sanitizer.ALLOWED_CSS_PROPERTIES | bleach.css_sanitizer.ALLOWED_SVG_PROPERTIES | ALLOWED_CSS | extra_allowed_css
+    css_sanitizer = CSSSanitizer(allowed_css_properties=allowed_css)
     protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data'}
     return bleach.clean(
         html,

@@ -100,6 +100,52 @@ def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
     assert sorted(html_utils.ALLOWED_ATTRS.keys()) == ['*', 'a', 'iframe', 'img', 'source', 'td', 'th', 'video']
 
 
+@pytest.mark.parametrize('value,extra_allowed_css,expected', [
+    pytest.param(
+        '''
+            <div style="width: 100%;">
+                <div style="position: relative; padding-bottom: 56.25%; padding-top: 0; height: 0;">
+                    <iframe title="Test" frameborder="0" width="1200px" height="675px"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://test.test"
+                            type="text/html" allowscriptaccess="always" allowfullscreen="true" scrolling="yes" allownetworking="all">
+                    </iframe>
+                </div>
+            </div>
+        ''', set(),
+        '''
+            <div style="width: 100%;">
+                <div style="padding-bottom: 56.25%; padding-top: 0; height: 0;">
+                    <iframe title="Test" frameborder="0" width="1200px" height="675px" style="width: 100%; height: 100%;" src="https://test.test" allowfullscreen="true" scrolling="yes">
+                    </iframe>
+                </div>
+            </div>
+        ''', id='default_allowed_css'
+    ),
+    pytest.param(
+        '''
+            <div style="width: 100%;">
+                <div style="position: relative; padding-bottom: 56.25%; padding-top: 0; height: 0;">
+                    <iframe title="Test" frameborder="0" width="1200px" height="675px"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://test.test"
+                            type="text/html" allowscriptaccess="always" allowfullscreen="true" scrolling="yes" allownetworking="all">
+                    </iframe>
+                </div>
+            </div>
+        ''', {'position', 'top', 'left', 'right', 'bottom'},
+        '''
+            <div style="width: 100%;">
+                <div style="position: relative; padding-bottom: 56.25%; padding-top: 0; height: 0;">
+                    <iframe title="Test" frameborder="0" width="1200px" height="675px" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://test.test" allowfullscreen="true" scrolling="yes">
+                    </iframe>
+                </div>
+            </div>
+        ''', id='extra_allowed_css'
+    )
+])
+def test_clean_html__extra_css(value, extra_allowed_css, expected):
+    assert html_utils.clean_html_tags(value, allow_iframes=True, extra_allowed_css=extra_allowed_css) == expected
+
+
 @pytest.mark.parametrize('value,max_length,margin,expected', [
     pytest.param(
         '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>test</p>', 20, 0,
