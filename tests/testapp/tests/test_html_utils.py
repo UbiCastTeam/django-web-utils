@@ -7,6 +7,9 @@ from django_web_utils import html_utils
         '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"></iframe>', False,
         '&lt;iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"&gt;&lt;/iframe&gt;', id='escape_iframe'),
     pytest.param(
+        '<iframe width="560" height="315" src="https://www.youtube.com/embed/l8PMl7tUDIE?si=B-IQYsfP8otwVPXg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin"></iframe>', True,
+        '<iframe width="560" height="315" src="https://www.youtube.com/embed/l8PMl7tUDIE?si=B-IQYsfP8otwVPXg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin"></iframe>', id='allow_full_youtube_iframe'),
+    pytest.param(
         '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"></iframe>', True,
         '<iframe allow="autoplay"></iframe>', id='escape_iframe_src'),
     pytest.param(
