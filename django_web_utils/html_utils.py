@@ -33,7 +33,7 @@ ALLOWED_ATTRS = {
     'th': {'rowspan', 'colspan'},
     'source': {'src', 'type'},
     'video': {'src', 'poster', 'loop', 'autoplay', 'muted', 'controls', 'playsinline', 'preload'},
-    'iframe': {'src', 'width', 'height', 'scrolling', 'allow', 'allowfullscreen', 'frameborder'}
+    'iframe': {'src', 'width', 'height', 'scrolling', 'allow', 'allowfullscreen', 'frameborder', 'referrerpolicy'}
 }
 ALLOWED_CSS = {
     'margin-bottom', 'margin-left', 'margin-right', 'margin-top', 'margin',
