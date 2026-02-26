@@ -7,75 +7,75 @@ msgstr ""
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: fr\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.2.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: sysinfo.py:61
 msgid "Application version"
-msgstr "Version de l'application"
+msgstr "Versione dell'applicazione"
 
 #: sysinfo.py:62
 msgid "Application revision"
-msgstr "Révision de l'application"
+msgstr "Revisione dell'applicazione"
 
 #: sysinfo.py:63
 msgid "Python version"
-msgstr "Version de Python"
+msgstr "Versione Python"
 
 #: sysinfo.py:64
 msgid "Django version"
-msgstr "Version de Django"
+msgstr "Versione di Django"
 
 #: sysinfo.py:67
 msgid "Database engine"
-msgstr "Moteur de base de données"
+msgstr "Motore del database"
 
 #: sysinfo.py:69
 msgid "Django time zone"
-msgstr "Fuseau horaire de Django"
+msgstr "Fuso orario di Django"
 
 #: sysinfo.py:84
 msgid "Description"
-msgstr "Description"
+msgstr "Descrizione"
 
 #: sysinfo.py:85
 msgid "Kernel"
-msgstr "Noyau"
+msgstr "Kernel"
 
 #: sysinfo.py:86
 msgid "Hostname"
-msgstr "Nom d'hôte"
+msgstr "Nome host"
 
 #: sysinfo.py:87
 msgid "Time zone"
-msgstr "Fuseau horaire"
+msgstr "Fuso orario"
 
 #: sysinfo.py:91
 msgid "Uptime"
-msgstr "Durée de fonctionnement"
+msgstr "Tempo di attività"
 
 #: sysinfo.py:92
 msgid "Load"
-msgstr "Charge"
+msgstr "Carico"
 
 #: sysinfo.py:126 sysinfo.py:153
 msgid "Model"
-msgstr "Modèle"
+msgstr "Modello"
 
 #: sysinfo.py:127
 msgid "Cores"
-msgstr "Cœurs"
+msgstr "Nuclei"
 
 #: sysinfo.py:128
 msgid "Default frequency"
-msgstr "Fréquence nominale"
+msgstr "Frequenza predefinita"
 
 #: sysinfo.py:169
 msgid "Software"
-msgstr "Logiciel"
+msgstr "Software"
 
 #: sysinfo.py:172
 msgid "OS"
@@ -95,194 +95,194 @@ msgstr "GPU"
 
 #: sysinfo.py:198
 msgid "Total"
-msgstr "Total"
+msgstr "Totale"
 
 #: sysinfo.py:198 sysinfo.py:199 sysinfo.py:200
 msgid "GB"
-msgstr "Go"
+msgstr "GB"
 
 #: sysinfo.py:199
 msgid "Free"
-msgstr "Libre"
+msgstr "Gratuito"
 
 #: sysinfo.py:200
 msgid "Cached"
-msgstr "En cache"
+msgstr "In cache"
 
 #: sysinfo.py:202
 msgid "Failed to get information"
-msgstr "Échec de l'obtention des informations"
+msgstr "Impossibile ottenere informazioni"
 
 #: sysinfo.py:203
 msgid "Memory"
-msgstr "Mémoire"
+msgstr "Memoria"
 
 #: sysinfo.py:210
 msgid "Network"
-msgstr "Réseau"
+msgstr "Rete"
 
 #: sysinfo.py:217
 msgid "Sensors"
-msgstr "Capteurs"
+msgstr "Sensori"
 
 #: templates/monitoring/base.html:6 templates/monitoring/base.html:8
 msgid "Daemons monitoring"
-msgstr "Surveillance des démons"
+msgstr "Monitoraggio dei demoni"
 
 #: templates/monitoring/daemon.html:13 templates/monitoring/daemon.html:47
 #: templates/monitoring/panel.html:21
 msgid "Status"
-msgstr "Statut"
+msgstr "Stato"
 
 #: templates/monitoring/daemon.html:15 templates/monitoring/daemon.html:52
 msgid "Commands"
-msgstr "Commandes"
+msgstr "Comandi"
 
 #: templates/monitoring/daemon.html:18 templates/monitoring/daemon.html:60
 msgid "Log file"
-msgstr "Fichier de journalisation"
+msgstr "File di registro"
 
 #: templates/monitoring/daemon.html:23 templates/monitoring/daemon.html:48
 #: templates/monitoring/panel.html:51
 msgid "Loading"
-msgstr "Chargement"
+msgstr "Caricamento"
 
 #: templates/monitoring/daemon.html:27 templates/monitoring/daemon.html:54
 #: templates/monitoring/panel.html:64
 msgid "Stop"
-msgstr "Arrêter"
+msgstr "Stop"
 
 #: templates/monitoring/daemon.html:32 templates/monitoring/log_bar.html:25
 msgid "Last modification:"
-msgstr "Dernière modification :"
+msgstr "Ultima modifica:"
 
 #: templates/monitoring/daemon.html:35
 msgid "File size:"
-msgstr "Taille du fichier :"
+msgstr "Dimensione del file:"
 
 #: templates/monitoring/daemon.html:38 templates/monitoring/daemon.html:73
 msgid "See"
-msgstr "Voir"
+msgstr "Vedi"
 
 #: templates/monitoring/daemon.html:39 templates/monitoring/daemon.html:74
 msgid "See tail"
-msgstr "Voir la fin"
+msgstr "Vedi coda"
 
 #: templates/monitoring/daemon.html:63
 msgid "Last modification"
-msgstr "Dernière modification"
+msgstr "Ultima modifica"
 
 #: templates/monitoring/daemon.html:67
 msgid "File size"
-msgstr "Taille du fichier"
+msgstr "Dimensione del file"
 
 #: templates/monitoring/daemon.html:71 templates/monitoring/panel.html:24
 msgid "Actions"
-msgstr "Actions"
+msgstr "Azioni"
 
 #: templates/monitoring/log.html:13
 msgid "Log file is empty."
-msgstr "Le fichier de journalisation est vide."
+msgstr "Il file di registro è vuoto."
 
 #: templates/monitoring/log_bar.html:4 templates/monitoring/panel.html:13
 msgid "Back"
-msgstr "Retour"
+msgstr "Indietro"
 
 #: templates/monitoring/log_bar.html:7
 msgid "Hostname:"
-msgstr "Nom d'hôte :"
+msgstr "Hostname:"
 
 #: templates/monitoring/log_bar.html:10
 msgid "File:"
-msgstr "Fichier :"
+msgstr "File:"
 
 #: templates/monitoring/log_bar.html:18
 msgid "Refresh"
-msgstr "Rafraîchir"
+msgstr "Aggiornare"
 
 #: templates/monitoring/log_bar.html:21
 msgid "Size:"
-msgstr "Taille :"
+msgstr "Dimensioni:"
 
 #: templates/monitoring/log_bar.html:29
 msgid "See complete file"
-msgstr "Voir le fichier complet"
+msgstr "Vedi file completo"
 
 #: templates/monitoring/log_bar.html:29
 msgid "See only end"
-msgstr "Voir seulement la fin"
+msgstr "Vedere solo la fine"
 
 #: templates/monitoring/log_bar.html:32
 msgid "See raw content"
-msgstr "Voir le contenu brut"
+msgstr "Vedere il contenuto grezzo"
 
 #: templates/monitoring/panel.html:21
 msgid "Name"
-msgstr "Nom"
+msgstr "Nome"
 
 #: templates/monitoring/panel.html:21
 msgid "Host:"
-msgstr "Hôte :"
+msgstr "Ospite:"
 
 #: templates/monitoring/panel.html:22
 msgid "Last log modification"
-msgstr "Dernière modification du journal"
+msgstr "Ultima modifica del registro"
 
 #: templates/monitoring/panel.html:23
 msgid "Log file size"
-msgstr "Taille du fichier de journal"
+msgstr "Dimensione del file di registro"
 
 #: templates/monitoring/panel.html:27
 msgid "Start all"
-msgstr "Tout démarrer"
+msgstr "Iniziare tutti"
 
 #: templates/monitoring/panel.html:28
 msgid "Stop all"
-msgstr "Tout arrêter"
+msgstr "Fermare tutti"
 
 #: templates/monitoring/panel.html:29
 msgid "Restart all"
-msgstr "Tout redémarrer"
+msgstr "Riavviare tutti"
 
 #: templates/monitoring/panel.html:49 views.py:148
 msgid "log file"
-msgstr "fichier de journalisation"
+msgstr "file di log"
 
 #: templates/monitoring/panel.html:57
 msgid "See log"
-msgstr "Voir le journal"
+msgstr "Vedi registro"
 
 #: templates/monitoring/panel.html:62
 msgid "Start"
-msgstr "Démarrer"
+msgstr "Inizio"
 
 #: templates/monitoring/panel.html:66
 msgid "Restart"
-msgstr "Redémarrer"
+msgstr "Riavvio"
 
 #: utils.py:36
 msgid "Invalid command."
-msgstr "Commande invalide."
+msgstr "Comando non valido."
 
 #: utils.py:39
 msgid "No valid target for command."
-msgstr "Aucune cible valide pour la commande."
+msgstr "Nessun obiettivo valido per il comando."
 
 #: utils.py:41
 msgid "Given daemon class is not a subclass of Django web utils BaseDaemon."
-msgstr "La classe donnée n'est pas une sous classe de BaseDaemon de Django web utils."
+msgstr "La classe demone data non è una sottoclasse di Django web utils BaseDaemon."
 
 #: utils.py:49
 msgid "The daemon script cannot be found."
-msgstr "Le script du démon est introuvable."
+msgstr "Lo script del demone non può essere trovato."
 
 #: utils.py:113
 msgid "The requested suffix does not exist."
-msgstr "Le suffixe demandé n'existe pas."
+msgstr "Il suffisso richiesto non esiste."
 
 #: utils.py:138
 msgid "Partial read of gzip files is not supported. Please get the complete file to read its content."
-msgstr "La lecture partielle des fichiers gzip n'est pas prise en charge. Veuillez obtenir le fichier complet pour en lire le contenu."
+msgstr "La lettura parziale dei file gzip non è supportata. È necessario ottenere il file completo per leggerne il contenuto."
 
 #: utils.py:154
 #, python-format
@@ -291,28 +291,28 @@ msgid ""
 "Only file tail and raw file are accessible.\n"
 "Warning: getting the raw file can saturate system memory."
 msgstr ""
-"Fichier trop volumineux : %s.\n"
-"Seul la fin du fichier et le fichier brut sont accessibles.\n"
-"Attention : l'obtention du fichier brut peut saturer la mémoire du système."
+"File troppo grande: %s.\n"
+"Sono accessibili solo la coda del file e il file grezzo.\n"
+"Attenzione: l'accesso al file grezzo può saturare la memoria del sistema."
 
 #: utils.py:162
 msgid "Unable to display log file."
-msgstr "Impossible d'afficher le fichier de journalisation."
+msgstr "Impossibile visualizzare il file di registro."
 
 #: utils.py:162
 msgid "Error:"
-msgstr "Erreur :"
+msgstr "Errore:"
 
 #: views.py:95
 msgid "The daemon name is invalid:"
-msgstr "Le nom du démon n'est pas valide :"
+msgstr "Il nome del demone non è valido:"
 
 #: views.py:102
 #, python-format
 msgid "The command \"%(cmd)s\" on \"%(name)s\" was successfully executed."
-msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a été exécutée avec succès."
+msgstr "Il comando \"%(cmd)s\" su \"%(name)s\" è stato eseguito con successo."
 
 #: views.py:104
 #, python-format
 msgid "The command \"%(cmd)s\" on \"%(name)s\" has failed."
-msgstr "La commande \"%(cmd)s\" sur \"%(name)s\" a échoué."
+msgstr "Il comando \"%(cmd)s\" su \"%(name)s\" è fallito."

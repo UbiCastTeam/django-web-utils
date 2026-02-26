@@ -7,251 +7,251 @@ msgstr ""
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: fr\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.2.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: admin_utils.py:12
 msgid "Export selected objects as CSV file"
-msgstr "Exporter les objets sélectionnés dans un fichier CSV"
+msgstr "Esportazione degli oggetti selezionati come file CSV"
 
 #: admin_utils.py:110
 msgid "CSV export"
-msgstr "Export CSV"
+msgstr "Esportazione CSV"
 
 #: antivirus_utils.py:47
 msgid "Your request was reported and if you send again infected files, you will be banned."
-msgstr "Votre requête a été signalée et si vous envoyez à nouveau des fichiers infectés, vous serez banni."
+msgstr "La tua richiesta è stata segnalata e se invierai nuovamente file infetti, sarai bannato."
 
 #: antivirus_utils.py:48
 msgid "Failed to run antivirus scanner."
-msgstr "Échec de l'exécution du scanner antivirus."
+msgstr "Impossibile eseguire la scansione antivirus."
 
 #: antivirus_utils.py:49
 msgid "Cannot scan file because it does not exist."
-msgstr "Impossible d'analyser le fichier car il n'existe pas."
+msgstr "Impossibile eseguire la scansione del file perché non esiste."
 
 #: antivirus_utils.py:50
 msgid "Your file was rejected because it is infected."
-msgstr "Votre fichier a été rejeté car il est infecté."
+msgstr "Il file è stato rifiutato perché infetto."
 
 #: antivirus_utils.py:51
 msgid "Cannot scan file because it is not a file."
-msgstr "Impossible d'analyser le fichier car il ne s'agit pas d'un fichier."
+msgstr "Impossibile eseguire la scansione del file perché non è un file."
 
 #: antivirus_utils.py:52
 msgid "Cannot scan file because it is neither a file nor a directory."
-msgstr "Impossible d'analyser le fichier car ce n'est ni un fichier ni un répertoire."
+msgstr "Impossibile eseguire la scansione del file perché non è né un file né una directory."
 
 #: antivirus_utils.py:53
 msgid "Failed to scan your file with the antivirus."
-msgstr "L'analyse de votre fichier par l'antivirus a échoué."
+msgstr "Non è riuscita la scansione del file con l'antivirus."
 
 #: auth_utils.py:40
 msgid "Your account is disabled."
-msgstr "Votre compte est désactivé."
+msgstr "Il vostro account è disattivato."
 
 #: auth_utils.py:42
 msgid "Your username and password do not match."
-msgstr "Votre nom d'utilisateur et votre mot de passe ne correspondent pas."
+msgstr "Il nome utente e la password non corrispondono."
 
 #: auth_utils.py:44
 msgid "Authentication required."
-msgstr "Authentification requise."
+msgstr "È richiesta l'autenticazione."
 
 #: auth_utils.py:47
 msgid "Access authentication"
-msgstr "Authentification d'accès"
+msgstr "Autenticazione di accesso"
 
 #: auth_utils.py:83 auth_utils.py:88
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
-msgstr "Le mot de passe doit contenir au minimum 3 types de caractères (les types sont : lettres minuscules, lettres majuscules, chiffres et caractères spéciaux)."
+msgstr "La password deve contenere almeno 3 tipi di caratteri (i tipi sono lettere minuscole, lettere maiuscole, cifre e caratteri speciali)."
 
 #: files_utils.py:63
 msgid "B"
-msgstr "o"
+msgstr "B"
 
 #: forms_utils.py:119 settings_store/forms.py:48
 msgid "Yes"
-msgstr "Oui"
+msgstr "Sì"
 
 #: forms_utils.py:121 settings_store/forms.py:50
 msgid "No"
-msgstr "Non"
+msgstr "No"
 
 #: json_utils.py:89
 msgid "Invalid request method"
-msgstr "Méthode de requête invalide"
+msgstr "Metodo di richiesta non valido"
 
 #: json_utils.py:94
 msgid "Authentication required"
-msgstr "Authentification requise"
+msgstr "È richiesta l'autenticazione"
 
 #: json_utils.py:125
 msgid "Bad request"
-msgstr "Requête invalide"
+msgstr "Richiesta negativa"
 
 #: json_utils.py:127
 msgid "Access denied"
-msgstr "Accès refusé"
+msgstr "Accesso negato"
 
 #: json_utils.py:129
 msgid "Page not found"
-msgstr "Page introuvable"
+msgstr "Pagina non trovata"
 
 #: json_utils.py:134
 msgid "Infected file detected"
-msgstr "Fichier infecté détecté"
+msgstr "Rilevato un file infetto"
 
 #: json_utils.py:143
 msgid "Internal server error"
-msgstr "Erreur interne au serveur"
+msgstr "Errore interno del server"
 
 #: ldap_utils.py:74
 msgid "Error when initializing connection with LDAP server."
-msgstr "Erreur lors de l'initialisation de la connexion avec le serveur LDAP."
+msgstr "Errore durante l'inizializzazione della connessione con il server LDAP."
 
 #: ldap_utils.py:74 ldap_utils.py:102 ldap_utils.py:129 ldap_utils.py:280
 msgid "Error:"
-msgstr "Erreur :"
+msgstr "Errore:"
 
 #: ldap_utils.py:102
 msgid "Error when trying to authenticate on LDAP server."
-msgstr "Erreur lors de l'authentification sur le serveur LDAP."
+msgstr "Errore durante il tentativo di autenticazione sul server LDAP."
 
 #: ldap_utils.py:128
 msgid "Search on LDAP server failed."
-msgstr "Recherche échouée sur le serveur LDAP."
+msgstr "La ricerca sul server LDAP non è riuscita."
 
 #: ldap_utils.py:131
 msgid "Arguments:"
-msgstr "Arguments :"
+msgstr "Argomenti:"
 
 #: ldap_utils.py:165
 msgid "User not found."
-msgstr "Utilisateur introuvable."
+msgstr "Utente non trovato."
 
 #: ldap_utils.py:177
 msgid "Group not found."
-msgstr "Groupe introuvable."
+msgstr "Gruppo non trovato."
 
 #: ldap_utils.py:280
 msgid "Error when trying to get user information."
-msgstr "Erreur lors de la récupération des informations de l'utilisateur."
+msgstr "Errore durante il tentativo di ottenere informazioni sull'utente."
 
 #: ldap_utils.py:289
 msgid "Login failed (however the user exists in LDAP)."
-msgstr "Échec de l'authentification (l'utilisateur existe bien dans LDAP)."
+msgstr "Accesso fallito (tuttavia l'utente esiste in LDAP)."
 
 #: ldap_utils.py:291
 msgid "Login succeeded."
-msgstr "Authentification réussie."
+msgstr "Accesso riuscito."
 
 #: ldap_utils.py:292
 #, python-format
 msgid "User \"%s\" data:"
-msgstr "Données de l'utilisateur \"%s\" :"
+msgstr "Dati dell'utente \"%s\":"
 
 #: ldap_utils.py:297
 msgid "User groups:"
-msgstr "Groupes de l'utilisateur :"
+msgstr "Gruppi di utenti:"
 
 #: ldap_utils.py:302
 msgid "Error when trying to get groups."
-msgstr "Erreur lors de la récupération des groupes de l'utilisateur."
+msgstr "Errore durante il tentativo di ottenere i gruppi."
 
 #: ldap_utils.py:313
 msgid "No groups found."
-msgstr "Aucun groupe n'a été trouvé."
+msgstr "Nessun gruppo trovato."
 
 #: magic_login/forms.py:11
 msgid "Email address"
-msgstr "Adresse e-mail"
+msgstr "Indirizzo e-mail"
 
 #: magic_login/forms.py:16
 msgid "Invalid email address."
-msgstr "L'adresse e-mail n'est pas valide."
+msgstr "Indirizzo e-mail non valido."
 
 #: magic_login/views.py:115
 msgid "The submitted form is incorrect. Please correct all errors and send it again."
-msgstr "Le formulaire saisi est incorrect. Veuillez corriger les erreurs puis le renvoyer."
+msgstr "Il modulo inviato non è corretto. Si prega di correggere tutti gli errori e di inviarlo nuovamente."
 
 #: magic_login/views.py:128
 msgid "The requested email address is not allowed."
-msgstr "L'adresse e-mail demandée n'est pas autorisée."
+msgstr "L'indirizzo e-mail richiesto non è consentito."
 
 #: magic_login/views.py:137
 #, python-format
 msgid "Link to authenticate on %s"
-msgstr "Lien pour s'authentifier sur %s"
+msgstr "Link per l'autenticazione su %s"
 
 #: magic_login/views.py:148
 msgid "Here is the link to log in on the site:"
-msgstr "Voici le lien pour s'authentifier sur le site :"
+msgstr "Ecco il link per accedere al sito:"
 
 #: magic_login/views.py:149
 msgid "If you did not request this link, ignore this email."
-msgstr "Si vous n'avez pas demandé ce lien, ignorez cet e-mail."
+msgstr "Se non avete richiesto questo link, ignorate questa e-mail."
 
 #: magic_login/views.py:162
 msgid "Failed to send the email:"
-msgstr "L'envoi de l'e-mail a échoué :"
+msgstr "Non è stato possibile inviare l'e-mail:"
 
 #: magic_login/views.py:164
 msgid "An email has been sent to you with the link to log in."
-msgstr "Un e-mail vous a été envoyé avec le lien pour vous connecter."
+msgstr "Le è stata inviata un'e-mail con il link per accedere."
 
 #: magic_login/views.py:169
 msgid "Your session has expired, please get a new link to retry."
-msgstr "Votre session a expiré, veuillez obtenir un nouveau lien pour réessayer."
+msgstr "La sessione è scaduta, si prega di ottenere un nuovo link per riprovare."
 
 #: magic_login/views.py:173
 msgid "Your request is invalid."
-msgstr "Votre requête n'est pas valide."
+msgstr "La richiesta non è valida."
 
 #: settings_store/forms.py:81 settings_utils.py:64 settings_utils.py:125
 msgid "No changes to save."
-msgstr "Aucune modification à sauvegarder."
+msgstr "Non ci sono modifiche da salvare."
 
 #: settings_store/forms.py:84
 msgid "Your changes will be active in a few seconds."
-msgstr "Vos modifications seront actives dans quelques secondes."
+msgstr "Le modifiche saranno attive in pochi secondi."
 
 #: settings_utils.py:69 settings_utils.py:131
 #, python-format
 msgid "Invalid setting name: %s"
-msgstr "Nom de paramètre non valide : %s"
+msgstr "Nome dell'impostazione non valido: %s"
 
 #: settings_utils.py:79 settings_utils.py:141
 msgid "Your changes were not saved but were applied to the running software."
-msgstr "Vos modifications n'ont pas été sauvegardées mais ont été appliquées à l'application en cours."
+msgstr "Le modifiche non sono state salvate, ma sono state applicate al software in esecuzione."
 
 #: settings_utils.py:113 settings_utils.py:170
 msgid "Unable to write configuration file:"
-msgstr "Impossible d'écrire le fichier de configuration :"
+msgstr "Impossibile scrivere il file di configurazione:"
 
 #: settings_utils.py:115 settings_utils.py:172
 msgid "Your changes have been applied. The service will be reloaded in a few seconds to make them effective."
-msgstr "Vos modifications ont été appliquées. Le service sera rechargé dans quelques secondes pour les rendre effectives."
+msgstr "Le modifiche sono state applicate. Il servizio verrà ricaricato tra qualche secondo per renderle effettive."
 
 #: templates/forms_utils/password_toggle_input.html:6
 msgctxt "value"
 msgid "Hide"
-msgstr "Cacher"
+msgstr "Nascondere"
 
 #: templates/forms_utils/password_toggle_input.html:6
 msgctxt "value"
 msgid "Edit"
-msgstr "Éditer"
+msgstr "Modifica"
 
 #: templates/forms_utils/password_toggle_input.html:9
 msgctxt "value"
 msgid "Copied!"
-msgstr "Copié !"
+msgstr "Copiato!"
 
 #: templates/forms_utils/password_toggle_input.html:9
 msgctxt "value"
 msgid "Copy"
-msgstr "Copier"
+msgstr "Copia"

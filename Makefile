@@ -99,6 +99,7 @@ translate:
 		--target-language ES \
 		--target-language FI \
 		--target-language FR \
+		--target-language IT \
 		--target-language NL \
 		--glossaries-dir deepl_glossaries \
 		--mark-language-fuzzy FR \

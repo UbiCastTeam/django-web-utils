@@ -1,15 +1,11 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-01 08:20+0000\n"
-"PO-Revision-Date: 2021-12-24 14:33+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"POT-Creation-Date: 2026-02-26 16:09+0000\n"
+"PO-Revision-Date: 2026-02-26 16:09+0000\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
 "MIME-Version: 1.0\n"

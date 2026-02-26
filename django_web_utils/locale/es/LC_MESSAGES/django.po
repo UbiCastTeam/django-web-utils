@@ -1,15 +1,11 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-15 16:23+0000\n"
-"PO-Revision-Date: 2021-12-24 14:33+0100\n"
-"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
+"POT-Creation-Date: 2026-02-26 16:09+0000\n"
+"PO-Revision-Date: 2026-02-26 16:09+0000\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -287,22 +283,22 @@ msgstr "No se puede escribir el archivo de configuración:"
 msgid "Your changes have been applied. The service will be reloaded in a few seconds to make them effective."
 msgstr "Sus cambios se han aplicado. El servicio se recargará en unos segundos para hacerlos efectivos."
 
-#: templates/forms_utils/password_toggle_input.html:7
+#: templates/forms_utils/password_toggle_input.html:6
 msgctxt "value"
 msgid "Hide"
 msgstr "Ocultar"
 
-#: templates/forms_utils/password_toggle_input.html:7
+#: templates/forms_utils/password_toggle_input.html:6
 msgctxt "value"
 msgid "Edit"
 msgstr "Editar"
 
-#: templates/forms_utils/password_toggle_input.html:11
+#: templates/forms_utils/password_toggle_input.html:9
 msgctxt "value"
 msgid "Copied!"
 msgstr "¡Copiado!"
 
-#: templates/forms_utils/password_toggle_input.html:11
+#: templates/forms_utils/password_toggle_input.html:9
 msgctxt "value"
 msgid "Copy"
 msgstr "Copia"

@@ -1,17 +1,12 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-15 16:27+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2026-02-26 16:26+0000\n"
+"PO-Revision-Date: 2026-02-26 16:09+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -390,75 +385,3 @@ msgstr "Komento \"%(cmd)s\" on \"%(name)s\" suoritettiin onnistuneesti."
 #, python-format
 msgid "The command \"%(cmd)s\" on \"%(name)s\" has failed."
 msgstr "Komento \"%(cmd)s\" on \"%(name)s\" on epäonnistunut."
-
-# Translated by DeepL.
-#~ msgid "Default configuration"
-#~ msgstr "Oletuskonfiguraatio"
-
-# Translated by DeepL.
-#~ msgid "Configuration override"
-#~ msgstr "Konfiguraation ohitus"
-
-# Translated by DeepL.
-#~ msgid "Configuration file size:"
-#~ msgstr "Konfiguraatiotiedoston koko:"
-
-# Translated by DeepL.
-#~ msgid "Current configuration file path:"
-#~ msgstr "Nykyisen määritystiedoston polku:"
-
-# Translated by DeepL.
-#~ msgid "Reset file"
-#~ msgstr "Nollaa tiedosto"
-
-# Translated by DeepL.
-#~ msgid "Apply modifications"
-#~ msgstr "Sovelletaan muutoksia"
-
-# Translated by DeepL.
-#~ msgid "Configure"
-#~ msgstr "Määritä"
-
-# Translated by DeepL.
-#~ msgid "config file"
-#~ msgstr "konfigurointitiedosto"
-
-# Translated by DeepL.
-#~ msgid "This daemon has no configuration file."
-#~ msgstr "Tällä palvelimella ei ole konfigurointitiedostoa."
-
-# Translated by DeepL.
-#~ msgid "Unable to write configuration file."
-#~ msgstr "Konfiguraatiotiedoston kirjoittaminen ei onnistu."
-
-# Translated by DeepL.
-#~ msgid "Configuration file updated."
-#~ msgstr "Konfiguraatiotiedosto päivitetty."
-
-# Translated by DeepL.
-#~ msgid "Configuration file cleared."
-#~ msgstr "Määritystiedosto tyhjennetty."
-
-# Translated by DeepL.
-#, python-format
-#~ msgid ""
-#~ "File too large: %s.\n"
-#~ "Only the raw file is accessible.\n"
-#~ "Warning: getting the raw file can saturate system memory."
-#~ msgstr ""
-#~ "Tiedosto liian suuri: %s.\n"
-#~ "Vain raakatiedosto on käytettävissä.\n"
-#~ "Varoitus: Raakatiedoston hakeminen voi kuormittaa järjestelmän muistia."
-
-# Translated by DeepL.
-#~ msgid "Unable to display configuration file."
-#~ msgstr "Konfiguraatiotiedostoa ei voida näyttää."
-
-# Translated by DeepL.
-#~ msgid "Unable to read default configuration file."
-#~ msgstr "Oletuskokoonpanotiedostoa ei pystytä lukemaan."
-
-# Translated by DeepL.
-#, python-format
-#~ msgid "Edit configuration file: %s"
-#~ msgstr "Muokkaa asetustiedostoa: %s"
