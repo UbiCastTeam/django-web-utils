@@ -167,8 +167,6 @@ class BaseDaemon:
             self.exit(131)
 
         loggers = logging.Logger.manager.loggerDict
-        if list(loggers.keys()):
-            logger.debug('Resetting loggers.')
 
         # configure logging and disable all existing loggers
         LOGGING_CONF = {
