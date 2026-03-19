@@ -3,11 +3,17 @@ from pathlib import Path
 
 import pytest
 from django.core import mail
+from django.core.cache import cache
 
 
 @pytest.fixture(autouse=True)
 def clear_mailbox():
     mail.outbox = []
+
+
+@pytest.fixture(autouse=True)
+def clear_cache():
+    cache.clear()
 
 
 @pytest.fixture()
