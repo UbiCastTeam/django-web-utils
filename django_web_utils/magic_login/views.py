@@ -77,7 +77,7 @@ class MagicLoginView(View):
             if not isinstance(data, dict):
                 raise ValueError('A dict is expected.')
         except (json.JSONDecodeError, ValueError) as err:
-            logger.error('Failed to parse content of "%s" file: %s', cls.users_json_path, err)
+            logger.warning('Failed to parse content of "%s" file: %s', cls.users_json_path, err)
             return {}
         return data
 

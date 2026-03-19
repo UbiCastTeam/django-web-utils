@@ -37,7 +37,7 @@ def recursive_dirs(path):
     try:
         files_names = os.listdir(path)
     except OSError as e:
-        logger.error(e)
+        logger.warning('Failed to list dirs of "%s": %s', path, e)
     else:
         files_names.sort(key=lambda f: f.lower())
         for file_name in files_names:
@@ -99,7 +99,7 @@ def storage_content(request, namespace=None):
     try:
         files_names = os.listdir(folder_path)
     except OSError as e:
-        logger.error(e)
+        logger.warning('Failed to list dirs of "%s": %s', path, e)
         return JsonResponse(dict(error=str(e)), status=400)
     if '.htaccess' in files_names:
         files_names.remove('.htaccess')

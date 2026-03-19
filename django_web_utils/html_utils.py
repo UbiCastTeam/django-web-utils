@@ -248,5 +248,5 @@ def get_short_text(html_text, max_length=300, margin=100):
             parser = _TextHTMLParser(html_text, max_length)
             return parser.get_short()
         except Exception as e:
-            logger.error('Unable to create short html text. %s' % e)
+            logger.warning('Unable to create short html text. %s' % e)
     return ''

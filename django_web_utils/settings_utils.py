@@ -109,7 +109,7 @@ def set_settings(**data: Any) -> tuple[bool, str]:
             # Write settings
             override_path.write_text(content)
         except OSError as e:
-            logger.error('Unable to write configuration file. %s', e)
+            logger.warning('Unable to write configuration file. %s', e)
             return False, '%s %s' % (_('Unable to write configuration file:'), e)
 
     msg = _('Your changes have been applied. The service will be reloaded in a few seconds to make them effective.')
@@ -166,7 +166,7 @@ def remove_settings(*keys: str) -> tuple[bool, str]:
                 else:
                     override_path.write_text(content)
             except OSError as e:
-                logger.error('Unable to write configuration file. %s' % e)
+                logger.warning('Unable to write configuration file. %s' % e)
                 return False, '%s %s' % (_('Unable to write configuration file:'), e)
 
     msg = _('Your changes have been applied. The service will be reloaded in a few seconds to make them effective.')

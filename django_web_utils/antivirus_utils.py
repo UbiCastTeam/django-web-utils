@@ -502,7 +502,7 @@ def antivirus_path_validator(path, remove=True):
         report = clamav.multi_scan(str(path))
         logger.debug('Scanned with antivirus path "%s": %s', path, report)
     except Exception as err:
-        logger.error('Scan failed for path "%s":\n%s', path, traceback.format_exc())
+        logger.warning('Scan failed for path "%s":\n%s', path, traceback.format_exc())
         if remove:
             _remove_infected_file(path)
         raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}')
@@ -518,7 +518,7 @@ def antivirus_path_validator(path, remove=True):
                 raise FileInfectedError(INFECTED_MESSAGE)
             raise ValidationError(INFECTED_MESSAGE)
         elif report.get('ERROR'):
-            logger.error(
+            logger.warning(
                 'Path "%s" cannot be scanned%s:\n%s',
                 path, (', it will be removed' if remove else ''), report['files']
             )
@@ -550,7 +550,7 @@ def antivirus_stream_validator(stream, remove=True, skip_closed=True):
         report = clamav.instream(stream)
         logger.debug('Scanned with antivirus file "%s": %s', stream.name, report)
     except Exception as err:
-        logger.error('Scan failed for stream "%s":\n%s', stream.name, traceback.format_exc())
+        logger.warning('Scan failed for stream "%s":\n%s', stream.name, traceback.format_exc())
         if remove and getattr(stream, 'path', None):
             _remove_infected_file(Path(stream.path))
         raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}')
@@ -566,7 +566,7 @@ def antivirus_stream_validator(stream, remove=True, skip_closed=True):
                 raise FileInfectedError(INFECTED_MESSAGE)
             raise ValidationError(INFECTED_MESSAGE)
         elif report.get('ERROR'):
-            logger.error(
+            logger.warning(
                 'Stream "%s" cannot be scanned%s:\n%s',
                 stream.name, (', it will be removed' if remove else ''), report['files']
             )

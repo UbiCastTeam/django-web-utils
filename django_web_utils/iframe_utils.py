@@ -76,7 +76,11 @@ def iframe_view(function=None, methods=None, login_url=None, login_required=Fals
                 return render(request, 'iframe/404.html', status=404)
             except Exception:
                 logger = logging.getLogger('django.request')
-                logger.error('Internal server error: %s', request.get_full_path(), exc_info=traceback.extract_stack(), extra={'status_code': 500, 'request': request})
+                logger.error(
+                    'Internal server error: %s', request.get_full_path(),
+                    exc_info=traceback.extract_stack(),
+                    extra={'status_code': 500, 'request': request}
+                )
                 response = render(request, 'iframe/500.html', status=500)
                 response._has_been_logged = True
                 return response

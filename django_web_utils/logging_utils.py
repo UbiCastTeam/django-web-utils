@@ -41,7 +41,7 @@ class ThrottledAdminEmailHandler(AdminEmailHandler):
         try:
             counter = self.increment_counter()
         except Exception as err:
-            logger.error(
+            logger.warning(
                 'Failed to increment counter of error report emails, no email will be sent. Details: %s',
                 err
             )
@@ -66,7 +66,7 @@ class IgnoreTimeoutErrors(logging.Filter):
         try:
             err_class = record.exc_info[0].__name__ if record.exc_info is not None else 'None'
         except Exception as e:
-            logger.error('IgnoreTimeoutErrors: Failed to parse error type: %s (record: %s).', e, record)
+            logger.warning('IgnoreTimeoutErrors: Failed to parse error type: %s (record: %s).', e, record)
             return True
         else:
             return err_class != 'UnreadablePostError'
@@ -85,7 +85,7 @@ class IgnoreDatabaseErrors(logging.Filter):
         try:
             err_class = record.exc_info[0].__name__ if record.exc_info is not None else 'None'
         except Exception as e:
-            logger.error('IgnoreDatabaseErrors: Failed to parse error type: %s (record: %s).', e, record)
+            logger.warning('IgnoreDatabaseErrors: Failed to parse error type: %s (record: %s).', e, record)
             return True
         else:
             return err_class != 'OperationalError'
@@ -107,7 +107,7 @@ class IgnoreNoSpaceLeftErrors(logging.Filter):
                 return error.errno != errno.ENOSPC
             return True
         except Exception as e:
-            logger.error('IgnoreNoSpaceLeftErrors: Failed to parse error type: %s (record: %s).', e, record)
+            logger.warning('IgnoreNoSpaceLeftErrors: Failed to parse error type: %s (record: %s).', e, record)
             return True
 
 

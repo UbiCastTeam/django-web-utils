@@ -145,7 +145,7 @@ def send_template_emails(template, context=None, recipients=None, content_subtyp
     cleaned_rcpts = _get_recipients_list(recipients)
     if not cleaned_rcpts:
         msg = 'No emails have been sent: no valid recipients given.'
-        logger.error('%s Recipients: %s.', msg, recipients)
+        logger.warning('%s Recipients: %s.', msg, recipients)
         return False, msg
 
     # Get template
@@ -192,7 +192,7 @@ def send_template_emails(template, context=None, recipients=None, content_subtyp
             connection.send_messages([msg])
         except Exception as err:
             error = err
-            logger.error('Error when trying to send email to: %s.\n%s', recipient.email, traceback.format_exc())
+            logger.warning('Failed to send email to: %s.\n%s', recipient.email, traceback.format_exc())
         else:
             sent.append(recipient.email)
             logger.info('Email with subject "%s" sent to "%s" (tplt).', subject, recipient.email)
@@ -225,7 +225,7 @@ def send_emails(subject, content, recipients=None, content_subtype='html', attac
     cleaned_rcpts = _get_recipients_list(recipients)
     if not cleaned_rcpts:
         msg = 'No emails have been sent: no valid recipients given.'
-        logger.error('%s Recipients: %s.', msg, recipients)
+        logger.warning('%s Recipients: %s.', msg, recipients)
         return False, msg
 
     # Prepare emails messages
@@ -248,7 +248,7 @@ def send_emails(subject, content, recipients=None, content_subtype='html', attac
             connection.send_messages([msg])
         except Exception as err:
             error = err
-            logger.error('Error when trying to send email to: %s.\n%s', recipient.email, traceback.format_exc())
+            logger.warning('Failed to send email to: %s.\n%s', recipient.email, traceback.format_exc())
         else:
             sent.append(recipient.email)
             logger.info('Email with subject "%s" sent to "%s".', subject, recipient.email)

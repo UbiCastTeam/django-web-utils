@@ -40,7 +40,7 @@ def get_version(package=None, module=None):
                     commit_shorthash = subprocess.getoutput(f'git --git-dir \'{git_dir}\' log -1 --pretty=%h')
                     revision = f'{commit_date}-{commit_shorthash}'
                 except Exception as e:
-                    logger.error('Unable to get revision: %s', e)
+                    logger.warning('Unable to get revision: %s', e)
             else:
                 revision = out.replace('Version: ', '')
             break

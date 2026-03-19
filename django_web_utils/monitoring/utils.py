@@ -45,7 +45,7 @@ def execute_daemon_command(request, daemon, command):
         path = path[:-1]
     path = Path(path)
     if not path.is_file():
-        logger.error('The daemon script cannot be found. Path: %s', path)
+        logger.warning('The daemon script cannot be found. Path: %s', path)
         return False, _('The daemon script cannot be found.')
 
     p = subprocess.run(
