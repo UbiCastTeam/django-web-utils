@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 import os
 import time
 import warnings
+from pathlib import Path
 
 
 warnings.simplefilter('always')
@@ -21,7 +22,7 @@ os.environ['PYTHONWARNINGS'] = 'always'  # Also affect subprocesses
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-OVERRIDE_PATH = '/tmp/djwutils_override.py'
+OVERRIDE_PATH = Path('/tmp/djwutils_override.toml')
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'xvds$ppv5ha754g1yx3aax7ugr_2*fmeFc(lrc8/7kdez-63xn'

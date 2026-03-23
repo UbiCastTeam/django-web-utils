@@ -1,7 +1,9 @@
 """
-Module to handle file settings.
+Module to handle file settings in TOML format or Python format.
 The OVERRIDE_PATH setting must be set to the local settings override path.
+This module handles only settings with ASCII name.
 """
+import datetime
 import logging
 import os
 import re
@@ -17,6 +19,9 @@ from django_web_utils.files_utils import backup_file
 
 logger = logging.getLogger('djwutils.settings_utils')
 
+# Special value to mark settings fields that should be reseted to default in "set_settings"
+TO_RESET = object()
+
 
 def backup_settings() -> Optional[Path]:
     """
@@ -27,7 +32,38 @@ def backup_settings() -> Optional[Path]:
         return backup_file(Path(settings.OVERRIDE_PATH))
 
 
-def _get_value_str(value):
+def _get_toml_value_str(value):
+    if value is None:
+        raise ValueError('The toml format does not support None.')
+    elif value is True:
+        value_str = 'true'
+    elif value is False:
+        value_str = 'false'
+    elif isinstance(value, (int, float)):
+        value_str = str(value)
+    elif isinstance(value, datetime.date):
+        value_str = value.strftime('%Y-%m-%d')
+    elif isinstance(value, datetime.datetime):
+        value_str = value.strftime('%Y-%m-%dT%H:%M:%S')
+    elif isinstance(value, (list, tuple)):
+        value_str = '['
+        for sub_val in value:
+            value_str += _get_toml_value_str(sub_val) + ', '
+        value_str = value_str.rstrip(', ')
+        value_str += ']'
+    elif isinstance(value, dict):
+        value_str = '{'
+        for key, sub_val in value.items():
+            value_str += _get_toml_value_str(key) + ': ' + _get_toml_value_str(sub_val) + ', '
+        value_str = value_str.rstrip(', ')
+        value_str += '}'
+    else:
+        # The `repr` function is used to escape all special characters like `\`
+        value_str = '"' + repr(str(value).replace('\r', ''))[1:-1].replace("\\'", "'").replace('"', '\\"') + '"'
+    return value_str
+
+
+def _get_py_value_str(value):
     if value is None:
         value_str = 'None'
     elif value is True:
@@ -39,17 +75,20 @@ def _get_value_str(value):
     elif isinstance(value, list):
         value_str = '['
         for sub_val in value:
-            value_str += _get_value_str(sub_val) + ', '
+            value_str += _get_py_value_str(sub_val) + ', '
+        value_str = value_str.rstrip(', ')
         value_str += ']'
     elif isinstance(value, tuple):
         value_str = '('
         for sub_val in value:
-            value_str += _get_value_str(sub_val) + ', '
+            value_str += _get_py_value_str(sub_val) + ', '
+        value_str = value_str.rstrip(', ')
         value_str += ')'
     elif isinstance(value, dict):
         value_str = '{'
         for key, sub_val in value.items():
-            value_str += _get_value_str(key) + ': ' + _get_value_str(sub_val) + ', '
+            value_str += _get_py_value_str(key) + ': ' + _get_py_value_str(sub_val) + ', '
+        value_str = value_str.rstrip(', ')
         value_str += '}'
     else:
         # The `repr` function is used to escape all special characters like `\`
@@ -88,18 +127,27 @@ def set_settings(**data: Any) -> tuple[bool, str]:
     if content and not content.endswith('\n'):
         content += '\n'
 
+    if override_path.suffix == '.toml':
+        str_fct = _get_toml_value_str
+    else:
+        str_fct = _get_py_value_str
+
     # Update content
     for key, value in data.items():
-        value_str = _get_value_str(value)
-        # Do not use `re.sub` here because it breaks escaping of `\`:
-        # https://docs.python.org/3/library/re.html#re.sub
-        match = re.search(fr'(^|\n)(\s*){key}\s*=.+($|\n)', content)
-        if match:
-            start, end = match.span()
-            grps = match.groups()
-            content = f'{content[:start]}{grps[0]}{grps[1]}{key} = {value_str}{grps[2]}{content[end:]}'
+        if value is TO_RESET:
+            # Remove value from settings
+            content = re.sub(fr'(^|\n)\s*{key}\s*=.+(\n|$)', r'\1', content)
         else:
-            content += f'{key} = {value_str}\n'
+            value_str = str_fct(value)
+            # Do not use `re.sub` here because it breaks escaping of `\`:
+            # https://docs.python.org/3/library/re.html#re.sub
+            match = re.search(fr'(^|\n)(\s*){key}\s*=.+($|\n)', content)
+            if match:
+                start, end = match.span()
+                grps = match.groups()
+                content = f'{content[:start]}{grps[0]}{grps[1]}{key} = {value_str}{grps[2]}{content[end:]}'
+            else:
+                content += f'{key} = {value_str}\n'
 
     # Write changes
     if content != initial_content:
