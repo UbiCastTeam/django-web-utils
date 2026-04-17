@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 
 import pytest
 from django.contrib.auth.models import User
@@ -51,7 +52,11 @@ def test_no_recipients(settings):
     pytest.param(True, id='with context processor'),
     pytest.param(False, id='no context processor'),
 ])
-def test_send_template_emails(settings, with_context_processor):
+@pytest.mark.parametrize('with_pathlib', [
+    pytest.param(True, id='with pathlib'),
+    pytest.param(False, id='with string'),
+])
+def test_send_template_emails(settings, with_context_processor, with_pathlib):
     if with_context_processor:
         settings.EMAIL_CONTEXT_PROCESSOR = 'testapp.context.emails_context_processor'
         footer = 'Using context processor'
@@ -59,7 +64,10 @@ def test_send_template_emails(settings, with_context_processor):
         footer = 'No footer'
 
     recipients = [{'email': 'test@test.com', 'lang': 'fr'}]
-    success, sent = emails_utils.send_template_emails('emails/email_test.html', {
+    path = 'emails/email_test.html'
+    if with_pathlib:
+        path = Path(path)
+    success, sent = emails_utils.send_template_emails(path, {
         'subject': 'The subject',
         'body': 'The body',
     }, recipients=recipients)

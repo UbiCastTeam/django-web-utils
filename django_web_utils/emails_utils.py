@@ -20,7 +20,7 @@ import os
 import socket
 import sys
 import traceback
-# Django
+
 from django.conf import settings
 from django.core import mail
 from django.db.models.query import QuerySet
@@ -28,7 +28,7 @@ from django.template import Context, Engine
 from django.utils import translation
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-# utils
+
 from django_web_utils import html_utils
 from django_web_utils.logging_utils import IgnoreTimeoutErrors, IgnoreDatabaseErrors
 
@@ -125,7 +125,7 @@ def send_template_emails(template, context=None, recipients=None, content_subtyp
     """
     Function to send emails with a template.
     Arguments:
-        template: template path.
+        template: template path (str or Path).
         context: can be a dict or None.
         recipients: can be a dict, a list, a str or None.
             dict format: {'test@test.com': {'lang': 'en', 'name': ''}}
@@ -150,12 +150,13 @@ def send_template_emails(template, context=None, recipients=None, content_subtyp
 
     # Get template
     engine = Engine.get_default()
-    if template.startswith('/'):
-        with open(template, 'r') as file_obj:
-            template = file_obj.read()
-        tplt = engine.from_string(template)
+    tplt_path = str(template)
+    if tplt_path.startswith('/'):
+        with open(tplt_path, 'r') as file_obj:
+            content = file_obj.read()
+        tplt = engine.from_string(content)
     else:
-        tplt = engine.get_template(template)
+        tplt = engine.get_template(tplt_path)
 
     # Prepare emails messages
     connection = None
