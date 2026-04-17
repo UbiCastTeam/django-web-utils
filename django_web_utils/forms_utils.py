@@ -3,12 +3,12 @@ Forms utility functions
 """
 import os
 import logging
-# Django
+
 from django import forms as dj_forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-# Django web utils
-from django_web_utils.settings_utils import set_settings
+
+from django_web_utils.settings_utils import set_settings, TO_RESET
 
 logger = logging.getLogger('djwutils.forms_utils')
 
@@ -144,15 +144,27 @@ class BaseFileSettingsForm():
         """
         if hasattr(super(), 'save'):
             super().save(commit)
-        # Get changed settings fields
+
+        # Write settings file
+        if commit:
+            # Get changed settings fields (with TO_RESET)
+            changed = {
+                info['setting']: (
+                    self.cleaned_data[field]
+                    if self.cleaned_data[field] != info['default']
+                    else TO_RESET
+                )
+                for field, info in self.Meta.SETTINGS_MAPPING.items()
+                if field in self.changed_data
+            }
+            return set_settings(**changed)
+
+        # Get changed settings fields (without TO_RESET)
         changed = {
-            info['setting']: self.cleaned_data.get(field, info['default'])
+            info['setting']: self.cleaned_data[field]
             for field, info in self.Meta.SETTINGS_MAPPING.items()
             if field in self.changed_data
         }
-        # Write settings file
-        if commit:
-            return set_settings(**changed)
         return True, changed
 
 
