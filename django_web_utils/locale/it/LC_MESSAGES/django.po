@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 16:09+0000\n"
+"POT-Creation-Date: 2026-05-05 08:31+0000\n"
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -13,11 +13,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin_utils.py:12
+#: admin_utils.py:47
 msgid "Export selected objects as CSV file"
 msgstr "Esportazione degli oggetti selezionati come file CSV"
 
-#: admin_utils.py:110
+#: admin_utils.py:112
 msgid "CSV export"
 msgstr "Esportazione CSV"
 
@@ -65,104 +65,104 @@ msgstr "È richiesta l'autenticazione."
 msgid "Access authentication"
 msgstr "Autenticazione di accesso"
 
-#: auth_utils.py:83 auth_utils.py:88
+#: auth_utils.py:84 auth_utils.py:92
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
 msgstr "La password deve contenere almeno 3 tipi di caratteri (i tipi sono lettere minuscole, lettere maiuscole, cifre e caratteri speciali)."
 
-#: files_utils.py:63
+#: files_utils.py:64
 msgid "B"
 msgstr "B"
 
-#: forms_utils.py:119 settings_store/forms.py:48
+#: forms_utils.py:121 settings_store/forms.py:48
 msgid "Yes"
 msgstr "Sì"
 
-#: forms_utils.py:121 settings_store/forms.py:50
+#: forms_utils.py:123 settings_store/forms.py:50
 msgid "No"
 msgstr "No"
 
-#: json_utils.py:89
+#: json_utils.py:88
 msgid "Invalid request method"
 msgstr "Metodo di richiesta non valido"
 
-#: json_utils.py:94
+#: json_utils.py:93
 msgid "Authentication required"
 msgstr "È richiesta l'autenticazione"
 
-#: json_utils.py:125
+#: json_utils.py:124
 msgid "Bad request"
 msgstr "Richiesta negativa"
 
-#: json_utils.py:127
+#: json_utils.py:126
 msgid "Access denied"
 msgstr "Accesso negato"
 
-#: json_utils.py:129
+#: json_utils.py:128
 msgid "Page not found"
 msgstr "Pagina non trovata"
 
-#: json_utils.py:134
+#: json_utils.py:133
 msgid "Infected file detected"
 msgstr "Rilevato un file infetto"
 
-#: json_utils.py:143
+#: json_utils.py:142
 msgid "Internal server error"
 msgstr "Errore interno del server"
 
-#: ldap_utils.py:74
+#: ldap_utils.py:75
 msgid "Error when initializing connection with LDAP server."
 msgstr "Errore durante l'inizializzazione della connessione con il server LDAP."
 
-#: ldap_utils.py:74 ldap_utils.py:102 ldap_utils.py:129 ldap_utils.py:280
+#: ldap_utils.py:75 ldap_utils.py:105 ldap_utils.py:140 ldap_utils.py:336
 msgid "Error:"
 msgstr "Errore:"
 
-#: ldap_utils.py:102
+#: ldap_utils.py:105
 msgid "Error when trying to authenticate on LDAP server."
 msgstr "Errore durante il tentativo di autenticazione sul server LDAP."
 
-#: ldap_utils.py:128
+#: ldap_utils.py:139
 msgid "Search on LDAP server failed."
 msgstr "La ricerca sul server LDAP non è riuscita."
 
-#: ldap_utils.py:131
+#: ldap_utils.py:142
 msgid "Arguments:"
 msgstr "Argomenti:"
 
-#: ldap_utils.py:165
+#: ldap_utils.py:180
 msgid "User not found."
 msgstr "Utente non trovato."
 
-#: ldap_utils.py:177
+#: ldap_utils.py:199
 msgid "Group not found."
 msgstr "Gruppo non trovato."
 
-#: ldap_utils.py:280
+#: ldap_utils.py:336
 msgid "Error when trying to get user information."
 msgstr "Errore durante il tentativo di ottenere informazioni sull'utente."
 
-#: ldap_utils.py:289
+#: ldap_utils.py:346
 msgid "Login failed (however the user exists in LDAP)."
 msgstr "Accesso fallito (tuttavia l'utente esiste in LDAP)."
 
-#: ldap_utils.py:291
+#: ldap_utils.py:350
 msgid "Login succeeded."
 msgstr "Accesso riuscito."
 
-#: ldap_utils.py:292
+#: ldap_utils.py:351
 #, python-format
 msgid "User \"%s\" data:"
 msgstr "Dati dell'utente \"%s\":"
 
-#: ldap_utils.py:297
+#: ldap_utils.py:356
 msgid "User groups:"
 msgstr "Gruppi di utenti:"
 
-#: ldap_utils.py:302
+#: ldap_utils.py:361
 msgid "Error when trying to get groups."
 msgstr "Errore durante il tentativo di ottenere i gruppi."
 
-#: ldap_utils.py:313
+#: ldap_utils.py:372
 msgid "No groups found."
 msgstr "Nessun gruppo trovato."
 
@@ -211,11 +211,11 @@ msgstr "La sessione è scaduta, si prega di ottenere un nuovo link per riprovare
 msgid "Your request is invalid."
 msgstr "La richiesta non è valida."
 
-#: settings_store/forms.py:81 settings_utils.py:64 settings_utils.py:125
+#: settings_store/forms.py:86 settings_utils.py:64 settings_utils.py:125
 msgid "No changes to save."
 msgstr "Non ci sono modifiche da salvare."
 
-#: settings_store/forms.py:84
+#: settings_store/forms.py:89
 msgid "Your changes will be active in a few seconds."
 msgstr "Le modifiche saranno attive in pochi secondi."
 

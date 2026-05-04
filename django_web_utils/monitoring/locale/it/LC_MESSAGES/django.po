@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 16:26+0000\n"
+"POT-Creation-Date: 2026-05-05 08:32+0000\n"
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -13,115 +13,115 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: sysinfo.py:61
+#: sysinfo.py:64
 msgid "Application version"
 msgstr "Versione dell'applicazione"
 
-#: sysinfo.py:62
+#: sysinfo.py:65
 msgid "Application revision"
 msgstr "Revisione dell'applicazione"
 
-#: sysinfo.py:63
+#: sysinfo.py:66
 msgid "Python version"
 msgstr "Versione Python"
 
-#: sysinfo.py:64
+#: sysinfo.py:67
 msgid "Django version"
 msgstr "Versione di Django"
 
-#: sysinfo.py:67
+#: sysinfo.py:70
 msgid "Database engine"
 msgstr "Motore del database"
 
-#: sysinfo.py:69
+#: sysinfo.py:72
 msgid "Django time zone"
 msgstr "Fuso orario di Django"
 
-#: sysinfo.py:84
+#: sysinfo.py:87
 msgid "Description"
 msgstr "Descrizione"
 
-#: sysinfo.py:85
+#: sysinfo.py:88
 msgid "Kernel"
 msgstr "Kernel"
 
-#: sysinfo.py:86
+#: sysinfo.py:89
 msgid "Hostname"
 msgstr "Nome host"
 
-#: sysinfo.py:87
+#: sysinfo.py:90
 msgid "Time zone"
 msgstr "Fuso orario"
 
-#: sysinfo.py:91
+#: sysinfo.py:94
 msgid "Uptime"
 msgstr "Tempo di attività"
 
-#: sysinfo.py:92
+#: sysinfo.py:95
 msgid "Load"
 msgstr "Carico"
 
-#: sysinfo.py:126 sysinfo.py:153
+#: sysinfo.py:129 sysinfo.py:156
 msgid "Model"
 msgstr "Modello"
 
-#: sysinfo.py:127
+#: sysinfo.py:130
 msgid "Cores"
 msgstr "Nuclei"
 
-#: sysinfo.py:128
+#: sysinfo.py:131
 msgid "Default frequency"
 msgstr "Frequenza predefinita"
 
-#: sysinfo.py:169
+#: sysinfo.py:172
 msgid "Software"
 msgstr "Software"
 
-#: sysinfo.py:172
+#: sysinfo.py:175
 msgid "OS"
 msgstr "OS"
 
-#: sysinfo.py:179
+#: sysinfo.py:182
 msgid "HDD"
 msgstr "HDD"
 
-#: sysinfo.py:182
+#: sysinfo.py:185
 msgid "CPU"
 msgstr "CPU"
 
-#: sysinfo.py:185
+#: sysinfo.py:188
 msgid "GPU"
 msgstr "GPU"
 
-#: sysinfo.py:198
+#: sysinfo.py:202
 msgid "Total"
 msgstr "Totale"
 
-#: sysinfo.py:198 sysinfo.py:199 sysinfo.py:200
+#: sysinfo.py:203 sysinfo.py:207 sysinfo.py:211
 msgid "GB"
 msgstr "GB"
 
-#: sysinfo.py:199
+#: sysinfo.py:206
 msgid "Free"
 msgstr "Gratuito"
 
-#: sysinfo.py:200
+#: sysinfo.py:210
 msgid "Cached"
 msgstr "In cache"
 
-#: sysinfo.py:202
+#: sysinfo.py:214
 msgid "Failed to get information"
 msgstr "Impossibile ottenere informazioni"
 
-#: sysinfo.py:203
+#: sysinfo.py:215
 msgid "Memory"
 msgstr "Memoria"
 
-#: sysinfo.py:210
+#: sysinfo.py:222
 msgid "Network"
 msgstr "Rete"
 
-#: sysinfo.py:217
+#: sysinfo.py:229
 msgid "Sensors"
 msgstr "Sensori"
 
@@ -280,11 +280,15 @@ msgstr "Lo script del demone non può essere trovato."
 msgid "The requested suffix does not exist."
 msgstr "Il suffisso richiesto non esiste."
 
-#: utils.py:138
-msgid "Partial read of gzip files is not supported. Please get the complete file to read its content."
-msgstr "La lettura parziale dei file gzip non è supportata. È necessario ottenere il file completo per leggerne il contenuto."
+#: utils.py:139
+msgid ""
+"Partial read of gzip files is not supported.\n"
+"Please get the complete file to read its content."
+msgstr ""
+"La lettura parziale dei file gzip non è supportata.\n"
+"Si prega di scaricare il file completo per poterne leggere il contenuto."
 
-#: utils.py:154
+#: utils.py:158
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -295,11 +299,11 @@ msgstr ""
 "Sono accessibili solo la coda del file e il file grezzo.\n"
 "Attenzione: l'accesso al file grezzo può saturare la memoria del sistema."
 
-#: utils.py:162
+#: utils.py:169
 msgid "Unable to display log file."
 msgstr "Impossibile visualizzare il file di registro."
 
-#: utils.py:162
+#: utils.py:169
 msgid "Error:"
 msgstr "Errore:"
 

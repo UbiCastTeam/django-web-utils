@@ -1,13 +1,13 @@
 """
 Forms utility functions
 """
-import os
 import logging
-# Django
+import os
+
 from django import forms as dj_forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-# Django web utils
+
 from django_web_utils.settings_utils import set_settings
 
 logger = logging.getLogger('djwutils.forms_utils')
@@ -53,7 +53,9 @@ class ProtectedFileField(dj_forms.FileField):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(widget=NoLinkClearableFileInput(), *args, **kwargs)
+        if 'widget' not in kwargs:
+            kwargs['widget'] = NoLinkClearableFileInput()
+        super().__init__(*args, **kwargs)
 
     @classmethod
     def handle_uploaded_file(cls, ufile, upload_to, validator=None):

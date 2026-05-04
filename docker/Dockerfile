@@ -29,6 +29,8 @@ RUN ln -sf /opt/src/django_web_utils /opt/venv/lib/python3.11/site-packages/djan
 
 RUN mkdir -p /opt/src
 WORKDIR /opt/src
+ENV DJANGO_SETTINGS_MODULE="settings"
+ENV PYTHONPATH="/opt/src/tests"
 
 # Add user matching local uid/gid
 ARG USER_UID

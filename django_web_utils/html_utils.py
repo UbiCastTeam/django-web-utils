@@ -1,15 +1,15 @@
 """
 HTML utility functions
 """
-from bleach.css_sanitizer import CSSSanitizer
 from copy import deepcopy
-from html.parser import HTMLParser
-import bleach
 import html.entities
+from html.parser import HTMLParser
 import logging
 import re
 import traceback
-# Django
+
+import bleach
+from bleach.css_sanitizer import CSSSanitizer
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
@@ -20,7 +20,7 @@ logger = logging.getLogger('djwutils.html_utils')
 ALLOWED_TAGS = {
     'div', 'p', 'span', 'br', 'b', 'strong', 'i', 'em', 'u', 'sub', 'sup', 'a', 'ul', 'ol', 'li',
     'h1', 'h2', 'h3', 'h4', 'table', 'thead', 'tbody', 'tr', 'td', 'th', 'img', 'fieldset', 'legend',
-    'pre', 'code', 'blockquote', 'video', 'source'
+    'pre', 'code', 'blockquote', 'video', 'source',
 }
 ALLOWED_ATTRS = {
     '*': {
@@ -33,7 +33,7 @@ ALLOWED_ATTRS = {
     'th': {'rowspan', 'colspan'},
     'source': {'src', 'type'},
     'video': {'src', 'poster', 'loop', 'autoplay', 'muted', 'controls', 'playsinline', 'preload'},
-    'iframe': {'src', 'width', 'height', 'scrolling', 'allow', 'allowfullscreen', 'frameborder', 'referrerpolicy'}
+    'iframe': {'src', 'width', 'height', 'scrolling', 'allow', 'allowfullscreen', 'frameborder', 'referrerpolicy'},
 }
 ALLOWED_CSS = {
     'margin-bottom', 'margin-left', 'margin-right', 'margin-top', 'margin',
@@ -42,15 +42,20 @@ ALLOWED_CSS = {
     'font-weight', 'font-size', 'font-style',
     'text-decoration', 'text-align', 'text-shadow',
     'border-bottom', 'border-left', 'border-right', 'border-top', 'border',
-    'border-radius-bottom-left', 'border-radius-bottom-right', 'border-radius-top-left', 'border-radius-top-right', 'border-radius',
-    'box-shadow', 'width', 'height', 'overflow', 'vertical-align'
+    'border-radius-bottom-left', 'border-radius-bottom-right', 'border-radius-top-left',
+    'border-radius-top-right', 'border-radius',
+    'box-shadow', 'width', 'height', 'overflow', 'vertical-align',
 }
 
 
-def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs={}, extra_allowed_css=set()):
+def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None, extra_allowed_css=None):
     """
     Function to remove all non allowed tags and attributes from the given HTML content.
     """
+    if extra_allowed_css is None:
+        extra_allowed_css = set()
+    if extra_allowed_attrs is None:
+        extra_allowed_attrs = {}
     allowed_attrs = deepcopy(ALLOWED_ATTRS)
     for key in allowed_attrs.keys():
         if key != '*':
@@ -97,7 +102,12 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs={}, extra_all
         tags |= {'iframe'}
     callable_allowed_attrs['img'] = img_attrs_check
     callable_allowed_attrs['a'] = a_attrs_check
-    allowed_css = bleach.css_sanitizer.ALLOWED_CSS_PROPERTIES | bleach.css_sanitizer.ALLOWED_SVG_PROPERTIES | ALLOWED_CSS | extra_allowed_css
+    allowed_css = (
+        bleach.css_sanitizer.ALLOWED_CSS_PROPERTIES
+        | bleach.css_sanitizer.ALLOWED_SVG_PROPERTIES
+        | ALLOWED_CSS
+        | extra_allowed_css
+    )
     css_sanitizer = CSSSanitizer(allowed_css_properties=allowed_css)
     protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data'}
     return bleach.clean(
@@ -150,7 +160,7 @@ def get_meta_tag_text(text):
     """
     result = unescape(text)
     result = strip_html_tags(result)
-    result = result.strip().replace('"', '\'\'')
+    result = result.strip().replace('"', "''")
     return result
 
 
@@ -247,6 +257,6 @@ def get_short_text(html_text, max_length=300, margin=100):
         try:
             parser = _TextHTMLParser(html_text, max_length)
             return parser.get_short()
-        except Exception as e:
-            logger.warning('Unable to create short html text. %s' % e)
+        except Exception as err:
+            logger.warning('Unable to create short html text. %s', err)
     return ''

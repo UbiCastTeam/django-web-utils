@@ -3,125 +3,125 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 16:26+0000\n"
-"PO-Revision-Date: 2026-02-26 16:09+0000\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2026-05-05 08:32+0000\n"
+"PO-Revision-Date: 2026-05-05 10:32+0200\n"
+"Last-Translator: Stéphane Diemer <stephane.diemer@ubicast.eu>\n"
 "Language-Team: \n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Poedit 3.6\n"
 
-#: sysinfo.py:61
+#: sysinfo.py:64
 msgid "Application version"
 msgstr "Version de l'application"
 
-#: sysinfo.py:62
+#: sysinfo.py:65
 msgid "Application revision"
 msgstr "Révision de l'application"
 
-#: sysinfo.py:63
+#: sysinfo.py:66
 msgid "Python version"
 msgstr "Version de Python"
 
-#: sysinfo.py:64
+#: sysinfo.py:67
 msgid "Django version"
 msgstr "Version de Django"
 
-#: sysinfo.py:67
+#: sysinfo.py:70
 msgid "Database engine"
 msgstr "Moteur de base de données"
 
-#: sysinfo.py:69
+#: sysinfo.py:72
 msgid "Django time zone"
 msgstr "Fuseau horaire de Django"
 
-#: sysinfo.py:84
+#: sysinfo.py:87
 msgid "Description"
 msgstr "Description"
 
-#: sysinfo.py:85
+#: sysinfo.py:88
 msgid "Kernel"
 msgstr "Noyau"
 
-#: sysinfo.py:86
+#: sysinfo.py:89
 msgid "Hostname"
 msgstr "Nom d'hôte"
 
-#: sysinfo.py:87
+#: sysinfo.py:90
 msgid "Time zone"
 msgstr "Fuseau horaire"
 
-#: sysinfo.py:91
+#: sysinfo.py:94
 msgid "Uptime"
 msgstr "Durée de fonctionnement"
 
-#: sysinfo.py:92
+#: sysinfo.py:95
 msgid "Load"
 msgstr "Charge"
 
-#: sysinfo.py:126 sysinfo.py:153
+#: sysinfo.py:129 sysinfo.py:156
 msgid "Model"
 msgstr "Modèle"
 
-#: sysinfo.py:127
+#: sysinfo.py:130
 msgid "Cores"
 msgstr "Cœurs"
 
-#: sysinfo.py:128
+#: sysinfo.py:131
 msgid "Default frequency"
 msgstr "Fréquence nominale"
 
-#: sysinfo.py:169
+#: sysinfo.py:172
 msgid "Software"
 msgstr "Logiciel"
 
-#: sysinfo.py:172
+#: sysinfo.py:175
 msgid "OS"
 msgstr "OS"
 
-#: sysinfo.py:179
+#: sysinfo.py:182
 msgid "HDD"
 msgstr "HDD"
 
-#: sysinfo.py:182
+#: sysinfo.py:185
 msgid "CPU"
 msgstr "CPU"
 
-#: sysinfo.py:185
+#: sysinfo.py:188
 msgid "GPU"
 msgstr "GPU"
 
-#: sysinfo.py:198
+#: sysinfo.py:202
 msgid "Total"
 msgstr "Total"
 
-#: sysinfo.py:198 sysinfo.py:199 sysinfo.py:200
+#: sysinfo.py:203 sysinfo.py:207 sysinfo.py:211
 msgid "GB"
 msgstr "Go"
 
-#: sysinfo.py:199
+#: sysinfo.py:206
 msgid "Free"
 msgstr "Libre"
 
-#: sysinfo.py:200
+#: sysinfo.py:210
 msgid "Cached"
 msgstr "En cache"
 
-#: sysinfo.py:202
+#: sysinfo.py:214
 msgid "Failed to get information"
 msgstr "Échec de l'obtention des informations"
 
-#: sysinfo.py:203
+#: sysinfo.py:215
 msgid "Memory"
 msgstr "Mémoire"
 
-#: sysinfo.py:210
+#: sysinfo.py:222
 msgid "Network"
 msgstr "Réseau"
 
-#: sysinfo.py:217
+#: sysinfo.py:229
 msgid "Sensors"
 msgstr "Capteurs"
 
@@ -280,11 +280,15 @@ msgstr "Le script du démon est introuvable."
 msgid "The requested suffix does not exist."
 msgstr "Le suffixe demandé n'existe pas."
 
-#: utils.py:138
-msgid "Partial read of gzip files is not supported. Please get the complete file to read its content."
-msgstr "La lecture partielle des fichiers gzip n'est pas prise en charge. Veuillez obtenir le fichier complet pour en lire le contenu."
+#: utils.py:139
+msgid ""
+"Partial read of gzip files is not supported.\n"
+"Please get the complete file to read its content."
+msgstr ""
+"La lecture partielle des fichiers gzip n'est pas prise en charge.\n"
+"Veuillez récupérer le fichier complet pour en lire le contenu."
 
-#: utils.py:154
+#: utils.py:158
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -295,11 +299,11 @@ msgstr ""
 "Seul la fin du fichier et le fichier brut sont accessibles.\n"
 "Attention : l'obtention du fichier brut peut saturer la mémoire du système."
 
-#: utils.py:162
+#: utils.py:169
 msgid "Unable to display log file."
 msgstr "Impossible d'afficher le fichier de journalisation."
 
-#: utils.py:162
+#: utils.py:169
 msgid "Error:"
 msgstr "Erreur :"
 

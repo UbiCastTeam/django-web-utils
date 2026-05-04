@@ -11,10 +11,11 @@ if [[ ! "$DOCKER_TEST" ]]; then
     while !</dev/tcp/db/5432; do sleep 1; done;
 
     echo "==> Applying migrations..."
-    python3 tests/manage.py migrate
+    django-admin migrate
 
     echo "==> Creating superuser..."
-    DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=test@example.com DJANGO_SUPERUSER_PASSWORD=test python3 tests/manage.py createsuperuser --noinput
+    DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_EMAIL=test@example.local DJANGO_SUPERUSER_PASSWORD=test \
+        django-admin createsuperuser --noinput
 
     echo "==> Creating magic login file..."
     mkdir /tmp/djwutils

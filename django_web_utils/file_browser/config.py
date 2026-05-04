@@ -1,4 +1,3 @@
-# Django
 from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings
 
@@ -25,10 +24,10 @@ def clean_namespace(namespace):
 
 def get_base_path(namespace):
     nsp = clean_namespace(namespace)
-    return getattr(settings, 'FILE_BROWSER_DIRS')[nsp][0]
+    return settings.FILE_BROWSER_DIRS[nsp][0]
 
 
 def get_base_url(namespace):
     nsp = clean_namespace(namespace)
-    url = getattr(settings, 'FILE_BROWSER_DIRS')[nsp][1].rstrip('/')
+    url = settings.FILE_BROWSER_DIRS[nsp][1].rstrip('/')
     return url

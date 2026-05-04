@@ -63,12 +63,6 @@ def unzip(path, zip_path=None, zip_file=None):
         # extract files
         used_zip_file.extractall(path)
         return True, ''
-    except AttributeError:
-        # for python 2.5
-        retcode = os.system('unzip -d %s %s' % (path, zip_path))
-        if retcode != 0:
-            return False, 'Unable to unzip file. The "unzip" command returned code %s.' % retcode
-        return True, ''
     except Exception:
         return False, 'File is not a valid zip.'
     finally:

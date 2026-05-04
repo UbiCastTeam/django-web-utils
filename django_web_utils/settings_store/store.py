@@ -225,7 +225,7 @@ class SettingsStoreBase(Mapping):
 
         raise TypeError(
             f'Cannot instantiate {cls.__name__}. A concrete database model '
-            f'must be provided as a keyword argument to {cls.__name__}\'s '
+            f"must be provided as a keyword argument to {cls.__name__}'s "
             f'definition (e.g.: class {cls.__name__}(SettingsStoreBase, '
             f'model="path.to.MyConcreteModel"): ...).'
         )
@@ -432,7 +432,7 @@ class Patcher:
             if not attr.startswith(mock.patch.TEST_PREFIX):
                 continue
             attr_value = getattr(klass, attr)
-            if not hasattr(attr_value, "__call__"):
+            if not callable(attr_value):
                 continue
 
             setattr(klass, attr, self(attr_value))

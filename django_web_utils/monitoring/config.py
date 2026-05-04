@@ -1,6 +1,5 @@
-# Django
 from django.conf import settings
-# Django web utils
+
 from django_web_utils.module_utils import import_module_by_python_path
 
 
@@ -41,9 +40,13 @@ def get_daemons_info():
                     daemon['cls'] = import_module_by_python_path(daemon['cls'])
                     daemon['log_path'] = daemon['cls'].get_log_path()
                 if daemon.get('can_access') is None:
-                    daemon['can_access'] = getattr(info_module, 'CAN_ACCESS', lambda request: request.user.is_superuser)
+                    daemon['can_access'] = getattr(
+                        info_module, 'CAN_ACCESS', lambda request: request.user.is_superuser
+                    )
                 if daemon.get('can_control') is None:
-                    daemon['can_control'] = getattr(info_module, 'CAN_CONTROL', lambda request: request.user.is_superuser)
+                    daemon['can_control'] = getattr(
+                        info_module, 'CAN_CONTROL', lambda request: request.user.is_superuser
+                    )
                 cleaned_info.GROUPS[daemon['group']]['members'].append(daemon)
                 cleaned_info.GROUPS[daemon['group']]['rowspan'] += 2
         globals()['_daemons_info'] = cleaned_info

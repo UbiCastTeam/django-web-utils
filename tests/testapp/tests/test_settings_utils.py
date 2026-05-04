@@ -136,7 +136,7 @@ def test_set_settings__multiline():
     assert path.read_text() == '''MULTILINE = '1\\n"\\'2\\\\'\nTEST = True\n'''
 
     # Add another multiline setting
-    success, msg = settings_utils.set_settings(MULTI2='test \'45\n')
+    success, msg = settings_utils.set_settings(MULTI2="test '45\n")
     assert success, msg
     path = Path(settings.OVERRIDE_PATH)
     assert path.read_text() == '''MULTILINE = '1\\n"\\'2\\\\'\nTEST = True\nMULTI2 = "test '45\\n"\n'''

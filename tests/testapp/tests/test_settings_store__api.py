@@ -41,7 +41,7 @@ def test_settings_store__subclassing__bad(django_assert_num_queries):
         ):
             pass
         with pytest.raises(TypeError):
-            _BadSettingsStore().model
+            _BadSettingsStore().model  # noqa: B018
 
 
 def test_settings_store__subclassing__good(django_assert_num_queries):
@@ -119,7 +119,7 @@ def test_settings_store__refresh__with_obsolete_data_in_db(django_assert_num_que
     settings_store.model.objects.create(key='OBS_VAL', value='obsolete', updated_at=datetime.datetime.now())
     with django_assert_num_queries(0):
         with pytest.raises(AttributeError):
-            settings_store.OBS_VAL
+            settings_store.OBS_VAL  # noqa: B018
 
     # Pretend another process updated a value in the database
     get_new_setting_store().update(STR_VAL='foo_2')
@@ -128,7 +128,7 @@ def test_settings_store__refresh__with_obsolete_data_in_db(django_assert_num_que
     with django_assert_num_queries(0):
         assert settings_store.STR_VAL == 'foo_2'
         with pytest.raises(AttributeError):
-            settings_store.OBS_VAL
+            settings_store.OBS_VAL  # noqa: B018
 
 
 def test_settings_store__refresh__cached(django_assert_num_queries):

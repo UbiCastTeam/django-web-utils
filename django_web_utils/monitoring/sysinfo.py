@@ -6,10 +6,10 @@ import os
 import re
 import subprocess
 import sys
-# Django
-from django.utils.translation import gettext_lazy as _
+
 import django
-# django_web_utils
+from django.utils.translation import gettext_lazy as _
+
 from django_web_utils.packages_utils import get_version
 
 logger = logging.getLogger('djwutils.monitoring.sysinfo')
@@ -20,7 +20,10 @@ def _get_output(cmd):
     env['LANG'] = 'C.UTF-8'
     env['LC_ALL'] = 'C.UTF-8'
     try:
-        p = subprocess.run(cmd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
+        p = subprocess.run(
+            cmd, env=env, encoding='utf-8',
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+        )
     except Exception as e:
         return str(e).strip()
     return p.stdout.strip()
@@ -195,9 +198,18 @@ def get_system_info(package=None, module=None, extra=None):
             except ValueError:
                 continue
             mem_dict[key.strip()] = value
-        tplt_args['info_memory'].append({'label': _('Total'), 'value': '%.2f %s' % ((mem_dict.get('MemTotal', 0) / 1000000.), _('GB'))})
-        tplt_args['info_memory'].append({'label': _('Free'), 'value': '%.2f %s' % ((mem_dict.get('MemFree', 0) / 1000000.), _('GB'))})
-        tplt_args['info_memory'].append({'label': _('Cached'), 'value': '%.2f %s' % ((mem_dict.get('Cached', 0) / 1000000.), _('GB'))})
+        tplt_args['info_memory'].append({
+            'label': _('Total'),
+            'value': '%.2f %s' % ((mem_dict.get('MemTotal', 0) / 1000000.), _('GB'))
+        })
+        tplt_args['info_memory'].append({
+            'label': _('Free'),
+            'value': '%.2f %s' % ((mem_dict.get('MemFree', 0) / 1000000.), _('GB'))
+        })
+        tplt_args['info_memory'].append({
+            'label': _('Cached'),
+            'value': '%.2f %s' % ((mem_dict.get('Cached', 0) / 1000000.), _('GB'))
+        })
     except Exception as e:
         tplt_args['info_memory'].append({'label': _('Failed to get information'), 'value': e})
     tplt_args['info_sections'].append({'label': _('Memory'), 'info': tplt_args['info_memory']})

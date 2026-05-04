@@ -1,10 +1,9 @@
 """
 Rss utility functions
 """
-import pytz
-
 from django.conf import settings
 from django.utils.safestring import mark_safe
+import pytz
 
 from . import html_utils
 

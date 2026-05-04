@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 import django_web_utils
@@ -64,13 +64,14 @@ def view_system_info(request):
 def view_csv(request):
     def csv_generator():
         yield ['Header Col1 ø', 'Header Col2 |', 'Header Col3 é']
-        yield ['Row1 Col1 ,', 'Row1 Col2\n,;\'', 'Row1 Col3 à']
+        yield ['Row1 Col1 ,', "Row1 Col2\n,;'", 'Row1 Col3 à']
         yield ['Row2 Col1 ;', 'Row2 Col2\r ,;"', 'Row2 Col3 *']
 
     return csv_streaming_response(
         csv_generator,
         parameters=request.GET,
-        file_name=request.GET.get('file_name'))
+        file_name=request.GET.get('file_name'),
+    )
 
 
 @json_utils.json_view

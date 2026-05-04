@@ -3,13 +3,13 @@ import re
 import traceback
 
 from django.conf import settings
-from django.utils.log import AdminEmailHandler
 from django.core.cache import cache
+from django.utils.log import AdminEmailHandler
 
 try:
     import pygments
-    from pygments.lexers import SqlLexer
     from pygments.formatters import Terminal256Formatter, TerminalTrueColorFormatter
+    from pygments.lexers import SqlLexer
 except ImportError:
     pygments = SqlLexer = Terminal256Formatter = TerminalTrueColorFormatter = None
 try:
@@ -139,7 +139,10 @@ class SQLFormatter(logging.Formatter):
                 # Indent the SQL query
                 sql = sqlparse.format(sql, reindent=True)
 
-            if self.color_style != 'none' and all((pygments, SqlLexer, Terminal256Formatter, TerminalTrueColorFormatter)):
+            if (
+                self.color_style != 'none'
+                and all((pygments, SqlLexer, Terminal256Formatter, TerminalTrueColorFormatter))
+            ):
                 # Highlight the SQL query
                 terminal_formatter_cls = TerminalTrueColorFormatter if self.true_color else Terminal256Formatter
                 sql = pygments.highlight(sql, SqlLexer(), terminal_formatter_cls(style=self.color_style))

@@ -39,7 +39,7 @@ class Recipient:
     def __init__(self, user=None, **info):
         self.name = (
             user.get_full_name() if hasattr(user, 'get_full_name') else info.pop('name', '')
-        ).replace('"', '”').replace('\'', '’')
+        ).replace('"', '”').replace("'", '’')
         self.email = user.email if user else info.pop('email', None)
         self.lang = (
             getattr(user, 'emails_lang', None) if user else info.pop('lang', None)
@@ -66,7 +66,7 @@ def _get_context():
                 ctx_processor = getattr(module, module_name)
             except Exception as err:
                 raise RuntimeError(f'Failed to import emails context processor: {err}') from err
-            if not hasattr(ctx_processor, '__call__'):
+            if not callable(ctx_processor):
                 ctx_processor = None
         globals()['_context_processor'] = ctx_processor
     else:

@@ -7,17 +7,15 @@ services:
       POSTGRES_PASSWORD: dj_web_utils
 
   django_web_utils:
-    image: ${DOCKER_IMG}
+    image: ${DOCKER_IMAGE}
     hostname: djwutils
     environment:
-      DJANGO_SETTINGS_MODULE: settings
-      PYTHONPATH: /opt/src/tests:${PYTHONPATH}
       POSTGRES_NAME: dj_web_utils
       POSTGRES_USER: dj_web_utils
       POSTGRES_PASSWORD: dj_web_utils
       POSTGRES_HOSTNAME: db
       NEED_CLAMAV: ${NEED_CLAMAV}
-    command: python3 tests/manage.py runserver 0.0.0.0:8200
+    command: django-admin runserver 0.0.0.0:8200
     build:
       context: ..
       dockerfile: ./docker/Dockerfile

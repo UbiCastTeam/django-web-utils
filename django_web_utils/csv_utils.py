@@ -2,12 +2,12 @@
 CSV utility functions
 """
 from collections.abc import Iterable
-# Django
+
 from django.http import StreamingHttpResponse
 
 
 def csv_streaming_response(
-    rows_iterator: Iterable, parameters: dict = None, file_name: str = None
+    rows_iterator: Iterable, parameters: dict | None = None, file_name: str | None = None
 ) -> StreamingHttpResponse:
     """
     Simple function to stream a CSV file.
