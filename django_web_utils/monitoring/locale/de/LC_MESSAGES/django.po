@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 16:26+0000\n"
+"POT-Creation-Date: 2026-05-05 08:32+0000\n"
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -15,138 +15,138 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 
 # Translated by DeepL.
-#: sysinfo.py:61
+#: sysinfo.py:64
 msgid "Application version"
 msgstr "Version der Anwendung"
 
-#: sysinfo.py:62
+#: sysinfo.py:65
 msgid "Application revision"
 msgstr "Überarbeitung der Anwendung"
 
 # Translated by DeepL.
-#: sysinfo.py:63
+#: sysinfo.py:66
 msgid "Python version"
 msgstr "Python-Version"
 
 # Translated by DeepL.
-#: sysinfo.py:64
+#: sysinfo.py:67
 msgid "Django version"
 msgstr "Django-Version"
 
 # Translated by DeepL.
-#: sysinfo.py:67
+#: sysinfo.py:70
 msgid "Database engine"
 msgstr "Datenbank-Engine"
 
 # Translated by DeepL.
-#: sysinfo.py:69
+#: sysinfo.py:72
 msgid "Django time zone"
 msgstr "Django Zeitzone"
 
-#: sysinfo.py:84
+#: sysinfo.py:87
 msgid "Description"
 msgstr "Beschreibung"
 
 # Translated by DeepL.
-#: sysinfo.py:85
+#: sysinfo.py:88
 msgid "Kernel"
 msgstr "Kernel"
 
-#: sysinfo.py:86
+#: sysinfo.py:89
 msgid "Hostname"
 msgstr "Hostname"
 
 # Translated by DeepL.
-#: sysinfo.py:87
+#: sysinfo.py:90
 msgid "Time zone"
 msgstr "Zeitzone"
 
 # Translated by DeepL.
-#: sysinfo.py:91
+#: sysinfo.py:94
 msgid "Uptime"
 msgstr "Betriebszeit"
 
 # Translated by DeepL.
-#: sysinfo.py:92
+#: sysinfo.py:95
 msgid "Load"
 msgstr "Laden Sie"
 
 # Translated by DeepL.
-#: sysinfo.py:126 sysinfo.py:153
+#: sysinfo.py:129 sysinfo.py:156
 msgid "Model"
 msgstr "Modell"
 
 # Translated by DeepL.
-#: sysinfo.py:127
+#: sysinfo.py:130
 msgid "Cores"
 msgstr "Kerne"
 
 # Translated by DeepL.
-#: sysinfo.py:128
+#: sysinfo.py:131
 msgid "Default frequency"
 msgstr "Standardfrequenz"
 
 # Translated by DeepL.
-#: sysinfo.py:169
+#: sysinfo.py:172
 msgid "Software"
 msgstr "Software"
 
 # Translated by DeepL.
-#: sysinfo.py:172
+#: sysinfo.py:175
 msgid "OS"
 msgstr "OS"
 
 # Translated by DeepL.
-#: sysinfo.py:179
+#: sysinfo.py:182
 msgid "HDD"
 msgstr "HDD"
 
 # Translated by DeepL.
-#: sysinfo.py:182
+#: sysinfo.py:185
 msgid "CPU"
 msgstr "CPU"
 
 # Translated by DeepL.
-#: sysinfo.py:185
+#: sysinfo.py:188
 msgid "GPU"
 msgstr "GPU"
 
 # Translated by DeepL.
-#: sysinfo.py:198
+#: sysinfo.py:202
 msgid "Total"
 msgstr "Insgesamt"
 
-#: sysinfo.py:198 sysinfo.py:199 sysinfo.py:200
+#: sysinfo.py:203 sysinfo.py:207 sysinfo.py:211
 msgid "GB"
 msgstr "GB"
 
 # Translated by DeepL.
-#: sysinfo.py:199
+#: sysinfo.py:206
 msgid "Free"
 msgstr "Kostenlos"
 
 # Translated by DeepL.
-#: sysinfo.py:200
+#: sysinfo.py:210
 msgid "Cached"
 msgstr "Cached"
 
 # Translated by DeepL.
-#: sysinfo.py:202
+#: sysinfo.py:214
 msgid "Failed to get information"
 msgstr "Informationen konnten nicht abgerufen werden"
 
 # Translated by DeepL.
-#: sysinfo.py:203
+#: sysinfo.py:215
 msgid "Memory"
 msgstr "Speicher"
 
 # Translated by DeepL.
-#: sysinfo.py:210
+#: sysinfo.py:222
 msgid "Network"
 msgstr "Netzwerk"
 
 # Translated by DeepL.
-#: sysinfo.py:217
+#: sysinfo.py:229
 msgid "Sensors"
 msgstr "Sensoren"
 
@@ -330,12 +330,16 @@ msgstr "Das Daemon-Skript kann nicht gefunden werden."
 msgid "The requested suffix does not exist."
 msgstr "Das angeforderte Suffix existiert nicht."
 
-#: utils.py:138
-msgid "Partial read of gzip files is not supported. Please get the complete file to read its content."
-msgstr "Das partielle Lesen von gzip-Dateien wird nicht unterstützt. Bitte holen Sie sich die komplette Datei, um ihren Inhalt zu lesen."
+#: utils.py:139
+msgid ""
+"Partial read of gzip files is not supported.\n"
+"Please get the complete file to read its content."
+msgstr ""
+"Das teilweise Lesen von gzip-Dateien wird nicht unterstützt.\n"
+"Bitte laden Sie die vollständige Datei herunter, um deren Inhalt zu lesen."
 
 # Translated by DeepL.
-#: utils.py:154
+#: utils.py:158
 #, python-format
 msgid ""
 "File too large: %s.\n"
@@ -346,11 +350,11 @@ msgstr ""
 "Nur Dateischwanz und Rohdatei sind zugänglich.\n"
 "Warnung: Das Abrufen der Rohdatei kann den Systemspeicher sättigen."
 
-#: utils.py:162
+#: utils.py:169
 msgid "Unable to display log file."
 msgstr "Protokolldatei kann nicht angezeigt werden."
 
-#: utils.py:162
+#: utils.py:169
 msgid "Error:"
 msgstr "Fehler:"
 

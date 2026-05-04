@@ -4,10 +4,9 @@ To use this module, you should create the following templates:
     400.html, 401.html, 403.html, 404.html, 405.html, 500.html
 All these templates should be in a dir called iframe.
 """
-from urllib.parse import quote
 import logging
-import traceback
-# Django
+from urllib.parse import quote
+
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
@@ -55,30 +54,30 @@ def iframe_view(function=None, methods=None, login_url=None, login_required=Fals
             except IframeHttp400:
                 return render(request, 'iframe/400.html', status=400)
             except IframeHttp401:
-                next = quote(request.get_full_path())
+                next_url = quote(request.get_full_path())
                 if login_url:
                     url = login_url
-                    if next:
+                    if next_url:
                         url += '?' if '?' not in url else '&'
-                        url += 'next=' + next
+                        url += 'next=' + next_url
                     return HttpResponseRedirect(url)
-                return render(request, 'iframe/401.html', {'next': next}, status=401)
+                return render(request, 'iframe/401.html', {'next': next_url}, status=401)
             except IframeHttp403:
-                next = quote(request.get_full_path())
+                next_url = quote(request.get_full_path())
                 if not request.user.is_authenticated and login_url:
                     url = login_url
-                    if next:
+                    if next_url:
                         url += '?' if '?' not in url else '&'
-                        url += 'next=' + next
+                        url += 'next=' + next_url
                     return HttpResponseRedirect(url)
-                return render(request, 'iframe/403.html', {'next': next}, status=403)
+                return render(request, 'iframe/403.html', {'next': next_url}, status=403)
             except IframeHttp404:
                 return render(request, 'iframe/404.html', status=404)
-            except Exception:
+            except Exception as err:
                 logger = logging.getLogger('django.request')
                 logger.error(
                     'Internal server error: %s', request.get_full_path(),
-                    exc_info=traceback.extract_stack(),
+                    exc_info=err,
                     extra={'status_code': 500, 'request': request}
                 )
                 response = render(request, 'iframe/500.html', status=500)

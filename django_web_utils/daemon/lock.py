@@ -27,25 +27,37 @@ def acquire_lock(path, timeout=None):
         pass
     else:
         if timeout and mtime < datetime.datetime.now() - timeout:
-            logger.info(f'Lock file "{path}" has timed out.')
+            logger.info('Lock file "%s" has timed out.', path)
         else:
             try:
                 content = path.read_text()
-            except OSError as e:
-                logger.debug(f'Failed to read lock file "{path}", retrying in 2s. Error was: {e}')
+            except OSError as err:
+                logger.debug(
+                    'Failed to read lock file "%s", retrying in 2s. Error was: %s',
+                    path, err
+                )
                 time.sleep(2)
                 try:
                     content = path.read_text()
-                except OSError as e:
-                    logger.info(f'Failed to read lock file "{path}", assuming another host is using it. Error was: {e}')
+                except OSError as err:
+                    logger.info(
+                        'Failed to read lock file "%s", assuming another host is using it. Error was: %s',
+                        path, err
+                    )
                     return False
             if content != hostname:
-                logger.info(f'Could not acquire lock file "{path}" because it is currently attributed to host "{content}".')
+                logger.info(
+                    'Could not acquire lock file "%s" because it is currently attributed to host "%s".',
+                    path, content
+                )
                 return False
             else:
-                logger.info(f'Lock file "{path}" already exists and is attributed to current hostname.')
+                logger.info(
+                    'Lock file "%s" already exists and is attributed to current hostname.',
+                    path
+                )
     path.write_text(hostname)
-    logger.info(f'Lock file "{path}" acquired.')
+    logger.info('Lock file "%s" acquired.', path)
     return True
 
 
@@ -56,9 +68,9 @@ def release_lock(path):
         content = path.read_text()
         if content == hostname:
             path.unlink(missing_ok=True)
-            logger.info(f'Lock file "{path}" released.')
+            logger.info('Lock file "%s" released.', path)
         else:
-            logger.warning(f'Cannot release lock file "{path}" because it is owned by host "{content}".')
+            logger.warning('Cannot release lock file "%s" because it is owned by host "%s".', path, content)
             return False
     return True
 

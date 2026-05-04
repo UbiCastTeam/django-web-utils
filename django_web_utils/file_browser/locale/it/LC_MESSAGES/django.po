@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 16:26+0000\n"
+"POT-Creation-Date: 2026-05-05 08:32+0000\n"
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -113,7 +113,7 @@ msgid "No base url defined in configuration."
 msgstr "Nessun url di base definito nella configurazione."
 
 #: views_action.py:74 views_action.py:141 views_action.py:164
-#: views_action.py:252
+#: views_action.py:264
 msgid "Invalid base path."
 msgstr "Percorso di base non valido."
 
@@ -176,45 +176,45 @@ msgstr "Non è stato specificato alcun percorso in cui spostare i file."
 msgid "Destination path does not exists."
 msgstr "Il percorso di destinazione non esiste."
 
-#: views_action.py:227
+#: views_action.py:228
 #, python-format
 msgid "Unable to move file %s:"
 msgstr "Impossibile spostare il file %s:"
 
-#: views_action.py:228
+#: views_action.py:231
 #, python-format
 msgid "%s file(s) successfully moved."
 msgstr "%s file spostati con successo."
 
-#: views_action.py:242
+#: views_action.py:246
 #, python-format
 msgid "Unable to delete file %s:"
 msgstr "Impossibile cancellare il file %s:"
 
-#: views_action.py:243
+#: views_action.py:251
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
 msgstr "%(f)s file e directory %(d)s cancellati con successo."
 
-#: views_action.py:258
+#: views_action.py:270
 msgid "Requested path does not exist."
 msgstr "Il percorso richiesto non esiste."
 
-#: views_action.py:298
+#: views_action.py:311
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
 msgstr "%(count)s risultati per \"%(search)s\" in \"%(path)s\"."
 
-#: views_action.py:300
+#: views_action.py:316
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
 msgstr "%(count)s risultati per \"%(search)s\"."
 
-#: views_action.py:302
+#: views_action.py:321
 #, python-format
 msgid "No results for \"%(search)s\"."
 msgstr "Nessun risultato per \"%(search)s\"."
 
-#: views_action.py:306
+#: views_action.py:327
 msgid "Invalid action requested."
 msgstr "Azione richiesta non valida."

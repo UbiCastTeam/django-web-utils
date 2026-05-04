@@ -2,14 +2,15 @@
 Django admin utility functions
 """
 import csv
-# Django
+import types
+
 from django.contrib import admin
 from django.db import models as dj_models
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
 
 
-def _export_as_csv_action(description=_('Export selected objects as CSV file'), fields=None, exclude=None, header=True):
+def _export_as_csv_action(description=None, fields=None, exclude=None, header=True):
     """
     This function returns an export csv action
     'fields' and 'exclude' work like in django ModelForm
@@ -18,7 +19,7 @@ def _export_as_csv_action(description=_('Export selected objects as CSV file'), 
     def export_as_csv(modeladmin, request, queryset):
         """
         Generic csv export admin action.
-        based on http://djangosnippets.org/snippets/1697/
+        based on https://djangosnippets.org/snippets/1697/
         """
         opts = modeladmin.model._meta
         field_names = set([field.name for field in opts.fields])
@@ -43,7 +44,7 @@ def _export_as_csv_action(description=_('Export selected objects as CSV file'), 
 
         return response
 
-    export_as_csv.short_description = description
+    export_as_csv.short_description = description or _('Export selected objects as CSV file')
     return export_as_csv
 
 
@@ -62,17 +63,22 @@ LIST_FIELDS = (
 )
 
 
-# register_module function
-# Automatic models registeration
-# ----------------------------------------------------------------------------
-def register_module(models_module, options=dict()):
+def register_module(models_module: types.ModuleType, options: dict | None = None) -> None:
+    """
+    Registers all models in the given module with the Django admin site.
+    """
+    if options is None:
+        options = dict()
     for attr_name in dir(models_module):
         model = getattr(models_module, attr_name, None)
-        if not hasattr(model, '__class__') or not hasattr(model, '_meta') \
-           or getattr(model._meta, 'abstract', False) \
-           or model in admin.site._registry \
-           or not issubclass(model.__class__, dj_models.Model.__class__) \
-           or not model.__module__.startswith(models_module.__name__):
+        if (
+            not hasattr(model, '__class__')
+            or not hasattr(model, '_meta')
+            or getattr(model._meta, 'abstract', False)
+            or model in admin.site._registry
+            or not issubclass(model.__class__, dj_models.Model.__class__)
+            or not model.__module__.startswith(models_module.__name__)
+        ):
             continue
 
         fields = []
@@ -91,15 +97,11 @@ def register_module(models_module, options=dict()):
         class ModelOptions(admin.ModelAdmin):
             save_on_top = True
             actions = []
-            list_display = []
-            list_filter = []
-            search_fields = []
+            list_display = fields
+            list_filter = lfields
+            search_fields = sfields
             ordering = ['-id']
-            date_hierarchy = None
-        ModelOptions.list_display = fields
-        ModelOptions.list_filter = lfields
-        ModelOptions.search_fields = sfields
-        ModelOptions.date_hierarchy = dfield
+            date_hierarchy = dfield
 
         if options.get(attr_name):
             for key in options[attr_name].keys():

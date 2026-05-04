@@ -3,8 +3,8 @@ Files utility functions
 """
 import datetime
 import os
-import subprocess
 from pathlib import Path
+import subprocess
 from typing import Iterator, Optional
 
 try:
@@ -34,8 +34,8 @@ def get_size(path: str | Path, ignore_du_errors: bool = True) -> int:
             raise RuntimeError('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
         try:
             return int(out.split('\t', 1)[0])
-        except ValueError:
-            raise RuntimeError('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err))
+        except ValueError as err:
+            raise RuntimeError('Failed to get size using "du". Stdout: %s, Stderr: %s' % (out, err)) from err
     else:
         # Socket or something else
         return 0
@@ -46,12 +46,13 @@ def get_size_repr(size: int) -> str:
     Return human-readable size with automatic suffix.
     """
     unit = 'Y'
+    sz: float = size
     for val in ('', 'k', 'M', 'G', 'T', 'P', 'E', 'Z'):
-        if abs(size) < 1000:
+        if abs(sz) < 1000:
             unit = val
             break
-        size /= 1000
-    return f'{round(size, 1)} {unit}B'
+        sz /= 1000
+    return f'{round(sz, 1)} {unit}B'
 
 
 def get_size_display(size: int = 0, path: str | Path | None = None) -> str:
@@ -81,9 +82,9 @@ def get_new_path(path: str | Path, new_extension: str | None = None) -> Path:
         fext = f'.{new_extension}' if new_extension else ''
     count = 1
     if '_' in fname:
-        name, count = fname.rsplit('_', 1)
+        name, count_s = fname.rsplit('_', 1)
         try:
-            count = int(count)
+            count = int(count_s)
         except ValueError:
             pass
         else:

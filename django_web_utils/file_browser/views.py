@@ -1,13 +1,13 @@
-from PIL import Image
 import datetime
 import logging
 import os
-# Django
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.utils.translation import gettext as _
-# Django web utils
+from PIL import Image
+
 from django_web_utils.file_browser import config
 from django_web_utils.files_utils import get_size_display
 
@@ -41,7 +41,7 @@ def recursive_dirs(path):
     else:
         files_names.sort(key=lambda f: f.lower())
         for file_name in files_names:
-            if '\'' in file_name or '"' in file_name:
+            if "'" in file_name or '"' in file_name:
                 continue
             current_path = os.path.join(path, file_name)
             if os.path.isdir(current_path):

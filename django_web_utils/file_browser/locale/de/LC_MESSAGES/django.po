@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 16:26+0000\n"
+"POT-Creation-Date: 2026-05-05 08:32+0000\n"
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -132,7 +132,7 @@ msgstr "Keine Basis-URL in der Konfiguration definiert."
 
 # Translated by DeepL.
 #: views_action.py:74 views_action.py:141 views_action.py:164
-#: views_action.py:252
+#: views_action.py:264
 msgid "Invalid base path."
 msgstr "Ungültiger Basispfad."
 
@@ -210,52 +210,52 @@ msgid "Destination path does not exists."
 msgstr "Der Zielpfad ist nicht vorhanden."
 
 # Translated by DeepL.
-#: views_action.py:227
+#: views_action.py:228
 #, python-format
 msgid "Unable to move file %s:"
 msgstr "Die Datei %s kann nicht verschoben werden:"
 
 # Translated by DeepL.
-#: views_action.py:228
+#: views_action.py:231
 #, python-format
 msgid "%s file(s) successfully moved."
 msgstr "%s Datei(en) erfolgreich verschoben."
 
 # Translated by DeepL.
-#: views_action.py:242
+#: views_action.py:246
 #, python-format
 msgid "Unable to delete file %s:"
 msgstr "Die Datei %s kann nicht gelöscht werden:"
 
 # Translated by DeepL.
-#: views_action.py:243
+#: views_action.py:251
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
 msgstr "%(f)s Datei(en) und %(d)s Verzeichnis(e) erfolgreich gelöscht."
 
 # Translated by DeepL.
-#: views_action.py:258
+#: views_action.py:270
 msgid "Requested path does not exist."
 msgstr "Der angeforderte Pfad existiert nicht."
 
 # Translated by DeepL.
-#: views_action.py:298
+#: views_action.py:311
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
 msgstr "%(count)s Ergebnisse für \"%(search)s\" in \"%(path)s\"."
 
 # Translated by DeepL.
-#: views_action.py:300
+#: views_action.py:316
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
 msgstr "%(count)s Ergebnisse für \"%(search)s\"."
 
 # Translated by DeepL.
-#: views_action.py:302
+#: views_action.py:321
 #, python-format
 msgid "No results for \"%(search)s\"."
 msgstr "Keine Ergebnisse für \"%(search)s\"."
 
-#: views_action.py:306
+#: views_action.py:327
 msgid "Invalid action requested."
 msgstr "Ungültige Aktion angefordert."

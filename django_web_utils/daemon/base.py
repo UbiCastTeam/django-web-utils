@@ -119,7 +119,7 @@ class BaseDaemon:
             if pid:
                 print(f'Stopping {self.get_name()}... ', file=sys.stdout)
                 # Kill process and its children
-                p = subprocess.run(f'kill -- -$(ps hopgid {pid} | sed \'s/^ *//g\')', shell=True)
+                p = subprocess.run(f"kill -- -$(ps hopgid {pid} | sed 's/^ *//g')", shell=True)
                 if p.returncode != 0:
                     print(f'Cannot stop {self.get_name()}.', file=sys.stderr)
                     self.exit(129)
@@ -213,7 +213,7 @@ class BaseDaemon:
             logging.captureWarnings(False)
 
         # Reset all loggers config
-        for key, lg in loggers.items():
+        for lg in loggers.values():
             lg.handlers = []
             lg.propagate = True
 
@@ -263,14 +263,15 @@ class BaseDaemon:
             logger.warning(
                 'Error when trying to remove the pid file "%s": %s\n'
                 '  As the pid file cannot be removed, the restart will probably kill the daemon itself.',
-                pid_path(), err
+                pid_path, err
             )
 
     def _log_error(self, err):
         if self._logging_available:
             logger.error(
-                f'Error when running {self.get_name()}: {err}\n{traceback.format_exc()}',
-                exc_info=traceback.extract_stack()
+                'Error when running %s: %s\n%s',
+                self.get_name(), err, traceback.format_exc(),
+                exc_info=err
             )
         elif self._log_in_file:
             try:

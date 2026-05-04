@@ -1,8 +1,8 @@
 """
 Scripts utility functions
 """
-import sys
 import subprocess
+import sys
 
 
 class Colors():
@@ -59,12 +59,3 @@ def get_output(cmd):
 
 def create_link(src, dst):
     return run_cmd(['ln', '-sf', src, dst])
-
-
-def is_different(src, dst):
-    p1 = subprocess.Popen(['diff', '-Naur', src, dst], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=sys.stderr)
-    p2 = subprocess.Popen(['grep', '--', '---'], stdin=p1.stdout, stdout=subprocess.PIPE, stderr=sys.stderr)
-    p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
-    p2.communicate()
-    sys.stderr.flush()
-    return p2.returncode == 0

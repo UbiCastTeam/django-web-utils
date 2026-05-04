@@ -1,10 +1,10 @@
 from typing import Type
 
-# Django
 from django import forms as dj_forms
 from django.utils.translation import gettext_lazy as _
 
 from django_web_utils.forms_utils import BaseFileSettingsForm
+
 from .store import SettingsStoreBase
 
 
@@ -60,7 +60,12 @@ class BaseSettingsStoreForm:
         if hasattr(super(), 'save'):
             result = super().save(commit)
             # Compat with django_web_utils.forms_utils.BaseFileSettingsForm
-            if isinstance(self, BaseFileSettingsForm) and hasattr(result, '__len__') and len(result) == 2 and isinstance(result[0], bool):
+            if (
+                isinstance(self, BaseFileSettingsForm)
+                and hasattr(result, '__len__')
+                and len(result) == 2
+                and isinstance(result[0], bool)
+            ):
                 success, msg = result
                 if success is False:
                     return success, msg
@@ -82,7 +87,11 @@ class BaseSettingsStoreForm:
                 return success, msg
             self.settings_store.update(**changed)
             return True, _('Your changes will be active in a few seconds.')
-        return True, list(changed.items()) + (msg if isinstance(msg, list) else ())
+
+        changed_list = list(changed.items())
+        if isinstance(msg, list):
+            changed_list.extend(msg)
+        return True, changed_list
 
 
 class SettingsStoreForm(BaseSettingsStoreForm, dj_forms.Form):

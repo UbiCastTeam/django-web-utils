@@ -2,13 +2,12 @@
 JSON utility functions
 """
 import datetime
-import traceback
 import logging
-# Django
+
 from django.core.exceptions import BadRequest, PermissionDenied
-from django.http import JsonResponse, Http404
+from django.http import Http404, JsonResponse
 from django.utils.translation import gettext_lazy as _
-# Django web utils
+
 from django_web_utils.antivirus_utils import FileInfectedError, on_file_infected_error
 
 
@@ -137,7 +136,7 @@ class JsonErrorResponseMiddleware:
                 logger = logging.getLogger('django.request')
                 logger.error(
                     'Internal server error: %s', request.get_full_path(),
-                    exc_info=traceback.extract_stack(),
+                    exc_info=exception,
                     extra={'status_code': 500, 'request': request}
                 )
                 response = JsonResponse({'error': '%s (500)' % _('Internal server error')}, status=500)

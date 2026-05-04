@@ -12,9 +12,9 @@ ifeq ($(shell expr $(USER_GID) \< 1000), 1)
 	USER_GID := 1000
 endif
 
-DOCKER_IMG ?= django_web_utils
-TMP_DOCKER_CT ?= django_web_utils_ct
+DOCKER_IMAGE ?= django_web_utils
 DOCKER_COMPOSE := docker compose -f docker/docker-compose.yml
+DOCKER_RUN := docker run --rm -it --name django_web_utils_ct -v ${CURDIR}:/opt/src -w /opt/src
 NEED_CLAMAV ?= 0
 
 docker_build:
@@ -24,13 +24,13 @@ docker_rebuild:
 	DOCKER_BUILDKIT=1 ${DOCKER_COMPOSE} build --no-cache
 
 lint:
-	docker run -v ${CURDIR}:/apps registry.ubicast.net/docker/flake8:latest make lint_local
+	${DOCKER_RUN} --entrypoint /usr/bin/make ${DOCKER_IMAGE} lint_local
 
 lint_local:
-	flake8 .
+	ruff check
 
 deadcode:
-	docker run -v ${CURDIR}:/apps registry.ubicast.net/docker/vulture:latest make deadcode_local
+	${DOCKER_RUN} --entrypoint /usr/bin/make ${DOCKER_IMAGE} deadcode_local
 
 deadcode_local:
 	vulture --exclude docker/,submodules/ --min-confidence 90 .
@@ -40,20 +40,20 @@ run:
 	${DOCKER_COMPOSE} up
 
 stop:
-	${DOCKER_COMPOSE} stop && ${DOCKER_COMPOSE} rm -f
+	${DOCKER_COMPOSE} down
 
 shell:
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "NEED_CLAMAV=${NEED_CLAMAV}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} /bin/bash
+	${DOCKER_COMPOSE} run -e DOCKER_TEST=1 -e "NEED_CLAMAV=${NEED_CLAMAV}" --rm ${DOCKER_IMAGE} /bin/bash
 
 test:
-	${DOCKER_COMPOSE} run -e CI=1 -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm --name ${TMP_DOCKER_CT} ${DOCKER_IMG} make test_local
+	${DOCKER_COMPOSE} run -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm ${DOCKER_IMAGE} make test_local
 
 test_local:PYTEST_ARGS := $(or ${PYTEST_ARGS},--cov --cov-report html --cov-report term tests/testapp/tests)
 test_local:
 	pytest --reuse-db ${PYTEST_ARGS}
 
 test_install:
-	docker run --rm -it --name ${TMP_DOCKER_CT} --user root --entrypoint /usr/bin/make -v ${CURDIR}:/opt/src ${DOCKER_IMG} test_install_local
+	${DOCKER_RUN} --user root --entrypoint /usr/bin/make ${DOCKER_IMAGE} test_install_local
 
 test_install_local:
 	# List files that will be installed
@@ -65,7 +65,7 @@ test_install_local:
 
 generate_po:
 	# Generate po files from source
-	docker run --rm -it -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_po_local
+	${DOCKER_RUN} -e DOCKER_TEST=1 ${DOCKER_IMAGE} make generate_po_local
 
 generate_po_local:
 	cd django_web_utils \
@@ -79,7 +79,7 @@ generate_po_local:
 
 generate_mo:
 	# Generate mo files from po files
-	docker run --rm -it -e DOCKER_TEST=1 --name ${TMP_DOCKER_CT} -v ${CURDIR}:/opt/src ${DOCKER_IMG} make generate_mo_local
+	${DOCKER_RUN} -e DOCKER_TEST=1 ${DOCKER_IMAGE} make generate_mo_local
 
 generate_mo_local:
 	cd django_web_utils \
@@ -91,7 +91,7 @@ generate_mo_local:
 
 translate:
 	make generate_po
-	docker run -v ${CURDIR}:/apps registry.ubicast.net/devtools/translator:main translator \
+	${DOCKER_RUN} --user "${USER_UID}:${USER_GID}" registry.ubicast.net/devtools/translator:main translator \
 		--api-key "${DEEPL_API_KEY}" \
 		--path django_web_utils \
 		--source-language EN \

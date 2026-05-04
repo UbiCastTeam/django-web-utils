@@ -15,15 +15,15 @@ def get_version(package=None, module=None):
     if module:
         version = getattr(module, '__version__', '')
         git_dir = Path(module.__path__[0]).resolve() / '.git'
-        for i in range(3):
+        for _i in range(3):
             if git_dir.exists():
                 break
             git_dir = git_dir.parent.parent / '.git'
     else:
         git_dir = '.'
     cmds = [
-        f'dpkg -s \'{package}\' | grep Version',
-        f'git --git-dir \'{git_dir}\' log -1',
+        f"dpkg -s '{package}' | grep Version",
+        f"git --git-dir '{git_dir}' log -1",
     ]
     local_repo = False
     for cmd in cmds:
@@ -33,11 +33,11 @@ def get_version(package=None, module=None):
                 local_repo = True
                 # Get git repo version using last commit date and short hash
                 try:
-                    commit_unix_ts = subprocess.getoutput(f'git --git-dir \'{git_dir}\' log -1 --pretty=%ct')
+                    commit_unix_ts = subprocess.getoutput(f"git --git-dir '{git_dir}' log -1 --pretty=%ct")
                     commit_date = datetime.datetime.fromtimestamp(
                         int(commit_unix_ts), datetime.UTC
                     ).strftime('%Y%m%d-%H%M%S')
-                    commit_shorthash = subprocess.getoutput(f'git --git-dir \'{git_dir}\' log -1 --pretty=%h')
+                    commit_shorthash = subprocess.getoutput(f"git --git-dir '{git_dir}' log -1 --pretty=%h")
                     revision = f'{commit_date}-{commit_shorthash}'
                 except Exception as e:
                     logger.warning('Unable to get revision: %s', e)

@@ -3,7 +3,7 @@ Authentication utility functions
 """
 import base64
 import re
-# Django
+
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -80,9 +80,15 @@ class CharactersTypesValidator:
             letter_types += 1
         if letter_types < 3:
             raise ValidationError(
-                _('The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters).'),
+                _(
+                    'The password must contain at least 3 types of characters '
+                    '(types are lower case letters, upper case letters, digits and special characters).'
+                ),
                 code='password_characters_types',
             )
 
     def get_help_text(self):
-        return _('The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters).')
+        return _(
+            'The password must contain at least 3 types of characters '
+            '(types are lower case letters, upper case letters, digits and special characters).'
+        )

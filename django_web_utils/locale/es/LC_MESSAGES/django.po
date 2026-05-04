@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 16:09+0000\n"
+"POT-Creation-Date: 2026-05-05 08:31+0000\n"
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -15,11 +15,11 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 
 # Translated by DeepL.
-#: admin_utils.py:12
+#: admin_utils.py:47
 msgid "Export selected objects as CSV file"
 msgstr "Exportar los objetos seleccionados como archivo CSV"
 
-#: admin_utils.py:110
+#: admin_utils.py:112
 msgid "CSV export"
 msgstr "Exportación a CSV"
 
@@ -78,122 +78,122 @@ msgid "Access authentication"
 msgstr "Autenticación de acceso"
 
 # Translated by DeepL.
-#: auth_utils.py:83 auth_utils.py:88
+#: auth_utils.py:84 auth_utils.py:92
 msgid "The password must contain at least 3 types of characters (types are lower case letters, upper case letters, digits and special characters)."
 msgstr "La contraseña debe contener al menos 3 tipos de caracteres (los tipos son letras minúsculas, letras mayúsculas, dígitos y caracteres especiales)."
 
-#: files_utils.py:63
+#: files_utils.py:64
 msgid "B"
 msgstr "B"
 
-#: forms_utils.py:119 settings_store/forms.py:48
+#: forms_utils.py:121 settings_store/forms.py:48
 msgid "Yes"
 msgstr "Sí"
 
 # Translated by DeepL.
-#: forms_utils.py:121 settings_store/forms.py:50
+#: forms_utils.py:123 settings_store/forms.py:50
 msgid "No"
 msgstr "No"
 
 # Translated by DeepL.
-#: json_utils.py:89
+#: json_utils.py:88
 msgid "Invalid request method"
 msgstr "Método de solicitud no válido"
 
-#: json_utils.py:94
+#: json_utils.py:93
 msgid "Authentication required"
 msgstr "Se requiere autenticación"
 
 # Translated by DeepL.
-#: json_utils.py:125
+#: json_utils.py:124
 msgid "Bad request"
 msgstr "Mala petición"
 
-#: json_utils.py:127
+#: json_utils.py:126
 msgid "Access denied"
 msgstr "Acceso denegado"
 
 # Translated by DeepL.
-#: json_utils.py:129
+#: json_utils.py:128
 msgid "Page not found"
 msgstr "Página no encontrada"
 
 # Translated by DeepL.
-#: json_utils.py:134
+#: json_utils.py:133
 msgid "Infected file detected"
 msgstr "Archivo infectado detectado"
 
 # Translated by DeepL.
-#: json_utils.py:143
+#: json_utils.py:142
 msgid "Internal server error"
 msgstr "Error interno del servidor"
 
 # Translated by DeepL.
-#: ldap_utils.py:74
+#: ldap_utils.py:75
 msgid "Error when initializing connection with LDAP server."
 msgstr "Error al inicializar la conexión con el servidor LDAP."
 
-#: ldap_utils.py:74 ldap_utils.py:102 ldap_utils.py:129 ldap_utils.py:280
+#: ldap_utils.py:75 ldap_utils.py:105 ldap_utils.py:140 ldap_utils.py:336
 msgid "Error:"
 msgstr "Error:"
 
 # Translated by DeepL.
-#: ldap_utils.py:102
+#: ldap_utils.py:105
 msgid "Error when trying to authenticate on LDAP server."
 msgstr "Error al intentar autenticarse en el servidor LDAP."
 
 # Translated by DeepL.
-#: ldap_utils.py:128
+#: ldap_utils.py:139
 msgid "Search on LDAP server failed."
 msgstr "La búsqueda en el servidor LDAP ha fallado."
 
 # Translated by DeepL.
-#: ldap_utils.py:131
+#: ldap_utils.py:142
 msgid "Arguments:"
 msgstr "Argumentos:"
 
-#: ldap_utils.py:165
+#: ldap_utils.py:180
 msgid "User not found."
 msgstr "Usuario no encontrado."
 
 # Translated by DeepL.
-#: ldap_utils.py:177
+#: ldap_utils.py:199
 msgid "Group not found."
 msgstr "Grupo no encontrado."
 
 # Translated by DeepL.
-#: ldap_utils.py:280
+#: ldap_utils.py:336
 msgid "Error when trying to get user information."
 msgstr "Error al intentar obtener la información del usuario."
 
 # Translated by DeepL.
-#: ldap_utils.py:289
+#: ldap_utils.py:346
 msgid "Login failed (however the user exists in LDAP)."
 msgstr "El inicio de sesión falló (sin embargo, el usuario existe en LDAP)."
 
 # Translated by DeepL.
-#: ldap_utils.py:291
+#: ldap_utils.py:350
 msgid "Login succeeded."
 msgstr "El inicio de sesión fue exitoso."
 
 # Translated by DeepL.
-#: ldap_utils.py:292
+#: ldap_utils.py:351
 #, python-format
 msgid "User \"%s\" data:"
 msgstr "Datos del usuario \"%s\":"
 
 # Translated by DeepL.
-#: ldap_utils.py:297
+#: ldap_utils.py:356
 msgid "User groups:"
 msgstr "Grupos de usuarios:"
 
 # Translated by DeepL.
-#: ldap_utils.py:302
+#: ldap_utils.py:361
 msgid "Error when trying to get groups."
 msgstr "Error al intentar obtener grupos."
 
 # Translated by DeepL.
-#: ldap_utils.py:313
+#: ldap_utils.py:372
 msgid "No groups found."
 msgstr "No se han encontrado grupos."
 
@@ -253,12 +253,12 @@ msgstr "Su sesión ha expirado, por favor obtenga un nuevo enlace para reintenta
 msgid "Your request is invalid."
 msgstr "Su solicitud no es válida."
 
-#: settings_store/forms.py:81 settings_utils.py:64 settings_utils.py:125
+#: settings_store/forms.py:86 settings_utils.py:64 settings_utils.py:125
 msgid "No changes to save."
 msgstr "Ningún cambio que guardar."
 
 # Translated by DeepL.
-#: settings_store/forms.py:84
+#: settings_store/forms.py:89
 msgid "Your changes will be active in a few seconds."
 msgstr "Sus cambios se activarán en unos segundos."
 

@@ -1,10 +1,11 @@
 """
 Images utility functions
 """
-import os
 import datetime
+import os
+
 from PIL import Image
-# utils
+
 from django_web_utils.files_utils import get_new_path
 
 
@@ -38,7 +39,13 @@ def get_image_info(path):
         size = img.size
     except Exception:
         pass
-    return dict(file_size=file_size, file_extension=file_extension, file_mtime=file_mtime, image_width=size[0], image_height=size[1])
+    return dict(
+        file_size=file_size,
+        file_extension=file_extension,
+        file_mtime=file_mtime,
+        image_width=size[0],
+        image_height=size[1],
+    )
 
 
 def rotate_image(path, clockwise=True, rename=True):

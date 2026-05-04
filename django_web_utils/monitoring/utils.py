@@ -1,11 +1,11 @@
 import datetime
 import gzip
 import logging
+from pathlib import Path
 import re
 import stat
 import subprocess
 import sys
-from pathlib import Path
 
 from django.contrib import messages
 from django.http import FileResponse
@@ -22,9 +22,9 @@ FILE_SIZE_LIMIT_GZ = 104_857_600  # 100 MiB
 
 
 def natural_keys(text):
-    '''
+    """
     alist.sort(key=natural_keys) sorts in human order
-    '''
+    """
     return [
         (int(val) if val.isdigit() else val)
         for val in re.split(r'(\d+)', text)
@@ -135,7 +135,10 @@ def log_view(request, path, tail=None, rotated_access=False, date_adjust_fct=Non
             if tail_only:
                 # Read only file end
                 if is_gz:
-                    content = _('Partial read of gzip files is not supported. Please get the complete file to read its content.')
+                    content = _(
+                        'Partial read of gzip files is not supported.\n'
+                        'Please get the complete file to read its content.'
+                    )
                 else:
                     content = b''
                     for segment in files_utils.reverse_read(picked_path):
@@ -151,7 +154,11 @@ def log_view(request, path, tail=None, rotated_access=False, date_adjust_fct=Non
                 (not is_gz and statobj.st_size > FILE_SIZE_LIMIT)
                 or (is_gz and statobj.st_size > FILE_SIZE_LIMIT_GZ)
             ):
-                content = _('File too large: %s.\nOnly file tail and raw file are accessible.\nWarning: getting the raw file can saturate system memory.') % size
+                content = _(
+                    'File too large: %s.\n'
+                    'Only file tail and raw file are accessible.\n'
+                    'Warning: getting the raw file can saturate system memory.'
+                ) % size
             else:
                 content = picked_path.read_bytes()
                 if is_gz:

@@ -29,19 +29,17 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "django >= 5.2, < 6.0",
-  "flake8",
   "psycopg[binary] >= 3.2",
   "pytest",
   "pytest-cov",
   "pytest-django",
+  "ruff",
   "sentry-sdk",
   "vulture",
 ]
 
 [project.urls]
 Repository = "https://github.com/UbiCastTeam/django-web-utils"
-
-[tool.setuptools]
 
 [tool.setuptools.dynamic]
 version = {attr = "django_web_utils.__version__"}
@@ -66,3 +64,44 @@ testpaths = ["tests/"]
 
 [tool.coverage.run]
 source_dirs = ["django_web_utils"]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+  ".git",
+  ".pytest_cache",
+  ".venv",
+  "htmlcov",
+  "submodules",
+]
+line-length = 120
+indent-width = 4
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "single"
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+select = ["E", "F", "B", "A", "G", "Q"]
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+multiline-quotes = "single"
+
+[tool.ruff.lint.isort]
+case-sensitive = false
+force-sort-within-sections = true
+force-wrap-aliases = true
+combine-as-imports = true
+forced-separate = ["tests"]
+order-by-type = false
+section-order = [
+  "future",
+  "standard-library",
+  "third-party",
+  "first-party",
+  "local-folder",
+]
+split-on-trailing-comma = true

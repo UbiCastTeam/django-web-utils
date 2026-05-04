@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Django web utils\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 16:26+0000\n"
+"POT-Creation-Date: 2026-05-05 08:32+0000\n"
 "PO-Revision-Date: 2026-02-26 16:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -131,7 +131,7 @@ msgstr "Geen basis url gedefinieerd in configuratie."
 
 # Translated by DeepL.
 #: views_action.py:74 views_action.py:141 views_action.py:164
-#: views_action.py:252
+#: views_action.py:264
 msgid "Invalid base path."
 msgstr "Ongeldig basispad."
 
@@ -209,52 +209,52 @@ msgid "Destination path does not exists."
 msgstr "Bestemmingspad bestaat niet."
 
 # Translated by DeepL.
-#: views_action.py:227
+#: views_action.py:228
 #, python-format
 msgid "Unable to move file %s:"
 msgstr "Kan bestand niet verplaatsen %s:"
 
 # Translated by DeepL.
-#: views_action.py:228
+#: views_action.py:231
 #, python-format
 msgid "%s file(s) successfully moved."
 msgstr "%s bestand(en) succesvol verplaatst."
 
 # Translated by DeepL.
-#: views_action.py:242
+#: views_action.py:246
 #, python-format
 msgid "Unable to delete file %s:"
 msgstr "Kan bestand %s niet verwijderen:"
 
 # Translated by DeepL.
-#: views_action.py:243
+#: views_action.py:251
 #, python-format
 msgid "%(f)s file(s) and %(d)s directory(ies) successfully deleted."
 msgstr "%(f)s bestand(en) en %(d)s map(pen) succesvol verwijderd."
 
 # Translated by DeepL.
-#: views_action.py:258
+#: views_action.py:270
 msgid "Requested path does not exist."
 msgstr "Het gevraagde pad bestaat niet."
 
 # Translated by DeepL.
-#: views_action.py:298
+#: views_action.py:311
 #, python-format
 msgid "%(count)s results for \"%(search)s\" in \"%(path)s\"."
 msgstr "%(count)s resultaten voor \"%(search)s\" in \"%(path)s\"."
 
 # Translated by DeepL.
-#: views_action.py:300
+#: views_action.py:316
 #, python-format
 msgid "%(count)s results for \"%(search)s\"."
 msgstr "%(count)s resultaten voor \"%(search)s\"."
 
 # Translated by DeepL.
-#: views_action.py:302
+#: views_action.py:321
 #, python-format
 msgid "No results for \"%(search)s\"."
 msgstr "Geen resultaten voor \"%(search)s\"."
 
-#: views_action.py:306
+#: views_action.py:327
 msgid "Invalid action requested."
 msgstr "Ongeldige actie aangevraagd."

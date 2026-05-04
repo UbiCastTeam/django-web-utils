@@ -4,12 +4,12 @@ The OVERRIDE_PATH setting must be set to the local settings override path.
 """
 import logging
 import os
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
-from typing import Iterable, Optional, Any
+from typing import Any, Iterable, Optional
 
-from django.conf import settings, ENVIRONMENT_VARIABLE
+from django.conf import ENVIRONMENT_VARIABLE, settings
 from django.utils.functional import empty
 from django.utils.translation import gettext as _
 
@@ -165,9 +165,9 @@ def remove_settings(*keys: str) -> tuple[bool, str]:
                     override_path.unlink(missing_ok=True)
                 else:
                     override_path.write_text(content)
-            except OSError as e:
-                logger.warning('Unable to write configuration file. %s' % e)
-                return False, '%s %s' % (_('Unable to write configuration file:'), e)
+            except OSError as err:
+                logger.warning('Unable to write configuration file. %s', err)
+                return False, '%s %s' % (_('Unable to write configuration file:'), err)
 
     msg = _('Your changes have been applied. The service will be reloaded in a few seconds to make them effective.')
     # The service reload should be handled with the "touch-reload" uwsgi

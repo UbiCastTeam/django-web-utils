@@ -2,16 +2,16 @@
 LDAP utility functions
 Requires ldap3 > 2.1
 """
-from ldap3.utils.conv import escape_filter_chars
-import ldap3
 import logging
 import ssl
-# Django
+
 from django.conf import settings
 from django.template import defaultfilters
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+import ldap3
+from ldap3.utils.conv import escape_filter_chars
 
 logger = logging.getLogger('djwutils.ldap_utils')
 
@@ -70,8 +70,10 @@ def get_connection(bind_dn=None, bind_password=None):
             sv_params['tls'] = tls
             sv_params['use_ssl'] = True
         server = ldap3.Server(**sv_params)
-    except Exception as e:
-        raise Exception('%s\n%s %s' % (_('Error when initializing connection with LDAP server.'), _('Error:'), e))
+    except Exception as err:
+        raise Exception(
+            '%s\n%s %s' % (_('Error when initializing connection with LDAP server.'), _('Error:'), err)
+        ) from err
     try:
         dn = bind_dn or get_conf('BIND_DN')
         password = bind_password or get_conf('BIND_PASSWORD')
@@ -98,8 +100,10 @@ def get_connection(bind_dn=None, bind_password=None):
                     raise Exception(str('Username and password do not match.'))
                 raise Exception(connection.result['description'])
             raise Exception('Bind call failed.')
-    except Exception as e:
-        raise Exception('%s\n%s %s' % (_('Error when trying to authenticate on LDAP server.'), _('Error:'), e))
+    except Exception as err:
+        raise Exception(
+            '%s\n%s %s' % (_('Error when trying to authenticate on LDAP server.'), _('Error:'), err)
+        ) from err
     else:
         return connection
 
@@ -114,7 +118,14 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
         if get_conf('VIRTUAL_ATTRIBUTES'):
             attrs.extend(get_conf('VIRTUAL_ATTRIBUTES').split(','))
     try:
-        entry_generator = connection.extend.standard.paged_search(base_dn, search_filter=sfilter, attributes=attrs, paged_size=get_conf('PAGE_SIZE'), time_limit=get_conf('TIMEOUT'), generator=True)
+        entry_generator = connection.extend.standard.paged_search(
+            base_dn,
+            search_filter=sfilter,
+            attributes=attrs,
+            paged_size=get_conf('PAGE_SIZE'),
+            time_limit=get_conf('TIMEOUT'),
+            generator=True,
+        )
         results = list()
         for entry in entry_generator:
             if 'dn' in entry and 'raw_attributes' in entry:
@@ -123,16 +134,16 @@ def ldap_search(base_dn, sfilter, attrs='all', connection=None):
                     if values:
                         decoded_attrs[key] = [v.decode('utf-8', 'replace') for v in values]
                 results.append(dict(dn=entry['dn'], attributes=decoded_attrs, raw_attributes=entry['raw_attributes']))
-    except Exception as e:
+    except Exception as err:
         raise Exception('%s\n%s %s\n%s\nBase dn: %s\nFilter: %s\nAttrs: %s' % (
             _('Search on LDAP server failed.'),
             _('Error:'),
-            e,
+            err,
             _('Arguments:'),
             base_dn,
             sfilter,
             attrs,
-        ))
+        )) from err
     return results
 
 
@@ -159,24 +170,38 @@ def get_all_groups(connection=None):
 # get_user_info function
 # ----------------------------------------------------------------------------
 def get_user_info(username, connection=None):
-    l_filter = '(&%s(%s=%s))' % (get_conf('USER_SEARCH_FILTER'), get_conf('USER_ID_FIELD'), escape_filter_chars(username))
+    l_filter = '(&%s(%s=%s))' % (
+        get_conf('USER_SEARCH_FILTER'),
+        get_conf('USER_ID_FIELD'),
+        escape_filter_chars(username),
+    )
     results = ldap_search(get_conf('USER_SEARCH_SCOPE'), l_filter, connection=connection)
     if not results:
         raise Exception(str(_('User not found.')))
     if len(results) > 1:
-        logger.warning('Multiple results found in LDAP server for search:\n%s\n%s\n%s', get_conf('USER_SEARCH_SCOPE'), 'ldap3.SUBTREE', l_filter)
+        logger.warning(
+            'Multiple results found in LDAP server for search:\n%s\n%s\n%s',
+            get_conf('USER_SEARCH_SCOPE'), 'ldap3.SUBTREE', l_filter
+        )
     return results[0]['dn'], results[0]['attributes']
 
 
 # get_group_info function
 # ----------------------------------------------------------------------------
 def get_group_info(group_uid, connection=None):
-    l_filter = '(&%s(%s=%s))' % (get_conf('GROUP_SEARCH_FILTER'), get_conf('GROUP_ID_FIELD'), escape_filter_chars(group_uid))
+    l_filter = '(&%s(%s=%s))' % (
+        get_conf('GROUP_SEARCH_FILTER'),
+        get_conf('GROUP_ID_FIELD'),
+        escape_filter_chars(group_uid),
+    )
     results = ldap_search(get_conf('GROUP_SEARCH_SCOPE'), l_filter, connection=connection)
     if not results:
         raise Exception(str(_('Group not found.')))
     if len(results) > 1:
-        logger.warning('Multiple results found in LDAP server for search:\n%s\n%s\n%s', get_conf('GROUP_SEARCH_SCOPE'), 'ldap3.SUBTREE', l_filter)
+        logger.warning(
+            'Multiple results found in LDAP server for search:\n%s\n%s\n%s',
+            get_conf('GROUP_SEARCH_SCOPE'), 'ldap3.SUBTREE', l_filter
+        )
     return results[0]['dn'], results[0]['attributes']
 
 
@@ -184,7 +209,12 @@ def get_group_info(group_uid, connection=None):
 # ----------------------------------------------------------------------------
 def get_group_sub_groups(group_dn, group_attrs, level=1, connection=None):
     sub_groups = list()
-    if get_conf('GROUP_SUB_GROUPS_FIELD') and (get_conf('GROUP_SUB_GROUPS_USE_DN') or get_conf('GROUP_ID_FIELD')) and hasattr(group_attrs, 'items') and group_attrs.get(get_conf('GROUP_SUB_GROUPS_FIELD')):
+    if (
+        get_conf('GROUP_SUB_GROUPS_FIELD')
+        and (get_conf('GROUP_SUB_GROUPS_USE_DN') or get_conf('GROUP_ID_FIELD'))
+        and hasattr(group_attrs, 'items')
+        and group_attrs.get(get_conf('GROUP_SUB_GROUPS_FIELD'))
+    ):
         for ref in group_attrs[get_conf('GROUP_SUB_GROUPS_FIELD')]:
             if not ref:
                 continue
@@ -195,14 +225,20 @@ def get_group_sub_groups(group_dn, group_attrs, level=1, connection=None):
                     continue  # value is not a valid dn
                 results = ldap_search(ref, get_conf('GROUP_SEARCH_FILTER'), connection=connection)
             else:
-                results = ldap_search(get_conf('GROUP_SEARCH_SCOPE'), '(&%s(%s=%s))' % (get_conf('GROUP_SEARCH_FILTER'), get_conf('GROUP_ID_FIELD'), escape_filter_chars(ref)), connection=connection)
+                results = ldap_search(get_conf('GROUP_SEARCH_SCOPE'), '(&%s(%s=%s))' % (
+                    get_conf('GROUP_SEARCH_FILTER'),
+                    get_conf('GROUP_ID_FIELD'),
+                    escape_filter_chars(ref),
+                ), connection=connection)
             for sub_group in results:
                 if sub_group['dn'] == group_dn:
                     continue  # avoid infinite group loops
                 sub_groups.append(sub_group)
                 sub_group_attrs = sub_group['attributes'] if hasattr(sub_group['attributes'], 'items') else dict()
                 sub_group_attrs['_sub_group_level'] = [level]
-                sub_groups.extend(get_group_sub_groups(sub_group['dn'], sub_group_attrs, level=level + 1, connection=connection))
+                sub_groups.extend(
+                    get_group_sub_groups(sub_group['dn'], sub_group_attrs, level=level + 1, connection=connection)
+                )
     return sub_groups
 
 
@@ -215,9 +251,21 @@ def get_user_groups(user_dn, user_attrs, connection=None):
     # get groups referred by group objects
     if get_conf('GROUP_MEMBERS_FIELD'):
         if get_conf('GROUP_MEMBERS_USE_DN'):
-            search_filter = '(&%s(%s=%s))' % (get_conf('GROUP_SEARCH_FILTER'), get_conf('GROUP_MEMBERS_FIELD'), escape_filter_chars(user_dn))
-        elif get_conf('USER_ID_FIELD') and hasattr(user_attrs, 'items') and user_attrs.get(get_conf('USER_ID_FIELD')):
-            search_filter = '(&%s(%s=%s))' % (get_conf('GROUP_SEARCH_FILTER'), get_conf('GROUP_MEMBERS_FIELD'), escape_filter_chars(user_attrs[get_conf('USER_ID_FIELD')][0]))
+            search_filter = '(&%s(%s=%s))' % (
+                get_conf('GROUP_SEARCH_FILTER'),
+                get_conf('GROUP_MEMBERS_FIELD'),
+                escape_filter_chars(user_dn),
+            )
+        elif (
+            get_conf('USER_ID_FIELD')
+            and hasattr(user_attrs, 'items')
+            and user_attrs.get(get_conf('USER_ID_FIELD'))
+        ):
+            search_filter = '(&%s(%s=%s))' % (
+                get_conf('GROUP_SEARCH_FILTER'),
+                get_conf('GROUP_MEMBERS_FIELD'),
+                escape_filter_chars(user_attrs[get_conf('USER_ID_FIELD')][0]),
+            )
         else:
             search_filter = None
         if search_filter:
@@ -227,12 +275,20 @@ def get_user_groups(user_dn, user_attrs, connection=None):
                 for sub_group in get_group_sub_groups(group['dn'], group['attributes'], connection=connection):
                     groups[sub_group['dn']] = sub_group['attributes']
     # get groups referred by user object
-    if get_conf('USER_GROUPS_FIELD') and hasattr(user_attrs, 'items') and user_attrs.get(get_conf('USER_GROUPS_FIELD')):
+    if (
+        get_conf('USER_GROUPS_FIELD')
+        and hasattr(user_attrs, 'items')
+        and user_attrs.get(get_conf('USER_GROUPS_FIELD'))
+    ):
         for name in user_attrs[get_conf('USER_GROUPS_FIELD')]:
             if get_conf('USER_GROUPS_USE_DN'):
                 results = ldap_search(name, get_conf('GROUP_SEARCH_FILTER'), connection=connection)
             else:
-                search_filter = '(&%s(%s=%s))' % (get_conf('GROUP_SEARCH_FILTER'), get_conf('GROUP_ID_FIELD'), escape_filter_chars(name))
+                search_filter = '(&%s(%s=%s))' % (
+                    get_conf('GROUP_SEARCH_FILTER'),
+                    get_conf('GROUP_ID_FIELD'),
+                    escape_filter_chars(name),
+                )
                 results = ldap_search(get_conf('GROUP_SEARCH_SCOPE'), search_filter, connection=connection)
             for group in results:
                 if group['dn'] not in groups:
@@ -286,7 +342,10 @@ def test_ldap_connection(username, password=None, get_groups=False):
                 authenticate(user_dn, password)
             except Exception as e:
                 success = False
-                msg = '%s\n<br/>%s\n<br/>\n<br/>' % (escape(_('Login failed (however the user exists in LDAP).')), defaultfilters.linebreaksbr(escape(e)))
+                msg = '%s\n<br/>%s\n<br/>\n<br/>' % (
+                    escape(_('Login failed (however the user exists in LDAP).')),
+                    defaultfilters.linebreaksbr(escape(e)),
+                )
             else:
                 msg = '%s\n<br/>\n<br/>' % escape(_('Login succeeded.'))
         msg += '%s<ul>' % escape(_('User "%s" data:') % username)

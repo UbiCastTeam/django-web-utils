@@ -1,3 +1,4 @@
+# flake8: noqa: E501
 import pytest
 from django_web_utils import html_utils
 
@@ -49,7 +50,11 @@ from django_web_utils import html_utils
     )
 ])
 def test_clean_html_tags(value, allow_iframes, expected):
-    assert html_utils.clean_html_tags(value, allow_iframes=allow_iframes, extra_allowed_attrs={'iframe': {'data-custom'}}) == expected
+    assert html_utils.clean_html_tags(
+        value,
+        allow_iframes=allow_iframes,
+        extra_allowed_attrs={'iframe': {'data-custom'}},
+    ) == expected
     assert sorted(html_utils.ALLOWED_TAGS) == [
         'a',
         'b',

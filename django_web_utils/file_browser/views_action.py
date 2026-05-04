@@ -2,13 +2,13 @@ import os
 import re
 import shutil
 import unicodedata
-# Django
+
 from django.contrib import messages
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
-# Django web utils
+
 from django_web_utils.antivirus_utils import antivirus_file_validator
 from django_web_utils.file_browser import config
 
@@ -224,7 +224,10 @@ def storage_action(request, namespace=None):
                             shutil.move(src, new_path)
                             moved += 1
                         except Exception as e:
-                            return JsonResponse(dict(error='%s %s' % (_('Unable to move file %s:') % name, e)), status=400)
+                            return JsonResponse(
+                                dict(error='%s %s' % (_('Unable to move file %s:') % name, e)),
+                                status=400
+                            )
                 return JsonResponse(dict(message=_('%s file(s) successfully moved.') % moved))
 
             elif action == 'delete':
@@ -238,9 +241,18 @@ def storage_action(request, namespace=None):
                         fd, dd = recursive_remove(src)
                         files_deleted += fd
                         dir_deleted += dd
-                    except Exception as e:
-                        return JsonResponse(dict(error='%s %s' % (_('Unable to delete file %s:') % name, e)), status=400)
-                return JsonResponse(dict(message=_('%(f)s file(s) and %(d)s directory(ies) successfully deleted.') % dict(f=files_deleted, d=dir_deleted)))
+                    except Exception as err:
+                        return JsonResponse(
+                            dict(error='%s %s' % (_('Unable to delete file %s:') % name, err)),
+                            status=400
+                        )
+                return JsonResponse(
+                    dict(
+                        message=_('%(f)s file(s) and %(d)s directory(ies) successfully deleted.')
+                        % dict(f=files_deleted, d=dir_deleted)
+                    ),
+                    status=200
+                )
     else:
         # Actions using get method
         action = request.GET.get('action')
@@ -258,7 +270,7 @@ def storage_action(request, namespace=None):
                 return JsonResponse(dict(error=_('Requested path does not exist.')), status=400)
             # Get search command
             search = request.GET.get('search', '')
-            search = search.replace('\'', '"').lower()
+            search = search.replace("'", '"').lower()
 
             dirs = dict()
             results = 0
@@ -295,11 +307,20 @@ def storage_action(request, namespace=None):
 
             if dirs:
                 if path:
-                    msg = _('%(count)s results for "%(search)s" in "%(path)s".') % dict(count=results, search=search, path=path)
+                    msg = (
+                        _('%(count)s results for "%(search)s" in "%(path)s".')
+                        % dict(count=results, search=search, path=path)
+                    )
                 else:
-                    msg = _('%(count)s results for "%(search)s".') % dict(count=results, search=search)
+                    msg = (
+                        _('%(count)s results for "%(search)s".')
+                        % dict(count=results, search=search)
+                    )
             else:
-                msg = _('No results for "%(search)s".') % dict(search=search)
+                msg = (
+                    _('No results for "%(search)s".')
+                    % dict(search=search)
+                )
 
             return JsonResponse(dict(search_in=path, msg=msg, results=results, dirs=dirs))
 

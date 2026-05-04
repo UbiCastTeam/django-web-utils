@@ -22,21 +22,21 @@ Settings:
     Can be a list of email addresses or a python module path to a callable returning the list.
     Default: email adresses of settings.ADMINS
 """
-from pathlib import Path
 import contextlib
 import logging
+from pathlib import Path
 import re
 import shutil
 import socket
 import struct
 import sys
 import traceback
-# Django
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.utils.translation import gettext_lazy as _
-# Django web utils
+
 from django_web_utils.emails_utils import send_error_report_emails
 from django_web_utils.module_utils import import_module_by_python_path
 
@@ -118,6 +118,8 @@ class ClamAVDaemon:
                 error_message = f'Error connecting to Unix socket "{self.unix_socket}"'
             elif self.socket_type == socket.AF_INET:
                 error_message = f'Error connecting to network socket with host "{self.host}" and port "{self.port}"'
+            else:
+                error_message = str(error)
             raise ClamdConnectionError(error_message) from error
 
         self.socket = clamd_socket
@@ -273,11 +275,12 @@ class ClamAVDaemon:
                     self._send_command('INSTREAM')
 
                     # Resend last chunk to scan content between two instream
-                    range_start = range_end - len(last_chunk)
-                    size = struct.pack(b'!L', len(last_chunk))
-                    self.socket.sendall(size + last_chunk)
-                    stream_size = len(last_chunk)
-                    last_chunk = None
+                    if last_chunk is not None:
+                        range_start = range_end - len(last_chunk)
+                        size = struct.pack(b'!L', len(last_chunk))
+                        self.socket.sendall(size + last_chunk)
+                        stream_size = len(last_chunk)
+                        last_chunk = None
 
                 # Send chunk
                 range_end += len(chunk)
@@ -505,7 +508,7 @@ def antivirus_path_validator(path, remove=True):
         logger.warning('Scan failed for path "%s":\n%s', path, traceback.format_exc())
         if remove:
             _remove_infected_file(path)
-        raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}')
+        raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}') from err
     else:
         if report.get('FOUND'):
             logger.warning(
@@ -553,7 +556,7 @@ def antivirus_stream_validator(stream, remove=True, skip_closed=True):
         logger.warning('Scan failed for stream "%s":\n%s', stream.name, traceback.format_exc())
         if remove and getattr(stream, 'path', None):
             _remove_infected_file(Path(stream.path))
-        raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}')
+        raise ValidationError(f'{COMMAND_ERROR_MESSAGE}\n{err.__class__.__name__}: {err}') from err
     else:
         if report.get('FOUND'):
             logger.warning(
