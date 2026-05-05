@@ -75,8 +75,6 @@ TEMPLATES = [
     },
 ]
 
-FORM_RENDERER = 'django.forms.renderers.DjangoDivFormRenderer'
-
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 AUTHENTICATION_BACKENDS = [
@@ -153,9 +151,7 @@ LOGGING = {
     },
 }
 
-ADMINS = (
-    ('admin contact', 'admin@example.com'),
-)
+ADMINS = ['"admin contact" <admin@example.com>']
 MANAGERS = ADMINS
 
 MONITORING_DAEMONS_INFO = 'testapp.daemons'

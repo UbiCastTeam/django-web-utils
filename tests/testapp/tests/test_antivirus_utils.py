@@ -1,9 +1,8 @@
-import subprocess
 from io import BytesIO
 from os import chmod
 from pathlib import Path
+import subprocess
 
-import pytest
 from django.conf import settings
 from django.core import mail as dj_mail
 from django.core.exceptions import ValidationError
@@ -11,6 +10,7 @@ from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import reverse
+import pytest
 
 from django_web_utils import antivirus_utils as avu
 
@@ -198,8 +198,7 @@ def test_form_request__post(client):
     assert response.status_code == 451
 
     mailinbox = [m.to[0] for m in dj_mail.outbox]
-    expected = [settings.ADMINS[0][1]]
-    assert mailinbox == expected
+    assert mailinbox == [settings.ADMINS[0]]
 
 
 @pytest.mark.django_db()
@@ -213,5 +212,4 @@ def test_form_request__post_json(client):
     assert response.status_code == 451
 
     mailinbox = [m.to[0] for m in dj_mail.outbox]
-    expected = [settings.ADMINS[0][1]]
-    assert mailinbox == expected
+    assert mailinbox == [settings.ADMINS[0]]
