@@ -58,7 +58,7 @@ test_install:
 test_install_local:
 	# List files that will be installed
 	make clean
-	rm /opt/venv/lib/python3.11/site-packages/django_web_utils
+	rm /opt/venv/lib/python3.13/site-packages/django_web_utils
 	cp -a /opt/src /tmp/src
 	cd /tmp/src && /opt/venv/bin/pip install .
 	cd /tmp/src && /opt/venv/bin/pip show -f django-web-utils

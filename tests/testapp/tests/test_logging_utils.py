@@ -5,7 +5,7 @@ from django.core import mail
 from django_web_utils.logging_utils import ThrottledAdminEmailHandler
 
 
-def test_limit():
+def test_limit(settings):
     handler = ThrottledAdminEmailHandler()
     for _i in range(15):
         record = logging.LogRecord(
@@ -14,4 +14,4 @@ def test_limit():
         )
         handler.emit(record)
     mailinbox = [m.to[0] for m in mail.outbox]
-    assert mailinbox == 10 * ['admin@example.com']
+    assert mailinbox == 10 * [settings.MANAGERS[0]]

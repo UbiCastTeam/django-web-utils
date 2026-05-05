@@ -1,9 +1,9 @@
-import re
 from pathlib import Path
+import re
 
-import pytest
 from django.contrib.auth.models import User
 from django.core import mail as dj_mail
+import pytest
 
 from django_web_utils import emails_utils
 
@@ -20,9 +20,9 @@ def reset_context_processor():
 
 def test_recipients__managers(settings):
     success, sent = emails_utils.send_emails(subject='Test', content='Body')
-    assert success is True
-    assert sent == [settings.MANAGERS[0][1]]
-    assert [m.to[0] for m in dj_mail.outbox] == [settings.MANAGERS[0][1]]
+    assert success is True, sent
+    assert sent == [settings.MANAGERS[0]]
+    assert [m.to[0] for m in dj_mail.outbox] == [settings.MANAGERS[0]]
 
 
 @pytest.mark.parametrize('recipients', [

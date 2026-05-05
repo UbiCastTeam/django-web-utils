@@ -420,7 +420,12 @@ def on_file_infected_error(request):
     elif isinstance(recipients_val, (list, tuple, dict)):
         recipients = recipients_val
     else:
-        recipients = [adm[1] for adm in settings.ADMINS]
+        recipients = []
+        for item in settings.ADMINS:
+            if isinstance(item, str):
+                recipients.append(item)
+            elif isinstance(item, tuple):
+                recipients.append(item[1])
     # Send email if ricipients
     if recipients:
         send_error_report_emails(log_subject, log_msg, recipients=recipients, show_traceback=False)

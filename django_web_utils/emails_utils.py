@@ -89,8 +89,14 @@ def _get_context():
 
 def _get_recipients_list(recipients):
     if recipients is None:
-        # Send emails to managers if no email is given
-        recipients = {a[1]: {'name': a[0]} for a in settings.MANAGERS}
+        # Send emails to managers if no email is given$
+        recipients = []
+        if settings.MANAGERS:
+            for a in settings.MANAGERS:
+                if isinstance(a, tuple):
+                    recipients.append(a[1])
+                else:
+                    recipients.append(a)
     elif isinstance(recipients, dict):
         # Convert dict to list
         as_list = list()

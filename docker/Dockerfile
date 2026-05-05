@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:trixie
 
 ENV LANG="C.UTF-8"
 ENV LC_ALL="C.UTF-8"
@@ -25,7 +25,7 @@ RUN pip install --upgrade pip setuptools wheel packaging uv
 COPY pyproject.toml pyproject.toml
 RUN uv pip install -r pyproject.toml --extra dev
 RUN rm pyproject.toml
-RUN ln -sf /opt/src/django_web_utils /opt/venv/lib/python3.11/site-packages/django_web_utils
+RUN ln -sf /opt/src/django_web_utils /opt/venv/lib/python3.13/site-packages/django_web_utils
 
 RUN mkdir -p /opt/src
 WORKDIR /opt/src

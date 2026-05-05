@@ -5,18 +5,17 @@ name: Python CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.11, 3.13]
+        python-version: [3.13, 3.14]
 
     services:
       postgres:
@@ -34,33 +33,33 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install antivirus
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clamav-daemon
-        sudo systemctl start clamav-freshclam
-        sleep 60
-        sudo systemctl start clamav-daemon
-        sleep 60
-        sudo systemctl status clamav-daemon
-    - name: Install Python dependencies
-      run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install -e '.[dev]'
-    - name: Lint code with Python ${{ matrix.python-version }}
-      run: |
-        make lint_local
-    - name: Check for deadcode with Python ${{ matrix.python-version }}
-      run: |
-        make deadcode_local
-    - name: Run test with Python ${{ matrix.python-version }}
-      env:
-        DJANGO_SETTINGS_MODULE: settings
-        PYTHONPATH: tests:${PYTHONPATH}
-      run: |
-        make test_local
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install antivirus
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clamav-daemon
+          sudo systemctl start clamav-freshclam
+          sleep 60
+          sudo systemctl start clamav-daemon
+          sleep 60
+          sudo systemctl status clamav-daemon
+      - name: Install Python dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -e '.[dev]'
+      - name: Lint code with Python ${{ matrix.python-version }}
+        run: |
+          make lint_local
+      - name: Check for deadcode with Python ${{ matrix.python-version }}
+        run: |
+          make deadcode_local
+      - name: Run test with Python ${{ matrix.python-version }}
+        env:
+          DJANGO_SETTINGS_MODULE: settings
+          PYTHONPATH: tests:${PYTHONPATH}
+        run: |
+          make test_local
