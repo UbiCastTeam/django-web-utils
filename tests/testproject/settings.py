@@ -11,14 +11,14 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+from pathlib import Path
 import time
 import warnings
 
 warnings.simplefilter('always')
 os.environ['PYTHONWARNINGS'] = 'always'  # Also affect subprocesses
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = Path(__file__).resolve().parent
 
 OVERRIDE_PATH = '/tmp/djwutils_override.py'
 
@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'django_web_utils.file_browser',
     'django_web_utils.monitoring',
 
-    'testapp',
+    'testproject.testapp',
 )
 
 MIDDLEWARE = (
@@ -54,7 +54,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'testapp.urls'
+ROOT_URLCONF = 'testproject.testapp.urls'
 
 TEMPLATES = [
     {
@@ -153,9 +153,9 @@ LOGGING = {
 ADMINS = ['"admin contact" <admin@example.com>']
 MANAGERS = ADMINS
 
-MONITORING_DAEMONS_INFO = 'testapp.daemons'
+MONITORING_DAEMONS_INFO = 'testproject.testapp.daemons'
 
-FILE_BROWSER_DIRS = {'storage': (os.path.join(BASE_DIR, 'storage'), '/storage')}
+FILE_BROWSER_DIRS = {'storage': (BASE_DIR / 'storage', '/storage')}
 
 # For reload_settings tests
 TIME_NOW = time.perf_counter_ns()

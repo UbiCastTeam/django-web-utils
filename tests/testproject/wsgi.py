@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/
 """
 import os
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'testproject.settings')
 
 from django.core.wsgi import get_wsgi_application  # noqa
 

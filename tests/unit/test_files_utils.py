@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from django.conf import settings
 from django.utils.translation import activate
 import pytest
 
@@ -8,7 +9,7 @@ from django_web_utils import files_utils
 
 pytestmark = pytest.mark.django_db
 
-storage_dir = Path(__file__).resolve().parent.parent.parent / 'storage'
+storage_dir = settings.BASE_DIR / 'storage'
 
 
 @pytest.fixture()

@@ -1,7 +1,7 @@
 import datetime
 
 import pytest
-from testapp.models import SettingsModel, SettingsStore
+from testproject.testapp.models import SettingsModel, SettingsStore
 
 from django_web_utils.settings_store.models import AbstractSettingsModel
 from django_web_utils.settings_store.store import InvalidSettingError, SettingsStoreBase
@@ -48,7 +48,7 @@ def test_settings_store__subclassing__good(django_assert_num_queries):
     with django_assert_num_queries(0):
         class GoodSettingsStore(
             SettingsStoreBase,
-            model='testapp.models.SettingsModel'
+            model='testproject.testapp.models.SettingsModel'
         ):
             pass
         assert GoodSettingsStore().model == SettingsModel

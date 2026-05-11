@@ -36,7 +36,7 @@ DAEMONS = [
     ),
     dict(
         group='test', name='dummy', label=_('Dummy daemon'),
-        cls='testapp.daemons.DummyDaemon',
+        cls='testproject.testapp.daemons.DummyDaemon',
         help_text=_('Dummy daemon.')
     ),
 ]

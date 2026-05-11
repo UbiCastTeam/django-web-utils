@@ -55,7 +55,7 @@ make test
 To run a single test:
 
 ``` bash
-make test PYTEST_ARGS='-x tests/testapp/tests/test_csv_utils.py'
+make test PYTEST_ARGS='-x tests/unit/test_csv_utils.py'
 ```
 
 ### Run test server

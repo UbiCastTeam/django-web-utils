@@ -5,7 +5,7 @@ from django.contrib.messages import get_messages
 from django.core import mail
 from django.urls import reverse
 import pytest
-from testapp.views import CustomMagicLoginView
+from testproject.testapp.views import CustomMagicLoginView
 
 pytestmark = pytest.mark.django_db
 
