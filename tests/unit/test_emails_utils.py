@@ -4,7 +4,7 @@ import re
 from django.contrib.auth.models import User
 from django.core import mail as dj_mail
 import pytest
-import testapp
+from testproject import testapp
 
 from django_web_utils import emails_utils
 
@@ -57,7 +57,7 @@ def test_no_recipients(settings):
 ])
 def test_send_template_emails(settings, with_context_processor, with_pathlib):
     if with_context_processor:
-        settings.EMAIL_CONTEXT_PROCESSOR = 'testapp.context.emails_context_processor'
+        settings.EMAIL_CONTEXT_PROCESSOR = 'testproject.testapp.context.emails_context_processor'
         footer = 'Using context processor'
     else:
         footer = 'No footer'

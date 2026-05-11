@@ -48,7 +48,7 @@ shell:
 test:
 	${DOCKER_COMPOSE} run -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm ${DOCKER_IMAGE} make test_local
 
-test_local:PYTEST_ARGS := $(or ${PYTEST_ARGS},--cov --cov-report html --cov-report term tests/testapp/tests)
+test_local:PYTEST_ARGS := $(or ${PYTEST_ARGS},--cov --cov-report html --cov-report term tests/unit)
 test_local:
 	pytest --reuse-db ${PYTEST_ARGS}
 

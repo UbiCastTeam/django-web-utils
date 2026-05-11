@@ -1,5 +1,5 @@
 from django import forms as dj_forms
-from testapp.models import SettingsStore
+from testproject.testapp.models import SettingsStore
 
 from django_web_utils.antivirus_utils import antivirus_stream_validator
 from django_web_utils.forms_utils import FileSettingsForm, PasswordToggleInput
