@@ -4,10 +4,9 @@ import re
 from django.contrib.auth.models import User
 from django.core import mail as dj_mail
 import pytest
+import testapp
 
 from django_web_utils import emails_utils
-
-import testapp
 
 pytestmark = pytest.mark.django_db
 

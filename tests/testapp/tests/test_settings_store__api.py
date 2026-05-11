@@ -1,10 +1,10 @@
 import datetime
 
 import pytest
+from testapp.models import SettingsModel, SettingsStore
 
 from django_web_utils.settings_store.models import AbstractSettingsModel
-from django_web_utils.settings_store.store import SettingsStoreBase, InvalidSetting
-from testapp.models import SettingsStore, SettingsModel
+from django_web_utils.settings_store.store import InvalidSettingError, SettingsStoreBase
 
 pytestmark = pytest.mark.django_db
 
@@ -281,7 +281,7 @@ def test_settings_store__update__wrong_names(django_assert_num_queries):
     """
     settings_store = get_new_setting_store()
     with django_assert_num_queries(0):
-        with pytest.raises(InvalidSetting):
+        with pytest.raises(InvalidSettingError):
             settings_store.update(NO_EXIST='foo_1')
 
 
@@ -340,7 +340,7 @@ def test_settings_store__override(django_assert_num_queries):
     @settings_store.override(LIST_VAL=[6, 7, 8])
     class Klass:
         @settings_store.override(STR_VAL='foo_over')
-        def test_something(_):
+        def test_something(self):
             with settings_store.override(FLOAT_VAL=8.8):
                 settings_store.refresh(full=True)  # no effects on overrides
                 assert settings_store['STR_VAL'] == 'foo_over'

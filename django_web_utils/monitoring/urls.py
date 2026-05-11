@@ -4,7 +4,6 @@ from django.views.i18n import JavaScriptCatalog
 
 from django_web_utils.monitoring import views
 
-
 urlpatterns = [
     path('', views.monitoring_panel, name='monitoring-panel'),
     path('status/', views.monitoring_status, name='monitoring-status'),

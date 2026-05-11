@@ -66,16 +66,10 @@ testpaths = ["tests/"]
 source_dirs = ["django_web_utils"]
 
 [tool.ruff]
-# Exclude a variety of commonly ignored directories.
-exclude = [
-  ".git",
-  ".pytest_cache",
-  ".venv",
-  "htmlcov",
-  "submodules",
-]
 line-length = 120
 indent-width = 4
+respect-gitignore = true
+exclude = [".git", "submodules"]
 
 [tool.ruff.format]
 indent-style = "space"
@@ -83,7 +77,7 @@ quote-style = "single"
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/rules/
-select = ["E", "F", "B", "A", "G", "Q"]
+select = ["A", "B", "E", "F", "G", "I", "N", "Q"]
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"

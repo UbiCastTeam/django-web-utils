@@ -1,7 +1,8 @@
 from contextlib import nullcontext
 
 import pytest
-from django_web_utils.time_utils import get_hms_tuple, get_hms_str
+
+from django_web_utils.time_utils import get_hms_str, get_hms_tuple
 
 
 @pytest.mark.parametrize('value,expectation,expected', [

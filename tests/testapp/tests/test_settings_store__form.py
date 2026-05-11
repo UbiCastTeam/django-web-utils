@@ -1,9 +1,8 @@
 from unittest import mock
 
-import pytest
 from django.utils.translation import gettext_lazy as _
-
-from testapp.forms import SettingsStoreValForm, SettingsStoreValFileForm
+import pytest
+from testapp.forms import SettingsStoreValFileForm, SettingsStoreValForm
 
 from .test_settings_store__api import get_new_setting_store
 

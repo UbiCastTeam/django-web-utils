@@ -1,6 +1,5 @@
-from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings
-
+from django.contrib.auth.decorators import user_passes_test
 
 # Take a look at the readme file for settings descriptions
 

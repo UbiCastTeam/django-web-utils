@@ -14,7 +14,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django.views.generic import View
 
-from django_web_utils.emails_utils import send_template_emails, send_emails
+from django_web_utils.emails_utils import send_emails, send_template_emails
 from django_web_utils.magic_login.forms import RequestMagicLoginForm
 from django_web_utils.magic_login.tokens import generate_token
 

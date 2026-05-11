@@ -2,7 +2,6 @@ from django.conf import settings
 
 from django_web_utils.module_utils import import_module_by_python_path
 
-
 # Take a look at the readme file for settings descriptions
 
 class _Info(object):

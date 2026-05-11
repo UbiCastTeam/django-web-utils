@@ -7,10 +7,10 @@ import datetime
 import logging
 import logging.config
 import os
+from pathlib import Path
 import subprocess
 import sys
 import traceback
-from pathlib import Path
 
 from django_web_utils.daemon.daemonization import daemonize
 
@@ -170,7 +170,7 @@ class BaseDaemon:
         loggers = logging.Logger.manager.loggerDict
 
         # Configure logging and disable all existing loggers
-        LOGGING_CONF = {
+        logging_conf = {
             'version': 1,
             'disable_existing_loggers': False,
             'formatters': {
@@ -208,7 +208,7 @@ class BaseDaemon:
                 'propagate': False,
             }
         }
-        logging.config.dictConfig(LOGGING_CONF)
+        logging.config.dictConfig(logging_conf)
         if self._log_in_file:
             logging.captureWarnings(False)
 

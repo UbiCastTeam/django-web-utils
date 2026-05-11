@@ -1,7 +1,7 @@
 import json
 
-import pytest
 from django.urls import reverse
+import pytest
 
 pytestmark = pytest.mark.django_db
 
