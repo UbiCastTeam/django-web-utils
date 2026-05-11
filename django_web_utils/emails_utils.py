@@ -30,7 +30,7 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 
 from django_web_utils import html_utils
-from django_web_utils.logging_utils import IgnoreTimeoutErrors, IgnoreDatabaseErrors
+from django_web_utils.logging_utils import IgnoreDatabaseErrors, IgnoreTimeoutErrors
 
 logger = logging.getLogger('djwutils.emails_utils')
 

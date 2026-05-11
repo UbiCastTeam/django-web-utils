@@ -1,11 +1,10 @@
 import re
 
-import pytest
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.core import mail
 from django.urls import reverse
-
+import pytest
 from testapp.views import CustomMagicLoginView
 
 pytestmark = pytest.mark.django_db

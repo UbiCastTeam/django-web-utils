@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import datetime
 from collections.abc import Mapping
 from contextlib import contextmanager
 from copy import deepcopy
+import datetime
 from functools import wraps
 from typing import Optional, Type, TYPE_CHECKING
 from unittest import mock
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 MISSING = object()
 
 
-class InvalidSetting(Exception):
+class InvalidSettingError(Exception):
     pass
 
 
@@ -192,7 +192,7 @@ class SettingsStoreBase(Mapping):
         """Validates setting names against our list of settings."""
         unknown_keys = set(setting_names).difference(self._mapping.keys())
         if unknown_keys:
-            raise InvalidSetting(
+            raise InvalidSettingError(
                 f'These keys are unknown: {unknown_keys}. This can be the '
                 f'result of a misspelling or you forgot to add the keys to '
                 f'the {self.__class__.__name__} class.'

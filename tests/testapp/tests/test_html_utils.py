@@ -1,5 +1,6 @@
 # flake8: noqa: E501
 import pytest
+
 from django_web_utils import html_utils
 
 

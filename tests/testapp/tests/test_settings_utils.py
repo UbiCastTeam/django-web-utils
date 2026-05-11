@@ -1,8 +1,8 @@
-import time
 from pathlib import Path
+import time
 
-import pytest
 from django.conf import settings
+import pytest
 
 from django_web_utils import settings_utils
 

@@ -1,9 +1,9 @@
-import shutil
 from pathlib import Path
+import shutil
 
-import pytest
 from django.core import mail
 from django.core.cache import cache
+import pytest
 
 
 @pytest.fixture(autouse=True)

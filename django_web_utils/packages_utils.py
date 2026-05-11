@@ -3,8 +3,8 @@ Packages utility functions
 """
 import datetime
 import logging
-import subprocess
 from pathlib import Path
+import subprocess
 
 logger = logging.getLogger('djwutils.packages_utils')
 

@@ -1,12 +1,13 @@
+from datetime import timedelta
 import logging
 import os
 import socket
 import time
-from datetime import timedelta
 
 import pytest
-from django_web_utils.daemon.base import BaseDaemon
+
 from django_web_utils.daemon import lock
+from django_web_utils.daemon.base import BaseDaemon
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +107,7 @@ def test_lock_decorator(lock_path, lock_content, silent):
         if silent:
             assert dummy_fct() is None
         else:
-            with pytest.raises(lock.LockAlreadyAcquired):
+            with pytest.raises(lock.LockAlreadyAcquiredError):
                 dummy_fct()
     else:
         assert dummy_fct() == 'dummy'

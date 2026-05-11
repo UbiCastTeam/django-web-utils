@@ -20,9 +20,9 @@ def get_locale_tz_datetime(dt):
     return dt
 
 
-# get_RFC_2822_format function
+# get_rfc_2822_format function
 # ----------------------------------------------------------------------------
-def get_RFC_2822_format(dt):
+def get_rfc_2822_format(dt):
     if not dt:
         return ''
     if dt.tzinfo is None:

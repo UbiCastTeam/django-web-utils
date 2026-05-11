@@ -2,6 +2,7 @@ import errno
 from unittest.mock import patch
 
 import pytest
+
 from django_web_utils.sentry_utils import ThrottledFilteredSentryReporter
 
 

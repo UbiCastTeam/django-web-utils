@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-import pytest
 from django.utils.translation import activate
+import pytest
 
 from django_web_utils import files_utils
 

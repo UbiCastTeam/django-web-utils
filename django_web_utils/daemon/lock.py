@@ -3,16 +3,16 @@ Lock functions
 This simple lock system is based on a file and is using the system hostname as reference.
 """
 import datetime
+from functools import wraps
 import logging
+from pathlib import Path
 import socket
 import time
-from pathlib import Path
-from functools import wraps
 
 logger = logging.getLogger('djwutils.daemon.lock')
 
 
-class LockAlreadyAcquired(Exception):
+class LockAlreadyAcquiredError(Exception):
     pass
 
 
@@ -84,7 +84,7 @@ def require_lock(path, timeout=None, silent=True):
                 if silent:
                     logger.info(msg)
                 else:
-                    raise LockAlreadyAcquired(msg)
+                    raise LockAlreadyAcquiredError(msg)
             else:
                 try:
                     return function(*args, **kwargs)

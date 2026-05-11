@@ -1,10 +1,9 @@
 from contextlib import contextmanager
 from unittest import mock
 
-import pytest
 from django.db import connections
 from django.db.utils import load_backend, OperationalError
-
+import pytest
 from testapp.models import SettingsModel
 
 from .test_settings_store__api import get_new_setting_store

@@ -10,11 +10,11 @@ class DummyDaemon(BaseDaemon):
     pass
 
 
-def CAN_ACCESS(request):
+def CAN_ACCESS(request):  # noqa: N802
     return request.user.is_superuser
 
 
-def CAN_CONTROL(request):
+def CAN_CONTROL(request):  # noqa: N802
     return request.user.is_superuser
 
 

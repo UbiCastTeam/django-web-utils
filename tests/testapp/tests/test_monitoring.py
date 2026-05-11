@@ -1,9 +1,9 @@
-import re
 from pathlib import Path
+import re
 
-import pytest
 from django.conf import settings
 from django.urls import reverse
+import pytest
 
 import django_web_utils
 from django_web_utils.monitoring.sysinfo import get_system_info
