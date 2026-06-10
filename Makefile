@@ -14,7 +14,7 @@ endif
 
 DOCKER_IMAGE ?= django_web_utils
 DOCKER_COMPOSE := docker compose -f docker/docker-compose.yml
-DOCKER_RUN := docker run --rm -it --name django_web_utils_ct -v ${CURDIR}:/opt/src -w /opt/src
+DOCKER_RUN := docker run --rm --name django_web_utils_ct -v ${CURDIR}:/opt/src -w /opt/src
 NEED_CLAMAV ?= 0
 
 docker_build:
