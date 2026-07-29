@@ -47,7 +47,7 @@ class ThrottledFilteredSentryReporter:
             default_integrations=False,
             integrations=integrations,
             before_send=self.before_send,
-            send_default_pii=True,
+            send_default_pii=False,
         )
 
     def _get_cache(self) -> object | None:
