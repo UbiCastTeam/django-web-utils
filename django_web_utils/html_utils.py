@@ -2,8 +2,7 @@
 HTML utility functions
 """
 from copy import deepcopy
-import html.entities
-from html.parser import HTMLParser
+from html import unescape as unescape_entities
 import logging
 import re
 import traceback
@@ -46,6 +45,10 @@ ALLOWED_CSS = {
     'border-radius-top-right', 'border-radius',
     'box-shadow', 'width', 'height', 'overflow', 'vertical-align',
 }
+LINE_RETURN_TAGS = {
+    'div', 'p', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'tr',
+    'fieldset', 'legend', 'pre', 'code', 'blockquote', 'video', 'source',
+}
 
 
 def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None, extra_allowed_css=None):
@@ -67,14 +70,14 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None, extra_a
         else:
             allowed_attrs[key] |= extra_allowed_attrs[key]
 
-    def iframe_attrs_check(tag, name, value):
+    def iframe_attrs_check(_tag, name, value):
         if name == 'src':
             return value.startswith(('https://', '/'))
         if name in allowed_attrs['iframe']:
             return True
         return False
 
-    def img_attrs_check(tag, name, value):
+    def img_attrs_check(_tag, name, value):
         if name == 'src':
             protocols = bleach.sanitizer.ALLOWED_PROTOCOLS | {'data:image/'}
             for protocol in protocols:
@@ -85,7 +88,7 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None, extra_a
             return True
         return False
 
-    def a_attrs_check(tag, name, value):
+    def a_attrs_check(_tag, name, value):
         if name == 'href':
             for protocol in bleach.sanitizer.ALLOWED_PROTOCOLS:
                 if value.startswith(protocol):
@@ -122,45 +125,61 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None, extra_a
 def strip_html_tags(html):
     """
     Function to remove all HTML tags from the given content.
+    The remaining text is HTML escaped ("&" becomes "&amp;" for example).
     """
-    return bleach.clean(html, strip=True)
+    return bleach.clean(html, tags=set(), strip=True)
 
 
-def unescape(text):
+def unescape(html):
     """
-    Function to convert HTML characters tags to unicode characters.
+    Function to convert HTML content to unicode text content.
     """
+    # Line returns in the source have no meaning in HTML
+    text = html.replace('\r', ' ').replace('\n', ' ')
+    # Add a space before every tag to avoid sticking words together
+    text = text.replace('<', ' <')
+    # Add a line return before block tags to keep the text structure
+    text = re.sub(
+        rf'</?({"|".join(LINE_RETURN_TAGS)})(\s[^>]*)?/?>',
+        r'\n\g<0>', text, flags=re.IGNORECASE
+    )
+    # Remove all HTML tags
     text = strip_html_tags(text)
-
-    def fixup(m):
-        text = m.group(0)
-        if text[:2] == '&#':
-            # character reference
-            try:
-                if text[:3] == '&#x':
-                    return chr(int(text[3:-1], 16))
-                else:
-                    return chr(int(text[2:-1]))
-            except ValueError:
-                pass
-        else:
-            # named entity
-            try:
-                text = chr(html.entities.name2codepoint[text[1:-1]])
-            except KeyError:
-                pass
-        return text  # leave as is
-
-    return re.sub(r'&#?\w+;', fixup, text)
+    # Normalize spaces but keep line returns
+    text = re.sub(r'[^\S\n]+', ' ', text)
+    text = re.sub(r'\s*\n\s*', '\n', text).strip()
+    # Replace entities and character references with their unicode equivalent
+    return unescape_entities(text)
 
 
-def get_meta_tag_text(text):
+def get_meta_tag_text(html):
     """
-    Function to get a text that can be safely used in a "meta" tag from an HTML content.
+    Function to get a text that can be safely used in an HTML "meta" tag.
+    The returned content is expected to be used inside an HTML attributes using double quotes.
     """
-    result = unescape(text)
-    result = strip_html_tags(result)
-    result = result.strip().replace('"', "''")
+    return unescape(html).replace('"', "''")
+
+
+def get_short_text(html, max_length=300):
+    """
+    Function to get the text of an HTML content.
+    The text is truncated if it is longer than "max_length" chars, the ellipsis being
+    included in that limit.
+    The returned text is not HTML escaped, it must be escaped when displayed.
+    """
+    # Remove all HTML tags and convert HTML entities
+    result = unescape(html)
+    # Cut content if too long
+    if len(result) > max_length:
+        # Keep some room for the ellipsis
+        cut = max(max_length - 3, 0)
+        truncated = result[:cut]
+        if not result[cut:cut + 1].isspace():
+            # The cut is in the middle of a word, remove it unless it is the only one
+            match = re.search(r'\s\S*$', truncated)
+            if match:
+                truncated = truncated[:match.start()]
+        result = truncated.rstrip() + '...'
     return result
 
 
@@ -179,84 +198,3 @@ def get_html_traceback(tb=None):
         else:
             lines.append(line)
     return mark_safe('\n<br/>'.join(lines))
-
-
-class _TextHTMLParser(HTMLParser):
-    def __init__(self, html_text, max_length=300):
-        super().__init__()
-        self._short = ''
-        self._length = 0
-        self._stop = False
-        self._tags_to_end = list()
-
-        self._max_length = max_length
-        self.feed(html_text)
-
-    def handle_starttag(self, tag, attrs):
-        if not self._stop:
-            self._short += '<%s' % tag
-            for attr in attrs:
-                self._short += ' %s="%s"' % (attr[0], attr[1])
-            self._short += '>'
-            # add tag to list of tags to end
-            self._tags_to_end.insert(0, tag)
-
-    def handle_endtag(self, tag):
-        if not self._stop:
-            self._short += '</%s>' % tag
-            # remove tag to list of tags to end
-            if len(self._tags_to_end) != 0:
-                if self._tags_to_end[0] == tag:
-                    self._tags_to_end.pop(0)
-
-    def handle_startendtag(self, tag, attrs):
-        if not self._stop:
-            self._short += '<%s' % tag
-            for attr in attrs:
-                self._short += ' %s="%s"' % (attr[0], attr[1])
-            self._short += '/>'
-
-    def handle_data(self, data):
-        if not self._stop:
-            if self._length + len(data) > self._max_length:
-                self._stop = True
-                data_length = self._max_length - self._length
-                cut = data[:data_length]
-                splitted = cut.split(' ')
-                self._short += ' '.join(splitted[:(len(splitted) - 1)])
-                self._short += ' ...'
-                self._insert_tags_end()
-            else:
-                self._length += len(data)
-                self._short += data
-
-    def handle_charref(self, name):
-        if not self._stop:
-            self._short += '&#%s;' % name
-            self._length += 1
-
-    def handle_entityref(self, name):
-        if not self._stop:
-            self._short += '&%s;' % name
-            self._length += 1
-
-    def _insert_tags_end(self):
-        for tag in self._tags_to_end:
-            self._short += '</%s>' % tag
-
-    def get_short(self):
-        return self._short.strip()
-
-
-def get_short_text(html_text, max_length=300, margin=100):
-    """
-    Function to get an HTML text which does not exceed a given number of chars.
-    ⚠ Returns an empty string if the text length is not exceeding the size limit!
-    """
-    if len(html_text) > max_length + margin:
-        try:
-            parser = _TextHTMLParser(html_text, max_length)
-            return parser.get_short()
-        except Exception as err:
-            logger.warning('Unable to create short html text. %s', err)
-    return ''
