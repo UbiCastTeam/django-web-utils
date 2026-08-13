@@ -155,16 +155,140 @@ def test_clean_html__extra_css(value, extra_allowed_css, expected):
     assert html_utils.clean_html_tags(value, allow_iframes=True, extra_allowed_css=extra_allowed_css) == expected
 
 
-@pytest.mark.parametrize('value,max_length,margin,expected', [
-    pytest.param(
-        '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>test</p>', 20, 0,
-        '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>test</p>', id='keep_tags'),
-    pytest.param(
-        '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>test</p>', 20, 100,
-        '', id='return_nothing_if_short_text_not_needed'),
-    pytest.param(
-        '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget diam vel lectus ultrices commodo. Phasellus aliquet ultrices molestie. Vestibulum elementum sapien quis sapien vestibulum, sed dictum velit commodo. Donec blandit risus varius ex pulvinar, ac aliquet mi bibendum.</p>', 20, 0,
-        '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>Lorem ipsum dolor ...</p>', id='short_long_string'),
+@pytest.mark.parametrize('value,expected', [
+    pytest.param('<p>para</p>', 'para', id='block_tag'),
+    pytest.param('<b>bold</b>text', 'boldtext', id='bleach_default_allowed_tag'),
+    pytest.param('<em>a</em><strong>b</strong>', 'ab', id='bleach_default_allowed_tags'),
+    pytest.param('<a href="http://test.com">link</a>', 'link', id='link'),
+    pytest.param('<script>alert(1)</script>', 'alert(1)', id='script_content_kept_as_text'),
+    pytest.param('a & b', 'a &amp; b', id='escape_ampersand'),
+    pytest.param('5 < 6', '5 &lt; 6', id='escape_lower_than'),
 ])
-def test_get_short_text(value, max_length, margin, expected):
-    assert html_utils.get_short_text(value, max_length=max_length, margin=margin) == expected
+def test_strip_html_tags(value, expected):
+    assert html_utils.strip_html_tags(value) == expected
+
+
+@pytest.mark.parametrize('value,expected', [
+    # No text to return
+    pytest.param(
+        '', '', id='empty'),
+    pytest.param(
+        '  \n  ', '', id='only_spaces'),
+    pytest.param(
+        '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/></p>',
+        '', id='no_text'),
+    # Tags removal
+    pytest.param(
+        '<p>Some <b>bold</b> and <em>italic</em> text</p>',
+        'Some bold and italic text', id='inline_tags_removed'),
+    pytest.param(
+        '<a href="http://test.com">link</a> here',
+        'link here', id='link_removed'),
+    pytest.param(
+        '<span>a</span><span>b</span>',
+        'a b', id='words_not_stuck_together'),
+    # Line returns
+    pytest.param(
+        '<p>First</p><p>Second</p>',
+        'First\nSecond', id='line_return_between_blocks'),
+    pytest.param(
+        '<div class="a" title="b">x</div><div>y</div>',
+        'x\ny', id='line_return_on_block_with_attrs'),
+    pytest.param(
+        'a<br/>b',
+        'a\nb', id='line_return_on_br'),
+    pytest.param(
+        '<ul><li>a</li><li>b</li></ul>',
+        'a\nb', id='line_return_on_list'),
+    pytest.param(
+        '<h1>Title</h1><p>Body</p>',
+        'Title\nBody', id='line_return_on_heading'),
+    pytest.param(
+        '<span>a</span>\n<span>b</span>',
+        'a b', id='source_line_returns_ignored'),
+    pytest.param(
+        '<p>\n  Multi\r\n  lines\n</p>',
+        'Multi lines', id='source_line_returns_in_text'),
+    # HTML entities
+    pytest.param(
+        '<b>Tom &amp; Jerry</b>', 'Tom & Jerry', id='named_entity'),
+    pytest.param(
+        '&eacute;t&eacute;', 'été', id='accented_named_entity'),
+    pytest.param(
+        '&lt;b&gt;not bold&lt;/b&gt;', '<b>not bold</b>', id='escaped_tags_are_text'),
+    pytest.param(
+        '&unknown;', '&unknown;', id='unknown_entity_left_as_is'),
+    # HTML5 entities, unknown from the HTML4 table
+    pytest.param(
+        '&apos;', "'", id='html5_named_entity'),
+    pytest.param(
+        '&AMP;', '&', id='uppercase_named_entity'),
+    # Character references
+    pytest.param(
+        '&#233;', 'é', id='decimal_reference'),
+    pytest.param(
+        '&#xe9;', 'é', id='hexadecimal_reference'),
+    pytest.param(
+        '&#XE9;', 'é', id='uppercase_hexadecimal_reference'),
+    pytest.param(
+        '&#x1F600;', '😀', id='astral_reference'),
+    # The 0x80-0x9F range is remapped to windows-1252 as required by the HTML5 specification
+    pytest.param(
+        '&#151;', '—', id='windows_1252_reference'),
+    # Invalid references are replaced to avoid null chars and lone surrogates
+    pytest.param(
+        '&#0;', '�', id='null_reference'),
+    pytest.param(
+        '&#xD800;', '�', id='surrogate_reference'),
+    pytest.param(
+        '&#99999999;', '�', id='out_of_range_reference'),
+])
+def test_unescape(value, expected):
+    assert html_utils.unescape(value) == expected
+
+
+@pytest.mark.parametrize('value,expected', [
+    pytest.param('<b>bold</b> text', 'bold text', id='inline_tags_removed'),
+    pytest.param('  <p>spaces</p>  ', 'spaces', id='stripped'),
+    pytest.param('<p>He said "hello" &amp; left &lt;br&gt;</p>', "He said ''hello'' & left <br>", id='quotes_and_entities'),
+])
+def test_get_meta_tag_text(value, expected):
+    assert html_utils.get_meta_tag_text(value) == expected
+
+
+# The text extraction itself is covered by "test_unescape"
+@pytest.mark.parametrize('value,max_length,expected', [
+    pytest.param(
+        '', 20,
+        '', id='empty'),
+    pytest.param(
+        '<p>test</p>', 20,
+        'test', id='short_text'),
+    # Truncation
+    pytest.param(
+        '<p><img src="data:image/png;base64,//fVYAExERERERERERERERjWOXJADu+UiLno+0l+LQRBSjhoYGNDQ0X"/>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget diam vel lectus ultrices commodo. Phasellus aliquet ultrices molestie. Vestibulum elementum sapien quis sapien vestibulum, sed dictum velit commodo. Donec blandit risus varius ex pulvinar, ac aliquet mi bibendum.</p>', 20,
+        'Lorem ipsum dolor...', id='long_text'),
+    pytest.param(
+        'word word word word word', 24,
+        'word word word word word', id='not_truncated_when_exactly_max_length'),
+    pytest.param(
+        'word word word word word', 23,
+        'word word word word...', id='truncated_when_one_char_too_long'),
+    pytest.param(
+        'word word word word word word word word word word', 20,
+        'word word word...', id='truncated_on_word_boundary'),
+    pytest.param(
+        'word word word word word word word word word word', 30,
+        'word word word word word...', id='truncated_on_word_boundary_2'),
+    pytest.param(
+        'a' * 50, 20,
+        'a' * 17 + '...', id='truncated_within_a_too_long_word'),
+    pytest.param(
+        '<p>First</p><p>Second and much more text</p>', 15,
+        'First\nSecond...', id='truncated_after_line_return'),
+])
+def test_get_short_text(value, max_length, expected):
+    result = html_utils.get_short_text(value, max_length=max_length)
+    assert result == expected
+    # The ellipsis is included in the length limit
+    assert len(result) <= max_length
