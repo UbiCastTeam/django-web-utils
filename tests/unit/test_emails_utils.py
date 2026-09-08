@@ -3,6 +3,7 @@ import re
 
 from django.contrib.auth.models import User
 from django.core import mail as dj_mail
+from django.utils import translation
 import pytest
 from testproject import testapp
 
@@ -45,6 +46,29 @@ def test_no_recipients(settings):
     success, sent = emails_utils.send_emails(subject='Test', content='Body', recipients=[])
     assert success is False
     assert sent == 'No emails have been sent: no valid recipients given.'
+
+
+@pytest.mark.parametrize('backend, expected_error', [
+    pytest.param('FailingEmailBackend', 'Simulated sending failure.', id='sending failure'),
+    pytest.param('UnavailableEmailBackend', 'Simulated connection failure.', id='connection failure'),
+])
+def test_send_emails__failure(settings, backend, expected_error):
+    settings.MAILERS = {'default': {'BACKEND': f'testproject.testapp.mailers.{backend}'}}
+
+    success, msg = emails_utils.send_emails(subject='Test', content='Body', recipients='fail@test.com')
+    assert success is False
+    assert msg == f'No emails have been sent. Last error when trying to send email: {expected_error}'
+    assert dj_mail.outbox == []
+
+
+def test_send_emails__partial_failure(settings):
+    settings.MAILERS = {'default': {'BACKEND': 'testproject.testapp.mailers.FailingEmailBackend'}}
+
+    recipients = ['fail@test.com', 'test@test.com']
+    success, sent = emails_utils.send_emails(subject='Test', content='Body', recipients=recipients)
+    assert success is True
+    assert sent == ['test@test.com']
+    assert [m.to[0] for m in dj_mail.outbox] == ['test@test.com']
 
 
 @pytest.mark.parametrize('with_context_processor', [
@@ -107,6 +131,35 @@ def test_send_template_emails__invalid_context(settings):
             'body': 'The body',
         }, recipients=recipients)
     assert [m.to[0] for m in dj_mail.outbox] == []
+
+
+def test_send_template_emails__failure(settings):
+    settings.MAILERS = {'default': {'BACKEND': 'testproject.testapp.mailers.FailingEmailBackend'}}
+
+    recipients = [{'email': 'fail@test.com', 'lang': 'fr'}]
+    with translation.override('en'):
+        success, msg = emails_utils.send_template_emails('emails/email_test.html', {
+            'subject': 'The subject',
+            'body': 'The body',
+        }, recipients=recipients)
+        # The language of the recipient must not remain active
+        assert translation.get_language() == 'en'
+    assert success is False
+    assert msg == 'No emails have been sent. Last error when trying to send email: Simulated sending failure.'
+    assert dj_mail.outbox == []
+
+
+def test_send_template_emails__invalid_template(settings):
+    # The template has no subject tag
+    recipients = [{'email': 'test@test.com', 'lang': 'fr'}]
+    with translation.override('en'):
+        with pytest.raises(ValueError):
+            emails_utils.send_template_emails('emails/email_no_subject.html', {
+                'body': 'The body',
+            }, recipients=recipients)
+        # The language of the recipient must not remain active
+        assert translation.get_language() == 'en'
+    assert dj_mail.outbox == []
 
 
 @pytest.mark.parametrize('fct, kwargs', [

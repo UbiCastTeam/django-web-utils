@@ -14,6 +14,7 @@ For example, a valid template could look like this:
 <subject>The email subject</subject>
 The email content
 """
+from contextlib import ExitStack
 import datetime
 import logging
 import os
@@ -164,47 +165,52 @@ def send_template_emails(template, context=None, recipients=None, content_subtyp
     else:
         tplt = engine.get_template(tplt_path)
 
-    # Prepare emails messages
-    connection = None
-    sent = []
-    error = 'unknown'
+    # Process emails
     cur_lang = translation.get_language()
     last_lang = cur_lang
-    for recipient in cleaned_rcpts:
-        # Activate correct lang
-        lang = recipient.lang
-        if lang != last_lang:
-            last_lang = lang
-            translation.activate(lang)
-        # Get subject and content
-        ctx = dict(base_ctx)
-        ctx['recipient'] = recipient
-        ctx['LANGUAGE_CODE'] = lang
-        content = tplt.render(Context(ctx))
-        subject_start = content.index('<subject>') + 9
-        subject_end = subject_start + content[subject_start:].index('</subject>')
-        subject = content[subject_start:subject_end].replace('\r', '').replace('\n', ' ').strip()
-        content = content[:subject_start - 9] + content[subject_end + 10:]
-        # Prepare email
-        address_with_name = f'"{recipient.name}" <{recipient.email}>' if recipient.name else recipient.email
-        msg = mail.EmailMessage(subject, content, sender, [address_with_name])
-        if attachments:
-            for attachment in attachments:
-                msg.attach_file(attachment)
-        msg.content_subtype = content_subtype  # by default, set email content type to html
-        # Send email
-        try:
-            if not connection:
-                connection = mail.get_connection()
-            connection.send_messages([msg])
-        except Exception as err:
-            error = err
-            logger.warning('Failed to send email to: %s.\n%s', recipient.email, traceback.format_exc())
-        else:
-            sent.append(recipient.email)
-            logger.info('Email with subject "%s" sent to "%s" (tplt).', subject, recipient.email)
-    if last_lang != cur_lang:
-        translation.activate(cur_lang)
+    sent = []
+    error = 'unknown'
+    try:
+        with ExitStack() as stack:
+            backend = None
+            for recipient in cleaned_rcpts:
+                # Activate correct lang
+                lang = recipient.lang
+                if lang != last_lang:
+                    last_lang = lang
+                    translation.activate(lang)
+                # Get subject and content
+                ctx = dict(base_ctx)
+                ctx['recipient'] = recipient
+                ctx['LANGUAGE_CODE'] = lang
+                content = tplt.render(Context(ctx))
+                subject_start = content.index('<subject>') + 9
+                subject_end = subject_start + content[subject_start:].index('</subject>')
+                subject = content[subject_start:subject_end].replace('\r', '').replace('\n', ' ').strip()
+                content = content[:subject_start - 9] + content[subject_end + 10:]
+                # Prepare email
+                address_with_name = f'"{recipient.name}" <{recipient.email}>' if recipient.name else recipient.email
+                msg = mail.EmailMessage(subject=subject, body=content, from_email=sender, to=[address_with_name])
+                if attachments:
+                    for attachment in attachments:
+                        msg.attach_file(attachment)
+                msg.content_subtype = content_subtype  # by default, set email content type to html
+                # Send email
+                try:
+                    if backend is None:
+                        # The backend connection is opened when entering the context
+                        # and closed when leaving the stack.
+                        backend = stack.enter_context(mail.mailers.default)
+                    backend.send_messages([msg])
+                except Exception as err:
+                    error = err
+                    logger.warning('Failed to send email to: %s.\n%s', recipient.email, traceback.format_exc())
+                else:
+                    sent.append(recipient.email)
+                    logger.info('Email with subject "%s" sent to "%s" (tplt).', subject, recipient.email)
+    finally:
+        if last_lang != cur_lang:
+            translation.activate(cur_lang)
     if not sent:
         return False, f'No emails have been sent. Last error when trying to send email: {error}'
     return True, sent
@@ -235,30 +241,33 @@ def send_emails(subject, content, recipients=None, content_subtype='html', attac
         logger.warning('%s Recipients: %s.', msg, recipients)
         return False, msg
 
-    # Prepare emails messages
+    # Process emails
     subject = subject.replace('\r', '').replace('\n', ' ').strip()
-    connection = None
     sent = []
     error = 'no recipient'
-    for recipient in cleaned_rcpts:
-        # Prepare email
-        address_with_name = f'"{recipient.name}" <{recipient.email}>' if recipient.name else recipient.email
-        msg = mail.EmailMessage(subject, content, sender, [address_with_name])
-        if attachments:
-            for attachment in attachments:
-                msg.attach_file(attachment)
-        msg.content_subtype = content_subtype  # by default, set email content type to html
-        # Send email
-        try:
-            if not connection:
-                connection = mail.get_connection()
-            connection.send_messages([msg])
-        except Exception as err:
-            error = err
-            logger.warning('Failed to send email to: %s.\n%s', recipient.email, traceback.format_exc())
-        else:
-            sent.append(recipient.email)
-            logger.info('Email with subject "%s" sent to "%s".', subject, recipient.email)
+    with ExitStack() as stack:
+        backend = None
+        for recipient in cleaned_rcpts:
+            # Prepare email
+            address_with_name = f'"{recipient.name}" <{recipient.email}>' if recipient.name else recipient.email
+            msg = mail.EmailMessage(subject=subject, body=content, from_email=sender, to=[address_with_name])
+            if attachments:
+                for attachment in attachments:
+                    msg.attach_file(attachment)
+            msg.content_subtype = content_subtype  # by default, set email content type to html
+            # Send email
+            try:
+                if backend is None:
+                    # The backend connection is opened when entering the context
+                    # and closed when leaving the stack.
+                    backend = stack.enter_context(mail.mailers.default)
+                backend.send_messages([msg])
+            except Exception as err:
+                error = err
+                logger.warning('Failed to send email to: %s.\n%s', recipient.email, traceback.format_exc())
+            else:
+                sent.append(recipient.email)
+                logger.info('Email with subject "%s" sent to "%s".', subject, recipient.email)
     if not sent:
         return False, f'No emails have been sent. Last error when trying to send email: {error}'
     return True, sent
