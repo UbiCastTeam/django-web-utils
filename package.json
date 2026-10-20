@@ -1,0 +1,10 @@
+{
+  "name": "django-web-utils",
+  "private": true,
+  "description": "Development dependencies used to lint JavaScript files (see `make lint_js`).",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.13.0",
+    "globals": "^17.0.0"
+  }
+}

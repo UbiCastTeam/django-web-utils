@@ -753,7 +753,7 @@ FileBrowser.prototype.deleteFiles = function (file, evt) {
     // open overlay
     let title = gettext('Delete');
     if (selected.length == 1) {
-        title = ' ' + gettext('one file');
+        title += ' ' + gettext('one file');
     } else {
         title += ' ' + selected.length + ' ' + gettext('files');
     }

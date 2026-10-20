@@ -10,7 +10,10 @@ It was greatly modified to fit this lib needs and to be able to scan large file 
 Settings:
 - ANTIVIRUS_ENABLED
     Boolean to enable or not antivirus scan.
-    If no value is set (None), the antivirus scan will be enabled if the clamAV socket file exists.
+    If no value is set (None), the antivirus scan will be enabled if the clamAV socket file exists
+    (a warning is logged when the socket does not exist).
+    It is recommended to set this value to True in production to make scans mandatory: if the scan
+    cannot be done (for example because the clamAV daemon is not running), files will be refused.
     This setting impacts top level functions:
     antivirus_path_validator, antivirus_stream_validator and antivirus_file_validator
     Default: None
@@ -23,6 +26,7 @@ Settings:
     Default: email adresses of settings.ADMINS
 """
 import contextlib
+import functools
 import logging
 from pathlib import Path
 import re
@@ -113,7 +117,7 @@ class ClamAVDaemon:
             elif self.socket_type == socket.AF_UNIX:
                 clamd_socket.connect(self.unix_socket)
 
-        except socket.error as error:
+        except OSError as error:
             if self.socket_type == socket.AF_UNIX:
                 error_message = f'Error connecting to Unix socket "{self.unix_socket}"'
             elif self.socket_type == socket.AF_INET:
@@ -337,7 +341,7 @@ class ClamAVDaemon:
             concat_args = ' ' + ' '.join(args)
 
         # cmd = 'n{cmd}{args}\n'.format(cmd=cmd, args=concat_args).encode('utf-8')
-        cmd = f'n{cmd}{concat_args}\n'.encode('utf-8')
+        cmd = f'n{cmd}{concat_args}\n'.encode()
         self.socket.sendall(cmd)
 
     def _recv_response(self):
@@ -347,7 +351,7 @@ class ClamAVDaemon:
         try:
             with contextlib.closing(self.socket.makefile('rb')) as file_object:
                 return file_object.readline().decode('utf-8').strip()
-        except (socket.error, socket.timeout) as error:
+        except (TimeoutError, OSError) as error:
             raise ClamdConnectionError(
                 f'Error while reading from socket: {sys.exc_info()[1].args}'
             ) from error
@@ -359,7 +363,7 @@ class ClamAVDaemon:
         try:
             with contextlib.closing(self.socket.makefile('rb')) as file_object:
                 return file_object.read().decode('utf-8')
-        except (socket.error, socket.timeout) as error:
+        except (TimeoutError, OSError) as error:
             raise ClamdConnectionError(
                 f'Error while reading from socket: {sys.exc_info()[1]}'
             ) from error
@@ -463,11 +467,25 @@ def get_antivirus_socket_path():
     return getattr(settings, 'ANTIVIRUS_SOCKET_PATH', None) or '/var/run/clamav/clamd.ctl'
 
 
+@functools.cache
+def _warn_missing_socket(socket_path):
+    # The warning is logged only once per process to avoid flooding logs
+    logger.warning(
+        'The antivirus scan is disabled because the clamAV socket "%s" does not exist. '
+        'Set the ANTIVIRUS_ENABLED setting to True to make scans mandatory '
+        'or to False to explicitly disable scans.',
+        socket_path
+    )
+
+
 def is_antivirus_enabled():
     enabled = getattr(settings, 'ANTIVIRUS_ENABLED', None)
     if enabled is None:
-        socket_exists = Path(get_antivirus_socket_path()).exists()
-        settings.ANTIVIRUS_ENABLED = socket_exists  # Avoid checking again socket existence
+        # The socket existence is checked each time because the daemon can be started after the application
+        socket_path = get_antivirus_socket_path()
+        socket_exists = Path(socket_path).exists()
+        if not socket_exists:
+            _warn_missing_socket(socket_path)
         return socket_exists
     return bool(enabled)
 

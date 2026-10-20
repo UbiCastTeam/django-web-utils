@@ -1,8 +1,5 @@
 *.py[cod]
 
-# C extensions
-*.so
-
 # Packages
 *.egg
 *.egg-info
@@ -26,12 +23,7 @@ coverage.xml
 htmlcov
 .pytest_cache
 
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
-
-# EN translations
-django_web_utils/locale/en/
-django_web_utils/*/locale/en/
+# Project
 .env
+node_modules/
+package-lock.json

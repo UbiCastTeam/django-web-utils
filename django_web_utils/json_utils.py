@@ -2,6 +2,7 @@
 JSON utility functions
 """
 import datetime
+from functools import wraps
 import logging
 
 from django.core.exceptions import BadRequest, PermissionDenied
@@ -9,6 +10,7 @@ from django.http import Http404, JsonResponse
 from django.utils.translation import gettext_lazy as _
 
 from django_web_utils.antivirus_utils import FileInfectedError, on_file_infected_error
+from django_web_utils.http_utils import parse_methods
 
 
 def get_date_display(date):
@@ -23,7 +25,7 @@ def get_date_object(date):
     Function to get date object from a serialized date.
     """
     try:
-        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        return datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')  # noqa: DTZ007
     except Exception:
         return None
 
@@ -77,16 +79,19 @@ def json_view(function=None, methods=None, login_required=False):
     """
     Decorator for JSON views.
     The "methods" argument can be used to allow only some methods on a particular view.
-    To allow several methods, use this format: "GET, PUT".
+    To allow several methods, use this format: "GET, PUT" (or a list like ["GET", "PUT"]).
     """
+    allowed_methods = parse_methods(methods)
+
     def decorator(fct):
+        @wraps(fct)
         def _wrapped_view(request, *args, **kwargs):
             # Tag request as json for error handling in the middleware
             request.is_json_request = True
             # Check request method
-            if methods and request.method not in methods:
+            if allowed_methods and request.method not in allowed_methods:
                 response = JsonResponse({'error': '%s (405)' % _('Invalid request method')}, status=405)
-                response['Allow'] = methods
+                response['Allow'] = ', '.join(sorted(allowed_methods))
                 return response
             # Check login
             if login_required and not request.user.is_authenticated:

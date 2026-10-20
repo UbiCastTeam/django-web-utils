@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
@@ -16,6 +15,6 @@ class RequestMagicLoginForm(forms.Form):
             raise forms.ValidationError(_('Invalid email address.'))
         return email
 
-    def get_email(self) -> Optional[str]:
+    def get_email(self) -> str | None:
         if hasattr(self, 'cleaned_data'):
             return self.cleaned_data.get('email')

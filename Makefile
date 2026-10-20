@@ -29,6 +29,11 @@ lint:
 lint_local:
 	ruff check
 
+lint_js:
+	# Lint JavaScript files (requires Node.js, dependencies are installed in "node_modules")
+	npm install --no-package-lock --no-audit --no-fund
+	npx eslint .
+
 deadcode:
 	${DOCKER_RUN} --entrypoint /usr/bin/make ${DOCKER_IMAGE} deadcode_local
 
@@ -43,10 +48,10 @@ stop:
 	${DOCKER_COMPOSE} down
 
 shell:
-	${DOCKER_COMPOSE} run -e DOCKER_TEST=1 -e "NEED_CLAMAV=${NEED_CLAMAV}" --rm ${DOCKER_IMAGE} /bin/bash
+	${DOCKER_COMPOSE} run -e DOCKER_TEST=1 -e "NEED_CLAMAV" --rm ${DOCKER_IMAGE} /bin/bash
 
 test:
-	${DOCKER_COMPOSE} run -e DOCKER_TEST=1 -e "PYTEST_ARGS=${PYTEST_ARGS}" --rm ${DOCKER_IMAGE} make test_local
+	${DOCKER_COMPOSE} run -e DOCKER_TEST=1 -e "PYTEST_ARGS" --rm ${DOCKER_IMAGE} make test_local
 
 test_local:PYTEST_ARGS := $(or ${PYTEST_ARGS},--cov --cov-report html --cov-report term tests/unit)
 test_local:

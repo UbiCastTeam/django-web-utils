@@ -1,17 +1,17 @@
 """
 CSV utility functions
 """
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
 from django.http import StreamingHttpResponse
 
 
 def csv_streaming_response(
-    rows_iterator: Iterable, parameters: dict | None = None, file_name: str | None = None
+    rows_iterator: Callable[[], Iterable], parameters: dict | None = None, file_name: str | None = None
 ) -> StreamingHttpResponse:
     """
     Simple function to stream a CSV file.
-    The "rows_iterator" should send a list for each CSV row.
+    The "rows_iterator" should be a function returning an iterable sending a list for each CSV row.
     If a parameters dict is given, some settings will be retrieved from it:
         delimiter, quote and encoding
     """
@@ -36,6 +36,7 @@ def csv_streaming_response(
 
     response = StreamingHttpResponse(iterator(), content_type=f'text/csv; charset={charset}')
     if file_name:
+        file_name = ''.join(char for char in file_name if char.isprintable() and char not in '"\\')
         response['Content-Disposition'] = f'attachment; filename="{file_name}"'
     response['Content-Encoding'] = 'identity'
     response['X-Accel-Buffering'] = 'no'

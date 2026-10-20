@@ -5,11 +5,12 @@ from contextlib import contextmanager
 from copy import deepcopy
 import datetime
 from functools import wraps
-from typing import Optional, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from unittest import mock
 
 # Django
 from django.db import connection, transaction
+from django.utils import timezone
 from django.utils.module_loading import import_string
 
 if TYPE_CHECKING:
@@ -115,16 +116,16 @@ class SettingsStoreBase(Mapping):
     # FOO: str = 'foo'
 
     # INIT
-    def __init_subclass__(cls, model: Type[AbstractSettingsModel] = None):
+    def __init_subclass__(cls, model: type[AbstractSettingsModel] = None):
         cls._model = model
         cls._validate_model(lazy=True)
         cls._defaults: dict = cls._get_defaults()
 
-    def __init__(self, cache_ttl: int = 0, default_lock_timeout: Optional[int] = 100):
+    def __init__(self, cache_ttl: int = 0, default_lock_timeout: int | None = 100):
         # Initialize a per-instance internal mapping with default values
         self._mapping: dict = deepcopy(self._defaults)
-        self._last_updated_at: Optional[datetime.datetime] = None
-        self._last_refreshed_at: Optional[datetime.datetime] = None
+        self._last_updated_at: datetime.datetime | None = None
+        self._last_refreshed_at: datetime.datetime | None = None
         self._cache_ttl = cache_ttl
         self._default_lock_timeout = default_lock_timeout
 
@@ -231,7 +232,7 @@ class SettingsStoreBase(Mapping):
         )
 
     @property
-    def model(self) -> Type[AbstractSettingsModel]:
+    def model(self) -> type[AbstractSettingsModel]:
         return self._validate_model(lazy=False)
 
     def refresh(self, force=False, full=False):
@@ -247,11 +248,11 @@ class SettingsStoreBase(Mapping):
             not force
             and self._last_refreshed_at is not None
             and self._cache_ttl > 0
-            and datetime.datetime.now() - self._last_refreshed_at <= datetime.timedelta(seconds=self._cache_ttl)
+            and timezone.now() - self._last_refreshed_at <= datetime.timedelta(seconds=self._cache_ttl)
         ):
             return
 
-        now = datetime.datetime.now()
+        now = timezone.now()
         mapping = self._mapping
 
         qs = self.model.objects.values_list('key', 'value', 'updated_at')
@@ -273,7 +274,7 @@ class SettingsStoreBase(Mapping):
         return refreshed
 
     @contextmanager
-    def _lock(self, *setting_names, wait_timeout: Optional[int] = MISSING):
+    def _lock(self, *setting_names, wait_timeout: int | None = MISSING):
         if wait_timeout is MISSING:
             wait_timeout = self._default_lock_timeout
         if wait_timeout is not None:
@@ -303,7 +304,7 @@ class SettingsStoreBase(Mapping):
                 yield
 
     @contextmanager
-    def lock(self, *setting_names, wait_timeout: Optional[int] = MISSING):
+    def lock(self, *setting_names, wait_timeout: int | None = MISSING):
         """
         Lock specific settings or all settings. Locks are transaction-bound.
         This means the call to this function must be done within a transaction
@@ -321,7 +322,7 @@ class SettingsStoreBase(Mapping):
         with self._lock(*setting_names, wait_timeout=wait_timeout):
             yield True
 
-    def update(self, wait_timeout: Optional[int] = MISSING, **updates):
+    def update(self, wait_timeout: int | None = MISSING, **updates):
         """
         Updates settings in the database.
 
@@ -342,7 +343,7 @@ class SettingsStoreBase(Mapping):
             #       replaced with one upsert using the unique index on `key` as
             #       a discriminant. Expected in Django 4.1:
             #       https://docs.djangoproject.com/en/dev/releases/4.1/#models
-            updated_at = datetime.datetime.now()
+            updated_at = timezone.now()
             for db_model in db_models:
                 updated_value = updates.pop(db_model.key)
                 if callable(updated_value):
@@ -370,23 +371,30 @@ class SettingsStoreBase(Mapping):
         # don't get into the "lost update" scenario (see tests). This technique
         # is the most lightweight, as it doesn't require explicit locking of
         # the whole table or using serializable transactions.
-        now = datetime.datetime.now()
+        now = timezone.now()
         self.model.objects.filter(key__in=update_keys).update(updated_at=now)
         self.refresh(force=True)
 
-    def cleanup_settings(self):
+    def cleanup_settings(self, wait_timeout: int | None = 10_000):
         """
         Puts the default values in the database if they don't exist (so
         `.lock()` works on them) and deletes settings from the database if they
         are not in the class' definition.
-        """
-        with transaction.atomic():
-            self.lock()
 
+        The whole table is locked during the operation.
+
+        :param wait_timeout: wait timeout (in milliseconds) for the table lock.
+                             The default value is longer than the default lock
+                             timeout because this function is usually called
+                             at startup, potentially by several processes at
+                             the same time. If the lock cannot be acquired in
+                             time, an OperationalError will be raised.
+        """
+        with transaction.atomic(), self.lock(wait_timeout=wait_timeout):
             # Insert defaults
             # TODO: replace with upsert when Django 4.1 is released.
             keys_in_db = list(self.model.objects.values_list('key', flat=True))
-            updated_at = datetime.datetime.now()
+            updated_at = timezone.now()
             self.model.objects.bulk_create(
                 [
                     self.model(key=key, value=value, updated_at=updated_at)
@@ -402,8 +410,9 @@ class SettingsStoreBase(Mapping):
     # TEST-SUITE HELPERS
     def override(self, **overrides):
         """
-        Context manager / decorator to temporarily modify settings (nothing is
-        committed to the database):
+        Context manager / decorator to temporarily modify settings (the values
+        are written to the database and the previous values are restored at
+        the exit):
 
         Usage (with settings being an instance of this class)::
 
@@ -442,7 +451,7 @@ class Patcher:
         @wraps(func)
         def patched(*args, **kwargs):
             with Patcher(self._setting_store, **self._overrides):
-                func(*args, **kwargs)
+                return func(*args, **kwargs)
         return patched
 
     def __enter__(self):

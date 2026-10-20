@@ -1,6 +1,7 @@
 """
 System information
 """
+import functools
 import logging
 import os
 import re
@@ -29,134 +30,126 @@ def _get_output(cmd):
     return p.stdout.strip()
 
 
-_repo_info = None
-
-
+@functools.cache
 def _get_repo_info(package, module):
-    # FIXME: Cache is global and should be relative to args
-    global _repo_info
-    if _repo_info is None:
-        _repo_info = get_version(package, module)
-    return _repo_info
+    # The information are read only once per package and module
+    return get_version(package, module)
 
 
-_soft_info = None
+@functools.cache
+def _get_static_soft_info(package, module):
+    # The information are read only once per package and module
+    version, revision, local_repo = _get_repo_info(package, module)
+    dj_version = getattr(django, 'VERSION', '?')
+    if isinstance(dj_version, tuple):
+        dj_version = '.'.join([str(i) for i in dj_version])
+    try:
+        from django.conf import settings
+        db_engine = ', '.join([db['ENGINE'] for db in settings.DATABASES.values()])
+        time_zone = getattr(settings, 'TIME_ZONE', '?')
+    except Exception as e:
+        logger.debug('Failed to get database TIME_ZONE setting: %s', e)
+        db_engine = None
+        time_zone = None
+    # Prepare rendering
+    soft_info = [
+        {'label': _('Application version'), 'value': version},
+        {'label': _('Application revision'), 'value': revision},
+        {'label': _('Python version'), 'value': sys.version},
+        {'label': _('Django version'), 'value': dj_version},
+    ]
+    if db_engine is not None:
+        soft_info.append({'label': _('Database engine'), 'value': db_engine})
+    if time_zone is not None:
+        soft_info.append({'label': _('Django time zone'), 'value': time_zone})
+    return tuple(soft_info)
 
 
 def _get_soft_info(package, module):
-    global _soft_info
-    if _soft_info is None:
-        # The information are read only once
-        version, revision, local_repo = _get_repo_info(package, module)
-        dj_version = getattr(django, 'VERSION', '?')
-        if isinstance(dj_version, tuple):
-            dj_version = '.'.join([str(i) for i in dj_version])
-        try:
-            from django.conf import settings
-            db_engine = ', '.join([db['ENGINE'] for db in settings.DATABASES.values()])
-            time_zone = getattr(settings, 'TIME_ZONE', '?')
-        except Exception as e:
-            logger.debug('Failed to get database TIME_ZONE setting: %s', e)
-            db_engine = None
-            time_zone = None
-        # Prepare rendering
-        _soft_info = [
-            {'label': _('Application version'), 'value': version},
-            {'label': _('Application revision'), 'value': revision},
-            {'label': _('Python version'), 'value': sys.version},
-            {'label': _('Django version'), 'value': dj_version},
-        ]
-        if db_engine is not None:
-            _soft_info.append({'label': _('Database engine'), 'value': db_engine})
-        if time_zone is not None:
-            _soft_info.append({'label': _('Django time zone'), 'value': time_zone})
-    result = _soft_info.copy()
-    return result
+    return list(_get_static_soft_info(package, module))
 
 
-_os_info = None
+@functools.cache
+def _get_static_os_info():
+    # The information are read only once
+    os_name = _get_output(['grep', 'PRETTY_NAME', '/etc/os-release']).replace('PRETTY_NAME', '').strip('"= \t')
+    # Prepare rendering
+    os_info = [
+        {'label': _('Description'), 'value': os_name or '?'},
+        {'label': _('Kernel'), 'value': _get_output(['uname', '-r'])},
+        {'label': _('Hostname'), 'value': _get_output(['uname', '-n'])},
+        {'label': _('Time zone'), 'value': _get_output(['cat', '/etc/timezone'])},
+    ]
+    return tuple(os_info)
 
 
 def _get_os_info():
-    global _os_info
-    if _os_info is None:
-        # The information are read only once
-        os_name = _get_output(['grep', 'PRETTY_NAME', '/etc/os-release']).replace('PRETTY_NAME', '').strip('"= \t')
-        # Prepare rendering
-        _os_info = [
-            {'label': _('Description'), 'value': os_name or '?'},
-            {'label': _('Kernel'), 'value': _get_output(['uname', '-r'])},
-            {'label': _('Hostname'), 'value': _get_output(['uname', '-n'])},
-            {'label': _('Time zone'), 'value': _get_output(['cat', '/etc/timezone'])},
-        ]
     # Add dynamic information
-    result = _os_info + [
+    result = list(_get_static_os_info()) + [
         {'label': _('Uptime'), 'value': _get_output(['uptime', '-p'])},
         {'label': _('Load'), 'value': _get_output(['cat', '/proc/loadavg'])},
     ]
     return result
 
 
-_cpu_info = None
+@functools.cache
+def _get_static_cpu_info():
+    # The information are read only once
+    info = {'total cores': 0}
+    try:
+        with open('/proc/cpuinfo') as fo:
+            for line in fo:
+                index = line.find(':')
+                if index > 0:
+                    if line.startswith('processor'):
+                        info['total cores'] += 1
+                    else:
+                        field = line[:index].strip()
+                        value = line[index + 1:].strip()
+                        info[field] = value
+    except Exception as e:
+        logger.debug('Failed to read CPU information file: %s', e)
+    info['model name'] = ' '.join(info.get('model name', '').split())
+    if '@' in info.get('model name', ''):
+        # Try to get default frequency
+        index = info['model name'].find('@')
+        info['default freq'] = info['model name'][index + 1:].strip().replace('GHz', ' GHz')
+        info['model name'] = info['model name'][:index].strip()
+    # Prepare rendering
+    cpu_info = [
+        {'label': _('Model'), 'value': info.get('model name', '?')},
+        {'label': _('Cores'), 'value': info['total cores'] or '?'},
+        {'label': _('Default frequency'), 'value': info.get('default freq', '?')},
+    ]
+    return tuple(cpu_info)
 
 
 def _get_cpu_info():
-    global _cpu_info
-    if _cpu_info is None:
-        # The information are read only once
-        info = {'total cores': 0}
-        try:
-            with open('/proc/cpuinfo', 'r') as fo:
-                for line in fo:
-                    index = line.find(':')
-                    if index > 0:
-                        if line.startswith('processor'):
-                            info['total cores'] += 1
-                        else:
-                            field = line[:index].strip()
-                            value = line[index + 1:].strip()
-                            info[field] = value
-        except Exception as e:
-            logger.debug('Failed to read CPU information file: %s', e)
-        info['model name'] = ' '.join(info.get('model name', '').split())
-        if '@' in info.get('model name', ''):
-            # Try to get default frequency
-            index = info['model name'].find('@')
-            info['default freq'] = info['model name'][index + 1:].strip().replace('GHz', ' GHz')
-            info['model name'] = info['model name'][:index].strip()
-        # Prepare rendering
-        _cpu_info = [
-            {'label': _('Model'), 'value': info.get('model name', '?')},
-            {'label': _('Cores'), 'value': info['total cores'] or '?'},
-            {'label': _('Default frequency'), 'value': info.get('default freq', '?')},
-        ]
-    result = _cpu_info.copy()
-    return result
+    return list(_get_static_cpu_info())
 
 
-_gpu_info = None
+@functools.cache
+def _get_static_gpu_info():
+    # The information are read only once
+    gpu_model = None
+    lspci = _get_output(['lspci'])
+    if 'VGA' in lspci:
+        vga_re = re.search(r'.+VGA.+:(.+)', lspci)
+        gpu_model = vga_re.groups()[0].strip()
+        if len(gpu_model) > 60 and '\n' not in gpu_model:
+            # add line return
+            min_ind = int(len(gpu_model) / 2) - 10
+            index = gpu_model[min_ind:].find(' ')
+            if index >= 0:
+                gpu_model = gpu_model[:min_ind + index] + '\n' + gpu_model[min_ind + index + 1:]
+    gpu_info = [
+        {'label': _('Model'), 'value': gpu_model or '?'},
+    ]
+    return tuple(gpu_info)
 
 
 def _get_gpu_info():
-    global _gpu_info
-    if _gpu_info is None:
-        # The information are read only once
-        gpu_model = None
-        lspci = _get_output(['lspci'])
-        if 'VGA' in lspci:
-            vga_re = re.search(r'.+VGA.+:(.+)', lspci)
-            gpu_model = vga_re.groups()[0].strip()
-            if len(gpu_model) > 60 and '\n' not in gpu_model:
-                # add line return
-                min_ind = int(len(gpu_model) / 2) - 10
-                index = gpu_model[min_ind:].find(' ')
-                if index >= 0:
-                    gpu_model = gpu_model[:min_ind + index] + '\n' + gpu_model[min_ind + index + 1:]
-        _gpu_info = [
-            {'label': _('Model'), 'value': gpu_model or '?'},
-        ]
-    result = _gpu_info.copy()
-    return result
+    return list(_get_static_gpu_info())
 
 
 def get_system_info(package=None, module=None, extra=None):

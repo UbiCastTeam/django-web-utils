@@ -30,14 +30,14 @@ def get_image_info(path):
     if os.path.exists(path):
         file_size = os.path.getsize(path)
         file_extension = path.split('.')[-1]
-        file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(path))
+        file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(path))  # noqa: DTZ006
 
     size = (0, 0)
     try:
         img = Image.open(path)
         img.load()
         size = img.size
-    except Exception:
+    except Exception:  # noqa: S110 (the size is unknown if the file is not a valid image)
         pass
     return dict(
         file_size=file_size,

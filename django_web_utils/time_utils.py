@@ -1,10 +1,9 @@
 """
 Time utility functions
 """
-from typing import Tuple
 
 
-def get_hms_tuple(seconds: int) -> Tuple[int, int, int]:
+def get_hms_tuple(seconds: int) -> tuple[int, int, int]:
     """
     Returns hours, minutes and seconds from a number of seconds.
     :param seconds: positive integer

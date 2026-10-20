@@ -5,6 +5,20 @@ A collection of utilities for web projects based on Django.
 This library is only compatible with Python 3.13+.
 
 
+## Installation
+
+Django is not installed as a dependency to let your project manage its version.
+Optional dependencies can be installed with extras:
+
+* `django`: Django version supported by this library.
+* `ldap`: dependencies of the `ldap_utils` module.
+* `sentry`: dependencies of the `sentry_utils` module.
+
+``` bash
+pip install 'django-web-utils[django,ldap,sentry]'
+```
+
+
 ## Usage
 
 Add in your `settings`:
@@ -28,7 +42,7 @@ INSTALLED_APPS = [
 
 ## Development
 
-All dependencies are required for the following commands (django, bleach and pillow).
+All dependencies are required for the following commands (including the `dev`, `django`, `ldap` and `sentry` extras).
 
 ### Code check
 

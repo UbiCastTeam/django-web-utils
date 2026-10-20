@@ -109,8 +109,8 @@ def test_user_list__with_debug(users):
     out = StringIO()
     call_command('user', '-v', '3', 'list', '-f', 'username,email', '-o', 'csv', stdout=out)
     output = out.getvalue().strip()
-    assert output.startswith('Ruuning cleaning for action "list" with options: {')
-    assert 'Ruuning action "list" with options: {' in output
+    assert output.startswith('Running cleaning for action "list" with options: {')
+    assert 'Running action "list" with options: {' in output
     assert output.endswith(
         '"username","email"\n'
         + '\n'.join([f'"{user.username}","{user.email}"' for user in users.values()])
@@ -353,6 +353,24 @@ def test_user_update__password(users):
         '--password', 'NewPwd123!',
         stdout=out,
     )
+    user.refresh_from_db()
+    assert user.check_password('NewPwd123!')
+
+
+def test_user_update__password_hidden_in_debug(users):
+    user = users['minimal']
+    out = StringIO()
+    call_command(
+        'user', '-v', '3', 'update',
+        '-t', f'username={user.username}',
+        '--password', 'NewPwd123!',
+        '-j', '{"password": "JsonPwd123!"}',
+        stdout=out,
+    )
+    output = out.getvalue()
+    assert 'Running action "update" with options: {' in output
+    assert 'NewPwd123!' not in output
+    assert 'JsonPwd123!' not in output
     user.refresh_from_db()
     assert user.check_password('NewPwd123!')
 

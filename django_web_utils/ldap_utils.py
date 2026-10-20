@@ -17,7 +17,7 @@ logger = logging.getLogger('djwutils.ldap_utils')
 
 
 # LDAP default settings object
-class LDAPDefaultSettings(object):
+class LDAPDefaultSettings:
     SETTINGS_PREFIX = 'AUTH_LDAP_'
     SERVER_URI = 'ldap://server.net'
     USER_SEARCH_SCOPE = 'ou=People,dc=server,dc=net'
@@ -97,7 +97,7 @@ def get_connection(bind_dn=None, bind_password=None):
         if not connection.bind():
             if connection.result.get('description'):
                 if 'invalidCredentials' in connection.result['description']:
-                    raise Exception(str('Username and password do not match.'))
+                    raise Exception('Username and password do not match.')
                 raise Exception(connection.result['description'])
             raise Exception('Bind call failed.')
     except Exception as err:
@@ -358,7 +358,10 @@ def test_ldap_connection(username, password=None, get_groups=False):
                 groups = get_user_groups(user_dn, user_info, connection=connection)
             except Exception as e:
                 success = False
-                msg += '%s\n<br/>%s\n<br/>' % (escape(_('Error when trying to get groups.')), e)
+                msg += '%s\n<br/>%s\n<br/>' % (
+                    escape(_('Error when trying to get groups.')),
+                    defaultfilters.linebreaksbr(escape(e)),
+                )
             else:
                 gids = list(groups.keys())
                 if gids:
@@ -370,4 +373,4 @@ def test_ldap_connection(username, password=None, get_groups=False):
                         msg += '\n</ul>'
                 else:
                     msg += '%s' % (escape(_('No groups found.')))
-        return success, mark_safe(msg)
+        return success, mark_safe(msg)  # noqa: S308 (all values are escaped)

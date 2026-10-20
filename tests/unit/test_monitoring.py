@@ -1,5 +1,7 @@
+import gzip
 from pathlib import Path
 import re
+import types
 
 from django.conf import settings
 from django.urls import reverse
@@ -10,7 +12,7 @@ from django_web_utils.monitoring.sysinfo import get_system_info
 
 pytestmark = pytest.mark.django_db
 
-with open(Path(settings.BASE_DIR, 'storage/logs/sample.log'), 'r') as fo:
+with open(Path(settings.BASE_DIR, 'storage/logs/sample.log')) as fo:
     LOG_CONTENT = fo.read()
 
 
@@ -153,3 +155,34 @@ def test_sysinfo():
         'info_memory',
         'info_network'
     ]
+
+
+@pytest.mark.parametrize('limit, expected', [
+    pytest.param(1000, 'Test\n' * 100, id='under limit'),
+    pytest.param(100, 'File too large once decompressed.\nOnly the raw file is accessible.', id='over limit'),
+])
+def test_log_view__gz_decompressed_limit(monkeypatch, tmp_path, limit, expected):
+    from django.test import RequestFactory
+
+    from django_web_utils.monitoring import utils
+    monkeypatch.setattr(utils, 'FILE_SIZE_LIMIT_GZ_DECOMPRESSED', limit)
+    path = tmp_path / 'test.log.gz'
+    path.write_bytes(gzip.compress(b'Test\n' * 100))
+
+    result = utils.log_view(RequestFactory().get('/'), path=path)
+    assert result['file_content'] == expected
+
+
+def test_daemons_info__str_paths(settings):
+    from django_web_utils.monitoring import config
+    settings.MONITORING_DAEMONS_INFO = types.SimpleNamespace(
+        GROUPS=[{'name': 'base', 'label': 'Base'}],
+        DAEMONS=[{'group': 'base', 'name': 'str', 'log_path': '/tmp/str.log', 'pid_path': '/tmp/str.pid'}],
+    )
+    config.get_daemons_info.cache_clear()
+    try:
+        info = config.get_daemons_info()
+        assert info.DAEMONS['str']['log_path'] == Path('/tmp/str.log')
+        assert info.DAEMONS['str']['pid_path'] == Path('/tmp/str.pid')
+    finally:
+        config.get_daemons_info.cache_clear()

@@ -14,8 +14,9 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture(autouse=True)
 def reset_context_processor():
-    if hasattr(emails_utils, '_context_processor'):
-        del emails_utils._context_processor
+    emails_utils._get_context_processor.cache_clear()
+    yield
+    emails_utils._get_context_processor.cache_clear()
 
 
 def test_recipients__managers(settings):
@@ -170,7 +171,7 @@ def test_emails_with_attachments(settings, fct, kwargs):
     file_path = testapp.__path__[0] + '/templates/emails/email_error.html'
     recipients = [User(email='test@test.com')]
     success, sent = fct(recipients=recipients, attachments=[file_path], **kwargs)
-    with open(file_path, 'r') as fo:
+    with open(file_path) as fo:
         expected = fo.read()
     assert success is True
     assert sent == ['test@test.com']
@@ -213,3 +214,18 @@ System hostname: -host-</div>
     if with_template:
         expected = f'\n<h2>With template!</h2>\n{expected}'
     assert body == expected
+
+
+SHARED_CONTEXT = {'footer': 'Shared'}
+
+
+def shared_context_processor():
+    return SHARED_CONTEXT
+
+
+def test_context_processor__not_modified(settings):
+    settings.EMAIL_CONTEXT_PROCESSOR = 'tests.unit.test_emails_utils.shared_context_processor'
+    settings.DEFAULT_FROM_EMAIL = 'sender@example.com'
+    ctx = emails_utils._get_context()
+    assert ctx == {'footer': 'Shared', 'sender': 'sender@example.com'}
+    assert SHARED_CONTEXT == {'footer': 'Shared'}

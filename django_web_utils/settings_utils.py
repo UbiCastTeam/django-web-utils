@@ -2,12 +2,14 @@
 Module to handle file settings.
 The OVERRIDE_PATH setting must be set to the local settings override path.
 """
+from collections.abc import Iterable
 import logging
 import os
 from pathlib import Path
 import re
 import sys
-from typing import Any, Iterable, Optional
+import tempfile
+from typing import Any
 
 from django.conf import ENVIRONMENT_VARIABLE, settings
 from django.utils.functional import empty
@@ -18,13 +20,59 @@ from django_web_utils.files_utils import backup_file
 logger = logging.getLogger('djwutils.settings_utils')
 
 
-def backup_settings() -> Optional[Path]:
+def backup_settings() -> Path | None:
     """
     Make a backup copy of the settings override file.
     See `backup_file` description for more information.
     """
     if getattr(settings, 'OVERRIDE_PATH', None):
         return backup_file(Path(settings.OVERRIDE_PATH))
+
+
+def _is_valid_setting_name(key: str) -> bool:
+    return bool(re.fullmatch(r'[A-Za-z][A-Za-z0-9_]*', key))
+
+
+def _write_file_atomically(path: Path, content: str) -> None:
+    """
+    Write the content in a temporary file then replace the target file with it,
+    so that the target file is never partially written.
+    The permissions and the owner of the existing file are kept.
+    If the path is a symbolic link, the target of the link is replaced (not the link itself).
+    The file is written directly (not atomically) if the temporary file cannot be created
+    (directory not writable) or if the owner of the existing file cannot be kept.
+    """
+    path = path.resolve()
+    try:
+        initial_stat = path.stat()
+    except FileNotFoundError:
+        initial_stat = None
+    try:
+        fd, tmp_path = tempfile.mkstemp(dir=path.parent, prefix=f'.{path.name}.', suffix='.tmp')
+    except PermissionError:
+        logger.info('The directory "%s" is not writable, the file "%s" is written directly.', path.parent, path)
+        path.write_text(content)
+        return
+    try:
+        with os.fdopen(fd, 'w') as fo:
+            fo.write(content)
+        if initial_stat is None:
+            os.chmod(tmp_path, 0o644)
+        else:
+            os.chmod(tmp_path, initial_stat.st_mode & 0o7777)
+            tmp_stat = os.stat(tmp_path)
+            if (tmp_stat.st_uid, tmp_stat.st_gid) != (initial_stat.st_uid, initial_stat.st_gid):
+                try:
+                    os.chown(tmp_path, initial_stat.st_uid, initial_stat.st_gid)
+                except PermissionError:
+                    logger.info('The owner of the file "%s" cannot be kept, the file is written directly.', path)
+                    Path(tmp_path).unlink()
+                    path.write_text(content)
+                    return
+        os.replace(tmp_path, path)
+    except BaseException:
+        Path(tmp_path).unlink(missing_ok=True)
+        raise
 
 
 def _get_value_str(value):
@@ -64,9 +112,10 @@ def set_settings(**data: Any) -> tuple[bool, str]:
         return True, _('No changes to save.')
 
     # Change locally settings
-    for key, value in data.items():
-        if not re.match(r'[A-Za-z][A-Za-z0-9_]*', key):
+    for key in data.keys():
+        if not _is_valid_setting_name(key):
             return False, (_('Invalid setting name: %s') % key)
+    for key, value in data.items():
         setattr(settings, key, value)
     logger.info('Updating following settings: %s', list(data.keys()))
 
@@ -107,7 +156,7 @@ def set_settings(**data: Any) -> tuple[bool, str]:
             # Backup settings before writing
             backup_settings()
             # Write settings
-            override_path.write_text(content)
+            _write_file_atomically(override_path, content)
         except OSError as e:
             logger.warning('Unable to write configuration file. %s', e)
             return False, '%s %s' % (_('Unable to write configuration file:'), e)
@@ -127,8 +176,9 @@ def remove_settings(*keys: str) -> tuple[bool, str]:
 
     # Change locally settings
     for key in keys:
-        if not re.match(r'[A-Za-z][A-Za-z0-9_]*', key):
+        if not _is_valid_setting_name(key):
             return False, (_('Invalid setting name: %s') % key)
+    for key in keys:
         if hasattr(settings, key):
             delattr(settings, key)
 
@@ -164,7 +214,7 @@ def remove_settings(*keys: str) -> tuple[bool, str]:
                 if not content.strip():
                     override_path.unlink(missing_ok=True)
                 else:
-                    override_path.write_text(content)
+                    _write_file_atomically(override_path, content)
             except OSError as err:
                 logger.warning('Unable to write configuration file. %s', err)
                 return False, '%s %s' % (_('Unable to write configuration file:'), err)

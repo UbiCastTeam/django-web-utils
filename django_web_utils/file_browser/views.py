@@ -91,9 +91,9 @@ def storage_content(request, namespace=None):
     """
     base_path = config.get_base_path(namespace)
     path = request.GET.get('path', '').strip('/')
-    folder_path = base_path if not path else os.path.join(base_path, path)
+    folder_path = config.get_safe_path(base_path, path)
 
-    if not os.path.exists(folder_path):
+    if not folder_path or not os.path.exists(folder_path):
         return JsonResponse(dict(error=_('Folder "%s" does not exist') % path), status=400)
 
     try:
@@ -137,7 +137,7 @@ def storage_content(request, namespace=None):
                 # Allow previes for images < 10MB
                 file_properties['preview'] = True
             # Get modification time
-            mdate = datetime.datetime.fromtimestamp(os.path.getmtime(current_path)).strftime('%Y-%m-%d %H:%M')
+            mdate = datetime.datetime.fromtimestamp(os.path.getmtime(current_path)).strftime('%Y-%m-%d %H:%M')  # noqa: DTZ006
             file_properties['mdate'] = mdate
             files.append(file_properties)
         # Else: socket or other, ignored
@@ -190,8 +190,8 @@ def storage_img_preview(request, namespace=None):
     path = request.GET.get('path', '').strip('/')
     if not path:
         return HttpResponseRedirect(static('file_browser/img/img.png'))
-    file_path = os.path.join(base_path, path)
-    if not os.path.exists(file_path):
+    file_path = config.get_safe_path(base_path, path)
+    if not file_path or not os.path.isfile(file_path):
         return HttpResponseRedirect(static('file_browser/img/img.png'))
 
     try:

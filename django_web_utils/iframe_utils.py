@@ -4,6 +4,7 @@ To use this module, you should create the following templates:
     400.html, 401.html, 403.html, 404.html, 405.html, 500.html
 All these templates should be in a dir called iframe.
 """
+from functools import wraps
 import logging
 from urllib.parse import quote
 
@@ -12,20 +13,25 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
+from django_web_utils.http_utils import parse_methods
+
 
 def iframe_view(function=None, methods=None, login_url=None, login_required=False):
     """
     Returns 400, 401, 403, 404, 405 and 500 errors with Iframe template.
     The "methods" argument can be used to allow only some methods on a particular view.
-    To allow several methods, use this format: "GET, PUT".
+    To allow several methods, use this format: "GET, PUT" (or a list like ["GET", "PUT"]).
     """
+    allowed_methods = parse_methods(methods)
+
     def decorator(fct):
         @xframe_options_exempt
+        @wraps(fct)
         def _wrapped_view(request, *args, **kwargs):
             # Check request method
-            if methods and request.method not in methods:
+            if allowed_methods and request.method not in allowed_methods:
                 response = render(request, 'iframe/405.html', status=405)
-                response['Allow'] = methods
+                response['Allow'] = ', '.join(sorted(allowed_methods))
                 return response
             # Process view
             try:

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import time
 
@@ -251,3 +252,81 @@ def test_reload_settings():
     assert settings_utils.reload_settings() is None
     # Global settings have been updated
     assert old_value != settings.TIME_NOW
+
+
+def test_set_settings__invalid_key_suffix():
+    # The whole key must be validated, not only its beginning
+    success, msg = settings_utils.set_settings(VALID=1, **{'INVALID\nimport os': 1})
+    assert not success, msg
+    assert not hasattr(settings, 'VALID')
+    path = Path(settings.OVERRIDE_PATH)
+    assert not path.exists()
+
+
+def test_remove_settings__invalid_key_suffix():
+    success, msg = settings_utils.remove_settings('INVALID = 1\nimport os')
+    assert not success, msg
+
+
+def test_set_settings__keep_file_mode():
+    path = Path(settings.OVERRIDE_PATH)
+    path.write_text('A = 1\n')
+    path.chmod(0o600)
+    success, msg = settings_utils.set_settings(B=2)
+    assert success, msg
+    assert path.read_text() == 'A = 1\nB = 2\n'
+    assert path.stat().st_mode & 0o777 == 0o600
+    # No temporary file must remain
+    assert not [p for p in path.parent.iterdir() if p.name.endswith('.tmp')]
+
+
+def test_write_file_atomically__symlink(tmp_dir):
+    target = tmp_dir / 'settings_target.py'
+    target.write_text('A = 1\n')
+    link = tmp_dir / 'settings_link.py'
+    link.symlink_to(target)
+    settings_utils._write_file_atomically(link, 'A = 2\n')
+    # The link is kept and its target is updated
+    assert link.is_symlink()
+    assert target.read_text() == 'A = 2\n'
+
+
+def test_write_file_atomically__directory_not_writable(tmp_dir):
+    directory = tmp_dir / 'read_only_dir'
+    directory.mkdir()
+    path = directory / 'settings_override.py'
+    path.write_text('A = 1\n')
+    directory.chmod(0o555)
+    try:
+        settings_utils._write_file_atomically(path, 'A = 2\n')
+    finally:
+        directory.chmod(0o755)
+    assert path.read_text() == 'A = 2\n'
+    assert [p.name for p in directory.iterdir()] == ['settings_override.py']
+
+
+def test_write_file_atomically__owner_not_kept(tmp_dir, monkeypatch):
+    path = tmp_dir / 'settings_override.py'
+    path.write_text('A = 1\n')
+    initial_inode = path.stat().st_ino
+
+    # Simulate a file owned by another user
+    real_stat = Path.stat
+
+    def fake_stat(self, *args, **kwargs):
+        st = real_stat(self, *args, **kwargs)
+        if self == path:
+            return os.stat_result((st.st_mode, st.st_ino, st.st_dev, st.st_nlink, st.st_uid + 1) + tuple(st)[5:])
+        return st
+
+    monkeypatch.setattr(Path, 'stat', fake_stat)
+
+    def fake_chown(*args):
+        raise PermissionError('Operation not permitted')
+
+    monkeypatch.setattr(os, 'chown', fake_chown)
+    settings_utils._write_file_atomically(path, 'A = 2\n')
+    assert path.read_text() == 'A = 2\n'
+    # The file has been written directly (not replaced)
+    assert real_stat(path).st_ino == initial_inode
+    assert [p.name for p in tmp_dir.iterdir()] == ['settings_override.py']

@@ -1,5 +1,4 @@
 from functools import cached_property
-from typing import Optional
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import BaseBackend
@@ -14,7 +13,7 @@ class MagicLoginBackend(BaseBackend):
     Authentication backend for the magic login feature.
     """
 
-    def authenticate(self, request: HttpRequest, magic_login_id: Optional[int]) -> Optional[AbstractBaseUser]:
+    def authenticate(self, request: HttpRequest, magic_login_id: int | None) -> AbstractBaseUser | None:
         if not magic_login_id:
             return
         user = self.get_user(user_id=magic_login_id)
@@ -28,11 +27,15 @@ class MagicLoginBackend(BaseBackend):
             user.save(update_fields=['password'])
         return user
 
-    def get_user(self, user_id: int) -> Optional[AbstractBaseUser]:
+    def get_user(self, user_id: int) -> AbstractBaseUser | None:
         try:
-            return self.user_model.objects.get(pk=user_id)
+            user = self.user_model.objects.get(pk=user_id)
         except self.user_model.DoesNotExist:
             return None
+        # Reject inactive users (same behavior as Django's ModelBackend)
+        if not getattr(user, 'is_active', True):
+            return None
+        return user
 
     @cached_property
     def user_model(self) -> type[AbstractBaseUser]:

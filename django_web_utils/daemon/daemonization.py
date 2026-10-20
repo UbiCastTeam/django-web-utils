@@ -75,7 +75,7 @@ def daemonize(redirect_to=None, rundir='/', umask=0o022, close_all_files=False):
     # terminal, most daemons redirect stdin, stdout, and stderr to /dev/null. This is done to prevent
     # side-effects from reads and writes to the standard I/O file descriptors.
     fdi = os.open(os.devnull, os.O_CREAT | os.O_RDONLY)
-    fdo = os.open(redirect_to or os.devnull, os.O_CREAT | os.O_WRONLY | os.O_APPEND, mode=0o666)
+    fdo = os.open(redirect_to or os.devnull, os.O_CREAT | os.O_WRONLY | os.O_APPEND, mode=0o644)
     os.dup2(fdi, 0)
     os.dup2(fdo, 1)
     os.dup2(fdo, 2)

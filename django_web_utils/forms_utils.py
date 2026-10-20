@@ -13,7 +13,7 @@ from django_web_utils.settings_utils import set_settings
 logger = logging.getLogger('djwutils.forms_utils')
 
 
-class FileInfo():
+class FileInfo:
     def __init__(self, path):
         self.name = os.path.basename(path) if path else ''
         self.url = '#'  # if no url, the value is ignored in the Django widget
@@ -90,7 +90,7 @@ class ProtectedFileField(dj_forms.FileField):
             return False
 
 
-class BaseFileSettingsForm():
+class BaseFileSettingsForm:
     """
     Form designed to change settings file values and restart server then.
     Settings that can be altered must be defined in Meta.SETTINGS_MAPPING.

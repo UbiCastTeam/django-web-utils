@@ -7,7 +7,7 @@ from django_web_utils import html_utils
 @pytest.mark.parametrize('value,allow_iframes,expected', [
     pytest.param(
         '<iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"></iframe>', False,
-        '&lt;iframe src="data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7PC9zY3JpcHQ+Cg==" allow="autoplay" nope="test"&gt;&lt;/iframe&gt;', id='escape_iframe'),
+        '', id='remove_iframe'),
     pytest.param(
         '<iframe width="560" height="315" src="https://www.youtube.com/embed/l8PMl7tUDIE?si=B-IQYsfP8otwVPXg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin"></iframe>', True,
         '<iframe width="560" height="315" src="https://www.youtube.com/embed/l8PMl7tUDIE?si=B-IQYsfP8otwVPXg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" referrerpolicy="strict-origin-when-cross-origin"></iframe>', id='allow_full_youtube_iframe'),
@@ -28,13 +28,13 @@ from django_web_utils import html_utils
         '<iframe src="/test" allow="autoplay"></iframe>', id='iframe_site_src_denied'),
     pytest.param(
         '<img src="data:image/png;base64,ABCD" style="width: 50%">', False,
-        '<img src="data:image/png;base64,ABCD" style="width: 50%;">', id='conserve_base64_image'),
+        '<img src="data:image/png;base64,ABCD" style="width:50%">', id='conserve_base64_image'),
     pytest.param(
         '<a href="data:image/png;base64,ABCD">', False,
         '<a></a>', id='clean_a_base64_href'),
     pytest.param(
         '<a href="http://google.com" style="font-size: 75%"></a>', False,
-        '<a href="http://google.com" style="font-size: 75%;"></a>', id='conserve_a_http_href'),
+        '<a href="http://google.com" style="font-size:75%"></a>', id='conserve_a_http_href'),
     pytest.param(
         '<iframe src="data:text/html,%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%31%29%3C%2F%73%63%72%69%70%74%3E"></iframe>', True,
         '<iframe></iframe>', id='alert_in_src'),
@@ -47,8 +47,23 @@ from django_web_utils import html_utils
             aria-live="polite" role="button" aria-describedby="id"
             aria-description="d"
         ></div>''', False,
-        '<div class="a" style="color: blue;" title="b" aria-label="c" aria-live="polite" role="button" aria-describedby="id" aria-description="d"></div>', id='allowed_check'
-    )
+        '<div class="a" style="color:blue" title="b" aria-label="c" aria-live="polite" role="button" aria-describedby="id" aria-description="d"></div>', id='allowed_check'
+    ),
+    pytest.param(
+        '<iframe src="//evil.example/test"></iframe><iframe src="/\\evil.example/test"></iframe>', True,
+        '<iframe></iframe><iframe></iframe>', id='iframe_protocol_relative_src_denied'),
+    pytest.param(
+        '<iframe src="https://localhost/test" allow="camera; autoplay; microphone *; fullscreen \'self\'"></iframe>', True,
+        '<iframe src="https://localhost/test" allow="autoplay; fullscreen \'self\'"></iframe>', id='iframe_allow_filtered'),
+    pytest.param(
+        '<iframe src="https://localhost/test" allow="camera; geolocation"></iframe>', True,
+        '<iframe src="https://localhost/test"></iframe>', id='iframe_allow_removed'),
+    pytest.param(
+        '<a href="javascript:alert(1)">a</a><a href="/local">b</a><img src="javascript:alert(1)">', False,
+        '<a>a</a><a>b</a><img>', id='invalid_urls'),
+    pytest.param(
+        '<p onclick="alert(1)">a</p><script>alert(1)</script><style>p {}</style><unknown>b</unknown>', False,
+        '<p>a</p>b', id='remove_scripts_and_unknown_tags'),
 ])
 def test_clean_html_tags(value, allow_iframes, expected):
     assert html_utils.clean_html_tags(
@@ -102,7 +117,10 @@ def test_clean_html_tags(value, allow_iframes, expected):
         '<div data-name="the name">Sample</div>', id='allow_data_name_attr'),
     pytest.param(
         '<iframe data-name="the name">Sample</iframe>', {'iframe': {'data-name'}},
-        '&lt;iframe data-name="the name"&gt;Sample&lt;/iframe&gt;', id='iframe_not_allowed'),
+        'Sample', id='iframe_not_allowed'),
+    pytest.param(
+        '<a href="https://example.com" data-name="the name">Sample</a>', {'a': ['data-name']},
+        '<a href="https://example.com" data-name="the name">Sample</a>', id='list_for_existing_tag'),
 ])
 def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
     assert html_utils.clean_html_tags(value, extra_allowed_attrs=extra_allowed_attrs) == expected
@@ -122,9 +140,9 @@ def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
             </div>
         ''', set(),
         '''
-            <div style="width: 100%;">
-                <div style="padding-bottom: 56.25%; padding-top: 0; height: 0;">
-                    <iframe title="Test" frameborder="0" width="1200px" height="675px" style="width: 100%; height: 100%;" src="https://test.test" allowfullscreen="true" scrolling="yes">
+            <div style="width:100%">
+                <div style="padding-bottom:56.25%;padding-top:0;height:0">
+                    <iframe title="Test" frameborder="0" width="1200px" height="675px" style="width:100%;height:100%" src="https://test.test" allowfullscreen="true" scrolling="yes">
                     </iframe>
                 </div>
             </div>
@@ -142,9 +160,9 @@ def test_clean_html_tags__extra_attrs(value, extra_allowed_attrs, expected):
             </div>
         ''', {'position', 'top', 'left', 'right', 'bottom'},
         '''
-            <div style="width: 100%;">
-                <div style="position: relative; padding-bottom: 56.25%; padding-top: 0; height: 0;">
-                    <iframe title="Test" frameborder="0" width="1200px" height="675px" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://test.test" allowfullscreen="true" scrolling="yes">
+            <div style="width:100%">
+                <div style="position:relative;padding-bottom:56.25%;padding-top:0;height:0">
+                    <iframe title="Test" frameborder="0" width="1200px" height="675px" style="position:absolute;top:0;left:0;width:100%;height:100%" src="https://test.test" allowfullscreen="true" scrolling="yes">
                     </iframe>
                 </div>
             </div>
@@ -157,10 +175,10 @@ def test_clean_html__extra_css(value, extra_allowed_css, expected):
 
 @pytest.mark.parametrize('value,expected', [
     pytest.param('<p>para</p>', 'para', id='block_tag'),
-    pytest.param('<b>bold</b>text', 'boldtext', id='bleach_default_allowed_tag'),
-    pytest.param('<em>a</em><strong>b</strong>', 'ab', id='bleach_default_allowed_tags'),
+    pytest.param('<b>bold</b>text', 'boldtext', id='inline_tag'),
+    pytest.param('<em>a</em><strong>b</strong>', 'ab', id='inline_tags'),
     pytest.param('<a href="http://test.com">link</a>', 'link', id='link'),
-    pytest.param('<script>alert(1)</script>', 'alert(1)', id='script_content_kept_as_text'),
+    pytest.param('<script>alert(1)</script>text', 'text', id='script_content_removed'),
     pytest.param('a & b', 'a &amp; b', id='escape_ampersand'),
     pytest.param('5 < 6', '5 &lt; 6', id='escape_lower_than'),
 ])

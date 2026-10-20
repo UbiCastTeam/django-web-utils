@@ -1,4 +1,3 @@
-from typing import Type
 
 from django import forms as dj_forms
 from django.utils.translation import gettext_lazy as _
@@ -39,7 +38,7 @@ class BaseSettingsStoreForm:
         }
 
         @classmethod
-        def get_default_values(cls, settings_store_cls: Type[SettingsStoreBase], mapping):
+        def get_default_values(cls, settings_store_cls: type[SettingsStoreBase], mapping):
             default_values = {}
             for field, info in mapping.items():
                 name = info['setting']
