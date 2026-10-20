@@ -1,6 +1,8 @@
 from django.urls import reverse
 import pytest
 
+from django_web_utils import csv_utils
+
 pytestmark = pytest.mark.django_db
 
 
@@ -40,3 +42,15 @@ def test_csv_response__custom_parameters(client, charset):
     ]
     actual = [row.decode(charset) for row in response.streaming_content]
     assert actual == expected
+
+
+def test_csv_response__file_name():
+    def rows():
+        yield ['=1+1', -1, 'ok']
+
+    response = csv_utils.csv_streaming_response(rows, file_name='a"b\r\n.csv')
+    # The values are not altered (formulas interpretation is optional in spreadsheet software)
+    assert [row.decode() for row in response.streaming_content] == [
+        '=1+1,-1,ok\r\n',
+    ]
+    assert response['Content-Disposition'] == 'attachment; filename="ab.csv"'

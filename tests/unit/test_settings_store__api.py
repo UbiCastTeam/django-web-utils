@@ -364,8 +364,12 @@ def test_settings_store__cleanup_settings(django_assert_num_queries):
     assert SettingsModel.objects.count() == 3
 
     settings_store = SettingsStore()
-    with django_assert_num_queries(5):
+    # The table lock adds 3 queries (savepoint, lock and savepoint release)
+    with django_assert_num_queries(8) as ctx:
         settings_store.cleanup_settings()
+    assert any('LOCK TABLE' in query['sql'] for query in ctx.captured_queries)
+    # A longer lock timeout is used because this function is usually called at startup by several processes
+    assert any("lock_timeout = '10000ms'" in query['sql'] for query in ctx.captured_queries)
     db_rows = SettingsModel.objects.all()
     assert len(db_rows) == 4
     db_rows = {db_row.key: db_row for db_row in db_rows}
@@ -373,3 +377,14 @@ def test_settings_store__cleanup_settings(django_assert_num_queries):
     assert db_rows['FLOAT_VAL'].value == 6.6
     assert db_rows['DICT_VAL'].value == {'key': 'value'}
     assert db_rows['LIST_VAL'].value == [1, 2, 3, 4, 5]
+
+
+def test_settings_store__override_return_value():
+    settings_store = SettingsStore()
+    settings_store.cleanup_settings()
+
+    @settings_store.override(STR_VAL='foo_over')
+    def get_value():
+        return settings_store.STR_VAL
+
+    assert get_value() == 'foo_over'

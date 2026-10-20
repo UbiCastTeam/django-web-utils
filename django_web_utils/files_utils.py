@@ -1,11 +1,11 @@
 """
 Files utility functions
 """
+from collections.abc import Iterator
 import datetime
 import os
 from pathlib import Path
 import subprocess
-from typing import Iterator, Optional
 
 try:
     from django.utils.translation import gettext as _
@@ -26,7 +26,7 @@ def get_size(path: str | Path, ignore_du_errors: bool = True) -> int:
         # "du" is much faster than getting size file of all files using python
         p = subprocess.run(
             ['du', '-sb', str(path)],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            stdin=subprocess.PIPE, capture_output=True
         )
         out = p.stdout.decode('utf-8').strip()
         err = p.stderr.decode('utf-8').strip()
@@ -116,7 +116,7 @@ def reverse_read(path: str | Path, buf_size: int = 8192) -> Iterator:
         yield None
 
 
-def backup_file(file_path: Path, max_backups: int = 10) -> Optional[Path]:
+def backup_file(file_path: Path, max_backups: int = 10) -> Path | None:
     """
     Make a backup copy of a file.
     Only one backup is made per day and only the last 10 (default) backups are retained.
@@ -126,7 +126,7 @@ def backup_file(file_path: Path, max_backups: int = 10) -> Optional[Path]:
         return
 
     mtime = file_path.stat().st_mtime
-    date_str = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d')
+    date_str = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d')  # noqa: DTZ006
 
     backup_path = file_path.parent / f'{file_path.name}.backup_{date_str}{file_path.suffix}'
     if backup_path.exists():

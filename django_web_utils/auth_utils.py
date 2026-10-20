@@ -2,11 +2,13 @@
 Authentication utility functions
 """
 import base64
+from functools import wraps
 import re
 
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 
 
@@ -15,6 +17,7 @@ def login_required_basicauth(function):
     Decorator to handle login through basicauth.
     Check that user is authenticated and if not, return a basic http authentication request.
     """
+    @wraps(function)
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated:
             return function(request, *args, **kwargs)
@@ -25,13 +28,13 @@ def login_required_basicauth(function):
             to_decode = to_decode.split(' ')[-1]
             try:
                 decoded = base64.b64decode(to_decode).decode('utf-8')
-            except Exception:
+            except Exception:  # noqa: S110 (an invalid header is handled like a missing one)
                 pass
             else:
                 if ':' in decoded:
                     username, password = decoded.split(':', 1)
                     # login user
-                    user = authenticate(username=username, password=password)
+                    user = authenticate(request, username=username, password=password)
                     if user:
                         if user.is_active:
                             login(request, user)
@@ -55,7 +58,9 @@ def login_basicauth(request, redirect_to=None):
     Function to log users in using basicauth.
     """
     rt = request.GET.get('next')
-    if not rt:
+    if not rt or not url_has_allowed_host_and_scheme(
+        rt, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
         rt = redirect_to
         if not rt:
             rt = '/'

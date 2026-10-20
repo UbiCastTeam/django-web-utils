@@ -49,6 +49,19 @@ def test_is_enabled():
     assert enabled is None
     enabled = avu.is_antivirus_enabled()
     assert enabled
+    # The result must not be stored in settings (the daemon can be started later)
+    assert getattr(settings, 'ANTIVIRUS_ENABLED', None) is None
+
+
+@override_settings(ANTIVIRUS_SOCKET_PATH='/tmp/djwutils-missing-clamd.ctl')
+def test_is_enabled__missing_socket(caplog):
+    avu._warn_missing_socket.cache_clear()
+    assert avu.is_antivirus_enabled() is False
+    assert getattr(settings, 'ANTIVIRUS_ENABLED', None) is None
+    assert 'The antivirus scan is disabled because the clamAV socket' in caplog.text
+    # The warning is logged only once
+    assert avu.is_antivirus_enabled() is False
+    assert caplog.text.count('The antivirus scan is disabled because the clamAV socket') == 1
 
 
 @override_settings(ANTIVIRUS_ENABLED=True)

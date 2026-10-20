@@ -1,16 +1,18 @@
+import hashlib
 import json
 import logging
 from pathlib import Path
-from typing import Optional
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import AbstractBaseUser
+from django.core.cache import cache
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.html import escape
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.generic import View
 
@@ -40,7 +42,11 @@ class MagicLoginView(View):
     #   `subject` (str)
     #   `body` (str)
     #   `user` (AbstractBaseUser)
-    template_email: Optional[str] = None
+    template_email: str | None = None
+
+    # Minimum delay in seconds between two link requests for the same email address.
+    # The Django cache is used to store the date of the last request. Set to 0 to disable the limit.
+    request_cooldown: int = 60
 
     @classmethod
     def get_users(cls) -> dict[str, AbstractBaseUser]:
@@ -90,7 +96,7 @@ class MagicLoginView(View):
         for email, user in cls.get_users().items():
             if email not in users_info:
                 logger.info(
-                    'Deleting user account %s because it is tagged as a magic login user and '
+                    'Deleting user account %r because it is tagged as a magic login user and '
                     'it does not exist in the json file "%s"',
                     user, cls.users_json_path
                 )
@@ -119,14 +125,29 @@ class MagicLoginView(View):
             'magic_login_form': form
         })
 
-    def process_email(self, request: HttpRequest, email: str) -> None:
-        ip = request.META['REMOTE_ADDR']
+    def process_email(self, request: HttpRequest, email: str) -> bool:
+        """
+        Send a login link if the email is allowed.
+        The response is the same whether the email is allowed or not to avoid disclosing allowed addresses.
+        """
+        ip = request.META.get('REMOTE_ADDR')
+        cache_key = None
+        if self.request_cooldown > 0:
+            cache_key = 'djwutils-magic-login-' + hashlib.sha256(email.lower().encode('utf-8')).hexdigest()
+            if not cache.add(cache_key, True, timeout=self.request_cooldown):
+                logger.warning('Too many requests for magic login link. IP: "%s", email: %r.', ip, email)
+                messages.warning(request, _(
+                    'A link has already been requested recently for this email address, '
+                    'please wait a moment before retrying.'
+                ))
+                return False
         users_info = self.get_users_info()
         info = users_info.get(email)
+        sent_msg = _('If this email address is allowed, an email has been sent to it with the link to log in.')
         if not info:
-            logger.warning('Invalid request for magic login link. IP: %s, email: "%s".', ip, email)
-            messages.warning(request, _('The requested email address is not allowed.'))
-            return False
+            logger.warning('Invalid request for magic login link. IP: "%s", email: %r.', ip, email)
+            messages.success(request, sent_msg)
+            return True
         info['email'] = email
         user = self.create_user(info)
         if not request.session.session_key or not request.session.exists(request.session.session_key):
@@ -134,22 +155,17 @@ class MagicLoginView(View):
         request.session['magic_login_id'] = user.id
         token = generate_token(user, request.session.session_key)
         next_url = self.get_next_url(request)
-        subject = _('Link to authenticate on %s') % request.get_host()
-        body = mark_safe(
-            '%(intro)s<br/>\n'
-            '<a href="%(scheme)s://%(host)s%(path)s?t=%(token)s&next=%(next)s" target="_blank">%(host)s</a><br/>\n'
-            '%(warning)s'
-            % {
-                'scheme': request.scheme,
-                'host': request.get_host(),
-                'path': request.path,
-                'token': token,
-                'next': next_url,
-                'intro': escape(_('Here is the link to log in on the site:')),
-                'warning': escape(_('If you did not request this link, ignore this email.'))
-            }
+        host = request.get_host()
+        subject = _('Link to authenticate on %s') % host
+        link = f'{request.scheme}://{host}{request.path}?{urlencode({"t": token, "next": next_url})}'
+        body = format_html(
+            '{}<br/>\n<a href="{}" target="_blank">{}</a><br/>\n{}',
+            _('Here is the link to log in on the site:'),
+            link,
+            host,
+            _('If you did not request this link, ignore this email.'),
         )
-        logger.info('A magic login link has been generated for IP: %s, email: "%s".', ip, email)
+        logger.info('A magic login link has been generated for IP: "%s", email: %r.', ip, email)
         if self.template_email:
             success, data = send_template_emails(self.template_email, context={
                 'subject': subject,
@@ -159,9 +175,13 @@ class MagicLoginView(View):
         else:
             success, data = send_emails(subject=subject, content=body, recipients={email: user})
         if not success:
-            messages.warning(request, _('Failed to send the email:') + ' ' + str(data))
+            logger.error('Failed to send magic login link to %r: %s', email, data)
+            if cache_key:
+                # Allow the user to retry immediately
+                cache.delete(cache_key)
+            messages.error(request, _('Failed to send the email. Please try again later.'))
         else:
-            messages.success(request, _('An email has been sent to you with the link to log in.'))
+            messages.success(request, sent_msg)
         return success
 
     def authenticate_user(self, request: HttpRequest) -> bool:
@@ -172,7 +192,7 @@ class MagicLoginView(View):
         if not user:
             messages.error(request, _('Your request is invalid.'))
             return False
-        ip = request.META['REMOTE_ADDR']
+        ip = request.META.get('REMOTE_ADDR')
         logger.info('A magic login link was used to authenticate user %s (IP: %s).', user, ip)
         login(request, user)
         return True
@@ -182,13 +202,23 @@ class MagicLoginView(View):
         Get the next URL to redirect the user after login.
         """
         next_page = request.GET.get('next', '')
-        if '://' in next_page:
+        if not self.is_safe_url(request, next_page):
             next_page = ''
         if not next_page:
             referer = request.META.get('HTTP_REFERER')
             site_url = f'{request.scheme}://{request.get_host()}'
-            if referer and referer.startswith(site_url):
+            if referer and referer.startswith(site_url + '/'):
                 relative_url = referer[len(site_url):]
-                if relative_url and '://' not in relative_url and not relative_url.startswith('/login'):
+                if self.is_safe_url(request, relative_url) and not relative_url.startswith('/login'):
                     next_page = relative_url
         return next_page or settings.LOGIN_REDIRECT_URL
+
+    @staticmethod
+    def is_safe_url(request: HttpRequest, url: str) -> bool:
+        """
+        Check that the URL is a local path (URLs with a scheme or a host are refused).
+        """
+        return (
+            url.startswith('/')
+            and url_has_allowed_host_and_scheme(url, allowed_hosts=None, require_https=request.is_secure())
+        )

@@ -22,15 +22,14 @@ def _export_as_csv_action(description=None, fields=None, exclude=None, header=Tr
         based on https://djangosnippets.org/snippets/1697/
         """
         opts = modeladmin.model._meta
-        field_names = set([field.name for field in opts.fields])
+        # Keep the model fields order
+        field_names = [field.name for field in opts.fields]
 
         if fields:
-            fieldset = set(fields)
-            field_names = field_names & fieldset
+            field_names = [name for name in field_names if name in fields]
 
         elif exclude:
-            excludeset = set(exclude)
-            field_names = field_names - excludeset
+            field_names = [name for name in field_names if name not in exclude]
 
         response = HttpResponse(content_type='text/csv; charset=utf-8')
         response['Content-Disposition'] = 'attachment; filename=export.csv'
@@ -38,7 +37,7 @@ def _export_as_csv_action(description=None, fields=None, exclude=None, header=Tr
         writer = csv.writer(response)
 
         if header:
-            writer.writerow(list(field_names))
+            writer.writerow(field_names)
         for obj in queryset:
             writer.writerow([getattr(obj, field) for field in field_names])
 

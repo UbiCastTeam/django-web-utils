@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 import socket
 
 from django.contrib.auth.decorators import login_required
@@ -130,6 +131,8 @@ def monitoring_log(request, name=None, path=None, back_url=None):
         else:
             path = daemon.get('log_path')
         label = daemon.get('label')
+    if path:
+        path = Path(path)
     if not path:
         raise Http404()
     if not label:

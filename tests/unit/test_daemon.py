@@ -111,3 +111,72 @@ def test_lock_decorator(lock_path, lock_content, silent):
                 dummy_fct()
     else:
         assert dummy_fct() == 'dummy'
+
+
+def test_lock_file__acquired_by_other_host(lock_path):
+    lock_path.write_text('other-host')
+    assert lock.acquire_lock(lock_path) is False
+    assert lock_path.read_text() == 'other-host'
+
+
+def test_check_dir__secure(tmp_dir):
+    path = tmp_dir / 'daemon-dir'
+    BaseDaemon._check_dir(path)
+    assert path.is_dir()
+    assert path.stat().st_mode & 0o022 == 0
+
+
+@pytest.mark.parametrize('kind', ['writable', 'symlink'])
+def test_check_dir__insecure(tmp_dir, kind):
+    path = tmp_dir / 'daemon-dir'
+    if kind == 'writable':
+        path.mkdir()
+        path.chmod(0o777)
+    else:
+        target = tmp_dir / 'target'
+        target.mkdir()
+        path.symlink_to(target, target_is_directory=True)
+    with pytest.raises(RuntimeError, match='is insecure'):
+        BaseDaemon._check_dir(path)
+
+
+def test_lock_file__stale_lock_removed(lock_path):
+    lock_path.write_text('nope')
+    assert lock._remove_stale_lock(lock_path, lock_path.stat()) is True
+    assert not lock_path.exists()
+    assert [p.name for p in lock_path.parent.iterdir() if p.name.startswith('lock-file')] == []
+
+
+def test_lock_file__stale_lock_replaced(lock_path):
+    lock_path.write_text('nope')
+    stale_stat = lock_path.stat()
+    # Another process replaces the stale lock with a fresh one before the removal
+    lock_path.unlink()
+    lock_path.write_text('other-process')
+    os.utime(lock_path, ns=(stale_stat.st_atime_ns, stale_stat.st_mtime_ns + 1_000_000_000))
+
+    # The fresh lock must not be removed
+    assert lock._remove_stale_lock(lock_path, stale_stat) is False
+    assert lock_path.read_text() == 'other-process'
+    assert [p.name for p in lock_path.parent.iterdir() if p.name.startswith('lock-file')] == ['lock-file']
+
+
+def test_log_error__insecure_log_dir(tmp_dir, capsys):
+    target = tmp_dir / 'target'
+    target.mkdir()
+    log_dir = tmp_dir / 'daemon-logs'
+    log_dir.symlink_to(target, target_is_directory=True)
+
+    class TestDaemon(BaseDaemon):
+        LOG_DIR = log_dir
+
+    daemon = object.__new__(TestDaemon)
+    daemon._logging_available = False
+    daemon._log_in_file = True
+    daemon._log_error(ValueError('test error'))
+
+    # Nothing must be written in the directory targeted by the symbolic link
+    assert list(target.iterdir()) == []
+    err = capsys.readouterr().err
+    assert 'test error' in err
+    assert 'is insecure' in err

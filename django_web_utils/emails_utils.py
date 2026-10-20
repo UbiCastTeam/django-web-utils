@@ -16,6 +16,7 @@ The email content
 """
 from contextlib import ExitStack
 import datetime
+import functools
 import logging
 import os
 import socket
@@ -28,6 +29,7 @@ from django.db.models.query import QuerySet
 from django.template import Context, Engine
 from django.utils import translation
 from django.utils.html import conditional_escape
+from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 
 from django_web_utils import html_utils
@@ -52,26 +54,24 @@ class Recipient:
         return (self.email or '').count('@') == 1
 
 
+@functools.cache
+def _get_context_processor():
+    """
+    Get the context processor function defined in the `EMAIL_CONTEXT_PROCESSOR` setting.
+    The function is imported only once.
+    """
+    fct_path = getattr(settings, 'EMAIL_CONTEXT_PROCESSOR', None)
+    if not fct_path:
+        return None
+    try:
+        ctx_processor = import_string(fct_path)
+    except ImportError as err:
+        raise RuntimeError(f'Failed to import emails context processor: {err}') from err
+    return ctx_processor if callable(ctx_processor) else None
+
+
 def _get_context():
-    # Get context processor function
-    if '_context_processor' not in globals():
-        ctx_processor = None
-        if getattr(settings, 'EMAIL_CONTEXT_PROCESSOR', None):
-            fct_path = settings.EMAIL_CONTEXT_PROCESSOR
-            try:
-                module_name = fct_path.rsplit('.', 1)[-1]
-                module_path = fct_path[:-len(module_name) - 1]
-                if not module_path:
-                    module_path = '.'
-                module = __import__(module_path, fromlist=[module_name])
-                ctx_processor = getattr(module, module_name)
-            except Exception as err:
-                raise RuntimeError(f'Failed to import emails context processor: {err}') from err
-            if not callable(ctx_processor):
-                ctx_processor = None
-        globals()['_context_processor'] = ctx_processor
-    else:
-        ctx_processor = globals()['_context_processor']
+    ctx_processor = _get_context_processor()
 
     # Generate context
     ctx = {}
@@ -81,8 +81,8 @@ def _get_context():
             raise RuntimeError(
                 f'Emails context processor returned an invalid object for context (must be a dict): {data}'
             )
-        else:
-            ctx = data
+        # Copy the dict to avoid modifying an object which could be shared between calls
+        ctx = dict(data)
     if (not ctx or not ctx.get('sender')) and getattr(settings, 'DEFAULT_FROM_EMAIL', None):
         ctx['sender'] = settings.DEFAULT_FROM_EMAIL
     return ctx
@@ -159,7 +159,7 @@ def send_template_emails(template, context=None, recipients=None, content_subtyp
     engine = Engine.get_default()
     tplt_path = str(template)
     if tplt_path.startswith('/'):
-        with open(tplt_path, 'r') as file_obj:
+        with open(tplt_path) as file_obj:
             content = file_obj.read()
         tplt = engine.from_string(content)
     else:
@@ -311,7 +311,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, filter_err
     fieldset_style = 'style="margin-bottom: 8px; border: 1px solid #888; border-radius: 4px;"'
     content = (
         '<div style="margin-bottom: 8px;">'
-        f'Message sent at: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}<br/>\n'
+        f'Message sent at: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}<br/>\n'  # noqa: DTZ005
         f'Unix user: {conditional_escape(os.environ.get("USER"))}<br/>\n'
         f'System hostname: {conditional_escape(socket.gethostname())}'
         '</div>\n'
@@ -334,7 +334,7 @@ def send_error_report_emails(title=None, error=None, recipients=None, filter_err
             '</fieldset>\n'
         )
     # Send emails
-    content = mark_safe(content)
+    content = mark_safe(content)  # noqa: S308 (all values are escaped)
     tplt = getattr(settings, 'EMAIL_ERROR_TEMPLATE', None)
     if tplt:
         return send_template_emails(tplt, dict(

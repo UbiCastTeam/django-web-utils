@@ -28,7 +28,7 @@
                 <div class="messages-list">
                     <!-- django message block -->
                     {% for message in messages %}
-                        <div class="message-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">{{ message|safe }}</div>
+                        <div class="message-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">{{ message|linebreaksbr }}</div>
                     {% endfor %}
                 </div>
             </div>

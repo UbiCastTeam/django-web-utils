@@ -8,11 +8,15 @@ import logging
 import logging.config
 import os
 from pathlib import Path
+import signal
+import stat
 import subprocess
 import sys
+import tempfile
 import traceback
 
 from django_web_utils.daemon.daemonization import daemonize
+from django_web_utils.system_utils import get_python_executable
 
 logger = logging.getLogger('djwutils.daemon.base')
 
@@ -26,10 +30,14 @@ class BaseDaemon:
 
     Log file will be located in `LOG_DIR/<daemon_file_name>.log`.
     PID file is located in `PID_DIR/<daemon_file_name>.pid`.
+    If these directories are in the system temporary directory, they must be owned by the
+    user running the daemon and must not be writable by other users (they are created with
+    these permissions if they don't exist).
     """
 
-    LOG_DIR = Path('/tmp/djwutils-daemon')
-    PID_DIR = Path('/tmp/djwutils-daemon')
+    # The directories are checked before being used (see the `_check_dir` method)
+    LOG_DIR = Path('/tmp/djwutils-daemon')  # noqa: S108
+    PID_DIR = Path('/tmp/djwutils-daemon')  # noqa: S108
     # Django settings module (for example: `'myproject.settings'`). Django is not loaded if set to `None`.
     SETTINGS_MODULE = None
 
@@ -119,9 +127,12 @@ class BaseDaemon:
             if pid:
                 print(f'Stopping {self.get_name()}... ', file=sys.stdout)
                 # Kill process and its children
-                p = subprocess.run(f"kill -- -$(ps hopgid {pid} | sed 's/^ *//g')", shell=True)
-                if p.returncode != 0:
-                    print(f'Cannot stop {self.get_name()}.', file=sys.stderr)
+                try:
+                    os.killpg(os.getpgid(pid), signal.SIGTERM)
+                except ProcessLookupError:
+                    pass  # The process has already ended
+                except OSError as err:
+                    print(f'Cannot stop {self.get_name()}: {err}', file=sys.stderr)
                     self.exit(129)
                 self.get_pid_path().unlink(missing_ok=True)
                 print(f'{self.get_name()} stopped.', file=sys.stdout)
@@ -134,16 +145,20 @@ class BaseDaemon:
                 print(f'{self.get_name()} is already running.', file=sys.stderr)
                 self.exit(130)
         elif command == 'clear_log':
+            # The directory is checked to avoid truncating a file targeted by a symbolic link
+            self._check_dir(self.LOG_DIR)
             if self.get_log_path().exists():
                 self.get_log_path().write_text('')
             print(f'Log file cleared for {self.get_name()}.', file=sys.stdout)
         else:
-            print(self.USAGE % self.daemon_path, file=sys.stderr)
+            print(f'Invalid command: {command}', file=sys.stderr)
             self.exit(128)
 
         if command in ('start', 'restart'):
             print(f'Starting {self.get_name()}...', file=sys.stdout)
             sys.stdout.flush()
+            if self._log_in_file:
+                self._check_dir(self.LOG_DIR)
             if self._should_daemonize:
                 daemonize(redirect_to=str(self.get_log_path()) if self._log_in_file else None)
             if not self._simultaneous:
@@ -153,6 +168,36 @@ class BaseDaemon:
             self._setup_logging()
         else:
             self.exit(0)
+
+    @staticmethod
+    def _check_dir(path):
+        """
+        Create the directory if it does not exist.
+        If the directory is in the system temporary directory (writable by all users), check that
+        it is owned by the current user and that it is not writable by other users, otherwise another
+        user could control the content of the directory (for example to make a symbolic link attack).
+        """
+        path = Path(os.path.abspath(path))
+        path.mkdir(mode=0o755, parents=True, exist_ok=True)
+        # The system temporary directories are checked even if the "TMPDIR" environment variable is set
+        tmp_dirs = {Path('/tmp'), Path('/var/tmp'), Path(os.path.abspath(tempfile.gettempdir()))}  # noqa: S108
+        for tmp_dir in tmp_dirs:
+            if path == tmp_dir or not path.is_relative_to(tmp_dir):
+                continue
+            # Check all directories between the temporary directory and the given path (symbolic links are refused)
+            current = tmp_dir
+            for part in path.relative_to(tmp_dir).parts:
+                current = current / part
+                st = current.lstat()
+                if (
+                    not stat.S_ISDIR(st.st_mode)
+                    or st.st_uid != os.getuid()
+                    or st.st_mode & (stat.S_IWGRP | stat.S_IWOTH)
+                ):
+                    raise RuntimeError(
+                        f'The directory "{current}" is insecure: it must be a directory owned by the current user '
+                        'and not writable by other users.'
+                    )
 
     def _setup_django(self):
         # Set django settings, so that django modules can be imported
@@ -165,7 +210,7 @@ class BaseDaemon:
         django.setup()
 
     def _setup_logging(self):
-        self.LOG_DIR.mkdir(parents=True, exist_ok=True)
+        self._check_dir(self.LOG_DIR)
 
         loggers = logging.Logger.manager.loggerDict
 
@@ -242,7 +287,7 @@ class BaseDaemon:
         """
         pid_path = self.get_pid_path()
         try:
-            pid_path.parent.mkdir(parents=True, exist_ok=True)
+            self._check_dir(pid_path.parent)
             pid_path.write_text(str(os.getpid()))
         except OSError:
             print(f'Cannot write pid into pidfile {pid_path}', file=sys.stderr)
@@ -275,14 +320,17 @@ class BaseDaemon:
             )
         elif self._log_in_file:
             try:
+                # The directory is checked to avoid writing in a file targeted by a symbolic link
+                # (the error can be caused by an insecure log directory)
+                self._check_dir(self.LOG_DIR)
                 with open(self.get_log_path(), 'a') as fo:
                     fo.write(
-                        f'Date: {datetime.datetime.now()} (local time): '
+                        f'Date: {datetime.datetime.now()} (local time): '  # noqa: DTZ005
                         f'Error when running {self.get_name()}: {err}\n'
                         f'{traceback.format_exc()}\n'
                     )
-            except OSError as err:
-                print(str(err), file=sys.stderr)
+            except (OSError, RuntimeError) as log_err:
+                print(f'{err}\nFailed to write error in log file: {log_err}', file=sys.stderr)
         else:
             print(str(err), file=sys.stderr)
 
@@ -309,7 +357,7 @@ class BaseDaemon:
         self._clear_pid()
 
         # Execute restart command (if the daemon was not daemonized it will become so)
-        cmd = ['python3', str(self.daemon_path), 'restart']
+        cmd = [get_python_executable(), str(self.daemon_path), 'restart']
         if args:
             cmd.extend(args)
         p = subprocess.run(

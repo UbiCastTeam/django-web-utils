@@ -24,6 +24,7 @@ Create a sub class of the view `django_web_utils.magic_login.views.MagicLoginVie
     - `users_json_path: Path`
     - `template_view: str`
     - `template_email: Optional[str]`
+    - `request_cooldown: int` (minimum delay in seconds between two link requests for the same email address, default: 60)
 - Implement the functions (classmethod):
     - `get_users(cls) -> dict[str, AbstractBaseUser]`
     - `create_user(cls, info: dict) -> AbstractBaseUser`

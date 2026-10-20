@@ -21,20 +21,30 @@ classifiers = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-  "bleach[css] >= 6.0, < 7.0",
-  "pillow >= 11",
-  "pytz",
+  "nh3 >= 0.3",
+  "pillow >= 12",
 ]
 
 [project.optional-dependencies]
-dev = [
+# Django is not a hard dependency to let projects manage their Django version,
+# but this library is only tested with the versions below.
+django = [
   "django >= 6.1, < 6.2",
+]
+# Required by the "ldap_utils" module.
+ldap = [
+  "ldap3 >= 2.9",
+]
+# Required by the "sentry_utils" module.
+sentry = [
+  "sentry-sdk >= 2.25",
+]
+dev = [
   "psycopg[binary] >= 3.2",
   "pytest",
   "pytest-cov",
   "pytest-django",
   "ruff",
-  "sentry-sdk",
   "vulture",
 ]
 
@@ -77,7 +87,15 @@ quote-style = "single"
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/rules/
-select = ["A", "B", "E", "F", "G", "I", "N", "Q"]
+select = ["A", "B", "DJ", "DTZ", "E", "F", "G", "I", "N", "Q", "S", "UP"]
+ignore = [
+  "S603",  # subprocess is always called with a list of arguments (no shell)
+  "S607",  # system commands (ps, du, git, etc.) are resolved using the PATH
+  "UP031",  # printf-style formatting will be migrated progressively
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["DTZ", "S101", "S105", "S106", "S108"]
 
 [tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
@@ -99,3 +117,7 @@ section-order = [
   "local-folder",
 ]
 split-on-trailing-comma = true
+
+[tool.basedpyright]
+# Disable type checking in IDE (Django does not support type checking)
+typeCheckingMode = "off"

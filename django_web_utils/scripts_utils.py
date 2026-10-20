@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 
-class Colors():
+class Colors:
     GRAY = '\033[90m'
     RED = '\033[91m'
     GREEN = '\033[92m'

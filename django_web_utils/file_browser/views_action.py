@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
+from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext as _
 
 from django_web_utils.antivirus_utils import antivirus_file_validator
@@ -17,21 +18,20 @@ def recursive_remove(path):
     """
     Function to remove a dir and all its file.
     Returns the number of deleted files and dirs.
+    Symbolic links are removed but never followed.
     """
     files_deleted = 0
     dir_deleted = 0
-    if not os.path.exists(path):
-        return files_deleted, dir_deleted
-    if os.path.isdir(path):
+    if os.path.islink(path) or os.path.isfile(path):
+        os.remove(path)
+        files_deleted += 1
+    elif os.path.isdir(path):
         for f in os.listdir(path):
             fd, dd = recursive_remove(os.path.join(path, f))
             files_deleted += fd
             dir_deleted += dd
         os.rmdir(path)
         dir_deleted += 1
-    elif os.path.isfile(path):
-        os.remove(path)
-        files_deleted += 1
     return files_deleted, dir_deleted
 
 
@@ -70,7 +70,8 @@ def storage_action(request, namespace=None):
                     red_url = reverse('file_browser_base')
             # Check data
             path = request.POST.get('path', '').strip('/')
-            if '..' in path:
+            dir_path = config.get_safe_path(base_path, path)
+            if not dir_path:
                 msg = _('Invalid base path.')
                 if action == 'upload_single':
                     messages.error(request, msg)
@@ -84,11 +85,6 @@ def storage_action(request, namespace=None):
                     return HttpResponseRedirect('%s#/%s' % (red_url, path))
                 else:
                     return JsonResponse(dict(error=msg), status=400)
-            if path:
-                dir_path = os.path.join(base_path, path)
-            else:
-                dir_path = base_path
-            dir_path = dir_path
             # Create upload folder
             try:
                 os.makedirs(dir_path, exist_ok=True)
@@ -109,6 +105,13 @@ def storage_action(request, namespace=None):
                 file_name = clean_file_name(uploaded_file.name)
                 if file_name == '.htaccess':
                     file_name += '_'
+                if not config.is_valid_name(file_name):
+                    msg = _('Invalid name.')
+                    if action == 'upload_single':
+                        messages.error(request, msg)
+                        return HttpResponseRedirect('%s#/%s' % (red_url, path))
+                    else:
+                        return JsonResponse(dict(error=msg), status=400)
                 # Write uploaded file
                 file_path = os.path.join(dir_path, file_name)
                 with open(file_path, 'wb+') as fo:
@@ -126,9 +129,9 @@ def storage_action(request, namespace=None):
                     url = base_url + '/' + file_name
                 urls.append(url)
             if action == 'upload_single':
-                for url in urls:
-                    msg += '\n' + url
-                messages.success(request, msg)
+                # The message is marked as safe to render links (all values are escaped)
+                links = format_html_join('', '<li><a href="{}">{}</a></li>', ((url, url) for url in urls))
+                messages.success(request, format_html('{}<ul>{}</ul>', msg, links))
                 return HttpResponseRedirect('%s#/%s' % (red_url, path))
             else:
                 return JsonResponse(dict(message=msg, urls=urls))
@@ -137,19 +140,17 @@ def storage_action(request, namespace=None):
         elif action == 'add_folder':
             # Check data
             path = request.POST.get('path', '').strip('/')
-            if '..' in path:
+            dir_path = config.get_safe_path(base_path, path)
+            if not dir_path:
                 return JsonResponse(dict(error=_('Invalid base path.')), status=400)
             name = request.POST.get('name')
             if not name:
                 return JsonResponse(dict(error=_('The "%s" field is required.') % 'name'), status=400)
             name = clean_file_name(name)
-            if not name:
+            if not config.is_valid_name(name):
                 return JsonResponse(dict(error=_('Invalid name.')), status=400)
             # Execute action
-            if path:
-                target = os.path.join(base_path, path, name)
-            else:
-                target = os.path.join(base_path, name)
+            target = os.path.join(dir_path, name)
             try:
                 os.makedirs(target, exist_ok=True)
             except Exception as e:
@@ -160,16 +161,16 @@ def storage_action(request, namespace=None):
         elif action in ('rename', 'move', 'delete'):
             # Check data
             path = request.POST.get('path', '').strip('/')
-            if '..' in path:
+            dir_path = config.get_safe_path(base_path, path)
+            if not dir_path:
                 return JsonResponse(dict(error=_('Invalid base path.')), status=400)
-            if path:
-                dir_path = os.path.join(base_path, path)
-            else:
-                dir_path = base_path
             names = list()
             for key in request.POST:
                 if key.startswith('name_') and request.POST[key]:
-                    names.append(request.POST[key])
+                    name = request.POST[key]
+                    if not config.is_valid_name(name):
+                        return JsonResponse(dict(error=_('Invalid name.')), status=400)
+                    names.append(name)
             if not names:
                 return JsonResponse(dict(error=_('No files selected.')), status=400)
 
@@ -188,16 +189,18 @@ def storage_action(request, namespace=None):
                 index = 0
                 for name in names:
                     src = os.path.join(dir_path, name)
-                    if not os.path.exists(src):
-                        return JsonResponse(dict(error=_('The file "%s" does not exist.') % src), status=400)
+                    if not os.path.lexists(src):
+                        return JsonResponse(dict(error=_('The file "%s" does not exist.') % name), status=400)
                     if len(names) == 1:
                         new = '%s%s' % (new_name, new_name_ext)
                     else:
                         index += 1
                         new = '%s-%s%s' % (new_name, index, new_name_ext)
+                    if not config.is_valid_name(new):
+                        return JsonResponse(dict(error=_('Invalid name.')), status=400)
                     dest = os.path.join(dir_path, new)
                     if src != dest:
-                        if os.path.exists(dest):
+                        if os.path.lexists(dest):
                             return JsonResponse(dict(error=_('The file "%s" already exists.') % new), status=400)
                         os.rename(src, dest)
                 if len(names) == 1:
@@ -210,11 +213,12 @@ def storage_action(request, namespace=None):
                 if not new_path:
                     return JsonResponse(dict(error=_('No path specfied to move files in.')), status=400)
                 if new_path == '#':
-                    new_path = base_path
+                    new_path = os.path.normpath(base_path)
                 else:
-                    new_path = os.path.join(base_path, new_path)
-                new_path = new_path
-                if not os.path.exists(new_path):
+                    new_path = config.get_safe_path(base_path, new_path)
+                    if not new_path:
+                        return JsonResponse(dict(error=_('Invalid base path.')), status=400)
+                if not os.path.isdir(new_path):
                     return JsonResponse(dict(error=_('Destination path does not exists.')), status=400)
                 moved = 0
                 for name in names:
@@ -234,8 +238,6 @@ def storage_action(request, namespace=None):
                 files_deleted = 0
                 dir_deleted = 0
                 for name in names:
-                    if not name:
-                        continue
                     src = os.path.join(dir_path, name)
                     try:
                         fd, dd = recursive_remove(src)
@@ -260,17 +262,20 @@ def storage_action(request, namespace=None):
         if action == 'search':
             # Get path
             path = request.GET.get('path', '').strip('/')
-            if '..' in path:
+            dir_path = config.get_safe_path(base_path, path)
+            if not dir_path:
                 return JsonResponse(dict(error=_('Invalid base path.')), status=400)
-            if path:
-                dir_path = os.path.join(base_path, path)
-            else:
-                dir_path = base_path
             if not os.path.exists(dir_path):
                 return JsonResponse(dict(error=_('Requested path does not exist.')), status=400)
             # Get search command
             search = request.GET.get('search', '')
             search = search.replace("'", '"').lower()
+
+            base_dir = os.path.normpath(base_path)
+
+            def get_relative_url(abs_path):
+                rel_path = os.path.relpath(abs_path, base_dir)
+                return '' if rel_path == '.' else rel_path.replace('\\', '/')
 
             dirs = dict()
             results = 0
@@ -279,7 +284,7 @@ def storage_action(request, namespace=None):
                     if '/' in name:
                         name = name.split('/')[-1]
                     if search in name.lower():
-                        dir_url = os.path.join(bpath, name)[len(base_path):].replace('\\', '/')
+                        dir_url = get_relative_url(os.path.join(bpath, name))
                         if dir_url:
                             if dir_url.startswith('/'):
                                 dir_url = dir_url[1:]
@@ -291,7 +296,7 @@ def storage_action(request, namespace=None):
                     if '/' in name:
                         name = name.split('/')[-1]
                     if search in name.lower():
-                        dir_url = bpath[len(base_path):].replace('\\', '/')
+                        dir_url = get_relative_url(bpath)
                         if dir_url:
                             if dir_url.startswith('/'):
                                 dir_url = dir_url[1:]

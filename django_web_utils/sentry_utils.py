@@ -1,5 +1,7 @@
 import errno
 import logging
+import os
+import time
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -27,6 +29,9 @@ class ThrottledFilteredSentryReporter:
         self.period_length_in_seconds: int = period_length_in_seconds
         self.max_reports_in_period: int = max_reports_in_period
         self.counter_cache_key: str = counter_cache_key
+        # Local counter used when the Django cache is not available
+        self._local_counter: int = 0
+        self._local_period_start: float | None = None
 
         integrations = [
             ExcepthookIntegration(),
@@ -51,17 +56,32 @@ class ThrottledFilteredSentryReporter:
         )
 
     def _get_cache(self) -> object | None:
-        if not hasattr(self, '_cache'):
-            try:
-                from django.core.cache import cache
-            except ImportError:
-                self._cache = None
-            else:
-                self._cache = cache
-        return self._cache
+        if hasattr(self, '_cache'):
+            return self._cache
+        try:
+            from django.conf import ENVIRONMENT_VARIABLE, settings
+            from django.core.cache import cache
+        except ImportError:
+            self._cache = None
+            return None
+        # The Django cache cannot be used if Django is not configured (for example in scripts).
+        # Settings are loaded lazily, so they are considered as configured if the settings module is defined.
+        if not settings.configured and not os.environ.get(ENVIRONMENT_VARIABLE):
+            # The result is not stored because Django can be configured later
+            return None
+        self._cache = cache
+        return cache
 
     def increment_counter(self) -> int:
         cache = self._get_cache()
+        if cache is None:
+            # Use a counter local to the current process
+            now = time.monotonic()
+            if self._local_period_start is None or now - self._local_period_start > self.period_length_in_seconds:
+                self._local_period_start = now
+                self._local_counter = 0
+            self._local_counter += 1
+            return self._local_counter
         try:
             value = cache.incr(self.counter_cache_key)
         except ValueError:
@@ -73,21 +93,23 @@ class ThrottledFilteredSentryReporter:
         # Sentry doc: https://docs.sentry.io/platforms/python/configuration/filtering/
 
         # Apply filters
-        exc_info = hint.get('exc_info', [None])[0]
-        if exc_info is not None:
-            if exc_info.__name__ == 'UnreadablePostError':
+        # The "exc_info" value is a tuple like the one returned by "sys.exc_info()": (type, value, traceback)
+        exc_info = hint.get('exc_info') or (None, None, None)
+        exc_type, exc_value = exc_info[0], exc_info[1]
+        if exc_type is not None:
+            if exc_type.__name__ == 'UnreadablePostError':
                 # Ignore UWSGI connection errors (UnreadablePostError)
                 # Like:
                 #     UnreadablePostError: error during read(---) on wsgi.input
                 return None
-            if exc_info.__name__ == 'OperationalError':
+            if exc_type.__name__ == 'OperationalError':
                 # Ignore database connection errors (OperationalError)
                 # Like:
                 #     OperationalError: could not connect to server: Connection refused
                 #     OperationalError: server closed the connection unexpectedly
                 #     OperationalError: SSL SYSCALL error: EOF detected
                 return None
-            if exc_info.__name__ == 'OSError' and exc_info.errno == errno.ENOSPC:
+            if isinstance(exc_value, OSError) and exc_value.errno == errno.ENOSPC:
                 # Ignore no space left errors (OSError)
                 # Like:
                 #     OSError [Errno 28] No space left on device: ...

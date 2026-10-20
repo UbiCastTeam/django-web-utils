@@ -1,4 +1,7 @@
+import html
 import re
+from unittest import mock
+from urllib.parse import parse_qs, urlencode, urlsplit
 
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
@@ -105,13 +108,107 @@ def test_invalid_token(client):
     assert messages[0].message == 'Your session has expired, please get a new link to retry.'
 
 
+SENT_MSG = 'If this email address is allowed, an email has been sent to it with the link to log in.'
+
+
 @pytest.mark.usefixtures('filled_file')
 def test_non_allowed_email(client):
+    # The response must be the same as for an allowed email to avoid disclosing allowed addresses
     response = client.post(reverse('testapp:magic_login'), {'email': 'nope@example.com'})
-    assert response.status_code == 200
+    assert response.status_code == 302
     messages = list(get_messages(response.wsgi_request))
     assert len(messages) == 1
-    assert messages[0].message == 'The requested email address is not allowed.'
+    assert messages[0].message == SENT_MSG
+    assert len(mail.outbox) == 0
+    assert User.objects.all().count() == 0
+
+
+@pytest.mark.usefixtures('filled_file')
+def test_request_cooldown(client):
+    response = client.post(reverse('testapp:magic_login'), {'email': 'magic@example.com'})
+    assert response.status_code == 302
+    assert len(mail.outbox) == 1
+
+    response = client.post(reverse('testapp:magic_login'), {'email': 'magic@example.com'})
+    assert response.status_code == 200
+    messages = list(get_messages(response.wsgi_request))
+    assert [m.message for m in messages] == [
+        SENT_MSG,
+        'A link has already been requested recently for this email address, please wait a moment before retrying.'
+    ]
+    assert len(mail.outbox) == 1
+
+
+
+@pytest.mark.usefixtures('filled_file')
+def test_request_cooldown__reset_on_send_failure(client):
+    with mock.patch('django_web_utils.magic_login.views.send_emails', return_value=(False, 'SMTP error')):
+        response = client.post(reverse('testapp:magic_login'), {'email': 'magic@example.com'})
+    assert response.status_code == 200
+    messages = list(get_messages(response.wsgi_request))
+    assert [m.message for m in messages] == ['Failed to send the email. Please try again later.']
+    assert len(mail.outbox) == 0
+
+    # The user can retry immediately
+    response = client.post(reverse('testapp:magic_login'), {'email': 'magic@example.com'})
+    assert response.status_code == 302
+    assert len(mail.outbox) == 1
+
+def _get_link(email):
+    match = re.match(r'.*<a href="([^"]+)" target="_blank">.*', email.body, re.DOTALL)
+    assert match
+    return html.unescape(match.groups()[0])
+
+
+@pytest.mark.usefixtures('filled_file')
+@pytest.mark.parametrize('next_url', [
+    '//evil.example/x',
+    '/\\evil.example/x',
+    'https://evil.example/x',
+    'javascript:alert(1)',
+    'evil.example',
+])
+def test_next_url__open_redirect(client, next_url):
+    response = client.post(
+        reverse('testapp:magic_login') + '?' + urlencode({'next': next_url}),
+        {'email': 'magic@example.com'},
+    )
+    assert response.status_code == 302
+    url = _get_link(mail.outbox[0])
+    assert url.endswith('&next=%2F')
+
+    response = client.get(url.removeprefix('http://testserver'))
+    assert response.status_code == 302
+    assert response['Location'] == '/'
+
+
+@pytest.mark.usefixtures('filled_file')
+def test_next_url__html_injection(client):
+    next_url = '/"><a href="https://evil.example">click</a>'
+    response = client.post(
+        reverse('testapp:magic_login') + '?' + urlencode({'next': next_url}),
+        {'email': 'magic@example.com'},
+    )
+    assert response.status_code == 302
+    body = mail.outbox[0].body
+    assert 'evil.example">' not in body
+    assert body.count('<a ') == 1
+    url = _get_link(mail.outbox[0])
+    assert parse_qs(urlsplit(url).query)['next'] == [next_url]
+
+
+@pytest.mark.usefixtures('filled_file')
+def test_inactive_user(client):
+    User.objects.create(username='magic-user', email='magic@example.com', is_active=False)
+    response = client.post(reverse('testapp:magic_login'), {'email': 'magic@example.com'})
+    assert response.status_code == 302
+    url = _get_link(mail.outbox[0])
+
+    response = client.get(url.removeprefix('http://testserver'))
+    assert response.status_code == 200
+    messages = list(get_messages(response.wsgi_request))
+    assert [m.message for m in messages] == [SENT_MSG, 'Your request is invalid.']
+    assert '_auth_user_id' not in client.session
 
 
 @pytest.mark.usefixtures('filled_file')
@@ -144,7 +241,7 @@ def test_allowed_email(request, client, with_template, already_exist, next_url, 
     assert response.status_code == 302
     messages = list(get_messages(response.wsgi_request))
     assert len(messages) == 1
-    assert messages[0].message == 'An email has been sent to you with the link to log in.'
+    assert messages[0].message == SENT_MSG
     assert User.objects.all().count() == 1
 
     response = client.get(response['Location'])
@@ -152,11 +249,11 @@ def test_allowed_email(request, client, with_template, already_exist, next_url, 
 
     assert [m.to[0] for m in mail.outbox] == ['"Magic User" <magic@example.com>']
     match = re.match(
-        r'.*<a href="http://testserver(/magic/\?t=[0-9a-z]+-[0-9a-f]+&next=[a-z/]+)" target="_blank">.*',
+        r'.*<a href="http://testserver(/magic/\?t=[0-9a-z]+-[0-9a-f]+&amp;next=[0-9A-Za-z%]+)" target="_blank">.*',
         mail.outbox[0].body, re.DOTALL
     )
     assert match
-    url = match.groups()[0]
+    url = html.unescape(match.groups()[0])
 
     response = client.get(url)
     assert response.status_code == 302

@@ -14,11 +14,14 @@ from django.utils.translation import gettext as _
 
 from django_web_utils import files_utils
 from django_web_utils.daemon.base import BaseDaemon
+from django_web_utils.system_utils import get_python_executable
 
 logger = logging.getLogger('djwutils.monitoring.utils')
 
 FILE_SIZE_LIMIT = 524_288_000  # 500 MiB
 FILE_SIZE_LIMIT_GZ = 104_857_600  # 100 MiB
+# The decompressed size is limited too to avoid saturating the memory with highly compressed files
+FILE_SIZE_LIMIT_GZ_DECOMPRESSED = FILE_SIZE_LIMIT
 
 
 def natural_keys(text):
@@ -49,7 +52,7 @@ def execute_daemon_command(request, daemon, command):
         return False, _('The daemon script cannot be found.')
 
     p = subprocess.run(
-        ['python3', str(path), command], encoding='utf-8',
+        [get_python_executable(), str(path), command], encoding='utf-8',
         stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
     success = p.returncode == 0
@@ -81,10 +84,12 @@ def get_daemon_status(request, daemon, date_adjust_fct=None):
         running = False
     # Get log file properties
     size = mtime = ''
+    if log_path:
+        log_path = Path(log_path)
     if log_path and log_path.exists():
         statobj = log_path.stat()
         size = files_utils.get_size_display(statobj.st_size)
-        mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)
+        mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)  # noqa: DTZ006 (local date)
         if date_adjust_fct:
             mtime = date_adjust_fct(mtime)
         mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
@@ -128,7 +133,7 @@ def log_view(request, path, tail=None, rotated_access=False, date_adjust_fct=Non
                     response['Content-Encoding'] = 'gzip'
                 return response
             size = files_utils.get_size_display(statobj.st_size)
-            mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)
+            mtime = datetime.datetime.fromtimestamp(statobj.st_mtime)  # noqa: DTZ006 (local date)
             if date_adjust_fct:
                 mtime = date_adjust_fct(mtime)
             mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
@@ -159,11 +164,19 @@ def log_view(request, path, tail=None, rotated_access=False, date_adjust_fct=Non
                     'Only file tail and raw file are accessible.\n'
                     'Warning: getting the raw file can saturate system memory.'
                 ) % size
+            elif is_gz:
+                with gzip.open(picked_path, 'rb') as fo:
+                    content = fo.read(FILE_SIZE_LIMIT_GZ_DECOMPRESSED + 1)
+                if len(content) > FILE_SIZE_LIMIT_GZ_DECOMPRESSED:
+                    content = _(
+                        'File too large once decompressed.\n'
+                        'Only the raw file is accessible.'
+                    )
+                else:
+                    content = content.decode('utf-8')
+                    lines = content.count('\n')
             else:
-                content = picked_path.read_bytes()
-                if is_gz:
-                    content = gzip.decompress(content)
-                content = content.decode('utf-8')
+                content = picked_path.read_bytes().decode('utf-8')
                 lines = content.count('\n')
         except Exception as e:
             messages.error(request, '%s %s\n%s' % (_('Unable to display log file.'), _('Error:'), e))

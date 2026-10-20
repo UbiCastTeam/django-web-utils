@@ -394,16 +394,35 @@ class UserCommand(BaseCommand):
         for action in self.management_class.ACTIONS:
             getattr(self.management_class, f'add_parser__{action}')(subparsers)
 
+    def _get_options_repr(self, options: dict) -> str:
+        """
+        Get a representation of the options without sensitive values (like passwords).
+        """
+        sensitive_fields = set(self.management_class.SENSITIVE_FIELDS)
+
+        def hide(value):
+            if isinstance(value, dict):
+                return {
+                    key: ('***' if key in sensitive_fields and val else hide(val))
+                    for key, val in value.items()
+                }
+            return value
+        return str(hide(options))
+
     def handle(self, *args, **options) -> None:
         options['debug'] = options['verbosity'] > 1
         if options['debug']:
-            self.stdout.write(f'Ruuning cleaning for action "{options["action"]}" with options: {options}')
+            self.stdout.write(
+                f'Running cleaning for action "{options["action"]}" with options: {self._get_options_repr(options)}'
+            )
         try:
             getattr(self.management_class, f'clean_options__{options["action"]}')(options)
         except argparse.ArgumentTypeError as err:
             raise CommandError(str(err)) from err
         if options['debug']:
-            self.stdout.write(f'Ruuning action "{options["action"]}" with options: {options}')
+            self.stdout.write(
+                f'Running action "{options["action"]}" with options: {self._get_options_repr(options)}'
+            )
         try:
             getattr(self.management_class, f'run_action__{options["action"]}')(self.stdout, options)
         except ValidationError as err:
