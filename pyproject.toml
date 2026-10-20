@@ -40,7 +40,7 @@ sentry = [
   "sentry-sdk >= 2.25",
 ]
 dev = [
-  "psycopg[binary] >= 3.2",
+  "psycopg[binary] >= 3.3.6",
   "pytest",
   "pytest-cov",
   "pytest-django",
