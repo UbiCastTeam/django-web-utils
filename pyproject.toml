@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools>=77.0"]
+requires = ["setuptools>=84.0.0"]
 
 [project]
 name = "django-web-utils"
@@ -21,26 +21,26 @@ classifiers = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-  "nh3 >= 0.3",
-  "pillow >= 12",
+  "nh3 >= 0.3.7",
+  "pillow >= 13.0.0",
 ]
 
 [project.optional-dependencies]
 # Django is not a hard dependency to let projects manage their Django version,
 # but this library is only tested with the versions below.
 django = [
-  "django >= 6.1, < 6.2",
+  "django >= 6.1.2, < 6.2",
 ]
 # Required by the "ldap_utils" module.
 ldap = [
-  "ldap3 >= 2.9",
+  "ldap3 >= 2.9.1",
 ]
 # Required by the "sentry_utils" module.
 sentry = [
-  "sentry-sdk >= 2.25",
+  "sentry-sdk >= 2.72.0",
 ]
 dev = [
-  "psycopg[binary] >= 3.2",
+  "psycopg[binary] >= 3.3.6",
   "pytest",
   "pytest-cov",
   "pytest-django",
