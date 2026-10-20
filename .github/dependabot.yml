@@ -1,24 +1,30 @@
 # Dependabot configuration
 # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+# All updates are combined into a single monthly pull request
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/configuring-multi-ecosystem-updates
 version: 2
+multi-ecosystem-groups:
+  all:
+    schedule:
+      interval: monthly
 updates:
   - package-ecosystem: github-actions
     directory: /
-    schedule:
-      interval: monthly
+    patterns: ['*']
+    multi-ecosystem-group: all
   - package-ecosystem: npm
     directory: /
-    schedule:
-      interval: monthly
+    patterns: ['*']
+    multi-ecosystem-group: all
   - package-ecosystem: pip
     directory: /
-    schedule:
-      interval: monthly
+    patterns: ['*']
+    multi-ecosystem-group: all
   - package-ecosystem: docker
     directory: /docker
-    schedule:
-      interval: monthly
+    patterns: ['*']
+    multi-ecosystem-group: all
   - package-ecosystem: gitsubmodule
     directory: /
-    schedule:
-      interval: monthly
+    patterns: ['*']
+    multi-ecosystem-group: all
