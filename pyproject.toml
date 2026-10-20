@@ -22,7 +22,7 @@ classifiers = [
 requires-python = ">=3.13"
 dependencies = [
   "nh3 >= 0.3",
-  "pillow >= 12",
+  "pillow >= 13.0.0",
 ]
 
 [project.optional-dependencies]
