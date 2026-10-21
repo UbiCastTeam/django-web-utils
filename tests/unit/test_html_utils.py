@@ -64,6 +64,21 @@ from django_web_utils import html_utils
     pytest.param(
         '<p onclick="alert(1)">a</p><script>alert(1)</script><style>p {}</style><unknown>b</unknown>', False,
         '<p>a</p>b', id='remove_scripts_and_unknown_tags'),
+    pytest.param(
+        '<iframe><script>alert("XSS");</script></iframe>', True,
+        '<iframe></iframe>', id='iframe_script_content_removed'),
+    pytest.param(
+        '<iframe><script>alert("XSS");</script></iframe>', False,
+        '', id='iframe_script_content_removed_iframe_not_allowed'),
+    pytest.param(
+        '<iframe src="https://localhost/test"><style>p {}</style><p onclick="alert(1)">a <b>b</b></p></iframe>', True,
+        '<iframe src="https://localhost/test">a b</iframe>', id='iframe_tags_content_removed'),
+    pytest.param(
+        '<iframe><iframe><script>alert(1)</script></iframe></iframe>', True,
+        '<iframe>&lt;script&gt;alert(1)&lt;/script&gt;</iframe>', id='iframe_nested_iframe_content_escaped'),
+    pytest.param(
+        '<p title="<iframe>">"a</p><iframe title="a > b"><script>alert(1)</script></iframe>', True,
+        '<p title="&lt;iframe&gt;">"a</p><iframe title="a &gt; b"></iframe>', id='iframe_tag_in_attribute'),
 ])
 def test_clean_html_tags(value, allow_iframes, expected):
     assert html_utils.clean_html_tags(

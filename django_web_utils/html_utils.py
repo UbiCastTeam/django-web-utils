@@ -68,6 +68,10 @@ LINE_RETURN_TAGS = {
     'div', 'p', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'tr',
     'fieldset', 'legend', 'pre', 'code', 'blockquote', 'video', 'source',
 }
+# Regex matching iframes (with their content) or any other tag in a HTML content cleaned by nh3.
+# In the nh3 output, attribute values are always double quoted and "<" is always escaped in texts,
+# so all tags can be matched reliably (quoted values are skipped in case "<" or ">" are not escaped in them).
+CLEANED_IFRAME_RE = re.compile(r'(<iframe\b(?:[^>"]|"[^"]*")*>)(.*?)</iframe>|<(?:[^>"]|"[^"]*")*>', re.DOTALL)
 
 
 def _filter_iframe_allow(value):
@@ -103,10 +107,25 @@ def _attribute_filter(tag, name, value):
     return value
 
 
+def _clean_iframe_content(match, allow_iframes):
+    """
+    Remove all tags from the content of an iframe matched by CLEANED_IFRAME_RE.
+    The content of iframes is not parsed as HTML by nh3 so tags like "script" are kept by it.
+    The iframe tag is removed if iframes are not allowed.
+    """
+    start_tag, content = match.group(1, 2)
+    if start_tag is None:
+        # Not an iframe
+        return match.group(0)
+    content = strip_html_tags(content)
+    return f'{start_tag}{content}</iframe>' if allow_iframes else content
+
+
 def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None, extra_allowed_css=None):
     """
     Function to remove all non allowed tags and attributes from the given HTML content.
     Non allowed tags are removed but their text content is kept (except for "script" and "style" tags).
+    All tags are removed from the content of iframes.
     """
     if extra_allowed_css is None:
         extra_allowed_css = set()
@@ -119,20 +138,17 @@ def clean_html_tags(html, allow_iframes=False, extra_allowed_attrs=None, extra_a
         else:
             allowed_attrs[key] |= set(extra_allowed_attrs[key])
 
-    tags = set(ALLOWED_TAGS)
-    if allow_iframes:
-        tags |= {'iframe'}
-    else:
-        allowed_attrs.pop('iframe', None)
-    return nh3.clean(
+    # Iframes are always kept by nh3 to be able to clean their content, they are removed afterwards if not allowed
+    cleaned = nh3.clean(
         html,
-        tags=tags,
+        tags=ALLOWED_TAGS | {'iframe'},
         attributes=allowed_attrs,
         attribute_filter=_attribute_filter,
         filter_style_properties=BASE_ALLOWED_CSS | ALLOWED_CSS | extra_allowed_css,
         url_schemes=URL_SCHEMES,
         link_rel=None,
     )
+    return CLEANED_IFRAME_RE.sub(lambda match: _clean_iframe_content(match, allow_iframes), cleaned)
 
 
 def strip_html_tags(html):
