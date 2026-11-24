@@ -2,6 +2,7 @@ import errno
 from unittest.mock import patch, PropertyMock
 
 import pytest
+import sentry_sdk
 
 from django_web_utils.sentry_utils import ThrottledFilteredSentryReporter
 
@@ -15,6 +16,26 @@ def sentry_reporter():
             sentry_release='1.0'
         )
 
+
+@pytest.mark.parametrize('django_integration', [False, True])
+def test_init(django_integration):
+    # Check that the options given to Sentry are valid (Sentry is not mocked)
+    try:
+        ThrottledFilteredSentryReporter(
+            sentry_dsn='https://public@sentry.example.com/1',
+            sentry_env='test',
+            sentry_release='1.0',
+            django_integration=django_integration,
+        )
+        client = sentry_sdk.get_client()
+        assert client.is_active()
+        assert client.options['data_collection']['user_info'] is False
+        assert client.options['data_collection']['http_bodies'] == []
+        assert client.get_integration('logging') is not None
+        assert (client.get_integration('django') is not None) is django_integration
+    finally:
+        sentry_sdk.get_client().close()
+        sentry_sdk.get_global_scope().set_client(None)
 
 def test_no_exc_info(sentry_reporter):
     fake_event = 'event'

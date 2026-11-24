@@ -37,7 +37,7 @@ ldap = [
 ]
 # Required by the "sentry_utils" module.
 sentry = [
-  "sentry-sdk >= 2.73.0",
+  "sentry-sdk >= 3.0.0",
 ]
 dev = [
   "psycopg[binary] >= 3.3.6",

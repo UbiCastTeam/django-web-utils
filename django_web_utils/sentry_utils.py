@@ -11,6 +11,9 @@ from sentry_sdk.types import Event, Hint
 
 logger = logging.getLogger('djwutils.sentry_utils')
 
+# Additional terms to filter values which could contain personal data (like IP addresses or user names)
+PII_DENYLIST_TERMS = ['forwarded', '-ip', 'remote-', 'via', '-user']
+
 
 class ThrottledFilteredSentryReporter:
     """
@@ -36,8 +39,8 @@ class ThrottledFilteredSentryReporter:
         integrations = [
             ExcepthookIntegration(),
             LoggingIntegration(
-                sentry_logs_level=logging.INFO,  # Capture INFO and above as logs
-                level=logging.INFO,  # Capture INFO and above as breadcrumbs
+                level=logging.INFO,  # Capture INFO and above as logs
+                breadcrumb_level=logging.INFO,  # Capture INFO and above as breadcrumbs
                 event_level=logging.ERROR,  # Send ERROR records as events
             ),
         ]
@@ -52,7 +55,23 @@ class ThrottledFilteredSentryReporter:
             default_integrations=False,
             integrations=integrations,
             before_send=self.before_send,
-            send_default_pii=False,
+            # Do not attach stack traces to messages (the default value changed to True in sentry-sdk 3)
+            attach_stacktrace=False,
+            # Restrict collected data (replaces "send_default_pii=False" since sentry-sdk 3)
+            # https://docs.sentry.io/platforms/python/migration/2.x-to-3.x
+            data_collection={
+                'user_info': False,
+                'http_bodies': [],
+                'graphql': {'document': False, 'variables': False},
+                'gen_ai': {'inputs': False, 'outputs': False},
+                'mcp': {'inputs': False, 'outputs': False},
+                'database_query_data': False,
+                'queues': False,
+                'stack_frame_variables': {'mode': 'denylist'},
+                'http_headers': {'request': {'mode': 'denylist', 'terms': PII_DENYLIST_TERMS}},
+                'cookies': {'mode': 'denylist', 'terms': PII_DENYLIST_TERMS},
+                'url_query_params': {'mode': 'denylist', 'terms': PII_DENYLIST_TERMS},
+            },
         )
 
     def _get_cache(self) -> object | None:
