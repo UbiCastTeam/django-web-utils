@@ -37,6 +37,19 @@ def test_init(django_integration):
         sentry_sdk.get_client().close()
         sentry_sdk.get_global_scope().set_client(None)
 
+def test_ignored_loggers():
+    with (
+        patch('sentry_sdk.init', return_value=None),
+        patch('django_web_utils.sentry_utils.ignore_logger_for_events') as ignore_mock,
+    ):
+        ThrottledFilteredSentryReporter(
+            sentry_dsn='mock',
+            sentry_env='test',
+            sentry_release='1.0',
+            ignored_loggers=['saml2', 'saml2.*'],
+        )
+    assert [c.args for c in ignore_mock.call_args_list] == [('saml2',), ('saml2.*',)]
+
 def test_no_exc_info(sentry_reporter):
     fake_event = 'event'
     fake_hint = {}

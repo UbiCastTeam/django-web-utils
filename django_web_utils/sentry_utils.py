@@ -6,7 +6,7 @@ import time
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.excepthook import ExcepthookIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.logging import ignore_logger_for_events, LoggingIntegration
 from sentry_sdk.types import Event, Hint
 
 logger = logging.getLogger('djwutils.sentry_utils')
@@ -18,6 +18,9 @@ PII_DENYLIST_TERMS = ['forwarded', '-ip', 'remote-', 'via', '-user']
 class ThrottledFilteredSentryReporter:
     """
     Class to filter and add a rate limit for error reports to Sentry.
+
+    The "ignored_loggers" argument is a list of logger names for which no error report and no breadcrumb will be sent.
+    Wildcards are supported (for example "saml2.*"). Records of these loggers are still sent as Sentry logs.
     """
     def __init__(
         self,
@@ -27,7 +30,8 @@ class ThrottledFilteredSentryReporter:
         django_integration: bool = False,
         period_length_in_seconds: int = 24 * 3600,
         max_reports_in_period: int = 10,
-        counter_cache_key: str = 'sentry_report_counter'
+        counter_cache_key: str = 'sentry_report_counter',
+        ignored_loggers: list[str] | None = None,
     ):
         self.period_length_in_seconds: int = period_length_in_seconds
         self.max_reports_in_period: int = max_reports_in_period
@@ -46,6 +50,9 @@ class ThrottledFilteredSentryReporter:
         ]
         if django_integration:
             integrations.append(DjangoIntegration())
+
+        for logger_name in ignored_loggers or []:
+            ignore_logger_for_events(logger_name)
 
         sentry_sdk.init(
             dsn=sentry_dsn,
